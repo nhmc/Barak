@@ -1,0 +1,6 @@
+barak.utilities.adict.__init__
+==============================
+
+.. currentmodule:: barak.utilities
+
+.. automethod:: adict.__init__

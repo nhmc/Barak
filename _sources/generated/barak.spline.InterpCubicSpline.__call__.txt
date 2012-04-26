@@ -1,0 +1,6 @@
+barak.spline.InterpCubicSpline.__call__
+=======================================
+
+.. currentmodule:: barak.spline
+
+.. automethod:: InterpCubicSpline.__call__

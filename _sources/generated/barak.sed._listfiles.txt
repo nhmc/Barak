@@ -1,0 +1,6 @@
+barak.sed._listfiles
+====================
+
+.. currentmodule:: barak.sed
+
+.. autofunction:: _listfiles

@@ -1,0 +1,119 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.utilities.indexnear &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.utilities.indgroupby" href="barak.utilities.indgroupby.html" />
+    <link rel="prev" title="barak.utilities.get_data_path" href="barak.utilities.get_data_path.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.utilities.indexnear</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.utilities.get_data_path.html">barak.utilities.get_data_path</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.utilities.indgroupby.html">barak.utilities.indgroupby</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-utilities-indexnear">
+<h1>barak.utilities.indexnear<a class="headerlink" href="#barak-utilities-indexnear" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.utilities.indexnear">
+<tt class="descclassname">barak.utilities.</tt><tt class="descname">indexnear</tt><big>(</big><em>ar</em>, <em>val</em><big>)</big><a class="reference internal" href="../_modules/barak/utilities.html#indexnear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.utilities.indexnear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the element in an array closest to a given value.</p>
+<p>The input array must be sorted lowest to highest.  Returns the
+index of the element with a value closest to the given value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ar</strong> : array_like</p>
+<blockquote>
+<div><p>Input array. It must be sorted smallest to largest.</p>
+</div></blockquote>
+<p><strong>val</strong> : float</p>
+<blockquote>
+<div><p>Find the element of <em class="xref py py-obj">ar</em> that is closest to <em class="xref py py-obj">val</em>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>index</strong> : int</p>
+<blockquote class="last">
+<div><p>Index of the <em class="xref py py-obj">ar</em> element with the closest value to <em class="xref py py-obj">val</em>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="mi">4500</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">indexnear</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="mf">4302.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="go">60 4303.03030303</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">indexnear</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="mf">4600.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="go">99 4500.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">indexnear</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="mf">3000.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="go">0 4000.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.utilities.get_data_path.html">barak.utilities.get_data_path</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.utilities.indgroupby.html">barak.utilities.indgroupby</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

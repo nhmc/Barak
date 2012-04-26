@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.coord &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.coord</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.coord</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Astronomical coordinate functions.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">DEG_PER_HR</span> <span class="o">=</span> <span class="mf">360.</span> <span class="o">/</span> <span class="mf">24.</span>           
+<span class="n">DEG_PER_MIN</span> <span class="o">=</span> <span class="n">DEG_PER_HR</span> <span class="o">/</span> <span class="mf">60.</span>    
+<span class="n">DEG_PER_S</span> <span class="o">=</span> <span class="n">DEG_PER_MIN</span> <span class="o">/</span> <span class="mf">60.</span>     
+<span class="n">DEG_PER_AMIN</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="mf">60.</span>             
+<span class="n">DEG_PER_ASEC</span> <span class="o">=</span> <span class="n">DEG_PER_AMIN</span> <span class="o">/</span> <span class="mf">60.</span> 
+<span class="n">RAD_PER_DEG</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.</span>
+<span class="n">DEG_PER_RAD</span> <span class="o">=</span> <span class="mf">180.</span> <span class="o">/</span> <span class="n">pi</span>
+
+<div class="viewcode-block" id="radec_to_xyz"><a class="viewcode-back" href="../../generated/barak.coord.radec_to_xyz.html#barak.coord.radec_to_xyz">[docs]</a><span class="k">def</span> <span class="nf">radec_to_xyz</span><span class="p">(</span><span class="n">ra_deg</span><span class="p">,</span> <span class="n">dec_deg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert RA and Dec to xyz positions on a unit sphere.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ra_deg, dec_deg: float or arrays of floats, shape (N,)</span>
+<span class="sd">      RA and Dec in degrees.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xyz: array of floats,  shape (N, 3).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ra</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ra_deg</span><span class="p">)</span> <span class="o">*</span> <span class="n">RAD_PER_DEG</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dec_deg</span><span class="p">)</span> <span class="o">*</span> <span class="n">RAD_PER_DEG</span>
+    <span class="n">cosd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cosd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ra</span><span class="p">),</span>
+                    <span class="n">cosd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ra</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="distsq"><a class="viewcode-back" href="../../generated/barak.coord.distsq.html#barak.coord.distsq">[docs]</a><span class="k">def</span> <span class="nf">distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the distance squared in xyz space between two RAs and</span>
+<span class="sd">    Decs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ra1, dec1:  floats or arrays of floats, shape (N,)</span>
+<span class="sd">    ra2, dec2:  floats or arrays of floats, shape (M,) </span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    distance_squared: array of floats shape (N, M)</span>
+<span class="sd">      If N or M is 1, that dimension is suppressed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xyz1</span> <span class="o">=</span> <span class="n">radec_to_xyz</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
+    <span class="n">xyz2</span> <span class="o">=</span> <span class="n">radec_to_xyz</span><span class="p">(</span><span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">xyz2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">d2</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="p">((</span><span class="n">xyz1</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">xyz2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">d2</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d2</span>
+</div>
+<div class="viewcode-block" id="radians_to_distsq"><a class="viewcode-back" href="../../generated/barak.coord.radians_to_distsq.html#barak.coord.radians_to_distsq">[docs]</a><span class="k">def</span> <span class="nf">radians_to_distsq</span><span class="p">(</span><span class="n">radians</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert to an angular separation from an xyz separation</span>
+<span class="sd">    squared on a unit sphere using the cosine rule.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="distsq_to_radians"><a class="viewcode-back" href="../../generated/barak.coord.distsq_to_radians.html#barak.coord.distsq_to_radians">[docs]</a><span class="k">def</span> <span class="nf">distsq_to_radians</span><span class="p">(</span><span class="n">distsq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert to an xyz separation squared to an angular separation</span>
+<span class="sd">    in radians on a unit sphere using the cosine rule.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">distsq</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="check_ra_dec"><a class="viewcode-back" href="../../generated/barak.coord.check_ra_dec.html#barak.coord.check_ra_dec">[docs]</a><span class="k">def</span> <span class="nf">check_ra_dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Check 0 &lt;= RA &lt; 360 and -90 &lt;= Dec &lt;= 90. Raise an error if</span>
+<span class="sd">    they are outside these limits.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ra</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;RA must be &gt; 0, </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ra</span><span class="p">[</span><span class="n">ra</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ra</span> <span class="o">&gt;=</span> <span class="mi">360</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;RA must be &lt; 360, </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ra</span><span class="p">[</span><span class="n">ra</span> <span class="o">&gt;=</span> <span class="mi">360</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dec</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Dec must be &gt; -90, </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">dec</span><span class="p">[</span><span class="n">dec</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">90</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dec</span> <span class="o">&gt;</span> <span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Dec must be &lt; 90, </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">dec</span><span class="p">[</span><span class="n">dec</span> <span class="o">&gt;</span> <span class="mi">90</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="ang_sep"><a class="viewcode-back" href="../../generated/barak.coord.ang_sep.html#barak.coord.ang_sep">[docs]</a><span class="k">def</span> <span class="nf">ang_sep</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns the angular separation (in degrees) on the celestial</span>
+<span class="sd">    sphere between two RA/Dec coordinates given in degrees.  Accepts</span>
+<span class="sd">    numpy arrays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ra1, dec1:  floats or arrays of floats, shape (N,)</span>
+<span class="sd">    ra2, dec2:  floats or arrays of floats, shape (M,) </span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    separation_in_degrees: array of floats shape (N, M)</span>
+<span class="sd">      If N or M is 1, that dimension is suppressed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">check_ra_dec</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
+    <span class="n">check_ra_dec</span><span class="p">(</span><span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DEG_PER_RAD</span> <span class="o">*</span> <span class="n">distsq_to_radians</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="_dec2s"><a class="viewcode-back" href="../../generated/barak.coord._dec2s.html#barak.coord._dec2s">[docs]</a><span class="k">def</span> <span class="nf">_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span>
+           <span class="n">raformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%06.3f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">decformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%05.2f</span><span class="s">&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts decimal RA and Dec (both in degrees) to sexigesimal RA</span>
+<span class="sd">    (hours/minutes/seconds) and Dec (degrees/arcmin/arcsec). Returns</span>
+<span class="sd">    two strings, RA and Dec.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dec</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span>
+        <span class="n">dec</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="n">negdec</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="n">negdec</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="c"># error checking</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">ra</span> <span class="o">&lt;</span> <span class="mf">360.</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dec</span> <span class="o">&gt;</span> <span class="mf">90.</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Decimal RA or Dec outside sensible limits.&quot;</span><span class="p">)</span>
+
+    <span class="n">rah</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">DEG_PER_HR</span><span class="p">)</span>
+    <span class="n">ram</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">DEG_PER_MIN</span><span class="p">)</span>
+    <span class="n">ras</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">/</span> <span class="n">DEG_PER_S</span>
+    <span class="n">s_ra</span> <span class="o">=</span> <span class="n">raformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">rah</span><span class="p">,</span> <span class="n">ram</span><span class="p">,</span> <span class="n">ras</span><span class="p">)</span>
+
+    <span class="n">decd</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">decm</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">DEG_PER_AMIN</span><span class="p">)</span>
+    <span class="n">decs</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">/</span> <span class="n">DEG_PER_ASEC</span>
+    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>
+        <span class="n">s_dec</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="n">decformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">decd</span><span class="p">,</span> <span class="n">decm</span><span class="p">,</span> <span class="n">decs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="n">s_dec</span> <span class="o">=</span> <span class="s">&#39;+&#39;</span> <span class="o">+</span> <span class="n">decformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">decd</span><span class="p">,</span> <span class="n">decm</span><span class="p">,</span> <span class="n">decs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s_ra</span><span class="p">,</span><span class="n">s_dec</span>
+</div>
+<div class="viewcode-block" id="dec2s"><a class="viewcode-back" href="../../generated/barak.coord.dec2s.html#barak.coord.dec2s">[docs]</a><span class="k">def</span> <span class="nf">dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert and ra and dec (or list of ras and decs) to decimal</span>
+<span class="sd">    degrees.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">radec</span> <span class="o">=</span> <span class="p">[</span><span class="n">_dec2s</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="_s2dec"><a class="viewcode-back" href="../../generated/barak.coord._s2dec.html#barak.coord._s2dec">[docs]</a><span class="k">def</span> <span class="nf">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Converts two strings of sexigesimal RA (hms) and Dec (dms) to</span>
+<span class="sd">    decimal RA and Dec (degrees).  The separators between h/m/s and</span>
+<span class="sd">    deg/arcmin/arcsec can be whitespace or colons.  Returns a tuple of</span>
+<span class="sd">    two floats, (ra, dec).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Convert to floats, noting sign of dec</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[:hms]&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">ra</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[:dms]&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+    <span class="n">rah</span><span class="p">,</span><span class="n">ram</span><span class="p">,</span><span class="n">ras</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ra</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="n">dec</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-&#39;</span><span class="p">:</span>
+        <span class="n">negdec</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="n">negdec</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">decd</span><span class="p">,</span><span class="n">decm</span><span class="p">,</span><span class="n">decs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dec</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>  <span class="n">decd</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
+    <span class="c"># Error checking</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">rah</span> <span class="o">&lt;</span> <span class="mf">24.</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">ram</span> <span class="o">&lt;=</span> <span class="mf">60.</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">ras</span> <span class="o">&lt;=</span> <span class="mf">60.</span>
+        <span class="ow">or</span> <span class="n">decd</span> <span class="o">&gt;</span> <span class="mf">90.</span> <span class="ow">or</span> <span class="n">decm</span> <span class="o">&gt;=</span> <span class="mf">60.</span> <span class="ow">or</span> <span class="n">decs</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Either RA or Dec is outside sensible &#39;</span>
+                         <span class="s">&#39;limits.</span><span class="se">\n</span><span class="s">RA = </span><span class="si">%s</span><span class="s">, Dec = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">))</span>
+    <span class="c"># Conversion</span>
+    <span class="n">d_ra</span> <span class="o">=</span> <span class="n">DEG_PER_HR</span> <span class="o">*</span> <span class="n">rah</span> <span class="o">+</span> <span class="n">DEG_PER_MIN</span> <span class="o">*</span> <span class="n">ram</span> <span class="o">+</span> <span class="n">DEG_PER_S</span> <span class="o">*</span> <span class="n">ras</span>
+    <span class="n">d_dec</span> <span class="o">=</span> <span class="n">decd</span> <span class="o">+</span> <span class="n">DEG_PER_AMIN</span> <span class="o">*</span> <span class="n">decm</span> <span class="o">+</span> <span class="n">DEG_PER_ASEC</span> <span class="o">*</span> <span class="n">decs</span>
+    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>  <span class="n">d_dec</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
+
+    <span class="k">return</span> <span class="n">d_ra</span><span class="p">,</span> <span class="n">d_dec</span>
+</div>
+<div class="viewcode-block" id="s2dec"><a class="viewcode-back" href="../../generated/barak.coord.s2dec.html#barak.coord.s2dec">[docs]</a><span class="k">def</span> <span class="nf">s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a sexigesimal ra and dec (or list of ras and decs) to</span>
+<span class="sd">    decimal degrees.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">radec</span> <span class="o">=</span> <span class="p">[</span><span class="n">_s2dec</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="match"><a class="viewcode-back" href="../../generated/barak.coord.match.html#barak.coord.match">[docs]</a><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">allmatches</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    match(ra1, dec1, ra2, dec2, tol)</span>
+
+<span class="sd">    Given two sets of numpy arrays of ra,dec and a tolerance tol</span>
+<span class="sd">    (float), returns an array of indices and separations with the same</span>
+<span class="sd">    length as the first input array.  If and index is &gt; 0, it is the</span>
+<span class="sd">    index of the closest matching second array element within tol</span>
+<span class="sd">    arcsec.  If it&#39;s -1, then there was no matching ra/dec within tol</span>
+<span class="sd">    arcsec.</span>
+
+<span class="sd">    if allmatches = True, then for each object in the first array,</span>
+<span class="sd">    return the index and separation of everything in the second array</span>
+<span class="sd">    within the search tolerance, not just the closest match.</span>
+
+<span class="sd">    Note to get the indices of objects in ra2, dec2 without a match, use</span>
+
+<span class="sd">    imatch = match(ra1, dec1, ra2, dec2, 2.)</span>
+<span class="sd">    inomatch = numpy.setdiff1d(np.arange(len(ra2)), set(imatch))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numpy.core.records</span> <span class="kn">import</span> <span class="n">fromarrays</span>
+    
+    <span class="n">ra1</span><span class="p">,</span><span class="n">ra2</span><span class="p">,</span><span class="n">dec1</span><span class="p">,</span><span class="n">dec2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">,</span> <span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">dec2</span><span class="p">))</span>
+
+    <span class="nb">abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span>
+
+    <span class="n">isorted</span> <span class="o">=</span> <span class="n">ra2</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+    <span class="n">sdec2</span> <span class="o">=</span> <span class="n">dec2</span><span class="p">[</span><span class="n">isorted</span><span class="p">]</span>
+    <span class="n">sra2</span> <span class="o">=</span> <span class="n">ra2</span><span class="p">[</span><span class="n">isorted</span><span class="p">]</span>
+
+    <span class="n">LIM</span> <span class="o">=</span> <span class="n">tol</span> <span class="o">*</span> <span class="n">DEG_PER_ASEC</span>
+
+    <span class="n">match</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c"># use mean dec, assumes decs similar</span>
+    <span class="n">decav</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sdec2</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="n">dec1</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="n">RA_LIM</span> <span class="o">=</span> <span class="n">LIM</span> <span class="o">/</span> <span class="n">cos</span><span class="p">(</span><span class="n">decav</span> <span class="o">*</span> <span class="n">RAD_PER_DEG</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ra</span><span class="p">,</span><span class="n">dec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span><span class="n">dec1</span><span class="p">):</span>
+        <span class="n">i1</span> <span class="o">=</span> <span class="n">sra2</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ra</span> <span class="o">-</span> <span class="n">RA_LIM</span><span class="p">)</span>
+        <span class="n">i2</span> <span class="o">=</span> <span class="n">i1</span> <span class="o">+</span> <span class="n">sra2</span><span class="p">[</span><span class="n">i1</span><span class="p">:]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ra</span> <span class="o">+</span> <span class="n">RA_LIM</span><span class="p">)</span>
+        <span class="c">#print i1,i2</span>
+        <span class="n">close</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span><span class="n">i2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dec</span> <span class="o">-</span> <span class="n">sdec2</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">LIM</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># if ras and decs are within LIM arcsec, then</span>
+                <span class="c"># calculate actual separation:</span>
+                <span class="n">disq</span> <span class="o">=</span> <span class="n">ang_sep</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">sra2</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">sdec2</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">close</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">disq</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+
+        <span class="n">close</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allmatches</span><span class="p">:</span>
+            <span class="c"># Choose the object with the closest separation inside the</span>
+            <span class="c"># requested tolerance, if one was found.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">close</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">min_dist</span><span class="p">,</span> <span class="n">jmin</span> <span class="o">=</span> <span class="n">close</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">min_dist</span> <span class="o">&lt;</span> <span class="n">LIM</span><span class="p">:</span>
+                    <span class="n">match</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">isorted</span><span class="p">[</span><span class="n">jmin</span><span class="p">],</span> <span class="n">min_dist</span><span class="p">))</span>
+                    <span class="k">continue</span>
+            <span class="c"># otherwise no match</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># append all the matching objects</span>
+            <span class="n">jclose</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">dist</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">close</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">LIM</span><span class="p">:</span>
+                    <span class="n">jclose</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                    <span class="n">seps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fromarrays</span><span class="p">([</span><span class="n">isorted</span><span class="p">[</span><span class="n">jclose</span><span class="p">],</span> <span class="n">seps</span><span class="p">],</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;ind&#39;</span><span class="p">,</span><span class="s">&#39;i8&#39;</span><span class="p">),(</span><span class="s">&#39;sep&#39;</span><span class="p">,</span><span class="s">&#39;f8&#39;</span><span class="p">)]))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allmatches</span><span class="p">:</span>
+        <span class="c"># return both indices and separations in a recarray</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;ind,sep&#39;</span><span class="p">)</span>
+        <span class="c"># change to arcseconds</span>
+        <span class="n">temp</span><span class="o">.</span><span class="n">sep</span> <span class="o">*=</span> <span class="mf">3600.</span>
+        <span class="n">temp</span><span class="o">.</span><span class="n">sep</span><span class="p">[</span><span class="n">temp</span><span class="o">.</span><span class="n">sep</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="k">return</span> <span class="n">temp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">match</span>
+</div>
+<div class="viewcode-block" id="indmatch"><a class="viewcode-back" href="../../generated/barak.coord.indmatch.html#barak.coord.indmatch">[docs]</a><span class="k">def</span> <span class="nf">indmatch</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds objects in ra1, dec1 that have a matching object in ra2,dec2</span>
+<span class="sd">    within tol arcsec.</span>
+
+<span class="sd">    Returns i1, i2 where i1 are indices into ra1,dec1 that have</span>
+<span class="sd">    matches, and i2 are the indices into ra2, dec2 giving the matching</span>
+<span class="sd">    objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">ind</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">i1</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">i2</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">ind</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span>
+    </div>
+<div class="viewcode-block" id="unique_radec"><a class="viewcode-back" href="../../generated/barak.coord.unique_radec.html#barak.coord.unique_radec">[docs]</a><span class="k">def</span> <span class="nf">unique_radec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find unique ras and decs in a list of coordinates.</span>
+
+<span class="sd">    RA and Dec must be array sof the same length, and in degrees.</span>
+
+<span class="sd">    tol is the tolerance for matching in arcsec. Any coord separated by</span>
+<span class="sd">    less that this amount are assumed to be the same.</span>
+
+<span class="sd">    Returns two arrays.  The first is an array of indices giving the</span>
+<span class="sd">    first occurence of a unique coordinate in the input list.  The</span>
+<span class="sd">    second is a list giving the indices of all coords that were</span>
+<span class="sd">    matched to a given unique coord.</span>
+
+<span class="sd">    The matching algorithm is confusing, but hopefully correct and not too</span>
+<span class="sd">    slow. Potential for improvement...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">allmatches</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">imatchflat</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+        <span class="n">imatchflat</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ind</span><span class="p">)</span>
+
+    <span class="n">inomatch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ra</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">imatchflat</span><span class="p">)))</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">inomatch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="c"># Indices giving unique ra, decs</span>
+    <span class="n">iunique</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c"># Will be same length as iunique. Gives all indices in original</span>
+    <span class="c"># coords that are matched to each unique coord.</span>
+    <span class="n">iextras</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">assigned</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">j</span> <span class="o">%</span> <span class="mi">1000</span><span class="p">):</span>
+            <span class="k">print</span> <span class="n">j</span>
+        <span class="c"># get the lowest index in this group</span>
+        <span class="n">isort</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ind</span><span class="p">)</span>
+        <span class="n">ilow</span> <span class="o">=</span> <span class="n">isort</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ilow</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">assigned</span><span class="p">:</span>
+            <span class="n">iunique</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ilow</span><span class="p">)</span>
+            <span class="n">assigned</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ilow</span><span class="p">)</span>
+            <span class="n">iextras</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ilow</span><span class="p">])</span>
+            <span class="c"># assign any extra indices to this unique coord.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">isort</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="c"># check not already been assigned to another coord</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">assigned</span><span class="p">:</span>
+                    <span class="n">iextras</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="n">assigned</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">iunique</span><span class="p">),</span> <span class="n">iextras</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

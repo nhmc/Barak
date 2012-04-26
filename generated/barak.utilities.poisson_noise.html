@@ -1,0 +1,108 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.utilities.poisson_noise &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.utilities.stats" href="barak.utilities.stats.html" />
+    <link rel="prev" title="barak.utilities.permutations" href="barak.utilities.permutations.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.utilities.poisson_noise</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.utilities.permutations.html">barak.utilities.permutations</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.utilities.stats.html">barak.utilities.stats</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-utilities-poisson-noise">
+<h1>barak.utilities.poisson_noise<a class="headerlink" href="#barak-utilities-poisson-noise" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.utilities.poisson_noise">
+<tt class="descclassname">barak.utilities.</tt><tt class="descname">poisson_noise</tt><big>(</big><em>nflux</em>, <em>nsigma</em>, <em>seed=None</em><big>)</big><a class="reference internal" href="../_modules/barak/utilities.html#poisson_noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.utilities.poisson_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds poisson noise to a normalised flux array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>nsigma</strong> : float</p>
+<blockquote>
+<div><p>One sigma error in the flux at the continuum level (where
+normalised flux=1).</p>
+</div></blockquote>
+<p><strong>nflux</strong> : array of floats, shape (N,)</p>
+<blockquote>
+<div><p>Normalised flux values (i.e. flux values divided by
+the continuum).</p>
+</div></blockquote>
+<p><strong>If `seed` is given, it is used to seed the random number</strong> :</p>
+<p><strong>generator.</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>flux, error</strong> : arrays of floats, shape (N,)</p>
+<blockquote class="last">
+<div><p>flux with noise added and one sigma error array.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.utilities.permutations.html">barak.utilities.permutations</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.utilities.stats.html">barak.utilities.stats</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.utilities.addnoise &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.utilities.autocorr" href="barak.utilities.autocorr.html" />
+    <link rel="prev" title="barak.utilities.Gaussian" href="barak.utilities.Gaussian.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.utilities.addnoise</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.utilities.Gaussian.html">barak.utilities.Gaussian</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.utilities.autocorr.html">barak.utilities.autocorr</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-utilities-addnoise">
+<h1>barak.utilities.addnoise<a class="headerlink" href="#barak-utilities-addnoise" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.utilities.addnoise">
+<tt class="descclassname">barak.utilities.</tt><tt class="descname">addnoise</tt><big>(</big><em>nflux</em>, <em>nsigma</em>, <em>minsig=None</em>, <em>seed=None</em><big>)</big><a class="reference internal" href="../_modules/barak/utilities.html#addnoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.utilities.addnoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add noise to a normalised flux array.</p>
+<p>Either gaussian, or a combination of poisson and gaussian noise is
+added to the flux array, depending on the keyword minsig.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>nflux</strong> : array of floats, shape (N,)</p>
+<blockquote>
+<div><p>Array of normalised flux values.</p>
+</div></blockquote>
+<p><strong>nsigma</strong> : float</p>
+<blockquote>
+<div><p>Total desired noise at the continuum (flux=1). Note the
+signal-to-noise ratio (SNR) = 1 / nsigma.</p>
+</div></blockquote>
+<p><strong>minsig</strong> : float, optional</p>
+<blockquote>
+<div><p>By default minsig is <em class="xref py py-obj">None</em>, which means gaussian noise with
+standard deviation <em class="xref py py-obj">nsigma</em> is added to the flux. If minsig is
+given, a combination of poisson and gaussian noise is added to
+the flux to give an error of <em class="xref py py-obj">sigma</em> at the continuum. In this
+case the gaussian noise component has st. dev. of <em class="xref py py-obj">minsig</em>,
+which must be less than <em class="xref py py-obj">nsigma</em>.</p>
+</div></blockquote>
+<p><strong>seed</strong> : int, optional</p>
+<blockquote>
+<div><p>If seed is given, it is used to seed the random number generator.
+By default the seed is not reset.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>flux, error</strong> : arrays of floats, shape (N,)</p>
+<blockquote class="last">
+<div><p>Normalised flux with noise added, one sigma error array.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.utilities.Gaussian.html">barak.utilities.Gaussian</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.utilities.autocorr.html">barak.utilities.autocorr</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

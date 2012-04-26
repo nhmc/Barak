@@ -1,0 +1,6 @@
+barak.pyvpfit.VpfitModel.__init__
+=================================
+
+.. currentmodule:: barak.pyvpfit
+
+.. automethod:: VpfitModel.__init__

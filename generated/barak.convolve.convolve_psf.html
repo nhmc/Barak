@@ -1,0 +1,110 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.convolve.convolve_psf &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.convolve.convolve_window" href="barak.convolve.convolve_window.html" />
+    <link rel="prev" title="barak.absorb.getT" href="barak.absorb.getT.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.convolve.convolve_psf</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.getT.html">barak.absorb.getT</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.convolve.convolve_window.html">barak.convolve.convolve_window</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-convolve-convolve-psf">
+<h1>barak.convolve.convolve_psf<a class="headerlink" href="#barak-convolve-convolve-psf" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.convolve.convolve_psf">
+<tt class="descclassname">barak.convolve.</tt><tt class="descname">convolve_psf</tt><big>(</big><em>a</em>, <em>fwhm</em>, <em>edge='invert'</em>, <em>replace_nan=True</em>, <em>debug=False</em><big>)</big><a class="reference internal" href="../_modules/barak/convolve.html#convolve_psf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.convolve.convolve_psf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convolve an array with a gaussian window.</p>
+<p>Given an array of values <em class="xref py py-obj">a</em> and a gaussian full width at half
+maximum <em class="xref py py-obj">fwhm</em> in pixel units, returns the convolution of the
+array with the normalised gaussian.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>a</strong> : array, shape(N,)</p>
+<blockquote>
+<div><p>Array to convolve</p>
+</div></blockquote>
+<p><strong>fwhm</strong> : float</p>
+<blockquote>
+<div><p>Gaussian full width at half maximum in pixels. This should be &gt; 2
+to sample the gaussian PSF properly.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>convolved_a</strong> : array, shape (N,)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The Gaussian kernel xis calculated for as many pixels required
+until it drops to 1% of its peak value. Note that the data will be
+spoiled at distances n/2 (rounding down) from the edges, where n
+is the width of the Gaussian in pixels.</p>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.getT.html">barak.absorb.getT</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.convolve.convolve_window.html">barak.convolve.convolve_window</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

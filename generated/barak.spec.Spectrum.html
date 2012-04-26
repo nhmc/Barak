@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.spec.Spectrum &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.spec.Spectrum.__init__" href="barak.spec.Spectrum.__init__.html" />
+    <link rel="prev" title="barak.sed.mag2flux" href="barak.sed.mag2flux.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.spec.Spectrum</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.sed.mag2flux.html">barak.sed.mag2flux</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.spec.Spectrum.__init__.html">barak.spec.Spectrum.__init__</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-spec-spectrum">
+<h1>barak.spec.Spectrum<a class="headerlink" href="#barak-spec-spectrum" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="barak.spec.Spectrum">
+<em class="property">class </em><tt class="descclassname">barak.spec.</tt><tt class="descname">Spectrum</tt><big>(</big><em>dw=None</em>, <em>dv=None</em>, <em>wstart=None</em>, <em>wend=None</em>, <em>npts=None</em>, <em>CRVAL=None</em>, <em>CRPIX=None</em>, <em>CDELT=None</em>, <em>wa=None</em>, <em>fl=None</em>, <em>er=None</em>, <em>co=None</em>, <em>fwhm=None</em>, <em>filename=None</em><big>)</big><a class="reference internal" href="../_modules/barak/spec.html#Spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spec.Spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to hold information about a spectrum.</p>
+<p class="rubric">Notes</p>
+<p>If enough information is given, the wavelength scale will be
+generated.  Note that there is no error check if you give
+conflicting wavelength scale information in the keywords!  In this
+case certain combinations of keywords take precendence.  See the
+code comments for details.</p>
+<p>Notes for FITS header:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wstart</span> <span class="o">=</span> <span class="n">CRVAL</span> <span class="o">-</span> <span class="p">(</span><span class="n">CRPIX</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">CDELT</span><span class="p">,</span>  <span class="n">dw</span> <span class="o">=</span> <span class="n">CDELT</span>
+</pre></div>
+</div>
+<p>Conversion between velocity width and log-linear pixel width:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dv</span> <span class="o">/</span> <span class="n">c_kms</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">dw</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">wstart</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">dw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">npts</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">wstart</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">npts</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">wstart</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">wend</span><span class="o">=</span><span class="mi">4400</span><span class="p">,</span> <span class="n">npts</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wa</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">wa</span><span class="o">=</span><span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="o">=</span><span class="n">fl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">CRVAL</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">CRPIX</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">CDELT</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fl</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="30%" />
+<col width="61%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>wa</td>
+<td>array of floats, shape(N,)</td>
+<td>Wavelength values (overrides all wavelength keywords)</td>
+</tr>
+<tr class="row-even"><td>fl</td>
+<td>array of floats, shape(N,)</td>
+<td>Flux.</td>
+</tr>
+<tr class="row-odd"><td>er</td>
+<td>array of floats, shape(N,)</td>
+<td>Error.</td>
+</tr>
+<tr class="row-even"><td>co</td>
+<td>array of floats, shape(N,)</td>
+<td>Continuum.</td>
+</tr>
+<tr class="row-odd"><td>dw</td>
+<td>float</td>
+<td>Wavelength difference between adjacent pixel centres.</td>
+</tr>
+<tr class="row-even"><td>dv</td>
+<td>float</td>
+<td>Velocity difference (km/s)</td>
+</tr>
+<tr class="row-odd"><td>fwhm</td>
+<td>float</td>
+<td>Instrumental FWHM in km/s</td>
+</tr>
+<tr class="row-even"><td>filename</td>
+<td>str</td>
+<td>Filename of spectrum</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="barak.spec.Spectrum.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>dw=None</em>, <em>dv=None</em>, <em>wstart=None</em>, <em>wend=None</em>, <em>npts=None</em>, <em>CRVAL=None</em>, <em>CRPIX=None</em>, <em>CDELT=None</em>, <em>wa=None</em>, <em>fl=None</em>, <em>er=None</em>, <em>co=None</em>, <em>fwhm=None</em>, <em>filename=None</em><big>)</big><a class="reference internal" href="../_modules/barak/spec.html#Spectrum.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spec.Spectrum.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the wavelength scale and initialise attributes.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="barak.spec.Spectrum.__init__.html#barak.spec.Spectrum.__init__" title="barak.spec.Spectrum.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>([dw,&nbsp;dv,&nbsp;wstart,&nbsp;wend,&nbsp;npts,&nbsp;...])</td>
+<td>Create the wavelength scale and initialise attributes.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="barak.spec.Spectrum.multiply.html#barak.spec.Spectrum.multiply" title="barak.spec.Spectrum.multiply"><tt class="xref py py-obj docutils literal"><span class="pre">multiply</span></tt></a>(val)</td>
+<td>Multipy the flux, error and continuum by <em class="xref py py-obj">val</em>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="barak.spec.Spectrum.plot.html#barak.spec.Spectrum.plot" title="barak.spec.Spectrum.plot"><tt class="xref py py-obj docutils literal"><span class="pre">plot</span></tt></a>([ax,&nbsp;show,&nbsp;yperc,&nbsp;alpha,&nbsp;linewidth,&nbsp;...])</td>
+<td>Plots a spectrum.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="barak.spec.Spectrum.rebin.html#barak.spec.Spectrum.rebin" title="barak.spec.Spectrum.rebin"><tt class="xref py py-obj docutils literal"><span class="pre">rebin</span></tt></a>(**kwargs)</td>
+<td>Class method version of spec.rebin()</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="barak.spec.Spectrum.rebin_simple.html#barak.spec.Spectrum.rebin_simple" title="barak.spec.Spectrum.rebin_simple"><tt class="xref py py-obj docutils literal"><span class="pre">rebin_simple</span></tt></a>(n)</td>
+<td>Class method version of spec.rebin_simple().</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="barak.spec.Spectrum.stats.html#barak.spec.Spectrum.stats" title="barak.spec.Spectrum.stats"><tt class="xref py py-obj docutils literal"><span class="pre">stats</span></tt></a>(wa1,&nbsp;wa2[,&nbsp;show])</td>
+<td>Calculates statistics (mean, standard deviation (i.e.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="barak.spec.Spectrum.write.html#barak.spec.Spectrum.write" title="barak.spec.Spectrum.write"><tt class="xref py py-obj docutils literal"><span class="pre">write</span></tt></a>(filename[,&nbsp;header,&nbsp;overwrite])</td>
+<td>Writes out a spectrum, as ascii - wavelength, flux, error, continuum.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.sed.mag2flux.html">barak.sed.mag2flux</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.spec.Spectrum.__init__.html">barak.spec.Spectrum.__init__</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

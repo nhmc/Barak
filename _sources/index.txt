@@ -1,0 +1,405 @@
+Welcome to Barak's documentation
+================================
+
+.. toctree::
+   :maxdepth: 2
+
+   index.rst
+
+
+absorb
+------
+
+This module has routines for analysing the absorption profiles
+from ions and molecules.
+
+.. currentmodule:: barak.absorb
+
+.. autosummary::
+   :toctree: generated/
+
+   calc_Wr
+   calc_iontau
+   calctau
+   find_tau
+   getT
+
+abundances
+----------
+
+Abundances and condensation temperatures.
+
+Contains:
+
+`Asolar`: an ordered dictionary of abundances from Lodders 2003, ApJ,
+591, 1220. (http://adsabs.harvard.edu/abs/2003ApJ...591.1220L)
+
+This gives a value A for each element, where A is defined for an
+element el as::
+
+  A(el) = log10 n(el)/n(H) - 12
+
+n(el) is the number density of atoms of that element, and n(H) is the
+number density of hydrogen.
+
+and
+
+`cond_temp`: an array of condensation temperatures (the temperature at
+which an element in a gaseous state attaches to dust grains) for each
+element from the same reference. In this array, `tc` is the
+condensation temperature in K when condensation begins and `tc50` is
+the 50% condensation temperature in K, when 50% of the element is left
+in a gaseous state.
+
+.. currentmodule:: barak.abundances
+
+.. autosummary::
+   :toctree: generated/
+
+
+constants
+---------
+
+Useful physical and mathematical values. Physical constants in
+Gaussian cgs units when not indicated otherwise. From 2010 CODATA
+recommended values where available (see
+http://physics.nist.gov/cuu/Constants/index.html).
+
+>>> import constants as c
+>>> from math import sqrt 
+>>> Planck_length = sqrt(c.hbar * c.G / c.c**3)    # cm 
+>>> Planck_mass = sqrt(c.hbar * c.c / c.G)         # g
+>>> Planck_time = sqrt(c.hbar * c.G / c.c**5)      # s
+
+Constants defined:
+
+ ======== ===================== =============== ===============================
+ c         2.99792458e10        cm/s            speed of light
+ G         6.67384e-8           cm^3/g/s^2      gravitational constant
+ h         6.6260775e-27        erg s           Planck's constant
+ hbar      1.054571726e-27      erg s           1/(4*pi) * Planck's constant
+ k         1.3806488e-16        erg/K           Boltzmann constant
+ mp        1.67261777e-24       g               proton mass
+ me        9.10938291e-28       g               electron mass
+ eV        1.602176565e-12      ergs            electron volt
+ e         4.80320451e-10       esu             magnitude of charge on electron
+ sigma     5.670373e-5          erg/s/cm^2/K^4  Stefan-Boltzmann constant
+ Ryd       2.179872171e-11      ergs            Rydberg: energy needed to
+                                                dissociate H atom from
+                                                ground state
+ Jy        1e-23                ergs/s/cm^2/Hz  Jansky
+ sigmaT    6.652458734e-25      cm^2            Thomson cross section
+ Mmoon     7.348e25             g               Moon mass
+ Rmoon     1.7374e8             cm              Moon radius
+ Mearth    5.9742e27            g               Earth mass
+ Rearth    6.3781e8             cm              Earth radius
+ Msun      1.989e33             g               Solar mass
+ Lsun      3.90e33              erg/s           Solar luminosity
+ Rsun      6.96e10              cm              Solar radius
+ au        1.496e13             cm              Distance from Earth to Sun
+ ly        9.4607304725808e16   cm              light year
+ pc        3.08567802e18        cm              parsec
+ kpc       3.08567802e21        cm              kiloparsec
+ Mpc       3.08567802e24        cm              megaparsec
+ yr        3.155815e7           s               year
+ Gyr       3.155815e16          s               gigayear
+ mu        0.62                 unitless        mean molecular weight of
+                                                astrophysical gas
+ mile      160934.              cm              mile
+ a0        hbar**2 / me / e**2  cm              Bohr radius
+ alpha     e**2 / (hbar*c)      unitless        Fine structure constant
+ Ryd_Ang   h * c * 1.0e8 / Ryd  Angstroms       Rydberg in Angstroms
+ c_kms     2.99792458e5         km/s            speed of light
+          
+ sqrt_ln2  0.832554611158       sqrt(ln(2))
+ pi       
+  
+ wlya      1215.6701            Angstroms       Wavelength of HI Lya transition
+ wlyb      1025.72              Angstroms       Wavelength of HI Lyb transition
+  
+ Ar                                             dictionary of atomic weights
+ ======== ===================== =============== ===============================
+
+.. currentmodule:: barak.constants
+
+.. autosummary::
+   :toctree: generated/
+
+
+convolve
+--------
+
+Functions related to convolution
+
+.. currentmodule:: barak.convolve
+
+.. autosummary::
+   :toctree: generated/
+
+   convolve_psf
+   convolve_window
+
+coord
+-----
+
+Astronomical coordinate functions.
+
+.. currentmodule:: barak.coord
+
+.. autosummary::
+   :toctree: generated/
+
+   _dec2s
+   _s2dec
+   ang_sep
+   check_ra_dec
+   dec2s
+   distsq
+   distsq_to_radians
+   indmatch
+   match
+   radec_to_xyz
+   radians_to_distsq
+   s2dec
+   unique_radec
+
+io
+--
+
+Functions to read and write text, fits and pickle files.
+
+.. currentmodule:: barak.io
+
+.. autosummary::
+   :toctree: generated/
+
+   loadobj
+   parse_config
+   readtabfits
+   readtxt
+   saveobj
+   writetabfits
+   writetxt
+
+plot
+----
+
+Plotting routines.
+
+.. currentmodule:: barak.plot
+
+.. autosummary::
+   :toctree: generated/
+
+   axvfill
+   axvlines
+   correct_marker_size
+   dhist
+   distplot
+   errplot
+   histo
+   puttext
+
+pyvpfit
+-------
+
+Contains a class, VpfitModel, useful for parsing f26 and fort.13
+files, and writing out fort.13 files. Also has functions for reading
+and searching an atom.dat file that originally came with vpfit (also
+bundled with this package).
+
+.. currentmodule:: barak.pyvpfit
+
+.. autosummary::
+   :toctree: generated/
+
+   VpfitModel
+   VpfitModel.__init__
+   VpfitModel.__repr__
+   VpfitModel.copy
+   VpfitModel.writef13
+   VpfitModel.writef26
+   calc_v90
+   findatom
+   findtrans
+   make_autovpin_input
+   make_rdgen_input
+   parse_entry
+   parse_lines
+   parse_regions
+   readatom
+   readf13
+   readf26
+   sumlines
+
+sed
+---
+
+Perform calculations on Spectral Energy Distributions (SEDs).
+
+Based on the SED module in astLib by Matt Hilton, with some routines
+copied from there (LGPL): http://astlib.sourceforge.net
+
+- VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.
+- AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.
+- SUN: The SED of the Sun.
+
+.. currentmodule:: barak.sed
+
+.. autosummary::
+   :toctree: generated/
+
+   Passband
+   Passband.__init__
+   Passband.__repr__
+   Passband.plot
+   SED
+   SED.__init__
+   SED.__repr__
+   SED.apply_extinction
+   SED.calc_colour
+   SED.calc_flux
+   SED.calc_mag
+   SED.copy
+   SED.integrate
+   SED.normalise_to_mag
+   SED.plot
+   SED.redshift_to
+   Jy2Mag
+   _listfiles
+   calc_extinction_Calzetti
+   flux2mag
+   get_SEDs
+   get_bands
+   get_extinction
+   mag2Jy
+   mag2flux
+
+spec
+----
+
+Contains an object to describe a spectrum, and various
+spectrum-related functions.
+
+.. currentmodule:: barak.spec
+
+.. autosummary::
+   :toctree: generated/
+
+   Spectrum
+   Spectrum.__init__
+   Spectrum.__repr__
+   Spectrum.multiply
+   Spectrum.plot
+   Spectrum.rebin
+   Spectrum.rebin_simple
+   Spectrum.stats
+   Spectrum.write
+   air2vac_ciddor
+   air2vac_morton
+   combine
+   convolve_constant_dv
+   cr_reject
+   cr_reject2
+   find_cont
+   find_err
+   find_wa_edges
+   getwave
+   make_constant_dv_wa_scale
+   make_wa_scale
+   pca_qso_cont
+   plot
+   plotatmos
+   plotlines
+   qso_template
+   read
+   rebin
+   rebin_simple
+   scale_overlap
+   scalemult
+   vac2air_ciddor
+   vac2air_morton
+   writesp
+
+spline
+------
+
+Spline-related functions.
+
+.. currentmodule:: barak.spline
+
+.. autosummary::
+   :toctree: generated/
+
+   InterpCubicSpline
+   InterpCubicSpline.__call__
+   InterpCubicSpline.__init__
+   InterpCubicSpline._tridiag
+   InterpCubicSpline.set_d2
+   fit_spline
+   interp_spline
+   splice
+
+utilities
+---------
+
+Various general-use functions.
+
+.. currentmodule:: barak.utilities
+
+.. autosummary::
+   :toctree: generated/
+
+   Bunch
+   Bunch.__init__
+   Bunch.__repr__
+   adict
+   adict.__delitem__
+   adict.__getattr__
+   adict.__getitem__
+   adict.__getstate__
+   adict.__init__
+   adict.__setattr__
+   adict.__setitem__
+   adict.__setstate__
+   adict.copy
+   Gaussian
+   addnoise
+   autocorr
+   between
+   blackbody_lam
+   blackbody_nu
+   calc_Mstar_b
+   combinations
+   find_edges_true_regions
+   get_data_path
+   indexnear
+   indgroupby
+   meshgrid_nd
+   nan2num
+   permutations
+   poisson_noise
+   stats
+   wmean
+
+voigt
+-----
+
+A fast implementation of the Voigt function.
+
+.. currentmodule:: barak.voigt
+
+.. autosummary::
+   :toctree: generated/
+
+   voigt
+   voigt_slow
+   voigt_wofz
+
+
+.. Indices and tables
+.. ==================
+
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

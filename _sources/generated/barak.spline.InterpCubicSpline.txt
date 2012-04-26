@@ -1,0 +1,23 @@
+barak.spline.InterpCubicSpline
+==============================
+
+.. currentmodule:: barak.spline
+
+.. autoclass:: InterpCubicSpline
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~InterpCubicSpline.__init__
+      ~InterpCubicSpline.set_d2
+   
+   
+
+   
+   
+   

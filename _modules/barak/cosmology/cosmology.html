@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.cosmology.cosmology &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.cosmology.cosmology</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.cosmology.cosmology</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">log10</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">sinh</span><span class="p">,</span> <span class="n">asin</span><span class="p">,</span> <span class="n">asinh</span><span class="p">,</span> <span class="n">pi</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">integrate</span>
+
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="kn">import</span> <span class="n">pc</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">c</span>
+
+<span class="kn">import</span> <span class="nn">parameters</span>
+
+<span class="c"># Originally authored by Andrew Becker (becker@astro.washington.edu),</span>
+<span class="c"># and modified by Neil Crighton (neilcrighton@gmail.com) and Roban</span>
+<span class="c"># Kramer (robanhk@gmail.com).</span>
+
+<span class="c"># Many of these adapted from astro-ph/9905116</span>
+
+<span class="c"># Constants</span>
+
+<span class="c"># speed of light in km/s</span>
+<span class="n">c_kms</span>  <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="mf">1e-5</span>
+
+<span class="c"># Mpc in cm</span>
+<span class="n">Mpc</span> <span class="o">=</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="n">pc</span>
+
+<span class="c"># Mpc in km</span>
+<span class="n">Mpc_km</span> <span class="o">=</span> <span class="mf">1e-5</span> <span class="o">*</span> <span class="n">Mpc</span>
+
+<span class="c"># Gyr in seconds</span>
+<span class="n">Gyr</span> <span class="o">=</span> <span class="mf">1e9</span> <span class="o">*</span> <span class="mf">365.25</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
+
+<span class="n">arcsec_in_radians</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">3600.</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+<span class="n">arcmin_in_radians</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">60.</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+
+<div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology">[docs]</a><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creating a new Cosmology instance</span>
+<span class="sd">    ---------------------------------</span>
+
+<span class="sd">    Create a new cosmology object with these three keywords:</span>
+
+<span class="sd">    H0:  Hubble parameter at z=0 in km/s/Mpc</span>
+<span class="sd">    Om:  Omega matter; matter density / critical density at z=0</span>
+<span class="sd">    Ol:  Omega lambda; dark energy density / critical density at z=0</span>
+
+<span class="sd">    Variables derived from H0, Om, and Ol</span>
+<span class="sd">    -------------------------------------</span>
+<span class="sd">    </span>
+<span class="sd">    Ok:  Omega_k, the curvature density at z=0. Defined as 1 - Om - Ol</span>
+<span class="sd">    h:  Dimensionless Hubble parameter (H0 = 100*h km/s/Mpc).</span>
+<span class="sd">        Often used to quote cosmological values independently of H0.</span>
+<span class="sd">    hubble_time:    Hubble time in Gyr</span>
+<span class="sd">    hubble_distance:   Hubble distance in Mpc</span>
+<span class="sd">    critical_density0:  Critical density in g cm^-3 at z=0</span>
+<span class="sd">    </span>
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    H(z):</span>
+<span class="sd">      Hubble parameter (km/s/Mpc)</span>
+<span class="sd">    critical_density(z):</span>
+<span class="sd">      The critical density such that the universe is flat at redshift z</span>
+<span class="sd">    scale_factor(z):</span>
+<span class="sd">      Scale factor</span>
+<span class="sd">    lookback_time(z):</span>
+<span class="sd">      Lookback time to redshift z (Gyr)</span>
+<span class="sd">    age(z):</span>
+<span class="sd">      Age of the universe at redshift z (Gyr)</span>
+<span class="sd">    comoving_distance(z):</span>
+<span class="sd">      Line of sight comoving distance to z (Mpc)</span>
+<span class="sd">    comoving_transverse_distance(z):</span>
+<span class="sd">      Transverse comoving distance to z (Mpc)</span>
+<span class="sd">    angular_diameter_distance(z):</span>
+<span class="sd">      Angular diameter distance (Mpc)</span>
+<span class="sd">    luminosity_distance(z):</span>
+<span class="sd">      Luminosity distance (Mpc)</span>
+<span class="sd">    angular_diameter_distance_z1z2(z1, z2):</span>
+<span class="sd">      Angular diameter distance between objects at z1 and z2</span>
+<span class="sd">    absorption_distance(z):</span>
+<span class="sd">      Absorption distance corresponding to redshift z</span>
+<span class="sd">    distmod(z):</span>
+<span class="sd">      Distance modulus</span>
+<span class="sd">    comoving_volume(z):</span>
+<span class="sd">      Comoving volume at redshift z</span>
+
+<span class="sd">    Note the energy density from radiation, omega_r, is ignored (valid</span>
+<span class="sd">    for redshifts &lt; ~10).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    from astro.cosmology import Cosmology</span>
+<span class="sd">    cosmo = Cosmology(H0=70, Om=0.3, Ol=0.7)</span>
+
+<span class="sd">    # get comoving distance in Mpc at redshift z</span>
+<span class="sd">    dc = cosmo.comoving_distance(z)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H0</span><span class="p">,</span> <span class="n">Om</span><span class="p">,</span> <span class="n">Ol</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;Cosmology&#39;</span><span class="p">):</span>
+
+        <span class="c"># all densities are in units of the critical density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Om</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Om</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Ol</span><span class="p">)</span>
+        <span class="n">Ok</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Om</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Ok</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">:</span>
+            <span class="n">Ok</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span> <span class="o">=</span> <span class="n">Ok</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="c"># Hubble parameter at z=0, km/s/Mpc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">H0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">H0</span><span class="p">)</span>
+        <span class="c"># H0 in s^-1</span>
+        <span class="n">H0_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H0</span> <span class="o">/</span> <span class="n">Mpc_km</span>
+        <span class="c"># 100 km/s/Mpc * h = H0 (so h is dimensionless)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H0</span> <span class="o">/</span> <span class="mf">100.</span>
+        <span class="c"># Hubble time in Gyr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hubble_time</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">H0_s</span> <span class="o">/</span> <span class="n">Gyr</span>
+        <span class="c"># Hubble distance in Mpc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hubble_distance</span> <span class="o">=</span> <span class="n">c_kms</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">H0</span>
+
+        <span class="c"># critical density at z=0 (grams per cubic cm)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critical_density0</span> <span class="o">=</span> <span class="mf">3.</span> <span class="o">*</span> <span class="n">H0_s</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">8.</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">G</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">(H0=</span><span class="si">%.3g</span><span class="s">, Om=</span><span class="si">%.3g</span><span class="s">, Ol=</span><span class="si">%.3g</span><span class="s">, Ok=</span><span class="si">%.3g</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">H0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Om</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">_efunc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Function used to calculate the hubble parameter as a</span>
+<span class="sd">        function of redshift. Eqn 14 from Hogg.&quot;&quot;&quot;</span>
+        <span class="n">zp1</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Om</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_inv_efunc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Integrand of the comoving distance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">zp1</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Om</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_tfunc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Integrand of the lookback time.</span>
+
+<span class="sd">        Eqn 30 from Hogg.&quot;&quot;&quot;</span>
+        <span class="n">zp1</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">zp1</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Om</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_xfunc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Integrand of the absorption distance.</span>
+
+<span class="sd">        See Hogg 1999 section 11.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">zp1</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span>
+        <span class="k">return</span> <span class="n">zp1</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Om</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ol</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cosmology.H"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.H">[docs]</a>    <span class="k">def</span> <span class="nf">H</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Hubble parameter (km/s/Mpc) at redshift `z`. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_efunc</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cosmology.scale_factor"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.scale_factor">[docs]</a>    <span class="k">def</span> <span class="nf">scale_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Scale factor at redshift `z`.</span>
+
+<span class="sd">        The scale factor `a = 1 / (1 + z)`. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cosmology.lookback_time"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.lookback_time">[docs]</a>    <span class="k">def</span> <span class="nf">lookback_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Lookback time in Gyr to redshift `z`.</span>
+
+<span class="sd">        The lookback time is the difference between the age of the</span>
+<span class="sd">        Universe now and the age at redshift `z`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_time</span> <span class="o">*</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tfunc</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Cosmology.age"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.age">[docs]</a>    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Age of the universe in Gyr at redshift `z`. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_time</span> <span class="o">*</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tfunc</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Cosmology.critical_density"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.critical_density">[docs]</a>    <span class="k">def</span> <span class="nf">critical_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Critical density in grams per cubic cm at redshift `z`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_density0</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_efunc</span><span class="p">(</span><span class="n">z</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+</div>
+<div class="viewcode-block" id="Cosmology.comoving_distance"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.comoving_distance">[docs]</a>    <span class="k">def</span> <span class="nf">comoving_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Comoving line-of-sight distance in Mpc at a given</span>
+<span class="sd">        redshift.</span>
+
+<span class="sd">        The comoving distance along the line-of-sight between two</span>
+<span class="sd">        objects remains constant with time for objects in the Hubble</span>
+<span class="sd">        flow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_distance</span> <span class="o">*</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inv_efunc</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Cosmology.comoving_transverse_distance"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.comoving_transverse_distance">[docs]</a>    <span class="k">def</span> <span class="nf">comoving_transverse_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Comoving transverse distance in Mpc at a given redshift.</span>
+
+<span class="sd">        This value is the transverse comoving distance at redshift `z`</span>
+<span class="sd">        corresponding to an angular separation of 1 radian.</span>
+
+<span class="sd">        This is the same as the comoving distance if omega_k is zero</span>
+<span class="sd">        (as in the current concordance lambda CDM model).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span>
+        <span class="n">dc</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Ok</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dc</span>
+        <span class="n">sqrtOk</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Ok</span><span class="p">))</span>
+        <span class="n">dh</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_distance</span>
+        <span class="k">if</span> <span class="n">Ok</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dh</span> <span class="o">/</span> <span class="n">sqrtOk</span> <span class="o">*</span> <span class="n">sinh</span><span class="p">(</span><span class="n">sqrtOk</span> <span class="o">*</span> <span class="n">dc</span> <span class="o">/</span> <span class="n">dh</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dh</span> <span class="o">/</span> <span class="n">sqrtOk</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">sqrtOk</span> <span class="o">*</span> <span class="n">dc</span> <span class="o">/</span> <span class="n">dh</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cosmology.angular_diameter_distance"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.angular_diameter_distance">[docs]</a>    <span class="k">def</span> <span class="nf">angular_diameter_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Angular diameter distance in Mpc at a given redshift.</span>
+
+<span class="sd">        This gives the proper (sometimes called &#39;physical&#39;) transverse</span>
+<span class="sd">        distance corresponding to an angle of 1 radian for an object</span>
+<span class="sd">        at redshift `z`.</span>
+
+<span class="sd">        Weinberg, 1972, pp 421-424; Weedman, 1986, pp 65-67; Peebles,</span>
+<span class="sd">        1993, pp 325-327.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cosmology.luminosity_distance"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.luminosity_distance">[docs]</a>    <span class="k">def</span> <span class="nf">luminosity_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Luminosity distance in Mpc at redshift `z`.</span>
+
+<span class="sd">        This is the distance to use when converting between the</span>
+<span class="sd">        bolometric flux from an object at redshift `z` and its</span>
+<span class="sd">        bolometric luminosity.</span>
+
+<span class="sd">        Weinberg, 1972, pp 420-424; Weedman, 1986, pp 60-62.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cosmology.angular_diameter_distance_z1z2"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.angular_diameter_distance_z1z2">[docs]</a>    <span class="k">def</span> <span class="nf">angular_diameter_distance_z1z2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Angular diameter distance between objects at 2 redshifts.</span>
+<span class="sd">        Useful for gravitational lensing.</span>
+
+<span class="sd">        This method only works for flat or open curvature</span>
+<span class="sd">        (omega_k &gt;= 0).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># does not work for negative curvature</span>
+        <span class="n">Ok</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">Ok</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+
+        <span class="c"># z1 &lt; z2</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">z2</span> <span class="o">&lt;</span> <span class="n">z1</span><span class="p">):</span>
+            <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span> <span class="o">=</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z1</span>
+
+        <span class="n">dm1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
+        <span class="n">dm2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
+        <span class="n">dh_2</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_distance</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">z2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dm2</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">Ok</span><span class="o">*</span><span class="n">dm1</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">dh_2</span><span class="p">)</span> <span class="o">-</span>
+                                 <span class="n">dm1</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">Ok</span><span class="o">*</span><span class="n">dm2</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">dh_2</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Cosmology.absorption_distance"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.absorption_distance">[docs]</a>    <span class="k">def</span> <span class="nf">absorption_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Absorption distance at redshift `z`.</span>
+
+<span class="sd">        This quantity is dimensionless (despite being called a</span>
+<span class="sd">        distance).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xfunc</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Cosmology.distmod"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.distmod">[docs]</a>    <span class="k">def</span> <span class="nf">distmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Distance modulus at redshift `z`.</span>
+
+<span class="sd">        The distance modulus is defined as the (apparent magnitude -</span>
+<span class="sd">        absolute magnitude for an object at redshift `z`).&quot;&quot;&quot;</span>
+        <span class="c"># Remember that the luminosity distance is in Mpc</span>
+        <span class="k">return</span> <span class="mf">5.</span> <span class="o">*</span> <span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">luminosity_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.e5</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cosmology.comoving_volume"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.Cosmology.comoving_volume">[docs]</a>    <span class="k">def</span> <span class="nf">comoving_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Comoving volume in cubic Mpc at redshift `z`.</span>
+
+<span class="sd">        This is the volume of the universe encompassed by redshifts</span>
+<span class="sd">        less than `z`. For the case of omega_k = 0 it is a sphere of</span>
+<span class="sd">        radius `comoving_distance(z)` but it is less intuitive if</span>
+<span class="sd">        omega_k is not 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">Ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ok</span> 
+        <span class="k">if</span> <span class="n">Ok</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">4.</span> <span class="o">/</span> <span class="mf">3.</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+
+        <span class="n">dh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_distance</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">term1</span> <span class="o">=</span> <span class="mf">4.</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">dh</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">Ok</span><span class="p">)</span>
+        <span class="n">term2</span> <span class="o">=</span> <span class="n">dm</span> <span class="o">/</span> <span class="n">dh</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Ok</span> <span class="o">*</span> <span class="p">(</span><span class="n">dm</span> <span class="o">/</span> <span class="n">dh</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">term3</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Ok</span><span class="p">))</span> <span class="o">*</span> <span class="n">dm</span> <span class="o">/</span> <span class="n">dh</span>
+        
+        <span class="k">if</span> <span class="n">Ok</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">term1</span> <span class="o">*</span> <span class="p">(</span><span class="n">term2</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Ok</span><span class="p">))</span> <span class="o">*</span> <span class="n">asinh</span><span class="p">(</span><span class="n">term3</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">term1</span> <span class="o">*</span> <span class="p">(</span><span class="n">term2</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Ok</span><span class="p">))</span> <span class="o">*</span> <span class="n">asin</span><span class="p">(</span><span class="n">term3</span><span class="p">))</span>
+
+
+<span class="c"># Pre-defined cosmologies. This loops over the parameter sets in the</span>
+<span class="c"># parameters module and creates a Cosmology instance with the same</span>
+<span class="c"># name as the parameter set in the current module&#39;s namespace.</span>
+</div></div>
+<span class="n">i0</span> <span class="o">=</span> <span class="n">Cosmology</span><span class="o">.</span><span class="n">__doc__</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;H0&#39;</span><span class="p">)</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">Cosmology</span><span class="o">.</span><span class="n">__doc__</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;Examples</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+    <span class="n">par</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="n">cosmo</span> <span class="o">=</span> <span class="n">Cosmology</span><span class="p">(</span><span class="n">par</span><span class="p">[</span><span class="s">&#39;H0&#39;</span><span class="p">],</span> <span class="n">par</span><span class="p">[</span><span class="s">&#39;Om&#39;</span><span class="p">],</span> <span class="n">par</span><span class="p">[</span><span class="s">&#39;Ol&#39;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">cosmo</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">    </span><span class="si">%s</span><span class="s"> cosmology</span>
+
+<span class="s">    Variables</span>
+<span class="s">    ---------</span>
+
+<span class="s">    </span><span class="si">%s</span><span class="s">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">__doc__</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">__name__</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">cosmo</span><span class="p">)</span>
+
+<span class="c"># don&#39;t leave these variables floating around in the namespace</span>
+<span class="k">del</span> <span class="n">key</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">cosmo</span><span class="p">,</span> <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span>
+
+<span class="c">#########################################################################</span>
+<span class="c"># The variable below contains default cosmology used by the</span>
+<span class="c"># convenience functions below and by other astropy functions if no</span>
+<span class="c"># cosmology is explicitly given. It can be set with set_default() and</span>
+<span class="c"># should be accessed using get_default().</span>
+<span class="c">#########################################################################</span>
+
+<span class="n">_default</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="get_default"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.get_default">[docs]</a><span class="k">def</span> <span class="nf">get_default</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Return the default cosmology. If no default has been set, a</span>
+<span class="sd">    warning is given and the default is set to the WMAP7 parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="k">global</span> <span class="n">_default</span>
+    <span class="k">if</span> <span class="n">_default</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;No default cosmology has been specified, using 7-year WMAP.&#39;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">_default</span> <span class="o">=</span> <span class="n">WMAP7</span>
+
+    <span class="k">return</span> <span class="n">_default</span>
+</div>
+<div class="viewcode-block" id="set_default"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.set_default">[docs]</a><span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set the default cosmology. &quot;&quot;&quot;</span> 
+    <span class="k">global</span> <span class="n">_default</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_default</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">__name__</span><span class="p">],</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;Unknown cosmology &#39;</span><span class="si">%s</span><span class="s">&#39;. Valid cosmologies:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">arg</span><span class="p">,</span> <span class="n">parameters</span><span class="o">.</span><span class="n">available</span><span class="p">)</span>
+            <span class="k">print</span> <span class="n">s</span>
+            <span class="k">return</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Cosmology</span><span class="p">):</span>
+        <span class="n">_default</span> <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Argument must be a string or cosmology instance&quot;</span>
+
+
+<span class="c"># convenience functions</span></div>
+<div class="viewcode-block" id="kpc_comoving_per_arcmin"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.kpc_comoving_per_arcmin">[docs]</a><span class="k">def</span> <span class="nf">kpc_comoving_per_arcmin</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Separation in transverse comoving kpc corresponding to an</span>
+<span class="sd">    arcminute at redshift `z`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">get_default</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.e3</span> <span class="o">*</span> <span class="n">arcmin_in_radians</span>
+</div>
+<div class="viewcode-block" id="kpc_proper_per_arcmin"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.kpc_proper_per_arcmin">[docs]</a><span class="k">def</span> <span class="nf">kpc_proper_per_arcmin</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Separation in transverse proper kpc corresponding to an</span>
+<span class="sd">    arcminute at redshift `z`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">get_default</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">angular_diameter_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.e3</span> <span class="o">*</span> <span class="n">arcmin_in_radians</span>
+</div>
+<div class="viewcode-block" id="arcsec_per_kpc_comoving"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.arcsec_per_kpc_comoving">[docs]</a><span class="k">def</span> <span class="nf">arcsec_per_kpc_comoving</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Angular separation in arcsec corresponding to a comoving kpc</span>
+<span class="sd">    at redshift `z`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">get_default</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">cosmo</span><span class="o">.</span><span class="n">comoving_transverse_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span>
+                <span class="mf">1.e3</span> <span class="o">*</span> <span class="n">arcsec_in_radians</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="arcsec_per_kpc_proper"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.arcsec_per_kpc_proper">[docs]</a><span class="k">def</span> <span class="nf">arcsec_per_kpc_proper</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Angular separation in arcsec corresponding to a proper kpc at</span>
+<span class="sd">    redshift `z`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">get_default</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">cosmo</span><span class="o">.</span><span class="n">angular_diameter_distance</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.e3</span> <span class="o">*</span> <span class="n">arcsec_in_radians</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="distmod"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.distmod">[docs]</a><span class="k">def</span> <span class="nf">distmod</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Distance modulus at redshift `z`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">get_default</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">distmod</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="radec_to_xyz"><a class="viewcode-back" href="../../../barak.cosmology.html#barak.cosmology.cosmology.radec_to_xyz">[docs]</a><span class="k">def</span> <span class="nf">radec_to_xyz</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">deg2rad</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a ra, dec and comoving distance to 3d comoving</span>
+<span class="sd">    coordinates.</span>
+
+<span class="sd">    Convert a vector pointing from the origin with comoving length</span>
+<span class="sd">    r in the direction ra,dec (in degrees) to comoving 3-d</span>
+<span class="sd">    coordinates x,y,z.</span>
+
+<span class="sd">    Assumes universe is flat.</span>
+
+<span class="sd">    ra = 0 corresponds to the positive x-z half plane. dec = 0</span>
+<span class="sd">    corresponds to the whole x-y plane.</span>
+
+<span class="sd">    To align the axes such that a vector r with direction (ra0, dec0)</span>
+<span class="sd">    points along the positive x-axis, use ra-ra0 and dec-dec0 instead</span>
+<span class="sd">    of ra and dec. In this case increasing dec corresponds to</span>
+<span class="sd">    increasing z, and increasing ra (from ra=0) corresponds to</span>
+<span class="sd">    increasing y.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># radians</span>
+    <span class="n">ra1</span> <span class="o">=</span> <span class="n">deg2rad</span> <span class="o">*</span> <span class="n">ra</span>
+    <span class="n">dec1</span> <span class="o">=</span> <span class="n">deg2rad</span> <span class="o">*</span> <span class="n">dec</span>
+
+    <span class="n">cos_dec1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec1</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="p">(</span><span class="n">cos_dec1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ra1</span><span class="p">))</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="p">(</span><span class="n">cos_dec1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ra1</span><span class="p">))</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

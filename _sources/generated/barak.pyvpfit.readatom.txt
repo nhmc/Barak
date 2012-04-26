@@ -1,0 +1,6 @@
+barak.pyvpfit.readatom
+======================
+
+.. currentmodule:: barak.pyvpfit
+
+.. autofunction:: readatom

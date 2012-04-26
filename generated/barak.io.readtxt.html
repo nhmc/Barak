@@ -1,0 +1,146 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.io.readtxt &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.io.saveobj" href="barak.io.saveobj.html" />
+    <link rel="prev" title="barak.io.readtabfits" href="barak.io.readtabfits.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.io.readtxt</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.io.readtabfits.html">barak.io.readtabfits</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.io.saveobj.html">barak.io.saveobj</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-io-readtxt">
+<h1>barak.io.readtxt<a class="headerlink" href="#barak-io-readtxt" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.io.readtxt">
+<tt class="descclassname">barak.io.</tt><tt class="descname">readtxt</tt><big>(</big><em>fh</em>, <em>sep=None</em>, <em>usecols=None</em>, <em>comment='#'</em>, <em>skip=0</em>, <em>arrays=True</em>, <em>names=None</em>, <em>readnames=False</em>, <em>converters=None</em>, <em>mintype=&lt;type 'int'&gt;</em><big>)</big><a class="reference internal" href="../_modules/barak/io.html#readtxt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.io.readtxt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads columns from a text file into arrays, converting to int,
+float or str where appropriate.</p>
+<p>By default the column separator is whitespace. <em class="xref py py-obj">rows</em> can be
+either an input filename or an iterable (e.g. a file object, list
+or iterator).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>rows</strong> : filename or iterable object</p>
+<blockquote>
+<div><p>Input data.</p>
+</div></blockquote>
+<p><strong>sep</strong> : str (default <em class="xref py py-obj">None</em>)</p>
+<blockquote>
+<div><p>A string used to separate items on a row (also known as a
+delimiter). Default is None, which means whitespace.</p>
+</div></blockquote>
+<p><strong>usecols</strong> : int or tuple of ints, optional</p>
+<blockquote>
+<div><p>Indices of columns to be read. By default all columns are read.</p>
+</div></blockquote>
+<p><strong>comment</strong> : str (default <em class="xref py py-obj">#</em>)</p>
+<blockquote>
+<div><p>Character marking the start of a comment.</p>
+</div></blockquote>
+<p><strong>skip</strong> : int (default <em class="xref py py-obj">0</em>)</p>
+<blockquote>
+<div><p>Number of rows to skip (not counting commented or blank lines)
+before reading data.</p>
+</div></blockquote>
+<p><strong>arrays</strong> : bool (<em class="xref py py-obj">True</em>)</p>
+<blockquote>
+<div><p>If True, all columns are converted to Numpy arrays.  If False,
+columns are returned as lists.</p>
+</div></blockquote>
+<p><strong>names</strong> : str or sequence of str (default <em class="xref py py-obj">None</em>)</p>
+<blockquote>
+<div><p>If <em class="xref py py-obj">names</em> is given and <em class="xref py py-obj">arrays</em> is True, the data are placed
+in a Numpy record array with field names given by <em class="xref py py-obj">names</em>. Can
+also be a single string of comma-separated values.</p>
+</div></blockquote>
+<p><strong>readnames</strong> : bool (<em class="xref py py-obj">False</em>)</p>
+<blockquote>
+<div><p>If <em class="xref py py-obj">readnames</em> is True the first line of the file is read to
+find the field names. This overrides the <em class="xref py py-obj">names</em> keyword.</p>
+</div></blockquote>
+<p><strong>converters</strong> : dict (<em class="xref py py-obj">None</em>)</p>
+<blockquote>
+<div><p>Functions to apply to each entry of a column. Each (key,value)
+pair gives the column index (key) and the function to be
+applied to each entry in that column (value).</p>
+</div></blockquote>
+<p class="last"><strong>Returns either structured array or lists.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_all_cols</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="s">&#39;filename&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ninthcol</span><span class="p">,</span> <span class="n">fifthcol</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="s">&#39;filename&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">firstcol</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="s">&#39;filename&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s">&#39;%&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recarray</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="s">&#39;filename&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;x,y&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.io.readtabfits.html">barak.io.readtabfits</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.io.saveobj.html">barak.io.saveobj</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

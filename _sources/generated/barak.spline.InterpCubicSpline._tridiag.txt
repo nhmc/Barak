@@ -1,0 +1,6 @@
+barak.spline.InterpCubicSpline._tridiag
+=======================================
+
+.. currentmodule:: barak.spline
+
+.. automethod:: InterpCubicSpline._tridiag

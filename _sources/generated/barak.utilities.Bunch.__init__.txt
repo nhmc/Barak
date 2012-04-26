@@ -1,0 +1,6 @@
+barak.utilities.Bunch.__init__
+==============================
+
+.. currentmodule:: barak.utilities
+
+.. automethod:: Bunch.__init__

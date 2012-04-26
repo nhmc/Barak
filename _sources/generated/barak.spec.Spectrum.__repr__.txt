@@ -1,0 +1,6 @@
+barak.spec.Spectrum.__repr__
+============================
+
+.. currentmodule:: barak.spec
+
+.. automethod:: Spectrum.__repr__

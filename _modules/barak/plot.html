@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.plot &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.plot</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.plot</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Plotting routines.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pl</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PolyCollection</span><span class="p">,</span> <span class="n">LineCollection</span>
+<span class="kn">import</span> <span class="nn">matplotlib.transforms</span> <span class="kn">as</span> <span class="nn">mtransforms</span>
+
+<span class="n">A4LANDSCAPE</span> <span class="o">=</span> <span class="mf">11.7</span><span class="p">,</span> <span class="mf">8.3</span>
+<span class="n">A4PORTRAIT</span> <span class="o">=</span> <span class="mf">8.3</span><span class="p">,</span> <span class="mf">11.7</span>
+
+<div class="viewcode-block" id="correct_marker_size"><a class="viewcode-back" href="../../generated/barak.plot.correct_marker_size.html#barak.plot.correct_marker_size">[docs]</a><span class="k">def</span> <span class="nf">correct_marker_size</span><span class="p">(</span><span class="n">fmt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find a default marker size such that different marker types</span>
+<span class="sd">    look roughly the same size.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.-&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="k">elif</span> <span class="s">&#39;D&#39;</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="k">elif</span> <span class="nb">set</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="s">&#39;&lt;&gt;^vd&#39;</span><span class="p">):</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="k">return</span> <span class="n">ms</span>
+</div>
+<div class="viewcode-block" id="axvfill"><a class="viewcode-back" href="../../generated/barak.plot.axvfill.html#barak.plot.axvfill">[docs]</a><span class="k">def</span> <span class="nf">axvfill</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Fill vertical regions defined by a sequence of (left, right)</span>
+<span class="sd">    positions.</span>
+
+<span class="sd">    xvals: sequence of pairs specifying the left and right extent of</span>
+<span class="sd">    each region. e.g. (3,4) or [(0,1),(3,4)]</span>
+<span class="sd">    ax=None: the axis to plot regions on.  default is the current axis.</span>
+<span class="sd">    color=&#39;g&#39;: color of the regions.</span>
+<span class="sd">    alpha=0.3: the opacity of the regions (1=opaque)</span>
+
+<span class="sd">    Other keywords arguments are passed to PolyCollection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">xvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xvals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">xvals</span> <span class="o">=</span> <span class="n">xvals</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">if</span> <span class="n">xvals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Invalid input&#39;</span><span class="p">)</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[[(</span><span class="n">x0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x0</span><span class="p">,</span><span class="n">x1</span> <span class="ow">in</span> <span class="n">xvals</span><span class="p">]</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">edgecolor</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">PolyCollection</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">p</span>
+</div>
+<div class="viewcode-block" id="axvlines"><a class="viewcode-back" href="../../generated/barak.plot.axvlines.html#barak.plot.axvlines">[docs]</a><span class="k">def</span> <span class="nf">axvlines</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;0.7&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot a set of vertical lines at the given positions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[[(</span><span class="n">x</span><span class="p">,</span><span class="n">ymin</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">ymax</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xvals</span><span class="p">]</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">)</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">l</span>
+
+</div>
+<div class="viewcode-block" id="puttext"><a class="viewcode-back" href="../../generated/barak.plot.puttext.html#barak.plot.puttext">[docs]</a><span class="k">def</span> <span class="nf">puttext</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">text</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span> <span class="n">xcoord</span><span class="o">=</span><span class="s">&#39;ax&#39;</span><span class="p">,</span> <span class="n">ycoord</span><span class="o">=</span><span class="s">&#39;ax&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convenience function for printing text on an axis using axes</span>
+<span class="sd">    coords.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">xcoord</span> <span class="o">==</span> <span class="s">&#39;data&#39;</span> <span class="ow">and</span> <span class="n">ycoord</span> <span class="o">==</span> <span class="s">&#39;ax&#39;</span><span class="p">:</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">xcoord</span> <span class="o">==</span> <span class="s">&#39;ax&#39;</span> <span class="ow">and</span> <span class="n">ycoord</span> <span class="o">==</span> <span class="s">&#39;data&#39;</span><span class="p">:</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">xcoord</span> <span class="o">==</span> <span class="s">&#39;ax&#39;</span> <span class="ow">and</span> <span class="n">ycoord</span> <span class="o">==</span> <span class="s">&#39;ax&#39;</span><span class="p">:</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Bad keyword combination: </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s"> &quot;</span><span class="o">%</span><span class="p">(</span><span class="n">xcoord</span><span class="p">,</span><span class="n">ycoord</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="distplot"><a class="viewcode-back" href="../../generated/barak.plot.distplot.html#barak.plot.distplot">[docs]</a><span class="k">def</span> <span class="nf">distplot</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">xvals</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">perc</span><span class="o">=</span><span class="p">(</span><span class="mi">68</span><span class="p">,</span> <span class="mi">95</span><span class="p">),</span> <span class="n">showmean</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+             <span class="n">showoutliers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;forestgreen&#39;</span><span class="p">,</span>  <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+             <span class="n">logx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">logy</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">negval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a top-down histogram plot for an array of</span>
+<span class="sd">    distributions. Shows the median, 68%, 95% ranges and outliers.</span>
+
+<span class="sd">    Similar to a boxplot.</span>
+
+<span class="sd">    vals: sequence of arrays</span>
+<span class="sd">        2-d array or a sequence of 1-d arrays.</span>
+<span class="sd">    xvals: array of floats</span>
+<span class="sd">        x positions.</span>
+<span class="sd">    perc: array of floats  (68, 95)</span>
+<span class="sd">        The percentile levels to use for area shading. Defaults show</span>
+<span class="sd">        the 68% and 95% percentile levels; roughly 1 and 2</span>
+<span class="sd">        sigma ranges for a Gaussian distribution.</span>
+<span class="sd">    showmean: boolean  (False)</span>
+<span class="sd">        Whether to show the means as a dashed black line.</span>
+<span class="sd">    showoutliers: boolean (False)</span>
+<span class="sd">        Whether to show outliers past the highest percentile range.</span>
+<span class="sd">    color: mpl color (&#39;forestgreen&#39;)</span>
+<span class="sd">    ax: mpl Axes object</span>
+<span class="sd">        Plot to this mpl Axes instance.</span>
+<span class="sd">    logx, logy: bool (False)</span>
+<span class="sd">        Whether to use a log x or y axis.</span>
+<span class="sd">    negval: float (None)</span>
+<span class="sd">        If using a log y axis, replace negative plotting values with</span>
+<span class="sd">        this value (by default it chooses a suitable value based on</span>
+<span class="sd">        the data values).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Input must be a 2-d array or sequence of arrays&#39;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">perc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">perc</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">perc</span><span class="p">)</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="n">perc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">p1</span><span class="p">,</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">temp</span><span class="p">,</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">temp</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="n">perc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">p0</span><span class="p">,</span> <span class="n">p4</span> <span class="o">=</span> <span class="n">temp</span><span class="p">,</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">temp</span>
+    <span class="n">percentiles</span> <span class="o">=</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">p4</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xvals</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">xvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+
+    <span class="c"># loop through columns, finding values to plot</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">outliers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">means</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="c"># remove nans</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c"># no data, skip this position</span>
+            <span class="k">continue</span>
+        <span class="c"># get percentile levels</span>
+        <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scoreatpercentile</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">showmean</span><span class="p">:</span>
+            <span class="n">means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="c"># get outliers</span>
+        <span class="k">if</span> <span class="n">showoutliers</span><span class="p">:</span>
+            <span class="n">outliers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> <span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">d</span><span class="p">)])</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logx</span> <span class="ow">and</span> <span class="n">logy</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">([],[])</span>
+    <span class="k">elif</span> <span class="n">logx</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">([],[])</span>
+    <span class="k">elif</span> <span class="n">logy</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">([],[])</span>
+
+    <span class="k">if</span> <span class="n">logy</span><span class="p">:</span>
+        <span class="c"># replace negative values with a small number, negval</span>
+        <span class="k">if</span> <span class="n">negval</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># guess number, falling back on 1e-5</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">levels</span><span class="p">[:,</span><span class="mi">0</span><span class="p">][</span><span class="n">levels</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">negval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">negval</span> <span class="o">=</span> <span class="mf">1e-5</span>
+
+        <span class="n">levels</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="n">levels</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">negval</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outliers</span><span class="p">)):</span>
+            <span class="n">outliers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">outliers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">negval</span>
+            <span class="k">if</span> <span class="n">showmean</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">negval</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">levels</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">levels</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">levels</span><span class="p">[:,</span><span class="mi">3</span><span class="p">],</span> <span class="n">levels</span><span class="p">[:,</span><span class="mi">4</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">levels</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">levels</span><span class="p">[:,</span><span class="mi">3</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">showoutliers</span><span class="p">:</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">out</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">outliers</span><span class="p">)])</span>
+        <span class="n">out1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">outliers</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out1</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;0.3&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">showmean</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="s">&#39;k--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">levels</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xvals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">ax</span>
+</div>
+<div class="viewcode-block" id="errplot"><a class="viewcode-back" href="../../generated/barak.plot.errplot.html#barak.plot.errplot">[docs]</a><span class="k">def</span> <span class="nf">errplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">yerrs</span><span class="p">,</span> <span class="n">xerrs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;.b&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">ecolor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">elw</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nonposval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot a graph with y errors.</span>
+
+<span class="sd">    x, y: arrays of shape (N,)</span>
+<span class="sd">        Data.</span>
+<span class="sd">    yerrs: array of shape (N,) or shape(N,2)</span>
+<span class="sd">        Either an array with the same length y, or a list of two such</span>
+<span class="sd">        arrays, giving lower and upper limits to plot.</span>
+<span class="sd">    xerrs:</span>
+<span class="sd">        Optional x errors.</span>
+<span class="sd">    fmt: str</span>
+<span class="sd">        Passed to the plot command for the x,y points.</span>
+<span class="sd">    ms, mew: floats</span>
+<span class="sd">        Plotting marker size and edge width.</span>
+<span class="sd">    ecolor: matplotlib color (None)</span>
+<span class="sd">        Color of the error bars. By default this will be the same color</span>
+<span class="sd">        as the markers.</span>
+<span class="sd">    elw: matplotlib line width (None)</span>
+<span class="sd">    nonposval: float (None)</span>
+<span class="sd">        If given, replace any non-positive values of y with this</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">yerrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yerrs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">yerrs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="n">yerrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">yerrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">yerrs</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">yerrs</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nonposval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nonposval</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ms</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="n">correct_marker_size</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+
+    <span class="n">l</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="n">ms</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="n">mew</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c"># find the error colour</span>
+    <span class="k">if</span> <span class="n">ecolor</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ecolor</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">get_mfc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ecolor</span> <span class="o">==</span> <span class="s">&#39;none&#39;</span><span class="p">:</span>
+            <span class="n">ecolor</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">get_mec</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">nonposval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">lo</span><span class="p">[</span><span class="n">lo</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nonposval</span>
+        <span class="n">hi</span><span class="p">[</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nonposval</span>
+
+    <span class="k">if</span> <span class="s">&#39;lw&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">elw</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">elw</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;lw&#39;</span><span class="p">]</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ecolor</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">elw</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;__nolabel__&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xerrs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">xerrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xerrs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xerrs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">lo</span> <span class="o">=</span> <span class="n">xerrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">hi</span> <span class="o">=</span> <span class="n">xerrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lo</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">xerrs</span>
+            <span class="n">hi</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">xerrs</span>
+        <span class="n">col2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ecolor</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">elw</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;__nolabel__&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">zorder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">zorder</span><span class="p">)</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">zorder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xerrs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">col2</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">zorder</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax</span>
+</div>
+<div class="viewcode-block" id="test_distplot"><a class="viewcode-back" href="../../generated/barak.plot.test_distplot.html#barak.plot.test_distplot">[docs]</a><span class="k">def</span> <span class="nf">test_distplot</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">showoutliers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;points&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">showmean</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+
+</div>
+<div class="viewcode-block" id="dhist"><a class="viewcode-back" href="../../generated/barak.plot.dhist.html#barak.plot.dhist">[docs]</a><span class="k">def</span> <span class="nf">dhist</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">xbins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ybins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+          <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s">&#39;right,bottom&#39;</span><span class="p">,</span> <span class="n">xhistmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">yhistmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+          <span class="n">histlw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xtop</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">ytop</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">chist</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Given two set of values, plot two histograms and the</span>
+<span class="sd">    distribution.</span>
+
+<span class="sd">    xvals,yvals are the two properties to plot.  xbins, ybins give the</span>
+<span class="sd">    number of bins or the bin edges. c is the color.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">chist</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">chist</span> <span class="o">=</span> <span class="n">c</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="n">loc</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">loc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">ms</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="n">correct_marker_size</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="n">ms</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">x0</span><span class="p">,</span><span class="n">x1</span><span class="p">,</span><span class="n">y0</span><span class="p">,</span><span class="n">y1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&lt;</span> <span class="s">&#39;1.5&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">xbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">xbins</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span><span class="n">ybins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">yvals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">ybins</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">xbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">xbins</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span><span class="n">ybins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">yvals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">ybins</span><span class="p">)</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">xbins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">Xmax</span> <span class="o">=</span> <span class="n">xhistmax</span> <span class="ow">or</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">xtop</span> <span class="o">*</span> <span class="n">X</span> <span class="o">/</span> <span class="n">Xmax</span>
+    <span class="k">if</span> <span class="s">&#39;top&#39;</span> <span class="ow">in</span> <span class="n">loc</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">X</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">chist</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">histlw</span><span class="p">)</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">ybins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">Ymax</span> <span class="o">=</span> <span class="n">yhistmax</span> <span class="ow">or</span> <span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">ytop</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">/</span> <span class="n">Ymax</span>
+    <span class="k">if</span> <span class="s">&#39;right&#39;</span> <span class="ow">in</span> <span class="n">loc</span><span class="p">:</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">Y</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">chist</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">histlw</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xbins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xbins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ybins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ybins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">xbinedges</span><span class="o">=</span><span class="n">xbins</span><span class="p">,</span> <span class="n">ybinedges</span><span class="o">=</span><span class="n">ybins</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="histo"><a class="viewcode-back" href="../../generated/barak.plot.histo.html#barak.plot.histo">[docs]</a><span class="k">def</span> <span class="nf">histo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot a histogram, without all the unnecessary stuff</span>
+<span class="sd">    matplotlib&#39;s hist() function does.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="n">vals</span><span class="p">,</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span> <span class="n">vals</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">lw</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pl</span><span class="o">.</span><span class="n">isinteractive</span><span class="p">():</span>
+        <span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">vals</span><span class="p">,</span><span class="n">bins</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.plot.distplot &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.plot.errplot" href="barak.plot.errplot.html" />
+    <link rel="prev" title="barak.plot.dhist" href="barak.plot.dhist.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.plot.distplot</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.plot.dhist.html">barak.plot.dhist</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.plot.errplot.html">barak.plot.errplot</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-plot-distplot">
+<h1>barak.plot.distplot<a class="headerlink" href="#barak-plot-distplot" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.plot.distplot">
+<tt class="descclassname">barak.plot.</tt><tt class="descname">distplot</tt><big>(</big><em>vals</em>, <em>xvals=None</em>, <em>perc=(68</em>, <em>95)</em>, <em>showmean=False</em>, <em>showoutliers=True</em>, <em>color='forestgreen'</em>, <em>ax=None</em>, <em>logx=False</em>, <em>logy=False</em>, <em>negval=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/barak/plot.html#distplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.plot.distplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a top-down histogram plot for an array of
+distributions. Shows the median, 68%, 95% ranges and outliers.</p>
+<p>Similar to a boxplot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>vals</strong> : sequence of arrays</p>
+<blockquote>
+<div><p>2-d array or a sequence of 1-d arrays.</p>
+</div></blockquote>
+<p><strong>xvals</strong> : array of floats</p>
+<blockquote>
+<div><p>x positions.</p>
+</div></blockquote>
+<p><strong>perc</strong> : array of floats  (68, 95)</p>
+<blockquote>
+<div><p>The percentile levels to use for area shading. Defaults show
+the 68% and 95% percentile levels; roughly 1 and 2
+sigma ranges for a Gaussian distribution.</p>
+</div></blockquote>
+<p><strong>showmean</strong> : boolean  (False)</p>
+<blockquote>
+<div><p>Whether to show the means as a dashed black line.</p>
+</div></blockquote>
+<p><strong>showoutliers</strong> : boolean (False)</p>
+<blockquote>
+<div><p>Whether to show outliers past the highest percentile range.</p>
+</div></blockquote>
+<p><strong>color</strong> : mpl color (&#8216;forestgreen&#8217;)</p>
+<p><strong>ax</strong> : mpl Axes object</p>
+<blockquote>
+<div><p>Plot to this mpl Axes instance.</p>
+</div></blockquote>
+<p><strong>logx, logy</strong> : bool (False)</p>
+<blockquote>
+<div><p>Whether to use a log x or y axis.</p>
+</div></blockquote>
+<p><strong>negval</strong> : float (None)</p>
+<blockquote class="last">
+<div><p>If using a log y axis, replace negative plotting values with
+this value (by default it chooses a suitable value based on
+the data values).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.plot.dhist.html">barak.plot.dhist</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.plot.errplot.html">barak.plot.errplot</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

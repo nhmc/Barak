@@ -1,0 +1,6 @@
+barak.spline.InterpCubicSpline.set_d2
+=====================================
+
+.. currentmodule:: barak.spline
+
+.. automethod:: InterpCubicSpline.set_d2

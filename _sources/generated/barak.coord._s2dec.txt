@@ -1,0 +1,6 @@
+barak.coord._s2dec
+==================
+
+.. currentmodule:: barak.coord
+
+.. autofunction:: _s2dec

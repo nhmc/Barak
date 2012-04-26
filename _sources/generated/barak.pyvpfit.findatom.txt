@@ -1,0 +1,6 @@
+barak.pyvpfit.findatom
+======================
+
+.. currentmodule:: barak.pyvpfit
+
+.. autofunction:: findatom
