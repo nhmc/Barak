@@ -33,60 +33,69 @@ arcsec_in_radians = 1 / 3600. * pi / 180
 arcmin_in_radians = 1 / 60. * pi / 180
 
 class Cosmology(object):
-    """
-    Create a new cosmology object with these three keywords::
-
-     H0:  Hubble parameter at z=0 in km/s/Mpc
-     Om:  Omega matter; matter density / critical density at z=0
-     Ol:  Omega lambda; dark energy density / critical density at z=0
-
-    Variables derived from H0, Om, and Ol::
+    """ An object representing an isotropic and homogeneous
+    (Friedmann-Lemaitre-Robertson-Walker) cosmology.
     
-     Ok:  Omega_k, the curvature density at z=0. Defined as 1 - Om - Ol
-     h:  Dimensionless Hubble parameter (H0 = 100*h km/s/Mpc).
-         Often used to quote cosmological values independently of H0.
-     hubble_time:    Hubble time in Gyr
-     hubble_distance:   Hubble distance in Mpc
-     critical_density0:  Critical density in g cm^-3 at z=0
-    
-    Methods:
+    Attributes
+    ----------
+    H0 : float
+     Hubble parameter at z=0 in km/s/Mpc.
+    Om : float
+     Omega matter; matter density / critical density at z=0.
+    Ol : float
+     Omega lambda; dark energy density / critical density at z=0.
+    Ok : float
+     Omega_k, the curvature density at z=0. Defined as 1 - Om - Ol.
+    h : float
+      Dimensionless Hubble parameter (H0 = 100*h km/s/Mpc).  Often
+      used to quote cosmological values independently of H0.
+    hubble_time : float
+      Hubble time in Gyr.
+    hubble_distance : float
+      Hubble distance in Mpc.
+    critical_density0 : float
+      Critical density in g cm^-3 at z=0.
 
-    H(z):
+    Methods
+    -------
+    H(z)
       Hubble parameter (km/s/Mpc)
-    critical_density(z):
+    critical_density(z)
       The critical density such that the universe is flat at redshift z
-    scale_factor(z):
+    scale_factor(z)
       Scale factor
-    lookback_time(z):
+    lookback_time(z)
       Lookback time to redshift z (Gyr)
-    age(z):
+    age(z)
       Age of the universe at redshift z (Gyr)
-    comoving_distance(z):
+    comoving_distance(z)
       Line of sight comoving distance to z (Mpc)
-    comoving_transverse_distance(z):
+    comoving_transverse_distance(z)
       Transverse comoving distance to z (Mpc)
-    angular_diameter_distance(z):
+    angular_diameter_distance(z)
       Angular diameter distance (Mpc)
-    luminosity_distance(z):
+    luminosity_distance(z)
       Luminosity distance (Mpc)
-    angular_diameter_distance_z1z2(z1, z2):
+    angular_diameter_distance_z1z2(z1, z2)
       Angular diameter distance between objects at z1 and z2
-    absorption_distance(z):
+    absorption_distance(z)
       Absorption distance corresponding to redshift z
-    distmod(z):
+    distmod(z)
       Distance modulus
-    comoving_volume(z):
+    comoving_volume(z)
       Comoving volume at redshift z
 
-    Note the energy density from radiation, omega_r, is ignored (valid
+    Notes
+    -----
+    The energy density from radiation, omega_r, is ignored (valid
     for redshifts < ~10).
 
     Examples
-
-    >>> from astro.cosmology import Cosmology
+    --------
+    >>> from astropy.cosmology import Cosmology
     >>> cosmo = Cosmology(H0=70, Om=0.3, Ol=0.7)
 
-    get comoving distance in Mpc at redshift z
+    Find the comoving distance in Mpc to redshift z:
 
     >>> dc = cosmo.comoving_distance(z)
     """

@@ -2,8 +2,9 @@
 """ This module contains dictionaries with sets of parameters for a
 given cosmology.
 
-Each cosmology has the following parameters defined::
+Each cosmology has the following parameters defined:
 
+    =========== ====================================
     Oc          Omega cold dark matter
     Ob          Omega baryon
     Om          Omega matter
@@ -14,6 +15,7 @@ Each cosmology has the following parameters defined::
     tau         Ionisation optical depth
     z_reion     Redshift of hydrogen reionisation
     t0          Age of the universe in Gyr
+    =========== ====================================
 
 The list of cosmologies available are given by the tuple
 `available`. Current cosmologies available:
