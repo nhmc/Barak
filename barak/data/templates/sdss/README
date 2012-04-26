@@ -1,0 +1,36 @@
+# SDSS spectra of bright objects. they generally cover 4000-9000 Ang,
+# a slightly lower range for the QSOs and LRG.
+#
+starO.fits        O star (Star)
+starOB.fits       O/B transition star (Star)
+starB.fits        B star (Star)
+starA_1.fits      A star (star)
+starA_2.fits      A star (Star)
+starFA.fits       F/A transition star (Star)
+starF_1.fits      F star (Star)
+starF_2.fits      F star (Star)
+starG_1.fits      G star (star)
+starG_2.fits      G star (Star)
+starK.fits        K star (Star)
+starM1.fits       M1 star (Late-type star, M or later)
+starM3.fits       M3 star (Late-type star, M or later)
+starM5.fits       M5 star (Late-type star, M or later)
+starM8.fits       M8 star (Late-type star, M or later)
+starL1.fits       L1 star (Late-type star, M or later)
+starWDmag.fits    Magnetic white dwarf (Star)
+starC_1.fits      Carbon star (Star)
+starC_2.fits      Carbon star (Star)
+starC_3.fits      Carbon star (Late-type star, M or later)
+starWD.fits       White dwarf (Star)
+starBWD.fits      B white dwarf (Star)
+starKloZ.fits     Low-metallicity K subdwarf (Star)
+galLRG.fits       Luminous Red Galaxy (Galaxy)
+gal_early.fits    "Early-type" galaxy (Galaxy)
+gal_1.fits        Galaxy
+gal_2.fits        Galaxy
+gal_3.fits        Galaxy
+gal_late.fits     "Late-type" galaxy (Galaxy)
+qso.fits          QSO
+qsoBAL_1.fits     QSO with some BAL activity (QSO)
+qsoBAL_2.fits     QSO with some BAL activity (QSO)
+qso_highlum.fits  High-luminosity QSO (QSO)

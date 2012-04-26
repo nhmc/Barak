@@ -1,0 +1,27 @@
+This package contains functions useful for general scientific
+programming, with a focus on astronomical research. The documentation
+details everything that is available, but some example tasks that can
+be handled are:
+
+  * Calculate cosmological distance measures for various cosmologies.
+  * Find the expected broad-band magnitudes given a spectral energy
+    distribution.
+  * Calculate absorption profiles for various ions observed in
+    astrophysical environments.
+  * Fit a smooth continuum to a spectrum with many emission or
+    absorption features.
+
+To install, run:
+
+   python setup.py install
+
+To test, you need py.test installed.  Run 
+
+   py.test barak 
+
+from this directory.
+
+
+Neil Crighton
+
+neilcrighton .at. gmail .dot. com

@@ -1,0 +1,94 @@
+# Condensation temperatures from from Table 2 (solar system abundances
+# in Lodders 2003,
+# http://adsabs.harvard.edu/abs/2003ApJ...591.1220L.
+
+# tc is the condensation temperature in K when condensation begins,
+# tc50 is the 50% condensation temperature in K when 50% of the
+# element is left in a gaseous state.
+
+el|tc      |initial_phase                 |tc50  |major_phase_or_host
+H |182     |H_{2}O ice                    |-1    |-
+He| 3      |He ice                        |-1    |-
+Li|-1      |{Li_{4}SiO_{4}, Li_{2}SiO_{3}}|1142  |Forsterite + enstatite
+Be|-1      |{BeCa_{2}Si_{2}O_{7}}         |1452  |Melilite
+B |-1      |{CaB_{2}Si_{2}O_{8}}          |908   |Feldspar
+C |78      |CH_{4}\cdot 7H_{2}O           |40    |CH_{4}\cdot 7H_{2}O + CH_{4} ice
+N |131     |NH_{3}\cdot H_{2}O            |123   |NH_{3}\cdot H_{2}O
+O |182     |Water ice                     |180   |rock + water ice
+F |739     |Ca_{5}[PO_{4}]_{3}F           |734   |F apatite
+Ne|9.3     |Ne ice                        |9.1   |Ne ice
+Na|-1      |{NaAlSi_{3}O_{8}}             |958   |Feldspar
+Mg|1397    |Spinel                        |-1    |-
+Mg|1354    |Forsterite                    |1336  |Forsterite
+Al|1677    |Al_{2}O_{3}                   |1653  |Hibonite
+Si|1529    |Gehlenite                     |-1    |-
+Si|1354    |Forsterite                    |1310  |Forsterite + enstatite
+P |1248    |Fe_{3}P                       |1229  |Schreibersite
+S |704     |FeS                           |664   |Troilite
+Cl|954     |Na_{4}[Al_{3}Si_{3}O_{12}]Cl  |948   |Sodalite
+Ar|48      |Ar\cdot 6H_{2}O               |47    |Ar\cdot 6H_{2}O
+K |-1      |{KAlSi_{3}O_{8}}              |1006  |Feldspar
+Ca|1659    |CaAl_{12}O_{19}               |1517  |Hibonite + gehlenite
+Sc|-1      |{Sc_{2}O_{3}}                 |1659  |Hibonite
+Ti|1593    |CaTiO_{3}                     |1582  |Titanate
+V |-1      |{VO, V_{2}O_{3}}              |1429  |Titanate
+Cr|-1      |{Cr}                          |1296  |Fe alloy
+Mn|-1      |{Mn_{2}SiO_{4}, MnSiO_{3}}    |1158  |Forsterite + enstatite
+Fe|1357    |Fe metal                      |1334  |Fe alloy
+Co|-1      |{Co}                          |1352  |Fe alloy
+Ni|-1      |{Ni}                          |1353  |Fe alloy
+Cu|-1      |{Cu}                          |1037  |Fe alloy
+Zn|-1      |{Zn_{2}SiO_{4}, ZnSiO_{3}}    |726   |Forsterite + enstatite
+Ga|-1      |{Ga, Ga_{2}O_{3}}             |968   |Fe alloy + feldspar
+Ge|-1      |{Ge}                          |883   |Fe alloy
+As|-1      |{As}                          |1065  |Fe alloy
+Se|-1      |{FeSe_{0.96}}                 |697   |Troilite
+Br|-1      |{CaBr_{2}}                    |546   |Cl apatite
+Kr|53      |Kr\cdot 6H_{2}O               |52    |Kr\cdot 6H_{2}O
+Rb|-1      |{Rb silicate}                 |800   |Feldspar
+Sr|-1      |{SrTiO_{3}}                   |1464  |Titanate
+Y |-1      |{Y_{2}O_{3}}                  |1659  |Hibonite
+Zr|1764    |ZrO_{2}                       |1741  |ZrO_{2}
+Nb|-1      |{NbO, NbO_{2}}                |1559  |Titanate
+Mo|-1      |{Mo}                          |1590  |Refractory metal alloy
+Ru|-1      |{Ru}                          |1551  |Refractory metal alloy
+Rh|-1      |{Rh}                          |1392  |Refractory metal alloy
+Pd|-1      |{Pd}                          |1324  |Fe alloy
+Ag|-1      |{Ag}                          |996   |Fe alloy
+Cd|-1      |{CdSiO_{3}, CdS}              |652   |Enstatite + troilite
+In|-1      |{InS, InSe, InTe}             |536   |FeS
+Sn|-1      |{Sn}                          |704   |Fe alloy
+Sb|-1      |{Sb}                          |979   |Fe alloy
+Te|-1      |{Te}                          |709   |Fe alloy
+I |-1      |{CaI_{2}}                     |535   |Cl apatite
+Xe|69      |Xe\cdot 6H_{2}O               |68    |Xe\cdot 6H_{2}O
+Cs|-1      |{Cs silicate}                 |799   |Feldspar
+Ba|-1      |{BaTiO_{3}}                   |1455  |Titanate
+La|-1      |{La_{2}O_{3}}                 |1578  |Hibonite + titanate
+Ce|-1      |{CeO_{2}, Ce_{2}O_{3}}        |1478  |Hibonite + titanate
+Pr|-1      |{Pr_{2}O_{3}}                 |1582  |Hibonite + titanate
+Nd|-1      |{Nd_{2}O_{3}}                 |1602  |Hibonite
+Sm|-1      |{Sm_{2}O_{3}}                 |1590  |Hibonite + titanate
+Eu|-1      |{EuO, Eu_{2}O_{3}}            |1356  |Hibonite + titanate + feldspar
+Gd|-1      |{Gd_{2}O_{3}}                 |1659  |Hibonite
+Tb|-1      |{Tb_{2}O_{3}}                 |1659  |Hibonite
+Dy|-1      |{Dy_{2}O_{3}}                 |1659  |Hibonite
+Ho|-1      |{Ho_{2}O_{3}}                 |1659  |Hibonite
+Er|-1      |{Er_{2}O_{3}}                 |1659  |Hibonite
+Tm|-1      |{Tm_{2}O_{3}}                 |1659  |Hibonite
+Yb|-1      |{Yb_{2}O_{3}}                 |1487  |Hibonite + titanate
+Lu|-1      |{Lu_{2}O_{3}}                 |1659  |hibonite
+Hf|1703    |HfO_{2}                       |1684  |HfO_{2}
+Ta|-1      |{Ta_{2}O_{5}}                 |1573  |Hibonite + titanate
+W |-1      |{W}                           |1789  |Refractory metal alloy
+Re|-1      |{Re}                          |1821  |Refractory metal alloy
+Os|-1      |{Os}                          |1812  |Refractory metal alloy
+Ir|-1      |{Ir}                          |1603  |Refractory metal alloy
+Pt|-1      |{Pt}                          |1408  |Refractory metal alloy
+Au|-1      |{Au}                          |1060  |Fe alloy
+Hg|-1      |{HgS, HgSe, HgTe}             |252   |Troilite
+Tl|-1      |{Tl_{2}S, Tl_{2}Se, Tl_{2}Te} |532   |Troilite
+Pb|-1      |{Pb}                          |727   |Fe alloy
+Bi|-1      |{Bi}                          |746   |Fe alloy
+Th|-1      |{ThO_{2}}                     |1659  |Hibonite
+U |-1      |{UO_{2}}                      |1610  |Hibonite

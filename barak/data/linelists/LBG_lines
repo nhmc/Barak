@@ -1,0 +1,69 @@
+# LBG lines seen in the composite spectrum from Shapley et al. 2003,
+# see the paper for details and references.
+#
+# em = seen in emission
+# abs = seen in absorption
+# ism = due to ISM
+# star = due to stellar absorption features from hot (O and B) stars
+# starwind = due to stellar wind features from the same hot stars
+# neb = other random emissison lines possibly due to gas in nebulae.
+#
+# ism lines are generally offset bluewards with respect to Lya and the
+# stellar (star, starwind, neb) lines. Stellar lines are presumed to
+# give the true LBG redshift. Lya is generally redshifted with respect
+# to the stellar lines.
+name    wa        em abs ism neb star starwind   
+Lya     1215.6701  1  1   1  0    0     0           
+Lyb     1025.7223  0  1   1  0    0     0           
+Lyg     972.5368   0  1   1  0    0     0           
+Lylim   911.7633   0  1   1  0    0     0  
+SiII    1526.70698 0  1   1  0    0     0      
+SiII    1260.4221  0  1   1  0    0     0           
+OI_SiII 1302.1685  0  1   1  0    0     0  # blend of OI 1302.1685 & SiII 1304.3702          
+CII     1334.5323  0  1   1  0    0     0           
+FeII    1608.45085 0  1   1  0    0     0           
+AlII    1670.7886  0  1   1  0    0     0           
+SiIV    1393.76018 1  1   1  0    0     1           
+SiIV    1402.77291 1  1   1  0    0     1           
+CIV     1548.2049  1  1   1  0    0     1           
+CIV     1550.77845 1  1   1  0    0     1           
+NV      1238.821   1  1   1  0    0     1           
+NV      1242.804   1  1   1  0    0     1           
+OVI     1031.9261  0  1   1  0    0     0           
+OVI     1037.6167  0  1   1  0    0     0           
+SiII*   1533.4316  1  0   0  1    0     0   
+SiII*   1309.2757  1  0   0  1    0     0      
+SiII*   1264.7377  1  0   0  1    0     0      
+OIII]   1660.809   1  0   0  1    0     0      
+OIII]   1666.150   1  0   0  1    0     0      
+CIII]   1908.734   1  0   0  1    0     0      
+CIII    1175.71    0  1   0  0    1     0           
+OIV     1343.35    0  1   0  0    1     0  # blend of 1342.99 and 1343.51                    
+SV      1501.76    0  1   0  0    1     0           
+HeII    1640       1  0   0  0    0     1           
+# other possible lines and oscillator strengths from atom.dat
+# SiII  1526.70698 0.13300 
+# SiII  1304.3702  0.0863  
+# SiII  1260.4221  1.180   
+# SiII  1193.2897  0.5820  
+# SiII  1190.4158  0.2920  
+# SiII* 1533.4316  0.13200 
+# SiII* 1309.2757  0.0860  
+# SiII* 1264.7377  1.050  
+# SiII* 1197.3938  0.145  
+# SiII* 1194.5002  0.727  
+# OI   1302.1685  0.048000
+# CII  1334.5323  0.127800
+# CII  1036.3367  0.118000
+# CII* 1335.7077  0.115000
+# CII* 1037.0182  0.118000
+# CIV  1548.2049  0.189900
+# CIV  1550.77845 0.094750
+# SiIII 1206.500   1.63000 
+# SiIV  1393.76018 0.513  
+# SiIV  1402.77291 0.254  
+# FeII  1260.533   0.024000
+# FeII  1144.9379  0.0830  
+# AlII  1670.7886  1.740  
+# O VI  1031.9261 0.13250  4.149e8  M03g
+# O VI  1037.6167 0.06580  4.076e8  M03g

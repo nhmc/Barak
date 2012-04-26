@@ -1,0 +1,9 @@
+# blue ccd quantum efficiency
+# http://abell.as.arizona.edu/~lbtsci/Instruments/LBC/lbc_description.html#dqe.html
+3000   0.0
+3500   0.538
+4000   0.811
+5000   0.838
+6500   0.768
+9000   0.274
+10500  0

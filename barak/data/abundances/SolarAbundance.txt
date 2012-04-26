@@ -1,0 +1,114 @@
+# Values from Table 2 (soalr system abundances) in
+# http://adsabs.harvard.edu/abs/2003ApJ...591.1220L. Errors are at the
+# few percent level.
+
+# Two atomic abundance scales are commonly used. The value for an
+# element 'el' on the logarithmic astronomical scale is designated
+# as A(el) = log10 k*(El). On this scale, the number of H atoms is set
+# to A(H) =  log10 n(H) = 12, so that 
+
+# A(el) = log10 n(el)/n(H) - 12
+
+# On the cosmochemical scale, atomic abundances are normalized to the
+# number of silicon atoms of N(Si) = 1e6, and abundances on this scale
+# are designated as N(el).
+
+# The astronomical log scale and the cosmochemical abundance scale by
+# number are coupled by A(el) = log N(el) + 1.540
+
+el      A       N
+H       12      2.431e10        
+He      10.984  2.343e9 
+Li      3.35    55.47   
+Be      1.48    0.7374  
+B       2.85    17.32   
+C       8.46    7.079e6 
+N       7.90    1.950e6 
+O       8.76    1.413e7 
+F       4.53    841.1   
+Ne      7.95    2.148e6 
+Na      6.37    5.751e4 
+Mg      7.62    1.020e6 
+Al      6.54    8.410e4 
+Si      7.61    1.e6    
+P       5.54    8373    
+S       7.26    4.449e5 
+Cl      5.33    5237    
+Ar      6.62    1.025e5 
+K       5.18    3692    
+K*      5.18    3697    
+Ca      6.41    6.287e4 
+Sc      3.15    34.20   
+Ti      5.00    2422    
+V       4.07    288.4   
+Cr      5.72    1.286e4 
+Mn      5.58    9168    
+Fe      7.54    8.380e5 
+Co      4.98    2323    
+Ni      6.29    4.780e4 
+Cu      4.34    527.0   
+Zn      4.70    1226    
+Ga      3.17    35.97   
+Ge      3.70    120.6   
+As      2.40    6.089   
+Se      3.43    65.79   
+Br      2.67    11.32   
+Kr      3.36    55.15   
+Rb      2.43    6.572   
+Rb*     2.44    6.694   
+Sr      2.99    23.64   
+Sr*     2.99    23.52   
+Y       2.28    4.608   
+Zr      2.67    11.33   
+Nb      1.49    0.7554  
+Mo      2.03    2.601   
+Ru      1.89    1.900   
+Rh      1.18    0.3708  
+Pd      1.77    1.435   
+Ag      1.30    0.4913  
+Cd      1.81    1.584   
+In      0.87    0.1810  
+Sn      2.19    3.733   
+Sb      1.14    0.3292  
+Te      2.30    4.815   
+I       1.61    0.9975  
+Xe      2.35    5.391   
+Cs      1.18    0.3671  
+Ba      2.25    4.351   
+La      1.25    0.4405  
+Ce      1.68    1.169   
+Pr      0.85    0.1737  
+Nd      1.54    0.8355  
+Nd*     1.54    0.8343  
+Sm      1.02    0.2542                      
+Sm*     1.02    0.2554                      
+Eu      0.60    0.09513                     
+Gd      1.13    0.3321                      
+Tb      0.38    0.05907                     
+Dy      1.21    0.3862                      
+Ho      0.56    0.08986                     
+Er      1.02    0.2554                      
+Tm      0.18    0.03700                     
+Yb      1.01    0.2484                      
+Lu      0.16    0.03572                     
+Lu*     0.17    0.03580                     
+Hf      0.84    0.1699                      
+Hf*     0.84    0.1698                      
+Ta      -0.06   0.02099                     
+W       0.72    0.1277                      
+Re      0.33    0.05254                     
+Re*     0.36    0.05509                     
+Os      1.44    0.6738                      
+Os*     1.44    0.6713                      
+Ir      1.42    0.6448                      
+Pt      1.75    1.357                       
+Au      0.91    0.1955                      
+Hg      1.23    0.4128                      
+Tl      0.88    0.1845                      
+Pb      2.13    3.258                       
+Pb*     2.12    3.234                       
+Bi      0.76    0.1388                      
+Th      0.16    0.03512                     
+Th*     0.26    0.04399                     
+U       -0.42   9.306e-3    
+U*      +0.01   24.631e-3    

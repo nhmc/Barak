@@ -1,0 +1,28 @@
+# copied from xidl  (Spec/Lines/Lists/qso.lst)
+  wa      n    name
+ 1026.00  1    Ly-beta
+ 1035.00  1    OVI
+ 1218.21  1    Ly-alpha # shifted
+ 1240.01  2    NV
+ 1304.35  2    OI
+ 1396.80  2    SiIV # shifted 
+ 1406.00  1    O[IV]
+ 1544.66  2    CIV # shifted
+ 1637.69  2    HeII # shifted
+ 1856.59  2    AlIII # shifted
+ 1903.91  1    CIII] # shifted
+ 2327.71  1    CII]
+ 2799.40  2    MgII # shifted
+ 3345.96  1    Ne[V]
+ 3426.98  1    Ne[V]
+ 3728.30  1    O[II]  # Boroson et al. 2004 value
+ 4341.69  2    Hgamma
+ 4364.44  1    O[III]
+ 4862.68  2    Hb
+ 4960.29  1    O[III]
+ 5008.24  1    O[III]
+ 6549.91  1    N[II]
+ 6564.63  1    Ha
+ 6585.27  1    N[II] # Boroson et al. 2004 value
+ 6718.29  1    S[II] # Boroson et al. 2004 value
+ 6732.67  1    S[II] # Boroson et al. 2004 value

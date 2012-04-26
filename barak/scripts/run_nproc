@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+from multiprocessing import Pool
+from subprocess import call
+import sys, time
+import argparse
+
+parser = argparse.ArgumentParser(description="""
+Run a shell command on a list of files using multiple processors.""")
+
+parser.add_argument('nproc', type=int, help='Number of processors to use')
+parser.add_argument('command', help='the shell command to apply to files')
+parser.add_argument('filename', nargs='+', help='A list of files')
+
+args = parser.parse_args()
+
+def run_single_process(command):
+    """ Run a single shell process and print a '.' when it completes."""
+    try:
+        print command
+        call(command, shell=1)
+        sys.stdout.write('.')
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        pass
+
+if 1:
+    commands = [args.command + ' ' + n for n in args.filename]
+    
+    pool = Pool(processes=args.nproc)
+    print 'Running %s using %i processes' % (args.command, args.nproc)
+    t1 = time.time()
+    p = pool.map_async(run_single_process, commands)
+    
+    # The following handles ctrl-c. We need to do it this way due to a
+    # bug in multiprocessing, see:
+    # http://stackoverflow.com/questions/1408356/keyboard-interrupts-with-pythons-multiprocessing-pool
+    # and http://bugs.python.org/issue8296.
+
+    try:
+        results = p.get(0xFFFF)
+    except KeyboardInterrupt:
+        print 'Keyboard Interrupt'
+        sys.exit()
+
+    print '\n%.2f min elapsed' % ((time.time() - t1)/ 60.)

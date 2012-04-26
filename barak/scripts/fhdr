@@ -1,0 +1,187 @@
+#!/usr/bin/env python
+"""\
+Examples
+--------
+* Print the second extension header for data.fits
+
+fhdr -1 data.fits
+
+* Print the headers for all extensions for data.fits
+
+fhdr -all data1.fits
+
+* List the first headers of data1.fits and data2.fits, and grab any
+  lines that have 'OBS' in them
+
+fhdr data1.fits data2.fits | grep 'OBS'
+
+* List the values of the NAXIS CD1_1 and OBID keywords for all the
+  files ending in .fits in the current directory.
+
+fhdr *.fits NAXIS CD1_1 OBSID
+"""
+import sys
+import warnings
+
+usage = """\
+Usage: fhdr [options] filename(s) [keys]
+
+If any keys are given, then only those keys are printed. Otherwise the
+entire header is printed for each file.
+
+Options:
+
+-[extension number]  The number of the extension to print the header
+                     for.  The first extension header (number 0) is
+                     shown by default.
+-all   Print headers for all extensions.
+-f     Format the output such that columns of keywords are aligned
+       (slower). This is only used if one or more keys are given.
+-p     Don't trim directory paths from the filename when printing.
+
+Note that filenames must end in ".fit", ".fits", ".fit.gz" or
+".fits.gz". If an extension is not specified but a key is given, then
+all extension headers will be searched for the key. Only the first
+occurence is shown, the same key may exist in the header of further
+extensions.
+"""
+
+warnings.filterwarnings('ignore')
+
+def main(args):
+
+    allext = False
+    formatting = False
+    fullpaths = False
+    ext_specified = False
+    iext = 0
+    while True:
+        if args[0].startswith('-'):
+            a = args.pop(0)[1:]
+            #print a
+            if a == 'all':
+                allext = True
+                continue
+            try:
+                iext = int(a)
+                ext_specified = True
+            except ValueError:
+                if a == 'f':
+                    formatting = True
+                elif a == 'p':
+                    fullpaths = True
+                else:
+                    print usage
+                    sys.exit(1)
+        else:
+            break
+
+    filenames = []
+    width = 0
+    endings = '.fits','.fit','.fits.gz','.fit.gz', '.fits.fz'
+    while args and max([args[0].endswith(e) for e in endings]):
+        filename = args.pop(0)
+        if fullpaths:
+            name = filename
+        else:
+            name = filename.split('/')[-1]
+        width = max(width, len(name))
+        filenames.append(filename)
+
+    keys = args
+
+    import pyfits
+    if not keys:
+        for filename in filenames:
+            try:
+                fh = pyfits.open(filename)
+            except IOError:
+                print 'Problem reading:', filename
+                sys.exit()
+            print '   Header for %s:' % filename
+            if allext:
+                for hdu in fh:
+                    print hdu.header
+            else:
+                print fh[iext].header
+            fh.close()
+    else:
+        fmt = ' '.join(['%%-%is' % width] + ['%s'] * len(keys))
+        titles = ['FILENAME']
+        output = []
+        maxlens = [0] * len(keys)
+        for k in keys:
+            if ' ' in k:
+                k = '"' + k + '"'
+            titles.append(k)
+        if not formatting:
+            print fmt % tuple(titles)
+        for filename in filenames:
+            try:
+                fh = pyfits.open(filename)
+            except IOError:
+                print 'Problem reading:', filename
+                sys.exit()
+            if fullpaths:
+                fname = filename
+            else:
+                fname = filename.split('/')[-1]
+
+            out = [fname]
+            for key in keys:
+                # Look for the key in the extension given (first by
+                # default).
+                i = iext
+                while True:
+                    try:
+                        hd = fh[i].header
+                    except IndexError:
+                        # if we've run out of extensions, give up.
+                        val = '***'
+                        break
+                    try:
+                        val = hd[key]
+                        break
+                    except KeyError:
+                        # if we can't find it, try adding "HIERARCH
+                        # ESO", used for keywords longer than 8
+                        # characters.
+                        try:
+                            val = hd["HIERARCH ESO " + key]
+                            break
+                        except KeyError:
+                            # if we still can't find it and we haven't
+                            # asked for a specific extension, check
+                            # the next extension
+                            if ext_specified:
+                                val = '***'
+                                break
+                            i += 1
+
+                #print 'setting', key, 'to', val, i
+                out.append(val)
+            if not formatting:
+                print fmt % tuple(out)
+            else:
+                lens = [len(str(v)) for v in out[1:]]
+                for i in range(len(maxlens)):
+                    if lens[i] > maxlens[i]:
+                        maxlens[i] = lens[i] 
+                output.append(out)
+
+        if formatting:
+            fmt = ' '.join(['%%-%is' % width]+['%%-%is' % w for w in maxlens])
+            tshort = [t.strip('"')[:m] for t,m in zip(titles[1:],maxlens)]
+            print fmt % tuple([titles[0][:width]] + tshort)
+            for row in output:
+                print fmt % tuple(row)
+             
+if __name__ =='__main__':
+    if len(sys.argv) == 1:
+        print usage
+        sys.exit(1)        
+    try:
+        main(sys.argv[1:])
+    except KeyboardInterrupt:
+        print 'Closing'
+        sys.exit()

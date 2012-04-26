@@ -1,0 +1,7 @@
+lbg_em.dat is the combined spectrum from Shapley et al. (F lamdma,
+arbitrary normalisation). This has longer wavelength coverage and
+essentially the same resolution as the composite spectrum from Steidel
+et al. 2010.
+
+lbg_abs.dat is the the same spectrum but interpolating over the Lya
+line.

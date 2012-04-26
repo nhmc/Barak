@@ -1,0 +1,14 @@
+Most of the code was written by Neil Crighton, with contributions from
+Tom Theuns.
+
+The cosmology module is based on a version written by Andrew Becker:
+http://www.astro.washington.edu/users/becker/python_software.html
+
+The voigt profile routine is based on a version written by Jochen
+Liske in VPGUESS, which can be downloaded from:
+http://www.eso.org/~jliske/vpguess/
+
+The sed module is heavily influenced by the astLib sed module by Matt
+Hilton: http://astlib.sourceforge.net/
+
+Last updated on 25th April 2012.
