@@ -182,7 +182,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    plot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Passband.__init__"><a class="viewcode-back" href="../../generated/barak.sed.Passband.__init__.html#barak.sed.Passband.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">ccd</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Passband.__init__"><a class="viewcode-back" href="../../generated/barak.sed.Passband.html#barak.sed.Passband.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">ccd</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PATH_PASSBAND</span><span class="p">):</span>
             <span class="n">filepath</span> <span class="o">=</span> <span class="n">PATH_PASSBAND</span> <span class="o">+</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -255,9 +255,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">flux</span><span class="p">[</span><span class="s">&#39;Vega&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">VEGA</span><span class="o">.</span><span class="n">calc_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flux</span><span class="p">[</span><span class="s">&#39;AB&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">AB</span><span class="o">.</span><span class="n">calc_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="Passband.__repr__"><a class="viewcode-back" href="../../generated/barak.sed.Passband.__repr__.html#barak.sed.Passband.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&#39;Passband &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-</div>
+
 <div class="viewcode-block" id="Passband.plot"><a class="viewcode-back" href="../../generated/barak.sed.Passband.plot.html#barak.sed.Passband.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effic</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">atmos</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Plots the passband. We plot the non-normalised</span>
 <span class="sd">        transmission. This may or may not include ccd efficiency,</span>
@@ -295,7 +295,7 @@
 
 <span class="sd">    Available SED templates filenames are in TEMPLATES.</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
-<div class="viewcode-block" id="SED.__init__"><a class="viewcode-back" href="../../generated/barak.sed.SED.__init__.html#barak.sed.SED.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">wa</span><span class="o">=</span><span class="p">[],</span> <span class="n">fl</span><span class="o">=</span><span class="p">[],</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SED.__init__"><a class="viewcode-back" href="../../generated/barak.sed.SED.html#barak.sed.SED.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">wa</span><span class="o">=</span><span class="p">[],</span> <span class="n">fl</span><span class="o">=</span><span class="p">[],</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
 
         <span class="c"># filename overrides wave and flux keywords</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -328,9 +328,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">redshift_to</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="SED.__repr__"><a class="viewcode-back" href="../../generated/barak.sed.SED.__repr__.html#barak.sed.SED.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&#39;SED &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span>
-</div>
+
 <div class="viewcode-block" id="SED.copy"><a class="viewcode-back" href="../../generated/barak.sed.SED.copy.html#barak.sed.SED.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Copies the SED, returning a new SED object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

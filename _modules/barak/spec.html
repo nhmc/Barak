@@ -169,7 +169,7 @@
 <span class="sd">    &gt;&gt;&gt; sp = Spectrum(wa=wa, fl=fl)</span>
 <span class="sd">    &gt;&gt;&gt; sp = Spectrum(CRVAL=4000, CRPIX=1, CDELT=1, fl=np.ones(500))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Spectrum.__init__"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.__init__.html#barak.spec.Spectrum.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Spectrum.__init__"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.html#barak.spec.Spectrum.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">dw</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">wstart</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">wend</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">npts</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">CRVAL</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">CRPIX</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">CDELT</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">wa</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fl</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">er</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -256,9 +256,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wa</span> <span class="o">=</span> <span class="n">wa</span>
 </div>
-<div class="viewcode-block" id="Spectrum.__repr__"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.__repr__.html#barak.spec.Spectrum.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&#39;Spectrum(wa, fl, er, co, dw, dv, fwhm, filename)&#39;</span>
-</div>
+
 <div class="viewcode-block" id="Spectrum.multiply"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.multiply.html#barak.spec.Spectrum.multiply">[docs]</a>    <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Multipy the flux, error and continuum by `val`.</span>
 <span class="sd">        </span>

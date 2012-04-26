@@ -65,6 +65,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#spline">spline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#utilities">utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#voigt">voigt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cosmology">cosmology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cosmology-core">cosmology.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cosmology-parameters">cosmology.parameters</a></li>
 </ul>
 </li>
 </ul>
@@ -509,12 +512,6 @@ bundled with this package).</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.VpfitModel.html#barak.pyvpfit.VpfitModel" title="barak.pyvpfit.VpfitModel"><tt class="xref py py-obj docutils literal"><span class="pre">VpfitModel</span></tt></a>([names,&nbsp;logN,&nbsp;z,&nbsp;b,&nbsp;zpar,&nbsp;bpar,&nbsp;...])</td>
 <td>Holds all the info about a vpfit model.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.VpfitModel.__init__.html#barak.pyvpfit.VpfitModel.__init__" title="barak.pyvpfit.VpfitModel.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">VpfitModel.__init__</span></tt></a>([names,&nbsp;logN,&nbsp;z,&nbsp;b,&nbsp;...])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.VpfitModel.__repr__.html#barak.pyvpfit.VpfitModel.__repr__" title="barak.pyvpfit.VpfitModel.__repr__"><tt class="xref py py-obj docutils literal"><span class="pre">VpfitModel.__repr__</span></tt></a>()</td>
-<td></td>
-</tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.VpfitModel.copy.html#barak.pyvpfit.VpfitModel.copy" title="barak.pyvpfit.VpfitModel.copy"><tt class="xref py py-obj docutils literal"><span class="pre">VpfitModel.copy</span></tt></a>()</td>
 <td></td>
 </tr>
@@ -582,23 +579,11 @@ copied from there (LGPL): <a class="reference external" href="http://astlib.sour
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.Passband.html#barak.sed.Passband" title="barak.sed.Passband"><tt class="xref py py-obj docutils literal"><span class="pre">Passband</span></tt></a>(filename[,&nbsp;ccd])</td>
 <td>This class describes a filter transmission curve.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.Passband.__init__.html#barak.sed.Passband.__init__" title="barak.sed.Passband.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">Passband.__init__</span></tt></a>(filename[,&nbsp;ccd])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.Passband.__repr__.html#barak.sed.Passband.__repr__" title="barak.sed.Passband.__repr__"><tt class="xref py py-obj docutils literal"><span class="pre">Passband.__repr__</span></tt></a>()</td>
-<td></td>
-</tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.Passband.plot.html#barak.sed.Passband.plot" title="barak.sed.Passband.plot"><tt class="xref py py-obj docutils literal"><span class="pre">Passband.plot</span></tt></a>([effic,&nbsp;atmos,&nbsp;ymax])</td>
 <td>Plots the passband.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.html#barak.sed.SED" title="barak.sed.SED"><tt class="xref py py-obj docutils literal"><span class="pre">SED</span></tt></a>([filename,&nbsp;wa,&nbsp;fl,&nbsp;z,&nbsp;label])</td>
 <td>A Spectral Energy Distribution (SED).</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.__init__.html#barak.sed.SED.__init__" title="barak.sed.SED.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">SED.__init__</span></tt></a>([filename,&nbsp;wa,&nbsp;fl,&nbsp;z,&nbsp;label])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.__repr__.html#barak.sed.SED.__repr__" title="barak.sed.SED.__repr__"><tt class="xref py py-obj docutils literal"><span class="pre">SED.__repr__</span></tt></a>()</td>
-<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.apply_extinction.html#barak.sed.SED.apply_extinction" title="barak.sed.SED.apply_extinction"><tt class="xref py py-obj docutils literal"><span class="pre">SED.apply_extinction</span></tt></a>(EBmV)</td>
 <td>Applies the Calzetti et al. 2000 (ApJ, 533, 682) extinction</td>
@@ -669,12 +654,6 @@ spectrum-related functions.</p>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.Spectrum.html#barak.spec.Spectrum" title="barak.spec.Spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">Spectrum</span></tt></a>([dw,&nbsp;dv,&nbsp;wstart,&nbsp;wend,&nbsp;npts,&nbsp;...])</td>
 <td>A class to hold information about a spectrum.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.Spectrum.__init__.html#barak.spec.Spectrum.__init__" title="barak.spec.Spectrum.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">Spectrum.__init__</span></tt></a>([dw,&nbsp;dv,&nbsp;wstart,&nbsp;wend,&nbsp;...])</td>
-<td>Create the wavelength scale and initialise attributes.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.Spectrum.__repr__.html#barak.spec.Spectrum.__repr__" title="barak.spec.Spectrum.__repr__"><tt class="xref py py-obj docutils literal"><span class="pre">Spectrum.__repr__</span></tt></a>()</td>
-<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.Spectrum.multiply.html#barak.spec.Spectrum.multiply" title="barak.spec.Spectrum.multiply"><tt class="xref py py-obj docutils literal"><span class="pre">Spectrum.multiply</span></tt></a>(val)</td>
 <td>Multipy the flux, error and continuum by <em class="xref py py-obj">val</em>.</td>
@@ -784,12 +763,6 @@ spectrum-related functions.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline.html#barak.spline.InterpCubicSpline" title="barak.spline.InterpCubicSpline"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline</span></tt></a>(x,&nbsp;y[,&nbsp;firstderiv,&nbsp;...])</td>
 <td>Interpolate a cubic spline through a set of points.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline.__call__.html#barak.spline.InterpCubicSpline.__call__" title="barak.spline.InterpCubicSpline.__call__"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline.__call__</span></tt></a>(xp)</td>
-<td>Given an array of x values, returns cubic-spline</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline.__init__.html#barak.spline.InterpCubicSpline.__init__" title="barak.spline.InterpCubicSpline.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline.__init__</span></tt></a>(x,&nbsp;y[,&nbsp;...])</td>
-<td></td>
-</tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline._tridiag.html#barak.spline.InterpCubicSpline._tridiag" title="barak.spline.InterpCubicSpline._tridiag"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline._tridiag</span></tt></a>(temp,&nbsp;d2)</td>
 <td></td>
 </tr>
@@ -820,38 +793,8 @@ spectrum-related functions.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.Bunch.html#barak.utilities.Bunch" title="barak.utilities.Bunch"><tt class="xref py py-obj docutils literal"><span class="pre">Bunch</span></tt></a>(**kwargs)</td>
 <td>Bunch class from the python cookbook with __str__ and __repr__ methods.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.Bunch.__init__.html#barak.utilities.Bunch.__init__" title="barak.utilities.Bunch.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">Bunch.__init__</span></tt></a>(**kwargs)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.Bunch.__repr__.html#barak.utilities.Bunch.__repr__" title="barak.utilities.Bunch.__repr__"><tt class="xref py py-obj docutils literal"><span class="pre">Bunch.__repr__</span></tt></a>()</td>
-<td></td>
-</tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.adict.html#barak.utilities.adict" title="barak.utilities.adict"><tt class="xref py py-obj docutils literal"><span class="pre">adict</span></tt></a>(*args,&nbsp;**kwargs)</td>
 <td>A dictionary with attribute-style access.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.adict.__delitem__.html#barak.utilities.adict.__delitem__" title="barak.utilities.adict.__delitem__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__delitem__</span></tt></a>(name)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.adict.__getattr__.html#barak.utilities.adict.__getattr__" title="barak.utilities.adict.__getattr__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__getattr__</span></tt></a>(name)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.adict.__getitem__.html#barak.utilities.adict.__getitem__" title="barak.utilities.adict.__getitem__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__getitem__</span></tt></a>(name)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.adict.__getstate__.html#barak.utilities.adict.__getstate__" title="barak.utilities.adict.__getstate__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__getstate__</span></tt></a>()</td>
-<td>Prepare a state of pickling.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.adict.__init__.html#barak.utilities.adict.__init__" title="barak.utilities.adict.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__init__</span></tt></a>(*args,&nbsp;**kwargs)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.adict.__setattr__.html#barak.utilities.adict.__setattr__" title="barak.utilities.adict.__setattr__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__setattr__</span></tt></a>(key,&nbsp;value)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.adict.__setitem__.html#barak.utilities.adict.__setitem__" title="barak.utilities.adict.__setitem__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__setitem__</span></tt></a>(key,&nbsp;value)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.adict.__setstate__.html#barak.utilities.adict.__setstate__" title="barak.utilities.adict.__setstate__"><tt class="xref py py-obj docutils literal"><span class="pre">adict.__setstate__</span></tt></a>(items)</td>
-<td>Unpickle.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.adict.copy.html#barak.utilities.adict.copy" title="barak.utilities.adict.copy"><tt class="xref py py-obj docutils literal"><span class="pre">adict.copy</span></tt></a>()</td>
 <td></td>
@@ -931,6 +874,223 @@ spectrum-related functions.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.voigt.voigt_wofz.html#barak.voigt.voigt_wofz" title="barak.voigt.voigt_wofz"><tt class="xref py py-obj docutils literal"><span class="pre">voigt_wofz</span></tt></a>(a,&nbsp;u)</td>
 <td>Compute the Voigt function using Scipy&#8217;s wofz().</td>
 </tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="cosmology">
+<h2>cosmology<a class="headerlink" href="#cosmology" title="Permalink to this headline">¶</a></h2>
+<p>barak.cosmology contains routines for cosmological distance measures
+and other quantities. References for most of the quantities calculated
+in this package are given by Hogg (astro-ph/9905116).</p>
+<p>The following objects are imported to the barak.cosmology namesapce:</p>
+<blockquote>
+<div>Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
+arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
+radec_to_xyz, get_default, set_default, WMAP5, WMAP7</div></blockquote>
+<p>See the barak.cosmology.core module for documentation for these.</p>
+<p>Most of the functionality is enabled by the Cosmology object. For
+example, to create a new <em class="xref py py-obj">Cosmology</em> object with arguments giving the
+hubble parameter, omega matter and omega lambda (all at z=0):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">barak.cosmology</span> <span class="kn">import</span> <span class="n">Cosmology</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cosmo</span> <span class="o">=</span> <span class="n">Cosmology</span><span class="p">(</span><span class="n">H0</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">Om</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">Ol</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cosmo</span>
+<span class="go">Cosmology(H0=70, Om=0.3, Ol=0.7, Ok=0)</span>
+</pre></div>
+</div>
+<p>The methods of this object calculate commonly used quantities with
+your cosmology. So the comoving distance in Mpc at redshift 4 is given
+by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cosmo</span><span class="o">.</span><span class="n">comoving_distance</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">7170.366414463296</span>
+</pre></div>
+</div>
+<p>The age of the universe at z = 0 in Gyr:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cosmo</span><span class="o">.</span><span class="n">age</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">13.46698402784007</span>
+</pre></div>
+</div>
+<p>See the <em class="xref py py-obj">Cosmology</em> object docstring for all the methods and variables
+available.  There are several standard cosmologies already defined:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cosmology</span> <span class="kn">import</span> <span class="n">WMAP7</span>    <span class="c"># Parameters from the 7-year WMAP results</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">WMAP7</span><span class="o">.</span><span class="n">critical_density0</span>        <span class="c"># Critical density at z=0 in g/cm^3</span>
+<span class="go">9.31000313202047e-30</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cosmology</span> <span class="kn">import</span> <span class="n">WMAP5</span>    <span class="c"># From the 5-year WMAP results</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">WMAP5</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>                     <span class="c"># Hubble parameter at z=3 in km/s/Mpc</span>
+<span class="go">301.54148311633674</span>
+</pre></div>
+</div>
+<p>There are also several convenience functions that calculate quantities
+without needing to create a Cosmology object. These use a &#8216;default&#8217;
+cosmology if no cosmology instance is explicitly passed to them. The
+default can be set with <em class="xref py py-obj">cosmology.set_default()</em> and is accessed with
+<em class="xref py py-obj">cosmology.get_default()</em>. If you don&#8217;t set the default explicitly,
+then the first time it is accessed a warning message is printed and
+it&#8217;s set to the 7 year WMAP cosmology.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">astropy</span> <span class="kn">import</span> <span class="n">cosmology</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cosmology</span><span class="o">.</span><span class="n">kpc_proper_per_arcmin</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">472.91882815884907</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cosmology</span><span class="o">.</span><span class="n">arcsec_per_kpc_proper</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">0.12687166682195736</span>
+</pre></div>
+</div>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+</tbody>
+</table>
+</div>
+<div class="section" id="cosmology-core">
+<h2>cosmology.core<a class="headerlink" href="#cosmology-core" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.html#barak.cosmology.core.Cosmology" title="barak.cosmology.core.Cosmology"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology</span></tt></a>(H0,&nbsp;Om,&nbsp;Ol[,&nbsp;name])</td>
+<td>An object representing an isotropic and homogeneous</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.H.html#barak.cosmology.core.Cosmology.H" title="barak.cosmology.core.Cosmology.H"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.H</span></tt></a>(z)</td>
+<td>Hubble parameter (km/s/Mpc) at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._efunc.html#barak.cosmology.core.Cosmology._efunc" title="barak.cosmology.core.Cosmology._efunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._efunc</span></tt></a>(z)</td>
+<td>Function used to calculate the hubble parameter as a function of redshift.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._inv_efunc.html#barak.cosmology.core.Cosmology._inv_efunc" title="barak.cosmology.core.Cosmology._inv_efunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._inv_efunc</span></tt></a>(z)</td>
+<td>Integrand of the comoving distance.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._tfunc.html#barak.cosmology.core.Cosmology._tfunc" title="barak.cosmology.core.Cosmology._tfunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._tfunc</span></tt></a>(z)</td>
+<td>Integrand of the lookback time.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._xfunc.html#barak.cosmology.core.Cosmology._xfunc" title="barak.cosmology.core.Cosmology._xfunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._xfunc</span></tt></a>(z)</td>
+<td>Integrand of the absorption distance.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.absorption_distance.html#barak.cosmology.core.Cosmology.absorption_distance" title="barak.cosmology.core.Cosmology.absorption_distance"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.absorption_distance</span></tt></a>(z)</td>
+<td>Absorption distance at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.age.html#barak.cosmology.core.Cosmology.age" title="barak.cosmology.core.Cosmology.age"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.age</span></tt></a>(z)</td>
+<td>Age of the universe in Gyr at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.angular_diameter_distance.html#barak.cosmology.core.Cosmology.angular_diameter_distance" title="barak.cosmology.core.Cosmology.angular_diameter_distance"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.angular_diameter_distance</span></tt></a>(z)</td>
+<td>Angular diameter distance in Mpc at a given redshift.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.angular_diameter_distance_z1z2.html#barak.cosmology.core.Cosmology.angular_diameter_distance_z1z2" title="barak.cosmology.core.Cosmology.angular_diameter_distance_z1z2"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.angular_diameter_distance_z1z2</span></tt></a>(z1,&nbsp;z2)</td>
+<td>Angular diameter distance between objects at 2 redshifts.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.comoving_distance.html#barak.cosmology.core.Cosmology.comoving_distance" title="barak.cosmology.core.Cosmology.comoving_distance"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.comoving_distance</span></tt></a>(z)</td>
+<td>Comoving line-of-sight distance in Mpc at a given</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.comoving_transverse_distance.html#barak.cosmology.core.Cosmology.comoving_transverse_distance" title="barak.cosmology.core.Cosmology.comoving_transverse_distance"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.comoving_transverse_distance</span></tt></a>(z)</td>
+<td>Comoving transverse distance in Mpc at a given redshift.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.comoving_volume.html#barak.cosmology.core.Cosmology.comoving_volume" title="barak.cosmology.core.Cosmology.comoving_volume"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.comoving_volume</span></tt></a>(z)</td>
+<td>Comoving volume in cubic Mpc at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.critical_density.html#barak.cosmology.core.Cosmology.critical_density" title="barak.cosmology.core.Cosmology.critical_density"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.critical_density</span></tt></a>(z)</td>
+<td>Critical density in grams per cubic cm at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.distmod.html#barak.cosmology.core.Cosmology.distmod" title="barak.cosmology.core.Cosmology.distmod"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.distmod</span></tt></a>(z)</td>
+<td>Distance modulus at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.lookback_time.html#barak.cosmology.core.Cosmology.lookback_time" title="barak.cosmology.core.Cosmology.lookback_time"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.lookback_time</span></tt></a>(z)</td>
+<td>Lookback time in Gyr to redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.luminosity_distance.html#barak.cosmology.core.Cosmology.luminosity_distance" title="barak.cosmology.core.Cosmology.luminosity_distance"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.luminosity_distance</span></tt></a>(z)</td>
+<td>Luminosity distance in Mpc at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.scale_factor.html#barak.cosmology.core.Cosmology.scale_factor" title="barak.cosmology.core.Cosmology.scale_factor"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.scale_factor</span></tt></a>(z)</td>
+<td>Scale factor at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.arcsec_per_kpc_comoving.html#barak.cosmology.core.arcsec_per_kpc_comoving" title="barak.cosmology.core.arcsec_per_kpc_comoving"><tt class="xref py py-obj docutils literal"><span class="pre">arcsec_per_kpc_comoving</span></tt></a>(z[,&nbsp;cosmo])</td>
+<td>Angular separation in arcsec corresponding to a comoving kpc</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.arcsec_per_kpc_proper.html#barak.cosmology.core.arcsec_per_kpc_proper" title="barak.cosmology.core.arcsec_per_kpc_proper"><tt class="xref py py-obj docutils literal"><span class="pre">arcsec_per_kpc_proper</span></tt></a>(z[,&nbsp;cosmo])</td>
+<td>Angular separation in arcsec corresponding to a proper kpc at</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.distmod.html#barak.cosmology.core.distmod" title="barak.cosmology.core.distmod"><tt class="xref py py-obj docutils literal"><span class="pre">distmod</span></tt></a>(z[,&nbsp;cosmo])</td>
+<td>Distance modulus at redshift <em class="xref py py-obj">z</em>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.get_default.html#barak.cosmology.core.get_default" title="barak.cosmology.core.get_default"><tt class="xref py py-obj docutils literal"><span class="pre">get_default</span></tt></a>()</td>
+<td>Return the default cosmology.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.kpc_comoving_per_arcmin.html#barak.cosmology.core.kpc_comoving_per_arcmin" title="barak.cosmology.core.kpc_comoving_per_arcmin"><tt class="xref py py-obj docutils literal"><span class="pre">kpc_comoving_per_arcmin</span></tt></a>(z[,&nbsp;cosmo])</td>
+<td>Separation in transverse comoving kpc corresponding to an</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.kpc_proper_per_arcmin.html#barak.cosmology.core.kpc_proper_per_arcmin" title="barak.cosmology.core.kpc_proper_per_arcmin"><tt class="xref py py-obj docutils literal"><span class="pre">kpc_proper_per_arcmin</span></tt></a>(z[,&nbsp;cosmo])</td>
+<td>Separation in transverse proper kpc corresponding to an</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.radec_to_xyz.html#barak.cosmology.core.radec_to_xyz" title="barak.cosmology.core.radec_to_xyz"><tt class="xref py py-obj docutils literal"><span class="pre">radec_to_xyz</span></tt></a>(ra,&nbsp;dec,&nbsp;r[,&nbsp;deg2rad])</td>
+<td>Convert a ra, dec and comoving distance to 3d comoving coordinates.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.set_default.html#barak.cosmology.core.set_default" title="barak.cosmology.core.set_default"><tt class="xref py py-obj docutils literal"><span class="pre">set_default</span></tt></a>(arg)</td>
+<td>Set the default cosmology.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="cosmology-parameters">
+<h2>cosmology.parameters<a class="headerlink" href="#cosmology-parameters" title="Permalink to this headline">¶</a></h2>
+<p>This module contains dictionaries with sets of parameters for a
+given cosmology.</p>
+<p>Each cosmology has the following parameters defined:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Oc</td>
+<td>Omega cold dark matter</td>
+</tr>
+<tr class="row-even"><td>Ob</td>
+<td>Omega baryon</td>
+</tr>
+<tr class="row-odd"><td>Om</td>
+<td>Omega matter</td>
+</tr>
+<tr class="row-even"><td>Ol</td>
+<td>Omega lambda</td>
+</tr>
+<tr class="row-odd"><td>H0</td>
+<td>Hubble parameter at z=0 in km/s/Mpc</td>
+</tr>
+<tr class="row-even"><td>n</td>
+<td>Density perturbation spectral index</td>
+</tr>
+<tr class="row-odd"><td>sigma8</td>
+<td>Density perturbation amplitude</td>
+</tr>
+<tr class="row-even"><td>tau</td>
+<td>Ionisation optical depth</td>
+</tr>
+<tr class="row-odd"><td>z_reion</td>
+<td>Redshift of hydrogen reionisation</td>
+</tr>
+<tr class="row-even"><td>t0</td>
+<td>Age of the universe in Gyr</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The list of cosmologies available are given by the tuple
+<em class="xref py py-obj">available</em>. Current cosmologies available:</p>
+<p>WMAP 7 year parameters from Komatsu et al. 2011, ApJS, 192, 18. Table
+1 (WMAP + BAO + H0 ML).</p>
+<p>WMAP 5 year parameters from Komatsu et al. 2009, ApJS, 180, 330. Table
+1 (WMAP + BAO + SN ML).</p>
+<p>Both these cosmologies are flat (omega matter + omega lambda = 1).</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
 </tbody>
 </table>
 </div>
