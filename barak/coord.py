@@ -150,9 +150,18 @@ def _dec2s(ra, dec,
 
     return s_ra,s_dec
 
-def dec2s(ra,dec):
-    """ Convert and ra and dec (or list of ras and decs) to decimal
-    degrees.
+def dec2s(ra, dec):
+    """ Convert and RA an Dec from degrees to sexigesimal.
+
+    Parameters
+    ----------
+    ra, dec: floats or arrays of floats, shape (N,)
+      The RA and Dec in degrees.
+
+    Returns
+    -------
+    ra, dec: str or arrays of str, shape (N,)
+      The RA and Dec in 'hour:min:s' 'deg:min:s' format.
     """
     try:
         return _dec2s(ra, dec)
@@ -191,6 +200,17 @@ def _s2dec(ra,dec):
 def s2dec(ra, dec):
     """ Convert a sexigesimal ra and dec (or list of ras and decs) to
     decimal degrees.
+
+    Parameters
+    ----------
+    ra, dec: str or arrays of str, shape (N,)
+      The RA and Dec in 'hour:min:s' 'deg:min:s' format. The
+      separators may be spaces or colons.
+
+    Returns
+    -------
+    ra, dec: floats or arrays of floats, shape (N,)
+      The RA and Dec in degrees.
     """
     try:
         return _s2dec(ra, dec)
@@ -284,13 +304,21 @@ def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
         return match
 
 def indmatch(ra1, dec1, ra2, dec2, tol):
-    """
-    Finds objects in ra1, dec1 that have a matching object in ra2,dec2
-    within tol arcsec.
+    """ Finds objects in ra1, dec1 that have a matching object in
+    ra2, dec2 within tol arcsec.
 
-    Returns i1, i2 where i1 are indices into ra1,dec1 that have
-    matches, and i2 are the indices into ra2, dec2 giving the matching
-    objects.
+    Parameters
+    ----------
+    ra1, dec1 : arrays of floats, shape (N,)
+      First list of coordinates in degrees.
+    ra2, dec2 : arrays of floats, shape (M,)
+      Second list of coordinates in degrees.
+
+    Returns
+    -------
+    i1 : arrays of int, shape (P,)
+      `i1` are the indices into ra1,dec1 that have matches in the ra2,
+      dec2. `i2` are the indices into ra2,dec2 giving the matching objects.
     """
     m = match(ra1, dec1, ra2, dec2, tol)
     c = m.ind > -1
@@ -301,7 +329,7 @@ def indmatch(ra1, dec1, ra2, dec2, tol):
 def unique_radec(ra, dec, tol):
     """ Find unique ras and decs in a list of coordinates.
 
-    RA and Dec must be array sof the same length, and in degrees.
+    RA and Dec must be arrays of the same length, and in degrees.
 
     tol is the tolerance for matching in arcsec. Any coord separated by
     less that this amount are assumed to be the same.

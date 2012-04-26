@@ -75,7 +75,6 @@ def get_SEDs(kind=None, names=None):
 
     Examples
     --------
-
     >>> pickles = get_SEDs('pickles')   # pickles stellar library SEDs
     >>> lbga = get_SEDs('LBG', 'lbg_abs.dat')  # LBG absorption spectrum
     """
@@ -120,15 +119,20 @@ class Passband(object):
 
     The available passbands are in PASSBANDS.
     
-    Attributes::
+    Attributes
+    ----------
+    wa : array of floats
+      Wavelength in Angstroms
+    tr : array of floats
+      Normalised transmission, including atmospheric extinction and
+      detector efficiency. May or may not include extinction from the
+      optical path.
+    effective_wa : float
+      Effective wavelength of the passband.
 
-      wa   wavelength in Angstroms
-      tr   normalised transmission, including atmospheric extinction and
-           detector efficiency. May or may not include extinction from
-           the optical path.
-      effective_wa   the effective wavelength of the passband.
-
-    Methods:  plot()
+    Methods
+    -------
+    plot
     """
     def __init__(self, filename, ccd=None):
         if not filename.startswith(PATH_PASSBAND):
@@ -484,7 +488,7 @@ def calc_extinction_Calzetti(wa, EBmV):
 
     Returns reddening such that::
 
-    extincted_flux = unextincted_flux * reddening
+     extincted_flux = unextincted_flux * reddening
     """
     assert wa[0] < 22000 and wa[-1] > 1200
 

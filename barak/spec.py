@@ -75,17 +75,27 @@ def make_wa_scale(wstart, dw, npts, constantdv=False, verbose=False):
 class Spectrum(object):
     """ A class to hold information about a spectrum.
     
-    Attributes::
+    Attributes
+    ----------
+    wa : array of floats, shape(N,)
+      Wavelength values (overrides all wavelength keywords)
+    fl : array of floats, shape(N,)
+      Flux.
+    er : array of floats, shape(N,)
+      Error.
+    co : array of floats, shape(N,)
+      Continuum.
+    dw : float
+      Wavelength difference between adjacent pixel centres.
+    dv : float
+      Velocity difference (km/s)
+    fwhm : float
+      Instrumental FWHM in km/s
+    filename : str
+      Filename of spectrum
 
-     wa:       array of wavelength values (overrides all wavelength keywords)
-     fl:       array of flux values
-     er:       array of error (same units as flux) values
-     co:       array of continuum values
-     dw:       Wavelength difference between adjacent pixel centres
-     dv:       Velocity difference (km/s) (overrides wdelt keyword)
-     fwhm:     instrumental FWHM in km/s
-     filename: filename of spectrum
-
+    Notes
+    -----
     If enough information is given, the wavelength scale will be
     generated.  Note that there is no error check if you give
     conflicting wavelength scale information in the keywords!  In this
@@ -100,9 +110,9 @@ class Spectrum(object):
     
      dv / c_kms = 1 - 10**(-dw)
 
+
     Examples
     --------
-
     >>> sp = Spectrum(wstart=4000, dw=1, npts=500)
     >>> sp = Spectrum(wstart=4000, dv=60, npts=500)
     >>> sp = Spectrum(wstart=4000, wend=4400, npts=500)
@@ -301,10 +311,12 @@ def read(filename, comment='#', debug=False):
     Reads in QSO spectrum given a filename.  Returns a Spectrum class
     object:
 
-    Parameters::
-
-    comment = '#' :  String that marks beginning of comment line,
-                     only used when reading in ascii files
+    Parameters
+    ----------
+    filename : str
+    comment : str ('#')
+      String that marks beginning of comment line, only used when
+      reading in ascii files
     """
     if filename.endswith('gz'):
         import gzip
@@ -480,8 +492,6 @@ def read(filename, comment='#', debug=False):
 def rebin_simple(wa, fl, er, co, n):
     """ Bins up the spectrum by averaging the values of every n
     pixels. Not very accurate, but much faster than rebin().
-
-    TODO: re-write using masked arrays to preserve masked values.
     """ 
     remain = -(len(wa) % n) or None
     wa = wa[:remain].reshape(-1, n)
@@ -505,8 +515,8 @@ def rebin(wav, fl, er, **kwargs):
     Accepts the same keywords as Spectrum.__init__() (see that
     docstring for a description of those keywords)
 
-    Note - will probably get the flux and errors for the first and
-    last pixel of the rebinned spectrum wrong.
+    Will probably get the flux and errors for the first and last pixel
+    of the rebinned spectrum wrong.
 
     General pointers about rebinning if you care about errors in the
     rebinned values:
@@ -638,7 +648,6 @@ def combine(spectra, cliphi=None, cliplo=None, verbose=False):
     width in the input spectra. If this is not what you want, rebin
     the spectra by hand with rebin() before using combine().
     """
-
     def clip(cliphi, cliplo, s_rebinned):
         # clip the rebinned input spectra
 
@@ -779,11 +788,14 @@ def cr_reject2(fl, er, nsig=10.0, fwhm=2, grow=1, debug=True):
     """ interpolate across features that have widths smaller than the
     expected fwhm resolution.
 
-    Parameters::
-
-      fwhm: int, resolution fwhm in pixels
-      fl: flux array
-      er: error array
+    Parameters
+    ----------
+    fwhm: int
+      Resolution fwhm in pixels
+    fl : array of floats, shape (N,)
+      Flux
+    er : array of floats, shape (N,)
+      Error
 
     Returns the interpolated flux and error arrays.
     """
@@ -891,14 +903,13 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
     """ Draw vertical dotted lines showing expected positions of
     absorption and emission lines, given a redshift.
 
-    Parameters::
-
-     atmos: list of wavelength pairs or True (None) Regions of
-            atmospheric absorption to plot. If True, it uses an
-            internal list of regions taken from aaomega spectra.
-  
-     lines: If given, it must be a record array with fields 'name' and 'wa'.
-    
+    Parameters
+    ----------
+    atmos : list of float pairs, or True (None)
+      Regions of atmospheric absorption to plot. If True, it uses an
+      internal list of regions.
+    lines : stuctured array, optional
+      If given, it must be a record array with fields 'name' and 'wa'.
 
     Returns the mpl artists representing the lines.
     """
@@ -1126,9 +1137,14 @@ def pca_qso_cont(nspec, seed=None, return_weights=False):
     """ Make qso continua using the PCA and weights from N. Suzuki et
     al. 2005 and N. Suzuki 2006.
 
-    Parameters: nspec (int), number of spectra to create
+    Parameters
+    ----------
+    nspec : int
+      Number of spectra to create
 
-    Returns: wavelength (shape N), array of spectra [shape (nspec, N)]
+    Returns
+    -------
+    wavelength (shape N), array of spectra [shape (nspec, N)]
 
     Memory use might be prohibitive for nspec > ~1e4.
     """
@@ -1253,29 +1269,25 @@ def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None):
     `wa_dv` and `npix` must be given -- this is faster because no
     intermediate array needs to be calculated.
 
-    Parameters::
+    Parameters
+    ----------
+    fl, wa : arrays of floats, length N
+      The array to be convolved and its wavelengths.
+    vfwhm : float, optional
+      Full width at half maximum in velocity space (km/s) of the
+      gaussian kernel with which to convolve `fl`.
+    npix : float, default 4
+      Number of pixels corresponding to `vfwhm` in `wa_dv` if given,
+      otherwise `wa` is interpolated to an array with velocity pixel
+      width = vfwhm / npix.
+    wa_dv : array of floats, default `None`
+      Wavelength array with a constant velocity width (this can be
+      generated with make_constant_dv_wa_scale()).
 
-     fl, wa: arrays of floats, length N
-         The array to be convolved and its wavelengths.
-  
-     vfwhm: float, optional
-         Full width at half maximum in velocity space (km/s) of the
-         gaussian kernel with which to convolve `fl`.
-  
-     npix: float, default 4
-         Number of pixels corresponding to `vfwhm` in `wa_dv` if given,
-         otherwise `wa` is interpolated to an array with velocity pixel
-         width = vfwhm / npix.
-         
-     wa_dv: array of floats, default `None`
-         Wavelength array with a constant velocity width (this can be
-         generated with make_constant_dv_wa_scale()).
-
-
-    Returns::
-
-     fl_out: array of length N
-         fl convolved with the gaussian kernel with the specified FWHM.
+    Returns
+    -------
+    fl_out : array of length N
+      fl convolved with the gaussian kernel with the specified FWHM.
      
     """
     # interpolate to the log-linear scale, convolve, then

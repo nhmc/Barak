@@ -81,3 +81,5 @@ Thumbs.db
 docs/generated
 docs/_build
 docs/index.rst
+setup.sh
+template_setup.py

@@ -232,8 +232,8 @@ def calc_Wr(i0, i1, wa, ew, ewer, tr):
     ngoodpix number of good pixels contributing to the measurements 
     Nmult    multiplier to get from equivalent width to column density
     ======== =========================================================
+
     """
-    
     ew1 = np.array(ew[i0:i1+1])
     ewer1 = np.array(ewer[i0:i1+1])
     wa1 = wa[i0:i1+1]

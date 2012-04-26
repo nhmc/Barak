@@ -1064,13 +1064,18 @@ def voigt(a, u):
     ----------
     a : float
       Ratio of Lorentzian to Gaussian linewidths (see below).
-    u : array of floats
+    u : array of floats, shape (N,)
       The frequency or velocity offsets from the line centre, in units
       of the FWHM of the Gaussian broadening (see below).
 
+    Returns
+    -------
+    H : array of floats, shape (N,)
+      The Voigt function.
+
     Notes
     -----
-    The Voigt function is useful for calculation the optical depth as
+    The Voigt function is useful for calculating the optical depth as
     function of frequency for an absorption transition associated with
     an atom or ion.
     

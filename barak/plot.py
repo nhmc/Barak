@@ -28,13 +28,17 @@ def axvfill(xvals, ax=None, color='k', alpha=0.1, edgecolor='none', **kwargs):
     """ Fill vertical regions defined by a sequence of (left, right)
     positions.
 
-    Parameters::
-    
-     xvals: sequence of pairs specifying the left and right extent of
-            each region. e.g. (3,4) or [(0,1),(3,4)]
-     ax=None: the axis to plot regions on.  default is the current axis.
-     color='g': color of the regions.
-     alpha=0.3: the opacity of the regions (1=opaque)
+    Parameters
+    ----------
+    xvals: list
+      Sequence of pairs specifying the left and right extent of each
+      region. e.g. (3,4) or [(0,1),(3,4)]
+    ax : matplotlib axes instance (default is the current axes)
+      The axes to plot regions on.
+    color : mpl colour (default 'g')
+      Color of the regions.
+    alpha : float (default 0.3)
+      Opacity of the regions (1=opaque).
 
     Other keywords arguments are passed to PolyCollection.
     """
@@ -94,29 +98,30 @@ def distplot(vals, xvals=None, perc=(68, 95), showmean=False,
 
     Similar to a boxplot.
 
-    Parameters::
+    Parameters
+    ----------
     
-     vals: sequence of arrays
-         2-d array or a sequence of 1-d arrays.
-     xvals: array of floats
-         x positions.
-     perc: array of floats  (68, 95)
-         The percentile levels to use for area shading. Defaults show
-         the 68% and 95% percentile levels; roughly 1 and 2
-         sigma ranges for a Gaussian distribution.
-     showmean: boolean  (False)
-         Whether to show the means as a dashed black line.
-     showoutliers: boolean (False)
-         Whether to show outliers past the highest percentile range.
-     color: mpl color ('forestgreen')
-     ax: mpl Axes object
-         Plot to this mpl Axes instance.
-     logx, logy: bool (False)
-         Whether to use a log x or y axis.
-     negval: float (None)
-         If using a log y axis, replace negative plotting values with
-         this value (by default it chooses a suitable value based on
-         the data values).
+    vals : sequence of arrays
+        2-d array or a sequence of 1-d arrays.
+    xvals : array of floats
+        x positions.
+    perc : array of floats  (68, 95)
+        The percentile levels to use for area shading. Defaults show
+        the 68% and 95% percentile levels; roughly 1 and 2
+        sigma ranges for a Gaussian distribution.
+    showmean : boolean  (False)
+        Whether to show the means as a dashed black line.
+    showoutliers : boolean (False)
+        Whether to show outliers past the highest percentile range.
+    color : mpl color ('forestgreen')
+    ax : mpl Axes object
+        Plot to this mpl Axes instance.
+    logx, logy : bool (False)
+        Whether to use a log x or y axis.
+    negval : float (None)
+        If using a log y axis, replace negative plotting values with
+        this value (by default it chooses a suitable value based on
+        the data values).
     """
     if any(not hasattr(a, '__iter__') for a in vals):
         raise ValueError('Input must be a 2-d array or sequence of arrays')
@@ -205,25 +210,25 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
             ecolor=None, elw=None, zorder=None, nonposval=None, **kwargs):
     """ Plot a graph with y errors.
 
-    Parameters::
-
-     x, y: arrays of shape (N,)
-         Data.
-     yerrs: array of shape (N,) or shape(N,2)
-         Either an array with the same length y, or a list of two such
-         arrays, giving lower and upper limits to plot.
-     xerrs:
-         Optional x errors.
-     fmt: str
-         Passed to the plot command for the x,y points.
-     ms, mew: floats
-         Plotting marker size and edge width.
-     ecolor: matplotlib color (None)
-         Color of the error bars. By default this will be the same color
-         as the markers.
-     elw: matplotlib line width (None)
-     nonposval: float (None)
-         If given, replace any non-positive values of y with this
+    Parameters
+    ----------
+    x, y: arrays of shape (N,)
+        Data.
+    yerrs: array of shape (N,) or shape (N,2)
+        Either an array with the same length y, or a list of two such
+        arrays, giving lower and upper limits to plot.
+    xerrs:
+        Optional x errors.
+    fmt: str
+        Passed to the plot command for the x,y points.
+    ms, mew: floats
+        Plotting marker size and edge width.
+    ecolor: matplotlib color (None)
+        Color of the error bars. By default this will be the same color
+        as the markers.
+    elw: matplotlib line width (None)
+    nonposval: float (None)
+        If given, replace any non-positive values of y with this
     """
     yerrs = np.array(yerrs)
     if yerrs.ndim > 1:
@@ -273,16 +278,6 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
             col2.set_zorder(zorder)
 
     return ax
-
-def test_distplot(n=100):
-    a = [np.random.randn(n) for i in range(10)]
-    x = range(len(a))
-    ax = distplot(x,a, showoutliers=1)
-    ax = distplot(x,a, color='r')
-    ax = distplot(x,a, label='points', color='b', showmean=1)
-    ax.legend()
-
-
 
 def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
           label=None, loc='right,bottom', xhistmax=None, yhistmax=None,

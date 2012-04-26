@@ -64,8 +64,8 @@ def convolve_window(a, window, edge='invert'):
     -------
     convolved_a : array, shape (N,)
 
-    Note
-    ----
+    Notes
+    -----
     The window is normalised before convolution.
     """
     npts = len(window)

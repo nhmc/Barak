@@ -9,14 +9,17 @@ class InterpCubicSpline:
     Instantiate the class with two arrays of points: x and
     y = f(x).
 
-    Inputs::
-
-     x                 : array of x values
-     y                 : array of y values (y = f(x))
-     firstderiv = None : derivative of f(x) at x[0]
-     lastderiv  = None : derivative of f(x) at x[-1]
-     nochecks = False  : if False, check the x array is sorted and
-                         unique. Set to True for increased speed.
+    Parameters
+    ----------
+    x, y : arrays of floats, shape (N,)
+      x and y = f(x).
+    firstderiv : float (None)
+      Derivative of f(x) at x[0]
+    lastderiv : float (None)
+      Derivative of f(x) at x[-1]
+    nochecks : bool (False)
+      If False, check the x array is sorted and unique. Set to True
+      for increased speed.
 
     After initialisation, the instance can be called with an array of
     values xp, and will return the cubic-spline interpolated values
@@ -92,12 +95,14 @@ class InterpCubicSpline:
         function y = f(x) for each value in array x. This is called by
         __init__() when a new class instance is created.
 
-        Optional inputs::
-
-         firstderiv = None : 1st derivative of f(x) at x[0].  If None,
-                              then 2nd derivative is set to 0 ('natural').
-         lastderiv  = None : 1st derivative of f(x) at x[-1].  If None,
-                              then 2nd derivative is set to 0 ('natural').
+        Parameters
+        ----------
+        firstderiv : float, (None)
+          1st derivative of f(x) at x[0].  If None, then 2nd
+          derivative is set to 0 ('natural').
+        lastderiv : float (None)
+          1st derivative of f(x) at x[-1].  If None, then 2nd
+          derivative is set to 0 ('natural').
         """
         if verbose:  print 'first deriv,last deriv',firstderiv,lastderiv
         x, y, npts = self.x, self.y, self.npts
@@ -138,21 +143,19 @@ def interp_spline(x, xvals, yvals, nochecks=False):
     return spl(x)
 
 def fit_spline(x, y, bins=4, estimator=np.median):
-    """ Find a smooth function that approximates the points x, y.
+    """ Find a smooth function that approximates `x`, `y`.
 
-    bins is the number of bins into which the sample is split.
-
-    Returns a function f(x) that approximates y from min(x) to max(x).
+    `bins` is the number of bins into which the sample is split. Returns
+    a function f(x) that approximates y from min(x) to max(x).
 
     Notes
     -----
-
     The sample is split into bins number of sub-samples with evenly
     spaced x values. The median x and y value within each subsample is
     measured, and a cubic spline is drawn through these subsample
     median points.
 
-    x must be sorted lowest -> highest, but need not be evenly spaced.
+    `x` must be sorted lowest -> highest, but need not be evenly spaced.
     """
     x,y = map(np.asarray, (x,y))
     good = ~np.isnan(x)
@@ -177,15 +180,15 @@ def fit_spline(x, y, bins=4, estimator=np.median):
 def splice(co0, co1, i, j, forced=None):
     """ Join two overlapping curves smoothly using a cubic spline.
 
-    Parameters::
-
-    co0, co1: arrays of shape (N,)
+    Parameters
+    ----------
+    co0, co1 : arrays of shape (N,)
       The two curves to be joined. They must have the same length and
       overlap completely.
-    i, j: int
+    i, j : int
       Roughly speaking, co0 values will be retained below i, and co1 values
       will be retained above j.
-    forced: int, optional
+    forced : int, optional
       The number of pixels and continuum values between i and j that
       continuum will be forced to pass through.
 

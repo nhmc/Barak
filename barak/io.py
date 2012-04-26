@@ -16,40 +16,39 @@ def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
     either an input filename or an iterable (e.g. a file object, list
     or iterator).
 
-    Parameters::
-
-     rows: filename or iterable object
-         Input data.
-     sep: str (default `None`)
-         A string used to separate items on a row (also known as a
-         delimiter). Default is None, which means whitespace.
-     usecols: int or tuple of ints, optional
-         Indices of columns to be read. By default all columns are read.
-     comment: str (default `#`)
-         Character marking the start of a comment. 
-     skip: int (default `0`)
-         Number of rows to skip (not counting commented or blank lines)
-         before reading data.
-     arrays: bool (`True`)
-         If True, all columns are converted to Numpy arrays.  If False,
-         columns are returned as lists.
-     names: str or sequence of str (default `None`)
-         If `names` is given and `arrays` is True, the data are placed
-         in a Numpy record array with field names given by `names`. Can
-         also be a single string of comma-separated values.
-     readnames: bool (`False`)
-         If `readnames` is True the first line of the file is read to
-         find the field names. This overrides the `names` keyword.
-     converters: dict (`None`)
-         Functions to apply to each entry of a column. Each (key,value)
-         pair gives the column index (key) and the function to be
-         applied to each entry in that column (value).
+    Parameters
+    ----------
+    rows : filename or iterable object
+        Input data.
+    sep : str (default `None`)
+        A string used to separate items on a row (also known as a
+        delimiter). Default is None, which means whitespace.
+    usecols : int or tuple of ints, optional
+        Indices of columns to be read. By default all columns are read.
+    comment : str (default `#`)
+        Character marking the start of a comment. 
+    skip : int (default `0`)
+        Number of rows to skip (not counting commented or blank lines)
+        before reading data.
+    arrays : bool (`True`)
+        If True, all columns are converted to Numpy arrays.  If False,
+        columns are returned as lists.
+    names : str or sequence of str (default `None`)
+        If `names` is given and `arrays` is True, the data are placed
+        in a Numpy record array with field names given by `names`. Can
+        also be a single string of comma-separated values.
+    readnames : bool (`False`)
+        If `readnames` is True the first line of the file is read to
+        find the field names. This overrides the `names` keyword.
+    converters : dict (`None`)
+        Functions to apply to each entry of a column. Each (key,value)
+        pair gives the column index (key) and the function to be
+        applied to each entry in that column (value).
 
     Returns either structured array or lists.
 
     Examples
     --------
-
     >>> list_of_all_cols = readtxt('filename')
     >>> ninthcol, fifthcol = readtxt('filename', sep=',', usecols=(8,4)])
     >>> firstcol = readtxt('filename', comment='%', usecols=[0])
@@ -167,22 +166,22 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
 
     >>> readtxt(filename, readnames=True)
 
-    Parameters::
-
-     fh:  file object or str
-         The file to be written to.
-     cols: structured array or a list of columns
-         Data to be written.
-     sep: str (' ')
-         A string used to separate items on each row.
-     names: list, string, False or None (None)
-         Column names. Can be a comma-separated string of names. If
-         False, do not print any names. If None and `cols` is a
-         structured array, column names are the array field names.
-     header: str (None)
-         A header written before the data and column names.
-     overwrite: bool (False)
-         If True, overwrite an existing file without prompting.
+    Parameters
+    ----------
+    fh :  file object or str
+        The file to be written to.
+    cols : structured array or a list of columns
+        Data to be written.
+    sep : str (' ')
+        A string used to separate items on each row.
+    names : list, string, False or None (None)
+        Column names. Can be a comma-separated string of names. If
+        False, do not print any names. If None and `cols` is a
+        structured array, column names are the array field names.
+    header : str (None)
+        A header written before the data and column names.
+    overwrite : bool (False)
+        If True, overwrite an existing file without prompting.
     """
     # Open file (checking whether it already exists)
     if isinstance(fh, basestring):
@@ -269,11 +268,14 @@ def writetabfits(filename, rec, units=None, overwrite=True):
     """ Writes a list of numpy arrays or a structured array to a
     binary fits table. Works best with structured arrays.
 
-    Parameters::
-    
-     filename      Filename to write to.
-     rec           Sequence of arrays or record array.
-     units (None)  Sequence of strings giving the units for each column.
+    Parameters
+    ----------
+    filename : str
+      Filename to write to.
+    rec : Sequence of arrays or record array
+      Data to write.
+    units : list of str (default None)
+      Sequence of strings giving the units for each column.
     """
     import pyfits
     
@@ -336,10 +338,12 @@ def loadobj(filename):
 def parse_config(filename, defaults={}):
     """ Read options for a configuration file.
 
-    Parameters::
-
-     filename    the configuration filename
-     defaults    a dictionary with default values for options
+    Parameters
+    ----------
+    filename : str
+      The configuration filename.
+    defaults : dict
+      A dictionary with default values for options.
 
     The options are returned as a dictionary that can also be indexed
     by attribute.
