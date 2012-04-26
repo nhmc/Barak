@@ -46,21 +46,36 @@
         
         
   <h1>Source code for barak.convolve</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Functions related to convolution</span>
+<span class="sd">&quot;&quot;&quot;</span> 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">nan2num</span>
 
 <div class="viewcode-block" id="convolve_psf"><a class="viewcode-back" href="../../generated/barak.convolve.convolve_psf.html#barak.convolve.convolve_psf">[docs]</a><span class="k">def</span> <span class="nf">convolve_psf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fwhm</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="s">&#39;invert&#39;</span><span class="p">,</span> <span class="n">replace_nan</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Given an array of values `a` and a gaussian full width at half</span>
+    <span class="sd">&quot;&quot;&quot; Convolve an array with a gaussian window.</span>
+
+<span class="sd">    Given an array of values `a` and a gaussian full width at half</span>
 <span class="sd">    maximum `fwhm` in pixel units, returns the convolution of the</span>
 <span class="sd">    array with the normalised gaussian.</span>
 
-<span class="sd">    Gaussian is calculated for as many pixels required until it drops</span>
-<span class="sd">    to 1% of peak value. Note that the data will be spoiled at</span>
-<span class="sd">    distances n/2 (rounding down) from the edges, where n is width of</span>
-<span class="sd">    the gaussian in pixels.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array, shape(N,)</span>
+<span class="sd">      Array to convolve</span>
+<span class="sd">    fwhm : float</span>
+<span class="sd">      Gaussian full width at half maximum in pixels. This should be &gt; 2</span>
+<span class="sd">      to sample the gaussian PSF properly.</span>
 
-<span class="sd">    The FWHM given should be &gt; 2 pixels to sample the gaussian PSF</span>
-<span class="sd">    properly.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    convolved_a : array, shape (N,)</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Gaussian kernel xis calculated for as many pixels required</span>
+<span class="sd">    until it drops to 1% of its peak value. Note that the data will be</span>
+<span class="sd">    spoiled at distances n/2 (rounding down) from the edges, where n</span>
+<span class="sd">    is the width of the Gaussian in pixels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">const2</span>   <span class="o">=</span> <span class="mf">2.354820046</span>             <span class="c"># 2*sqrt(2*ln(2))</span>
     <span class="n">const100</span> <span class="o">=</span> <span class="mf">3.034854259</span>             <span class="c"># sqrt(2*ln(100))</span>
@@ -79,15 +94,27 @@
     <span class="k">return</span> <span class="n">convolve_window</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">gauss</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="n">edge</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="convolve_window"><a class="viewcode-back" href="../../generated/barak.convolve.convolve_window.html#barak.convolve.convolve_window">[docs]</a><span class="k">def</span> <span class="nf">convolve_window</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="s">&#39;invert&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Convolve `a` with a window array. The window array should have</span>
-<span class="sd">    an odd number of elements.</span>
+    <span class="sd">&quot;&quot;&quot; Convolve an array with an arbitrary window.</span>
 
-<span class="sd">    The edges of `a` are extended by reflection (and, if requested,</span>
-<span class="sd">    inversion) to reduce edge effects.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array, shape (N,)</span>
+<span class="sd">    window : array, shape (M,)</span>
+<span class="sd">      The window array should have an odd number of elements.</span>
+<span class="sd">    edge : {&#39;invert&#39;, &#39;reflect&#39;, &#39;extend&#39;} or int  (default &#39;invert&#39;)    </span>
+<span class="sd">      How to mitigate edge effects. If &#39;invert&#39;, the edges of `a` are</span>
+<span class="sd">      extended by inversion, similarly for reflection. &#39;extend&#39; means</span>
+<span class="sd">      the intial and final points are replicated to extend the</span>
+<span class="sd">      array. An integer value means take the median of that many</span>
+<span class="sd">      points at each end and extend by replicating the median value.</span>
 
-<span class="sd">    edge = {&#39;extend&#39;, &#39;reflect&#39;, &#39;invert&#39;} or an integer</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    convolved_a : array, shape (N,)</span>
 
-<span class="sd">    The window is normalised.</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The window is normalised before convolution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">npts</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
@@ -110,7 +137,7 @@
         <span class="n">temp1</span> <span class="o">=</span>  <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="nb">int</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown value for edge keyword: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">edge</span><span class="p">)</span>
         <span class="n">med1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="n">edge</span><span class="p">])</span>

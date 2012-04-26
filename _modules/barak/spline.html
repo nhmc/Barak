@@ -46,6 +46,8 @@
         
         
   <h1>Source code for barak.spline</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Spline-related functions.</span>
+<span class="sd">&quot;&quot;&quot;</span> 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span>
 
@@ -55,14 +57,17 @@
 <span class="sd">    Instantiate the class with two arrays of points: x and</span>
 <span class="sd">    y = f(x).</span>
 
-<span class="sd">    Inputs:</span>
-
-<span class="sd">    x                 : array of x values</span>
-<span class="sd">    y                 : array of y values (y = f(x))</span>
-<span class="sd">    firstderiv = None : derivative of f(x) at x[0]</span>
-<span class="sd">    lastderiv  = None : derivative of f(x) at x[-1]</span>
-<span class="sd">    nochecks = False  : if False, check the x array is sorted and</span>
-<span class="sd">                        unique. Set to True for increased speed.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x, y : arrays of floats, shape (N,)</span>
+<span class="sd">      x and y = f(x).</span>
+<span class="sd">    firstderiv : float (None)</span>
+<span class="sd">      Derivative of f(x) at x[0]</span>
+<span class="sd">    lastderiv : float (None)</span>
+<span class="sd">      Derivative of f(x) at x[-1]</span>
+<span class="sd">    nochecks : bool (False)</span>
+<span class="sd">      If False, check the x array is sorted and unique. Set to True</span>
+<span class="sd">      for increased speed.</span>
 
 <span class="sd">    After initialisation, the instance can be called with an array of</span>
 <span class="sd">    values xp, and will return the cubic-spline interpolated values</span>
@@ -77,10 +82,6 @@
 
 <span class="sd">    The spline generation is based on the NR algorithms (but not their</span>
 <span class="sd">    routines.)</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="InterpCubicSpline.__init__"><a class="viewcode-back" href="../../generated/barak.spline.InterpCubicSpline.__init__.html#barak.spline.InterpCubicSpline.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">firstderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -142,12 +143,14 @@
 <span class="sd">        function y = f(x) for each value in array x. This is called by</span>
 <span class="sd">        __init__() when a new class instance is created.</span>
 
-<span class="sd">        optional inputs:</span>
-
-<span class="sd">        firstderiv = None : 1st derivative of f(x) at x[0].  If None,</span>
-<span class="sd">                             then 2nd derivative is set to 0 (&#39;natural&#39;).</span>
-<span class="sd">        lastderiv  = None : 1st derivative of f(x) at x[-1].  If None,</span>
-<span class="sd">                             then 2nd derivative is set to 0 (&#39;natural&#39;).</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        firstderiv : float, (None)</span>
+<span class="sd">          1st derivative of f(x) at x[0].  If None, then 2nd</span>
+<span class="sd">          derivative is set to 0 (&#39;natural&#39;).</span>
+<span class="sd">        lastderiv : float (None)</span>
+<span class="sd">          1st derivative of f(x) at x[-1].  If None, then 2nd</span>
+<span class="sd">          derivative is set to 0 (&#39;natural&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>  <span class="k">print</span> <span class="s">&#39;first deriv,last deriv&#39;</span><span class="p">,</span><span class="n">firstderiv</span><span class="p">,</span><span class="n">lastderiv</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">npts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span>
@@ -188,11 +191,10 @@
     <span class="k">return</span> <span class="n">spl</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="fit_spline"><a class="viewcode-back" href="../../generated/barak.spline.fit_spline.html#barak.spline.fit_spline">[docs]</a><span class="k">def</span> <span class="nf">fit_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Find a smooth function that approximates the points x, y.</span>
+    <span class="sd">&quot;&quot;&quot; Find a smooth function that approximates `x`, `y`.</span>
 
-<span class="sd">    bins is the number of bins into which the sample is split.</span>
-
-<span class="sd">    Returns a function f(x) that approximates y from min(x) to max(x).</span>
+<span class="sd">    `bins` is the number of bins into which the sample is split. Returns</span>
+<span class="sd">    a function f(x) that approximates y from min(x) to max(x).</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -201,7 +203,7 @@
 <span class="sd">    measured, and a cubic spline is drawn through these subsample</span>
 <span class="sd">    median points.</span>
 
-<span class="sd">    x must be sorted lowest -&gt; highest, but need not be evenly spaced.</span>
+<span class="sd">    `x` must be sorted lowest -&gt; highest, but need not be evenly spaced.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
     <span class="n">good</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -226,19 +228,19 @@
 <div class="viewcode-block" id="splice"><a class="viewcode-back" href="../../generated/barak.spline.splice.html#barak.spline.splice">[docs]</a><span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="n">co0</span><span class="p">,</span> <span class="n">co1</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">forced</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Join two overlapping curves smoothly using a cubic spline.</span>
 
-<span class="sd">    co0, co1: arrays of shape (N,)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    co0, co1 : arrays of shape (N,)</span>
 <span class="sd">      The two curves to be joined. They must have the same length and</span>
 <span class="sd">      overlap completely.</span>
-
-<span class="sd">    i, j: int</span>
+<span class="sd">    i, j : int</span>
 <span class="sd">      Roughly speaking, co0 values will be retained below i, and co1 values</span>
 <span class="sd">      will be retained above j.</span>
-
-<span class="sd">    forced: int, optional</span>
+<span class="sd">    forced : int, optional</span>
 <span class="sd">      The number of pixels and continuum values between i and j that</span>
 <span class="sd">      continuum will be forced to pass through.</span>
 
-<span class="sd">    Returns:  the new continuum array with shape (N,).</span>
+<span class="sd">    Returns the new continuum array of shape (N,).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># go npix to either side of the joining point, and measure slopes</span>
     <span class="n">newco</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">co0</span><span class="p">)</span>

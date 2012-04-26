@@ -46,6 +46,9 @@
         
         
   <h1>Source code for barak.absorb</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; This module has routines for analysing the absorption profiles</span>
+<span class="sd">from ions and molecules.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span>
 
@@ -65,20 +68,38 @@
 <span class="sd">    space. v is an array of velocity values in km/s. The absorption</span>
 <span class="sd">    line must be centred at v=0.</span>
 
-<span class="sd">    optional keywords:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : array of floats, shape (N,)</span>
+<span class="sd">      velocities</span>
+<span class="sd">    wav0 : float</span>
+<span class="sd">      Rest wavelength opf transition in Angstroms.</span>
+<span class="sd">    osc : float</span>
+<span class="sd">      Oscillator strength of transition.</span>
+<span class="sd">    gam : float</span>
+<span class="sd">      Gamma parameter for the transition.</span>
+<span class="sd">    logN : float:</span>
+<span class="sd">      log10 of the column density in absorbers per cm^2.</span>
+<span class="sd">    btemp : float (20)</span>
+<span class="sd">      *b* parameter from doppler temperature broadening (km/s)</span>
+<span class="sd">    bturb : float (0)</span>
+<span class="sd">      *b* parameter from doppler turbulent broadening (km/s)</span>
+<span class="sd">    T : float (None)</span>
+<span class="sd">      Temperature of cloud in Kelvin (overrides btemp).</span>
 
-<span class="sd">    btemp = b parameter from doppler temperature broadening (km/s)</span>
-
-<span class="sd">    bturb = b parameter from doppler turbulent broadening (km/s)</span>
-
-<span class="sd">    T = temperature of cloud in Kelvin (overrides btemp).</span>
-
-<span class="sd">    Warning</span>
+<span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    deltav must be small enough to properly sample the profile,</span>
-<span class="sd">    otherwise you&#39;ll get nonsense!</span>
+<span class="sd">    tau : array of floats, shape (N,)</span>
+<span class="sd">      The optical depth as a function of v</span>
 
-<span class="sd">    Can also map the velocity array to some wavelength:</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The step size for `v` must be small enough to properly</span>
+<span class="sd">    sample the profile.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To map the velocity array to some wavelength:</span>
 
 <span class="sd">    &gt;&gt;&gt; z = 3.0</span>
 <span class="sd">    &gt;&gt;&gt; wa = wav0 * (1 + z) * (1 + v/c_kms)</span>
@@ -131,30 +152,35 @@
     <span class="n">tau</span> <span class="o">=</span> <span class="n">const</span><span class="o">*</span><span class="n">N</span><span class="o">*</span><span class="n">osc</span><span class="o">*</span><span class="n">wav0</span> <span class="o">/</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">vp</span> <span class="c"># dimensionless</span>
 
     <span class="k">return</span> <span class="n">tau</span>
-
 </div>
 <div class="viewcode-block" id="calc_iontau"><a class="viewcode-back" href="../../generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau">[docs]</a><span class="k">def</span> <span class="nf">calc_iontau</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">ion</span><span class="p">,</span> <span class="n">zp1</span><span class="p">,</span> <span class="n">logN</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxdv</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span>
                 <span class="n">label_tau_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns tau values at each wavelength for transitions in ion.</span>
 
-<span class="sd">    Input</span>
-<span class="sd">    -----</span>
-<span class="sd">    wa:        wavelength array</span>
-<span class="sd">    ion:       ion entry from readatom output dictionary</span>
-<span class="sd">    zp1:       redshift + 1</span>
-<span class="sd">    logN:      log10(column density in cm**-2)</span>
-<span class="sd">    b:         b parameter (km/s).  Assumes thermal broadening.</span>
-<span class="sd">    maxdv(1000): For performance reasons, only calculate the Voigt</span>
-<span class="sd">                 profile for a single line to +/- maxdv.  Increase</span>
-<span class="sd">                 this if you expect DLA-type extended wings. None for</span>
-<span class="sd">                 no maximum.</span>
-<span class="sd">    vpad(500): Include transitions that are within vpad km/s of either</span>
-<span class="sd">               edge of the wavelength array.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wa : array of floats</span>
+<span class="sd">      wavelength array</span>
+<span class="sd">    ion : atom.data entry</span>
+<span class="sd">      ion entry from readatom output dictionary</span>
+<span class="sd">    zp1 : float</span>
+<span class="sd">      redshift + 1</span>
+<span class="sd">    logN : float</span>
+<span class="sd">      log10(column density in cm**-2)</span>
+<span class="sd">    b : float</span>
+<span class="sd">      b parameter (km/s).  Assumes thermal broadening.</span>
+<span class="sd">    maxdv : float (default 1000)</span>
+<span class="sd">      For performance reasons, only calculate the Voigt profile for a</span>
+<span class="sd">      single line to +/- maxdv.  Increase this if you expect DLA-type</span>
+<span class="sd">      extended wings. None for no maximum.</span>
+<span class="sd">    vpad : float (default 500)</span>
+<span class="sd">      Include transitions that are within vpad km/s of either edge of</span>
+<span class="sd">      the wavelength array.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tau: ndarray of optical depth values.</span>
-
+<span class="sd">    tau : array of floats</span>
+<span class="sd">      Array of optical depth values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">zp1</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
@@ -226,25 +252,36 @@
 <div class="viewcode-block" id="calc_Wr"><a class="viewcode-back" href="../../generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr">[docs]</a><span class="k">def</span> <span class="nf">calc_Wr</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">ew</span><span class="p">,</span> <span class="n">ewer</span><span class="p">,</span> <span class="n">tr</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find the rest equivalent width of a feature, and column</span>
 <span class="sd">    density assuming optically thin.</span>
-<span class="sd">    </span>
-<span class="sd">    i0, i1: start and end indices of feature (inclusive)</span>
-<span class="sd">    wa: wavelength array (observed wavelengths)</span>
-<span class="sd">    ew: array of equivalent width per pixel</span>
-<span class="sd">    ewer: array of equivalent width 1 sigma error per pixel</span>
-<span class="sd">    tr: transition entry from an atom.dat array read by pyvpfit.readatom(),</span>
-<span class="sd">        with attributes wav (rest wavelength) and osc (oscillator strength).</span>
 
-<span class="sd">    returns a dictionary with:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    i0, i1 : int</span>
+<span class="sd">      Start and end indices of feature (inclusive).</span>
+<span class="sd">    wa : array of floats, shape (N,)</span>
+<span class="sd">      Observed wavelengths.</span>
+<span class="sd">    ew : array of floats, shape (N,)</span>
+<span class="sd">      Equivalent width per pixel.</span>
+<span class="sd">    ewer : array of floats, shape (N,)</span>
+<span class="sd">      Equivalent width 1 sigma error per pixel.</span>
+<span class="sd">    tr : atom.dat entry</span>
+<span class="sd">      Transition entry from an atom.dat array read by pyvpfit.readatom(),</span>
+<span class="sd">      with attributes wav (rest wavelength) and osc (oscillator strength).</span>
 
-<span class="sd">    logN:     1 sigma low val, value, 1 sigma upper val)</span>
-<span class="sd">    Ndetlim:  log N 5 sigma upper limit</span>
-<span class="sd">    Wr:       Rest equivalent width in same units as wa</span>
-<span class="sd">    Wre:      1 sigma error on rest equivalent width</span>
-<span class="sd">    zp1:      1 + redshift</span>
-<span class="sd">    ngoodpix: number of good pixels contributing to the measurements </span>
-<span class="sd">    Nmult:    multiplier to get from equivalent width to column density</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A dictionary with keys:</span>
+
+<span class="sd">    ======== =========================================================</span>
+<span class="sd">    logN     1 sigma low val, value, 1 sigma upper val</span>
+<span class="sd">    Ndetlim  log N 5 sigma upper limit</span>
+<span class="sd">    Wr       Rest equivalent width in same units as wa</span>
+<span class="sd">    Wre      1 sigma error on rest equivalent width</span>
+<span class="sd">    zp1      1 + redshift</span>
+<span class="sd">    ngoodpix number of good pixels contributing to the measurements </span>
+<span class="sd">    Nmult    multiplier to get from equivalent width to column density</span>
+<span class="sd">    ======== =========================================================</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    
     <span class="n">ew1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ew</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">ewer1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ewer</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">wa1</span> <span class="o">=</span> <span class="n">wa</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
@@ -272,7 +309,7 @@
 </div>
 <div class="viewcode-block" id="getT"><a class="viewcode-back" href="../../generated/barak.absorb.getT.html#barak.absorb.getT">[docs]</a><span class="k">def</span> <span class="nf">getT</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">bvals</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert b parameters (km/s) to a temperature in K for an atom</span>
-<span class="sd">    with mass (amu) amu.</span>
+<span class="sd">    with mass amu.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">bvals</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e5</span>

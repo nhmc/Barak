@@ -46,8 +46,7 @@
         
         
   <h1>Source code for barak.plot</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot; Plotting routines.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot; Plotting routines. &quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -77,11 +76,17 @@
     <span class="sd">&quot;&quot;&quot; Fill vertical regions defined by a sequence of (left, right)</span>
 <span class="sd">    positions.</span>
 
-<span class="sd">    xvals: sequence of pairs specifying the left and right extent of</span>
-<span class="sd">    each region. e.g. (3,4) or [(0,1),(3,4)]</span>
-<span class="sd">    ax=None: the axis to plot regions on.  default is the current axis.</span>
-<span class="sd">    color=&#39;g&#39;: color of the regions.</span>
-<span class="sd">    alpha=0.3: the opacity of the regions (1=opaque)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xvals: list</span>
+<span class="sd">      Sequence of pairs specifying the left and right extent of each</span>
+<span class="sd">      region. e.g. (3,4) or [(0,1),(3,4)]</span>
+<span class="sd">    ax : matplotlib axes instance (default is the current axes)</span>
+<span class="sd">      The axes to plot regions on.</span>
+<span class="sd">    color : mpl colour (default &#39;g&#39;)</span>
+<span class="sd">      Color of the regions.</span>
+<span class="sd">    alpha : float (default 0.3)</span>
+<span class="sd">      Opacity of the regions (1=opaque).</span>
 
 <span class="sd">    Other keywords arguments are passed to PolyCollection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -141,24 +146,27 @@
 
 <span class="sd">    Similar to a boxplot.</span>
 
-<span class="sd">    vals: sequence of arrays</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    vals : sequence of arrays</span>
 <span class="sd">        2-d array or a sequence of 1-d arrays.</span>
-<span class="sd">    xvals: array of floats</span>
+<span class="sd">    xvals : array of floats</span>
 <span class="sd">        x positions.</span>
-<span class="sd">    perc: array of floats  (68, 95)</span>
+<span class="sd">    perc : array of floats  (68, 95)</span>
 <span class="sd">        The percentile levels to use for area shading. Defaults show</span>
 <span class="sd">        the 68% and 95% percentile levels; roughly 1 and 2</span>
 <span class="sd">        sigma ranges for a Gaussian distribution.</span>
-<span class="sd">    showmean: boolean  (False)</span>
+<span class="sd">    showmean : boolean  (False)</span>
 <span class="sd">        Whether to show the means as a dashed black line.</span>
-<span class="sd">    showoutliers: boolean (False)</span>
+<span class="sd">    showoutliers : boolean (False)</span>
 <span class="sd">        Whether to show outliers past the highest percentile range.</span>
-<span class="sd">    color: mpl color (&#39;forestgreen&#39;)</span>
-<span class="sd">    ax: mpl Axes object</span>
+<span class="sd">    color : mpl color (&#39;forestgreen&#39;)</span>
+<span class="sd">    ax : mpl Axes object</span>
 <span class="sd">        Plot to this mpl Axes instance.</span>
-<span class="sd">    logx, logy: bool (False)</span>
+<span class="sd">    logx, logy : bool (False)</span>
 <span class="sd">        Whether to use a log x or y axis.</span>
-<span class="sd">    negval: float (None)</span>
+<span class="sd">    negval : float (None)</span>
 <span class="sd">        If using a log y axis, replace negative plotting values with</span>
 <span class="sd">        this value (by default it chooses a suitable value based on</span>
 <span class="sd">        the data values).</span>
@@ -250,9 +258,11 @@
             <span class="n">ecolor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">elw</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nonposval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Plot a graph with y errors.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    x, y: arrays of shape (N,)</span>
 <span class="sd">        Data.</span>
-<span class="sd">    yerrs: array of shape (N,) or shape(N,2)</span>
+<span class="sd">    yerrs: array of shape (N,) or shape (N,2)</span>
 <span class="sd">        Either an array with the same length y, or a list of two such</span>
 <span class="sd">        arrays, giving lower and upper limits to plot.</span>
 <span class="sd">    xerrs:</span>
@@ -316,16 +326,6 @@
             <span class="n">col2</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">zorder</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ax</span>
-</div>
-<div class="viewcode-block" id="test_distplot"><a class="viewcode-back" href="../../generated/barak.plot.test_distplot.html#barak.plot.test_distplot">[docs]</a><span class="k">def</span> <span class="nf">test_distplot</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">showoutliers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;points&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">showmean</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-
-
 </div>
 <div class="viewcode-block" id="dhist"><a class="viewcode-back" href="../../generated/barak.plot.dhist.html#barak.plot.dhist">[docs]</a><span class="k">def</span> <span class="nf">dhist</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">xbins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ybins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
           <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s">&#39;right,bottom&#39;</span><span class="p">,</span> <span class="n">xhistmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">yhistmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>

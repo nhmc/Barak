@@ -94,6 +94,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+
 <span class="sd">    &gt;&gt;&gt; print find_wa_edges([1, 2.1, 3.3, 4.6])</span>
 <span class="sd">    [ 0.45  1.55  2.7   3.95  5.25]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -122,28 +123,41 @@
 <div class="viewcode-block" id="Spectrum"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.html#barak.spec.Spectrum">[docs]</a><span class="k">class</span> <span class="nc">Spectrum</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A class to hold information about a spectrum.</span>
 <span class="sd">    </span>
-<span class="sd">    wa:       array of wavelength values (overrides all wavelength keywords)</span>
-<span class="sd">    fl:       array of flux values</span>
-<span class="sd">    er:       array of error (same units as flux) values</span>
-<span class="sd">    co:       array of continuum values</span>
-<span class="sd">    dw:       Wavelength difference between adjacent pixel centres</span>
-<span class="sd">    dv:       Velocity difference (km/s) (overrides wdelt keyword)</span>
-<span class="sd">    fwhm:     instrumental FWHM in km/s</span>
-<span class="sd">    filename: filename of spectrum</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wa : array of floats, shape(N,)</span>
+<span class="sd">      Wavelength values (overrides all wavelength keywords)</span>
+<span class="sd">    fl : array of floats, shape(N,)</span>
+<span class="sd">      Flux.</span>
+<span class="sd">    er : array of floats, shape(N,)</span>
+<span class="sd">      Error.</span>
+<span class="sd">    co : array of floats, shape(N,)</span>
+<span class="sd">      Continuum.</span>
+<span class="sd">    dw : float</span>
+<span class="sd">      Wavelength difference between adjacent pixel centres.</span>
+<span class="sd">    dv : float</span>
+<span class="sd">      Velocity difference (km/s)</span>
+<span class="sd">    fwhm : float</span>
+<span class="sd">      Instrumental FWHM in km/s</span>
+<span class="sd">    filename : str</span>
+<span class="sd">      Filename of spectrum</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
 <span class="sd">    If enough information is given, the wavelength scale will be</span>
 <span class="sd">    generated.  Note that there is no error check if you give</span>
 <span class="sd">    conflicting wavelength scale information in the keywords!  In this</span>
 <span class="sd">    case certain combinations of keywords take precendence.  See the</span>
 <span class="sd">    code comments for details.</span>
 
-<span class="sd">    Notes for FITS header:</span>
+<span class="sd">    Notes for FITS header::</span>
 <span class="sd">    </span>
-<span class="sd">    wstart = CRVAL - (CRPIX - 1.0) * CDELT,  dw = CDELT</span>
+<span class="sd">     wstart = CRVAL - (CRPIX - 1.0) * CDELT,  dw = CDELT</span>
 
-<span class="sd">    Conversion between velocity width and log-linear pixel width:</span>
+<span class="sd">    Conversion between velocity width and log-linear pixel width::</span>
 <span class="sd">    </span>
-<span class="sd">    dv / c_kms = 1 - 10**(-dw)</span>
+<span class="sd">     dv / c_kms = 1 - 10**(-dw)</span>
+
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -246,11 +260,10 @@
         <span class="k">return</span> <span class="s">&#39;Spectrum(wa, fl, er, co, dw, dv, fwhm, filename)&#39;</span>
 </div>
 <div class="viewcode-block" id="Spectrum.multiply"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.multiply.html#barak.spec.Spectrum.multiply">[docs]</a>    <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Multipy the flux, error and continuum by `val`.</span>
+<span class="sd">        </span>
 <span class="sd">        &gt;&gt;&gt; sp = Spectrum(wstart=4000, dw=1, npts=500, fl=np.ones(500))</span>
 <span class="sd">        &gt;&gt;&gt; sp.multiply(2)</span>
-<span class="sd">        &gt;&gt;&gt; np.allclose(sp.fl, 2 * np.ones(500))</span>
-<span class="sd">        True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fl</span> <span class="o">*=</span> <span class="n">val</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">er</span> <span class="o">*=</span> <span class="n">val</span>
@@ -259,7 +272,7 @@
 <div class="viewcode-block" id="Spectrum.plot"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.plot.html#barak.spec.Spectrum.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">yperc</span><span class="o">=</span><span class="mf">0.98</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
              <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;steps-mid&#39;</span><span class="p">,</span>
              <span class="n">flcolor</span><span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="n">cocolor</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Plots spectrum.</span>
+        <span class="sd">&quot;&quot;&quot; Plots a spectrum.</span>
 
 <span class="sd">        Returns the matplotlib artists that represent the flux, error</span>
 <span class="sd">        and continuum curves.        </span>
@@ -273,10 +286,10 @@
         <span class="sd">&quot;&quot;&quot;Calculates statistics (mean, standard deviation (i.e. RMS), mean</span>
 <span class="sd">        error, etc) of the flux between two wavelength points.</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        mean flux, RMS of flux, mean error, SNR:</span>
-<span class="sd">           SNR = (mean flux / RMS)</span>
+<span class="sd">        Returns::</span>
+<span class="sd">        </span>
+<span class="sd">         mean flux, RMS of flux, mean error, SNR:</span>
+<span class="sd">            SNR = (mean flux / RMS)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">([</span><span class="n">wa1</span><span class="p">,</span> <span class="n">wa2</span><span class="p">])</span>
         <span class="n">fl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span>
@@ -304,13 +317,13 @@
         <span class="k">return</span> <span class="n">rebin_simple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">er</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">co</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
     </div>
 <div class="viewcode-block" id="Spectrum.write"><a class="viewcode-back" href="../../generated/barak.spec.Spectrum.write.html#barak.spec.Spectrum.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Writes out a spectrum, as ascii for now - wavelength,</span>
-<span class="sd">        flux, error, continuum.</span>
+        <span class="sd">&quot;&quot;&quot; Writes out a spectrum, as ascii - wavelength, flux, error,</span>
+<span class="sd">        continuum.</span>
 
-<span class="sd">        Keyword overwrite can be True or False.</span>
+<span class="sd">        `overwrite` can be True or False.</span>
 
-<span class="sd">        header is a string to be written to the file before the</span>
-<span class="sd">        spectrum. A special case is header=&#39;RESVEL&#39;, which means the</span>
+<span class="sd">        `header` is a string to be written to the file before the</span>
+<span class="sd">        spectrum. A special case is `header=&#39;RESVEL&#39;`, which means the</span>
 <span class="sd">        instrumental fwhm in km/s will be written on the first line</span>
 <span class="sd">        (VPFIT style).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -344,10 +357,14 @@
 <div class="viewcode-block" id="read"><a class="viewcode-back" href="../../generated/barak.spec.read.html#barak.spec.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s">&#39;#&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads in QSO spectrum given a filename.  Returns a Spectrum class</span>
-<span class="sd">    object.</span>
+<span class="sd">    object:</span>
 
-<span class="sd">    comment = &#39;#&#39; :  String that marks beginning of comment line,</span>
-<span class="sd">                     only used when reading in ascii files</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">    comment : str (&#39;#&#39;)</span>
+<span class="sd">      String that marks beginning of comment line, only used when</span>
+<span class="sd">      reading in ascii files</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;gz&#39;</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">gzip</span>
@@ -523,8 +540,6 @@
 <div class="viewcode-block" id="rebin_simple"><a class="viewcode-back" href="../../generated/barak.spec.rebin_simple.html#barak.spec.rebin_simple">[docs]</a><span class="k">def</span> <span class="nf">rebin_simple</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">,</span> <span class="n">er</span><span class="p">,</span> <span class="n">co</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Bins up the spectrum by averaging the values of every n</span>
 <span class="sd">    pixels. Not very accurate, but much faster than rebin().</span>
-
-<span class="sd">    TODO: re-write using masked arrays to preserve masked values.</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">remain</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">None</span>
     <span class="n">wa</span> <span class="o">=</span> <span class="n">wa</span><span class="p">[:</span><span class="n">remain</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
@@ -548,8 +563,8 @@
 <span class="sd">    Accepts the same keywords as Spectrum.__init__() (see that</span>
 <span class="sd">    docstring for a description of those keywords)</span>
 
-<span class="sd">    Note - will probably get the flux and errors for the first and</span>
-<span class="sd">    last pixel of the rebinned spectrum wrong.</span>
+<span class="sd">    Will probably get the flux and errors for the first and last pixel</span>
+<span class="sd">    of the rebinned spectrum wrong.</span>
 
 <span class="sd">    General pointers about rebinning if you care about errors in the</span>
 <span class="sd">    rebinned values:</span>
@@ -681,7 +696,6 @@
 <span class="sd">    width in the input spectra. If this is not what you want, rebin</span>
 <span class="sd">    the spectra by hand with rebin() before using combine().</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="n">cliphi</span><span class="p">,</span> <span class="n">cliplo</span><span class="p">,</span> <span class="n">s_rebinned</span><span class="p">):</span>
         <span class="c"># clip the rebinned input spectra</span>
 
@@ -822,12 +836,16 @@
     <span class="sd">&quot;&quot;&quot; interpolate across features that have widths smaller than the</span>
 <span class="sd">    expected fwhm resolution.</span>
 
-<span class="sd">    fwhm: int, resolution fwhm in pixels</span>
-<span class="sd">    fl: flux array</span>
-<span class="sd">    er: error array</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fwhm: int</span>
+<span class="sd">      Resolution fwhm in pixels</span>
+<span class="sd">    fl : array of floats, shape (N,)</span>
+<span class="sd">      Flux</span>
+<span class="sd">    er : array of floats, shape (N,)</span>
+<span class="sd">      Error</span>
 
-<span class="sd">    returns</span>
-<span class="sd">    fl,er: interpolated fl, er arrays</span>
+<span class="sd">    Returns the interpolated flux and error arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fl</span><span class="p">,</span> <span class="n">er</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">fl</span><span class="p">,</span> <span class="n">er</span><span class="p">))</span>
     <span class="c"># interpolate over bad pixels </span>
@@ -850,8 +868,9 @@
 <span class="sd">    Errors are just used to identify bad pixels, if they are all &gt; 0</span>
 <span class="sd">    they are ignored.</span>
 
-<span class="sd">    mask is optional, and of the form [(3500,4500), (4650,4680)] to mask</span>
-<span class="sd">    wavelengths from 3500 to 4500 Ang, and 4650 to 4680 Ang, etc.</span>
+<span class="sd">    `mask` is optional, and of the form `[(3500,4500), (4650,4680)]`</span>
+<span class="sd">    to mask wavelengths from 3500 to 4500 Ang, and 4650 to 4680 Ang</span>
+<span class="sd">    for example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">w0</span><span class="p">,</span><span class="n">f0</span><span class="p">,</span><span class="n">e0</span><span class="p">,</span><span class="n">w1</span><span class="p">,</span><span class="n">f1</span><span class="p">,</span><span class="n">e1</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">,</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span><span class="n">f0</span><span class="p">,</span><span class="n">e0</span><span class="p">,</span><span class="n">w1</span><span class="p">,</span><span class="n">f1</span><span class="p">,</span><span class="n">e1</span><span class="p">])</span>
     <span class="n">masked0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w0</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
@@ -883,10 +902,10 @@
 <span class="sd">    good regions overlap, regions close to the overlap are searched</span>
 <span class="sd">    for.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    scale_factor : float</span>
-<span class="sd">        Multiply spectrum 1 by scale_factor to match spectrum 0.</span>
+<span class="sd">    Returns::</span>
+
+<span class="sd">     scale_factor : float</span>
+<span class="sd">         Multiply spectrum 1 by scale_factor to match spectrum 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
    <span class="c"># find overlapping regions</span>
@@ -932,12 +951,13 @@
     <span class="sd">&quot;&quot;&quot; Draw vertical dotted lines showing expected positions of</span>
 <span class="sd">    absorption and emission lines, given a redshift.</span>
 
-<span class="sd">    atmos: list of wavelength pairs or True (None) Regions of</span>
-<span class="sd">           atmospheric absorption to plot. If True, it uses an</span>
-<span class="sd">           internal list of regions taken from aaomega spectra.</span>
-
-<span class="sd">    lines: If given, it must be a record array with fields &#39;name&#39; and &#39;wa&#39;.</span>
-<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atmos : list of float pairs, or True (None)</span>
+<span class="sd">      Regions of atmospheric absorption to plot. If True, it uses an</span>
+<span class="sd">      internal list of regions.</span>
+<span class="sd">    lines : stuctured array, optional</span>
+<span class="sd">      If given, it must be a record array with fields &#39;name&#39; and &#39;wa&#39;.</span>
 
 <span class="sd">    Returns the mpl artists representing the lines.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1165,8 +1185,14 @@
     <span class="sd">&quot;&quot;&quot; Make qso continua using the PCA and weights from N. Suzuki et</span>
 <span class="sd">    al. 2005 and N. Suzuki 2006.</span>
 
-<span class="sd">    Input:   nspec (int), number of spectra to create</span>
-<span class="sd">    Returns: wavelength (shape N), array of spectra [shape (nspec, N)]</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nspec : int</span>
+<span class="sd">      Number of spectra to create</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wavelength (shape N), array of spectra [shape (nspec, N)]</span>
 
 <span class="sd">    Memory use might be prohibitive for nspec &gt; ~1e4.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1293,28 +1319,24 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fl, wa: arrays of floats, length N</span>
-<span class="sd">        The array to be convolved and its wavelengths.</span>
-
-<span class="sd">    vfwhm: float, optional</span>
-<span class="sd">        Full width at half maximum in velocity space (km/s) of the</span>
-<span class="sd">        gaussian kernel with which to convolve `fl`.</span>
-
-<span class="sd">    npix: float, default 4</span>
-<span class="sd">        Number of pixels corresponding to `vfwhm` in `wa_dv` if given,</span>
-<span class="sd">        otherwise `wa` is interpolated to an array with velocity pixel</span>
-<span class="sd">        width = vfwhm / npix.</span>
-<span class="sd">        </span>
-<span class="sd">    wa_dv: array of floats, default `None`</span>
-<span class="sd">        Wavelength array with a constant velocity width (this can be</span>
-<span class="sd">        generated with make_constant_dv_wa_scale()).</span>
-
+<span class="sd">    fl, wa : arrays of floats, length N</span>
+<span class="sd">      The array to be convolved and its wavelengths.</span>
+<span class="sd">    vfwhm : float, optional</span>
+<span class="sd">      Full width at half maximum in velocity space (km/s) of the</span>
+<span class="sd">      gaussian kernel with which to convolve `fl`.</span>
+<span class="sd">    npix : float, default 4</span>
+<span class="sd">      Number of pixels corresponding to `vfwhm` in `wa_dv` if given,</span>
+<span class="sd">      otherwise `wa` is interpolated to an array with velocity pixel</span>
+<span class="sd">      width = vfwhm / npix.</span>
+<span class="sd">    wa_dv : array of floats, default `None`</span>
+<span class="sd">      Wavelength array with a constant velocity width (this can be</span>
+<span class="sd">      generated with make_constant_dv_wa_scale()).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    fl_out: array of length N</span>
-<span class="sd">        fl convolved with the gaussian kernel with the specified FWHM.</span>
-<span class="sd">    </span>
+<span class="sd">    fl_out : array of length N</span>
+<span class="sd">      fl convolved with the gaussian kernel with the specified FWHM.</span>
+<span class="sd">     </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># interpolate to the log-linear scale, convolve, then</span>
     <span class="c"># interpolate back again.</span>

@@ -46,7 +46,7 @@
         
         
   <h1>Source code for barak.voigt</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot; Dxifferent ways to calculate the Voigt function.</span>
+<span class="sd">&quot;&quot;&quot; A fast implementation of the Voigt function.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -1064,16 +1064,17 @@
 
 
 <div class="viewcode-block" id="voigt_wofz"><a class="viewcode-back" href="../../generated/barak.voigt.voigt_wofz.html#barak.voigt.voigt_wofz">[docs]</a><span class="k">def</span> <span class="nf">voigt_wofz</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Compute the Voigt function.</span>
+    <span class="sd">&quot;&quot;&quot; Compute the Voigt function using Scipy&#39;s wofz().</span>
 
-<span class="sd">    a: float</span>
-<span class="sd">      Ratio of Lorentzian to Gaussian linewidths.</span>
+<span class="sd">    Parameters::</span>
+<span class="sd">    </span>
+<span class="sd">     a: float</span>
+<span class="sd">       Ratio of Lorentzian to Gaussian linewidths.</span>
+<span class="sd">     u: array of floats</span>
+<span class="sd">       The frequency or velocity offsets from the line centre, in units</span>
+<span class="sd">       of the Gaussian broadening linewidth.</span>
 
-<span class="sd">    u: array of floats</span>
-<span class="sd">      The frequency or velocity offsets from the line centre, in units</span>
-<span class="sd">      of the Gaussian broadening linewidth.</span>
-
-<span class="sd">    See the notes for voigt() for more details</span>
+<span class="sd">    See the notes for voigt() for more details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
          <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">wofz</span>
@@ -1084,13 +1085,13 @@
     <span class="k">else</span><span class="p">:</span>
          <span class="k">return</span> <span class="n">wofz</span><span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
 </div>
-<div class="viewcode-block" id="voigtslow"><a class="viewcode-back" href="../../generated/barak.voigt.voigtslow.html#barak.voigt.voigtslow">[docs]</a><span class="k">def</span> <span class="nf">voigtslow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Calculate the voigt function H(a,u).</span>
+<div class="viewcode-block" id="voigt_slow"><a class="viewcode-back" href="../../generated/barak.voigt.voigt_slow.html#barak.voigt.voigt_slow">[docs]</a><span class="k">def</span> <span class="nf">voigt_slow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate the voigt function to very high accuracy.</span>
 
 <span class="sd">    Uses numerical integration, so is slow.  Answer is correct to 20</span>
 <span class="sd">    significant figures.</span>
 
-<span class="sd">    Note this needs mpmath or sympy to be installed.</span>
+<span class="sd">    Note this needs `mpmath` or `sympy` to be installed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">mpmath</span> <span class="kn">as</span> <span class="nn">mp</span>
@@ -1105,46 +1106,51 @@
 
 </div>
 <div class="viewcode-block" id="voigt"><a class="viewcode-back" href="../../generated/barak.voigt.voigt.html#barak.voigt.voigt">[docs]</a><span class="k">def</span> <span class="nf">voigt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Compute the Voigt function.</span>
+    <span class="sd">&quot;&quot;&quot; Compute the Voigt function using a fast approximation.</span>
 
-<span class="sd">    a: float</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : float</span>
 <span class="sd">      Ratio of Lorentzian to Gaussian linewidths (see below).</span>
-
-<span class="sd">    u: array of floats</span>
+<span class="sd">    u : array of floats, shape (N,)</span>
 <span class="sd">      The frequency or velocity offsets from the line centre, in units</span>
 <span class="sd">      of the FWHM of the Gaussian broadening (see below).</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    H : array of floats, shape (N,)</span>
+<span class="sd">      The Voigt function.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    </span>
-<span class="sd">    The Voigt function is useful for calculation the optical depth as</span>
+<span class="sd">    The Voigt function is useful for calculating the optical depth as</span>
 <span class="sd">    function of frequency for an absorption transition associated with</span>
 <span class="sd">    an atom or ion.</span>
 <span class="sd">    </span>
 <span class="sd">    The Voigt function H(a, u) is related to the Voigt profile</span>
-<span class="sd">    V(x, sigma, gamma):</span>
+<span class="sd">    V(x, sigma, gamma)::</span>
 
 <span class="sd">      V(x, sigma, gamma) = H(a, u) / (sqrt(2*pi) * sigma)</span>
 
-<span class="sd">    where:</span>
+<span class="sd">    where::</span>
 
 <span class="sd">      a = gamma / (sqrt(2) * sigma)</span>
 <span class="sd">      u = x / (sqrt(2) * sigma)</span>
 
-<span class="sd">    The Voigt profile is convolution of a Gaussian profile:</span>
+<span class="sd">    The Voigt profile is convolution of a Gaussian profile::</span>
 
 <span class="sd">      G(x, sigma) = exp(-0.5 * (x / sigma)^2) / (sigma * sqrt(2*pi))</span>
 
-<span class="sd">    and a Lorentzian profile:</span>
+<span class="sd">    and a Lorentzian profile::</span>
 <span class="sd">    </span>
 <span class="sd">      L(x, gamma) = gamma / ((x^2 + gamma^2) * pi)</span>
 <span class="sd">      </span>
-<span class="sd">    It is normalised; the integral of V over all x = 1.</span>
+<span class="sd">    It is normalised; the integral of V over all x is 1.</span>
 
 <span class="sd">    This function uses a Taylor approximation to the Voigt function</span>
 <span class="sd">    for 0 &lt; a &lt; 0.1. (Harris 1948, ApJ, 108, 112).  Relative error</span>
-<span class="sd">    with respect to voigt_de is &lt; 10^-4.9 for a &lt; 0.1. For larger `a`</span>
-<span class="sd">    values a the exact calculation is done in `voigt_wofz`.</span>
+<span class="sd">    with respect to `voigt_wofz` is &lt; 10^-4.9 for a &lt; 0.1. For larger</span>
+<span class="sd">    `a` the exact calculation is done in `voigt_wofz`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
@@ -1179,8 +1185,7 @@
         <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="n">u2</span><span class="p">)</span><span class="o">*</span><span class="n">expmu2</span>  <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">H3</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span>
         <span class="mf">0.5</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="n">u2</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="n">u2</span><span class="o">*</span><span class="n">u2</span><span class="p">)</span><span class="o">*</span><span class="n">expmu2</span><span class="p">)))</span>
 
-    <span class="k">return</span> <span class="n">out</span>
-    </div>
+    <span class="k">return</span> <span class="n">out</span></div>
 </pre></div>
 
       </div>

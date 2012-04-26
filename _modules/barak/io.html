@@ -46,6 +46,8 @@
         
         
   <h1>Source code for barak.io</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Functions to read and write text, fits and pickle files.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">izip</span>
 <span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">gzip</span>
@@ -64,52 +66,41 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    rows: filename or iterable object</span>
+<span class="sd">    rows : filename or iterable object</span>
 <span class="sd">        Input data.</span>
-
-<span class="sd">    sep: str (default `None`)</span>
+<span class="sd">    sep : str (default `None`)</span>
 <span class="sd">        A string used to separate items on a row (also known as a</span>
 <span class="sd">        delimiter). Default is None, which means whitespace.</span>
-
-<span class="sd">    usecols: int or tuple of ints, optional</span>
+<span class="sd">    usecols : int or tuple of ints, optional</span>
 <span class="sd">        Indices of columns to be read. By default all columns are read.</span>
-
-<span class="sd">    comment: str (default `#`)</span>
+<span class="sd">    comment : str (default `#`)</span>
 <span class="sd">        Character marking the start of a comment. </span>
-
-<span class="sd">    skip: int (default `0`)</span>
+<span class="sd">    skip : int (default `0`)</span>
 <span class="sd">        Number of rows to skip (not counting commented or blank lines)</span>
 <span class="sd">        before reading data.</span>
-
-<span class="sd">    arrays: bool (`True`)</span>
+<span class="sd">    arrays : bool (`True`)</span>
 <span class="sd">        If True, all columns are converted to Numpy arrays.  If False,</span>
 <span class="sd">        columns are returned as lists.</span>
-
-<span class="sd">    names: str or sequence of str (default `None`)</span>
+<span class="sd">    names : str or sequence of str (default `None`)</span>
 <span class="sd">        If `names` is given and `arrays` is True, the data are placed</span>
 <span class="sd">        in a Numpy record array with field names given by `names`. Can</span>
 <span class="sd">        also be a single string of comma-separated values.</span>
-
-<span class="sd">    readnames: bool (`False`)</span>
+<span class="sd">    readnames : bool (`False`)</span>
 <span class="sd">        If `readnames` is True the first line of the file is read to</span>
 <span class="sd">        find the field names. This overrides the `names` keyword.</span>
-
-<span class="sd">    converters: dict (`None`)</span>
+<span class="sd">    converters : dict (`None`)</span>
 <span class="sd">        Functions to apply to each entry of a column. Each (key,value)</span>
 <span class="sd">        pair gives the column index (key) and the function to be</span>
 <span class="sd">        applied to each entry in that column (value).</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out: structured array or lists</span>
-<span class="sd">        Output data.</span>
+<span class="sd">    Returns either structured array or lists.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    list_of_all_cols = readtxt(&#39;filename&#39;)</span>
-<span class="sd">    ninthcol, fifthcol = readtxt(&#39;filename&#39;, sep=&#39;,&#39;, usecols=(8,4)])</span>
-<span class="sd">    firstcol = readtxt(&#39;filename&#39;, comment=&#39;%&#39;, usecols=[0])</span>
-<span class="sd">    recarray = readtxt(&#39;filename&#39;, sep=&#39;,&#39;, usecols=(1,3), names=&#39;x,y&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; list_of_all_cols = readtxt(&#39;filename&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ninthcol, fifthcol = readtxt(&#39;filename&#39;, sep=&#39;,&#39;, usecols=(8,4)])</span>
+<span class="sd">    &gt;&gt;&gt; firstcol = readtxt(&#39;filename&#39;, comment=&#39;%&#39;, usecols=[0])</span>
+<span class="sd">    &gt;&gt;&gt; recarray = readtxt(&#39;filename&#39;, sep=&#39;,&#39;, usecols=(1,3), names=&#39;x,y&#39;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mintype</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">typedict</span> <span class="o">=</span> <span class="p">{</span><span class="nb">float</span> <span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
@@ -221,25 +212,24 @@
 <span class="sd">    Structured array data written using this function can be read</span>
 <span class="sd">    again using:</span>
 
-<span class="sd">    readtxt(filename, readnames=True)</span>
+<span class="sd">    &gt;&gt;&gt; readtxt(filename, readnames=True)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fh:  file object or str</span>
+<span class="sd">    fh :  file object or str</span>
 <span class="sd">        The file to be written to.</span>
-<span class="sd">    cols: structured array or a list of columns</span>
+<span class="sd">    cols : structured array or a list of columns</span>
 <span class="sd">        Data to be written.</span>
-<span class="sd">    sep: str (&#39; &#39;)</span>
+<span class="sd">    sep : str (&#39; &#39;)</span>
 <span class="sd">        A string used to separate items on each row.</span>
-<span class="sd">    names: list, string, False or None (None)</span>
+<span class="sd">    names : list, string, False or None (None)</span>
 <span class="sd">        Column names. Can be a comma-separated string of names. If</span>
 <span class="sd">        False, do not print any names. If None and `cols` is a</span>
 <span class="sd">        structured array, column names are the array field names.</span>
-<span class="sd">    header: str (None)</span>
+<span class="sd">    header : str (None)</span>
 <span class="sd">        A header written before the data and column names.</span>
-<span class="sd">    overwrite: bool (False)</span>
+<span class="sd">    overwrite : bool (False)</span>
 <span class="sd">        If True, overwrite an existing file without prompting.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># Open file (checking whether it already exists)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
@@ -326,9 +316,14 @@
     <span class="sd">&quot;&quot;&quot; Writes a list of numpy arrays or a structured array to a</span>
 <span class="sd">    binary fits table. Works best with structured arrays.</span>
 
-<span class="sd">    filename      Filename to write to.</span>
-<span class="sd">    rec           Sequence of arrays or record array.</span>
-<span class="sd">    units (None)  Sequence of strings giving the units for each column.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">      Filename to write to.</span>
+<span class="sd">    rec : Sequence of arrays or record array</span>
+<span class="sd">      Data to write.</span>
+<span class="sd">    units : list of str (default None)</span>
+<span class="sd">      Sequence of strings giving the units for each column.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">pyfits</span>
     
@@ -358,11 +353,12 @@
     <span class="n">tbhdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="readtabfits"><a class="viewcode-back" href="../../generated/barak.io.readtabfits.html#barak.io.readtabfits">[docs]</a><span class="k">def</span> <span class="nf">readtabfits</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Read table data written with writetabfits()</span>
+    <span class="sd">&quot;&quot;&quot; Read fits binary table data, such as that written by</span>
+<span class="sd">    `writetabfits()`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">pyfits</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">ext</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
 </div>
@@ -390,8 +386,12 @@
 <div class="viewcode-block" id="parse_config"><a class="viewcode-back" href="../../generated/barak.io.parse_config.html#barak.io.parse_config">[docs]</a><span class="k">def</span> <span class="nf">parse_config</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot; Read options for a configuration file.</span>
 
-<span class="sd">    filename    the configuration filename</span>
-<span class="sd">    defaults    a dictionary with default values for options</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">      The configuration filename.</span>
+<span class="sd">    defaults : dict</span>
+<span class="sd">      A dictionary with default values for options.</span>
 
 <span class="sd">    The options are returned as a dictionary that can also be indexed</span>
 <span class="sd">    by attribute.</span>
@@ -399,12 +399,12 @@
 <span class="sd">    Ignores blank lines, lines starting with &#39;#&#39;, and anything on a</span>
 <span class="sd">    line after a &#39;#&#39;.</span>
 
-<span class="sd">    Sample format:</span>
+<span class="sd">    Sample format::</span>
 
-<span class="sd">    # this is the file with the line list</span>
-<span class="sd">    lines = lines.dat    </span>
-<span class="sd">    x = 20</span>
-<span class="sd">    save = True    # save the data</span>
+<span class="sd">     # this is the file with the line list</span>
+<span class="sd">     lines = lines.dat    </span>
+<span class="sd">     x = 20</span>
+<span class="sd">     save = True    # save the data</span>
 
 <span class="sd">    Attempts to convert the values to int, float, boolean otherwise</span>
 <span class="sd">    string.</span>

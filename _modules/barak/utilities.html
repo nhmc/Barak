@@ -57,6 +57,8 @@
     <span class="sd">&quot;&quot;&quot;Bunch class from the python cookbook with __str__ and __repr__</span>
 <span class="sd">    methods.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; s = Bunch(a=1, b=2, c=[&#39;bar&#39;, 99])</span>
 <span class="sd">    &gt;&gt;&gt; s.a</span>
 <span class="sd">    1</span>
@@ -137,16 +139,18 @@
     <span class="sd">&quot;&quot;&quot; Find the indices giving rows in `a` that have common values</span>
 <span class="sd">    for the field `name`.</span>
 
-<span class="sd">    Inputs</span>
-<span class="sd">    ------</span>
-<span class="sd">    a: structured array</span>
-<span class="sd">    name: field of `a` (str)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : structured array</span>
+<span class="sd">       Find the indices for rows in this array.</span>
+<span class="sd">    name : str</span>
+<span class="sd">       Field of `a`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    unique_vals, indices:</span>
-<span class="sd">        unique sorted values of a[name], and a list of indices into</span>
-<span class="sd">        `a` giving rows with each unique value.</span>
+<span class="sd">       unique sorted values of `a[name]`, and a list of indices into</span>
+<span class="sd">       `a` giving the rows with each unique value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
     <span class="n">isort</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
@@ -162,10 +166,11 @@
         <span class="k">yield</span> <span class="n">b</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">ind</span>
 </div>
 <div class="viewcode-block" id="between"><a class="viewcode-back" href="../../generated/barak.utilities.between.html#barak.utilities.between">[docs]</a><span class="k">def</span> <span class="nf">between</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return a boolean array that&#39;s True where vmin &lt;= a &lt; vmax.</span>
+    <span class="sd">&quot;&quot;&quot; Return a boolean array True where vmin &lt;= a &lt; vmax.</span>
 
-<span class="sd">    (Careful of floating point issues when dealing with equalities</span>
-<span class="sd">    though)</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Careful of floating point issues when dealing with equalities.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">vmax</span>
@@ -175,16 +180,22 @@
 <div class="viewcode-block" id="poisson_noise"><a class="viewcode-back" href="../../generated/barak.utilities.poisson_noise.html#barak.utilities.poisson_noise">[docs]</a><span class="k">def</span> <span class="nf">poisson_noise</span><span class="p">(</span><span class="n">nflux</span><span class="p">,</span> <span class="n">nsigma</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Adds poisson noise to a normalised flux array.</span>
 
-<span class="sd">    nsigma: One sigma error in the flux at the continuum level (where</span>
-<span class="sd">    normalised flux=1).</span>
-
-<span class="sd">    nflux: Array of normalised flux values (i.e. flux values divided by</span>
-<span class="sd">    the continuum).</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nsigma : float</span>
+<span class="sd">       One sigma error in the flux at the continuum level (where</span>
+<span class="sd">       normalised flux=1).  </span>
+<span class="sd">    nflux : array of floats, shape (N,)</span>
+<span class="sd">       Normalised flux values (i.e. flux values divided by</span>
+<span class="sd">       the continuum).</span>
 
 <span class="sd">    If `seed` is given, it is used to seed the random number</span>
 <span class="sd">    generator.</span>
 
-<span class="sd">    Returns:  flux with noise added, one sigma error array.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flux, error : arrays of floats, shape (N,)</span>
+<span class="sd">      flux with noise added and one sigma error array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -206,26 +217,26 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    nflux: array_like</span>
+<span class="sd">    nflux : array of floats, shape (N,)</span>
 <span class="sd">      Array of normalised flux values.</span>
-<span class="sd">    nsigma: float</span>
+<span class="sd">    nsigma : float</span>
 <span class="sd">      Total desired noise at the continuum (flux=1). Note the</span>
-<span class="sd">      SNR = 1 / nsigma.</span>
-<span class="sd">    minsig: float, optional</span>
+<span class="sd">      signal-to-noise ratio (SNR) = 1 / nsigma.</span>
+<span class="sd">    minsig : float, optional</span>
 <span class="sd">      By default minsig is `None`, which means gaussian noise with</span>
-<span class="sd">      standard deviation `sigma` is added to the flux. If minsig is</span>
+<span class="sd">      standard deviation `nsigma` is added to the flux. If minsig is</span>
 <span class="sd">      given, a combination of poisson and gaussian noise is added to</span>
 <span class="sd">      the flux to give an error of `sigma` at the continuum. In this</span>
 <span class="sd">      case the gaussian noise component has st. dev. of `minsig`,</span>
-<span class="sd">      which must be less than `sigma`.</span>
-
-<span class="sd">    seed: int, optional</span>
+<span class="sd">      which must be less than `nsigma`.</span>
+<span class="sd">    seed : int, optional</span>
 <span class="sd">      If seed is given, it is used to seed the random number generator.</span>
 <span class="sd">      By default the seed is not reset.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    normalised flux with noise added, one sigma error array.</span>
+<span class="sd">    flux, error : arrays of floats, shape (N,)</span>
+<span class="sd">      Normalised flux with noise added, one sigma error array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nsigma</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">nsigma</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -255,21 +266,20 @@
 
 </div>
 <div class="viewcode-block" id="wmean"><a class="viewcode-back" href="../../generated/barak.utilities.wmean.html#barak.utilities.wmean">[docs]</a><span class="k">def</span> <span class="nf">wmean</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return the weighted mean and error.</span>
+    <span class="sd">&quot;&quot;&quot; Return the weighted mean and error. Uses inverse variances as</span>
+<span class="sd">    weights.</span>
 
-<span class="sd">    Uses inverse variances as weights.</span>
-
-<span class="sd">    val: array with shape (N,)</span>
-<span class="sd">      Array of values and</span>
-
-<span class="sd">    sig: array with shape (N,)</span>
-<span class="sd">      One sigma errors (sqrt(variance)) of the array values.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    val : array with shape (N,)</span>
+<span class="sd">      Array of values.</span>
+<span class="sd">    sig : array with shape (N,)</span>
+<span class="sd">      One sigma errors (``sqrt(variance)``) of the array values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    wmean, wsigma: floats</span>
-<span class="sd">      The weighted mean and error on the weighted mean.</span>
-
+<span class="sd">    wmean, wsigma : floats</span>
+<span class="sd">       The weighted mean and error on the weighted mean.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
@@ -299,15 +309,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ar: array_like</span>
+<span class="sd">    ar : array_like</span>
 <span class="sd">      Input array. It must be sorted smallest to largest.</span>
-<span class="sd">    val: float</span>
+<span class="sd">    val : float</span>
 <span class="sd">      Find the element of `ar` that is closest to `val`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    index: int</span>
-<span class="sd">      Index of the `ar` element with the closest value to `val`.</span>
+<span class="sd">    index : int</span>
+<span class="sd">       Index of the `ar` element with the closest value to `val`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -336,19 +346,24 @@
 
 </div>
 <div class="viewcode-block" id="calc_Mstar_b"><a class="viewcode-back" href="../../generated/barak.utilities.calc_Mstar_b.html#barak.utilities.calc_Mstar_b">[docs]</a><span class="k">def</span> <span class="nf">calc_Mstar_b</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Find the Schechter parameter M* in the rest frame b band at</span>
+    <span class="sd">&quot;&quot;&quot; Find M* at a given redshift.</span>
+
+<span class="sd">    Find the Schechter parameter M* in the rest frame B band at</span>
 <span class="sd">    redshift z, by interpolating over the Faber at al. 2007 DEEP2</span>
-<span class="sd">    averaged values, and assuming M*_b = -20.0 at z=0 (rough average</span>
+<span class="sd">    averaged values, and assuming M*_B = -20.0 at z=0 (rough average</span>
 <span class="sd">    of the z=0.07-0.1 points in Faber 2007) .</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="mf">1.5</span>
     <span class="n">zvals</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.1</span>
     <span class="n">Mvals</span> <span class="o">=</span> <span class="o">-</span><span class="mf">20.00</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.51</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.36</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.54</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">zvals</span><span class="p">,</span> <span class="n">Mvals</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="combinations"><a class="viewcode-back" href="../../generated/barak.utilities.combinations.html#barak.utilities.combinations">[docs]</a><span class="k">def</span> <span class="nf">combinations</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; A generator for the number of ways you can take n items (order</span>
-<span class="sd">    unimportant) from a list of items.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; A generator of combinations from `items`.</span>
+
+<span class="sd">    This returns a generator for the number of ways you can take n</span>
+<span class="sd">    items (order unimportant) from a list of items.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">yield</span> <span class="p">[]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -357,7 +372,10 @@
                 <span class="k">yield</span> <span class="p">[</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="n">c</span>
 </div>
 <div class="viewcode-block" id="permutations"><a class="viewcode-back" href="../../generated/barak.utilities.permutations.html#barak.utilities.permutations">[docs]</a><span class="k">def</span> <span class="nf">permutations</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Permutations are just a special case of combinations.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Generator for permutations from `items`.</span>
+
+<span class="sd">    These are a special case of `combinations`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">combinations</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="find_edges_true_regions"><a class="viewcode-back" href="../../generated/barak.utilities.find_edges_true_regions.html#barak.utilities.find_edges_true_regions">[docs]</a><span class="k">def</span> <span class="nf">find_edges_true_regions</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>

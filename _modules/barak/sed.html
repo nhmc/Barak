@@ -51,9 +51,10 @@
 <span class="sd">Based on the SED module in astLib by Matt Hilton, with some routines</span>
 <span class="sd">copied from there (LGPL): http://astlib.sourceforge.net</span>
 
-<span class="sd">VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.</span>
-<span class="sd">AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.</span>
-<span class="sd">SUN: The SED of the Sun.</span>
+<span class="sd">- VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.</span>
+<span class="sd">- AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.</span>
+<span class="sd">- SUN: The SED of the Sun.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -98,11 +99,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    # get the SDSS passbands</span>
-<span class="sd">    sdss = get_bands(&#39;SDSS&#39;, &#39;u,g,r,i,z&#39;)</span>
-
-<span class="sd">    # get the LBC U_spec filter</span>
-<span class="sd">    U = get_bands(&#39;LBC&#39;, &#39;u&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; sdss = get_bands(&#39;SDSS&#39;, &#39;u,g,r,i,z&#39;)  # get the SDSS passbands</span>
+<span class="sd">    &gt;&gt;&gt; U = get_bands(&#39;LBC&#39;, &#39;u&#39;)    # get the LBC U_spec filter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">instr</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_listfiles</span><span class="p">(</span><span class="n">PATH_PASSBAND</span><span class="p">)</span>
@@ -124,11 +123,8 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    # get all the pickles stellar library SEDs</span>
-<span class="sd">    pickles = get_SEDs(&#39;pickles&#39;)</span>
-
-<span class="sd">    # get an LBG absorption spectrum</span>
-<span class="sd">    lbga = get_SEDs(&#39;LBG&#39;, &#39;lbg_abs.dat&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; pickles = get_SEDs(&#39;pickles&#39;)   # pickles stellar library SEDs</span>
+<span class="sd">    &gt;&gt;&gt; lbga = get_SEDs(&#39;LBG&#39;, &#39;lbg_abs.dat&#39;)  # LBG absorption spectrum</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_listfiles</span><span class="p">(</span><span class="n">PATH_TEMPLATE</span><span class="p">)</span>
@@ -147,9 +143,7 @@
 
 <span class="sd">    returns extinction = 10^(0.4 * extinction_in_mags * airmass),</span>
 
-<span class="sd">    where</span>
-
-<span class="sd">    flux_true = flux_extincted * extinction</span>
+<span class="sd">    where flux_true = flux_extincted * extinction</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">PATH_EXTINCT</span><span class="p">))</span>
@@ -173,15 +167,20 @@
 
 <span class="sd">    The available passbands are in PASSBANDS.</span>
 <span class="sd">    </span>
-<span class="sd">    Attributes:</span>
-<span class="sd">      wa   wavelength in Angstroms</span>
-<span class="sd">      tr   normalised transmission, including atmospheric extinction and</span>
-<span class="sd">           detector efficiency. May or may not include extinction from</span>
-<span class="sd">           the optical path.</span>
-<span class="sd">      effective_wa   the effective wavelength of the passband.</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wa : array of floats</span>
+<span class="sd">      Wavelength in Angstroms</span>
+<span class="sd">    tr : array of floats</span>
+<span class="sd">      Normalised transmission, including atmospheric extinction and</span>
+<span class="sd">      detector efficiency. May or may not include extinction from the</span>
+<span class="sd">      optical path.</span>
+<span class="sd">    effective_wa : float</span>
+<span class="sd">      Effective wavelength of the passband.</span>
 
-<span class="sd">    Methods:</span>
-<span class="sd">      plot()</span>
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    plot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Passband.__init__"><a class="viewcode-back" href="../../generated/barak.sed.Passband.__init__.html#barak.sed.Passband.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">ccd</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PATH_PASSBAND</span><span class="p">):</span>
@@ -260,9 +259,10 @@
         <span class="k">return</span> <span class="s">&#39;Passband &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 </div>
 <div class="viewcode-block" id="Passband.plot"><a class="viewcode-back" href="../../generated/barak.sed.Passband.plot.html#barak.sed.Passband.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effic</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">atmos</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plots the passband. We plot the non-normalised</span>
+        <span class="sd">&quot;&quot;&quot; Plots the passband. We plot the non-normalised</span>
 <span class="sd">        transmission. This may or may not include ccd efficiency,</span>
-<span class="sd">        losses from the atmosphere and telescope optics.&quot;&quot;&quot;</span>
+<span class="sd">        losses from the atmosphere and telescope optics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span>
         <span class="k">if</span> <span class="n">ymax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">ymax</span>
@@ -288,10 +288,10 @@
 <span class="sd">    Wavelengths must be in Angstroms, fluxes in erg/s/cm^2/Ang.</span>
 
 <span class="sd">    To convert from f_nu to f_lambda in erg/s/cm^2/Ang, substitute</span>
-<span class="sd">    using:</span>
+<span class="sd">    using::</span>
 
-<span class="sd">    nu = c / lambda</span>
-<span class="sd">    f_lambda = c / lambda^2 * f_nu </span>
+<span class="sd">     nu = c / lambda</span>
+<span class="sd">     f_lambda = c / lambda^2 * f_nu </span>
 
 <span class="sd">    Available SED templates filenames are in TEMPLATES.</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
@@ -432,7 +432,7 @@
 <span class="sd">        modulus (5.0*log10*(dl*1e5), where dl is the luminosity</span>
 <span class="sd">        distance in Mpc at the redshift of the L{SED}) is added.</span>
 
-<span class="sd">        system is either &#39;Vega&#39; or &#39;AB&#39;</span>
+<span class="sd">        `system` is either &#39;Vega&#39; or &#39;AB&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_flux</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
 
@@ -534,9 +534,9 @@
 <span class="sd">    The wavelength array wa must be in Angstroms and sorted lowest -&gt;</span>
 <span class="sd">    highest.</span>
 
-<span class="sd">    Returns reddening such that:</span>
+<span class="sd">    Returns reddening such that::</span>
 
-<span class="sd">    extincted_flux = unextincted_flux * reddening</span>
+<span class="sd">     extincted_flux = unextincted_flux * reddening</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">22000</span> <span class="ow">and</span> <span class="n">wa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1200</span>
 
