@@ -11,11 +11,12 @@ be handled are:
   * Fit a smooth continuum to a spectrum with many emission or
     absorption features.
 
-To install, run:
+More details are given the documentation here: http://nhmc.github.com/Barak
 
-   python setup.py install
+To install, just copy the the barak/ to directory to a location
+pointed to by your PYTHONPATH variable.
 
-To test, you need py.test installed.  Run 
+To run the tests you need py.test installed.  Then run
 
    py.test barak 
 
