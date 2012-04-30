@@ -4,13 +4,13 @@ barak.cosmology contains routines for cosmological distance measures
 and other quantities. References for most of the quantities calculated
 in this package are given by Hogg (astro-ph/9905116).
 
-The following objects are imported to the barak.cosmology namesapce:
+The following objects are imported to the barak.cosmology namespace:
 
   Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
   arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
   radec_to_xyz, get_default, set_default, WMAP5, WMAP7
 
-See the barak.cosmology.core module for documentation for these.
+See the barak.cosmology.core module for documentation on these.
 
 Most of the functionality is enabled by the Cosmology object. For
 example, to create a new `Cosmology` object with arguments giving the

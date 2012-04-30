@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 from StringIO import StringIO
-from .. import cosmology
+from .. import core
 import numpy as np
 
 # Still need to test:
@@ -12,7 +12,7 @@ def test_flat_z1():
     """ Test a flat cosmology at z=1 against several other on-line
     calculators.
     """
-    cosmo = cosmology.Cosmology(H0=70, Om=0.27, Ol=0.73)
+    cosmo = core.Cosmology(H0=70, Om=0.27, Ol=0.73)
     z = 1
 
     # Test values were taken from the following web cosmology
@@ -39,17 +39,17 @@ def test_flat_z1():
 
 def test_convenience():
 
-    assert np.allclose(cosmology.arcsec_per_kpc_comoving(3), 0.0317179)
-    assert np.allclose(cosmology.arcsec_per_kpc_proper(3), 0.1268716668)
-    assert np.allclose(cosmology.kpc_comoving_per_arcmin(3), 1891.6753126)
-    assert np.allclose(cosmology.kpc_proper_per_arcmin(3), 472.918828)
-    assert np.allclose(cosmology.distmod(3), 47.075902)
+    assert np.allclose(core.arcsec_per_kpc_comoving(3), 0.0317179)
+    assert np.allclose(core.arcsec_per_kpc_proper(3), 0.1268716668)
+    assert np.allclose(core.kpc_comoving_per_arcmin(3), 1891.6753126)
+    assert np.allclose(core.kpc_proper_per_arcmin(3), 472.918828)
+    assert np.allclose(core.distmod(3), 47.075902)
 
 def test_comoving_volume():
 
-    c_flat = cosmology.Cosmology(H0=70, Om=0.27, Ol=0.73)
-    c_open = cosmology.Cosmology(H0=70, Om=0.27, Ol=0.0)
-    c_closed = cosmology.Cosmology(H0=70, Om=2, Ol=0.0)
+    c_flat = core.Cosmology(H0=70, Om=0.27, Ol=0.73)
+    c_open = core.Cosmology(H0=70, Om=0.27, Ol=0.0)
+    c_closed = core.Cosmology(H0=70, Om=2, Ol=0.0)
 
     redshifts = 0.5, 1, 2, 3, 5, 9
 
@@ -180,7 +180,7 @@ def test_flat_open_closed_icosmo():
 """
 
     redshifts, dm, da, dl = np.loadtxt(StringIO(cosmo_flat), unpack=1)
-    cosmo = cosmology.Cosmology(H0=70, Om=0.3, Ol=0.70)
+    cosmo = core.Cosmology(H0=70, Om=0.3, Ol=0.70)
     for i,z in enumerate(redshifts):
         #print z
         #print cosmo.angular_diameter_distance(z), da[i]
@@ -191,14 +191,14 @@ def test_flat_open_closed_icosmo():
         assert np.allclose(cosmo.luminosity_distance(z), dl[i])
 
     redshifts, dm, da, dl = np.loadtxt(StringIO(cosmo_open), unpack=1)
-    cosmo = cosmology.Cosmology(H0=70, Om=0.3, Ol=0.1)
+    cosmo = core.Cosmology(H0=70, Om=0.3, Ol=0.1)
     for i,z in enumerate(redshifts):
         assert np.allclose(cosmo.comoving_transverse_distance(z), dm[i])
         assert np.allclose(cosmo.angular_diameter_distance(z), da[i])
         assert np.allclose(cosmo.luminosity_distance(z), dl[i])
 
     redshifts, dm, da, dl = np.loadtxt(StringIO(cosmo_closed), unpack=1)
-    cosmo = cosmology.Cosmology(H0=70, Om=2, Ol=0.1)
+    cosmo = core.Cosmology(H0=70, Om=2, Ol=0.1)
     for i,z in enumerate(redshifts):
         assert np.allclose(cosmo.comoving_transverse_distance(z), dm[i])
         assert np.allclose(cosmo.angular_diameter_distance(z), da[i])
@@ -206,9 +206,9 @@ def test_flat_open_closed_icosmo():
 
 
 def test_default():
-    cosmo = cosmology.get_default()
-    assert cosmo == cosmology.WMAP7
-    cosmology.set_default('WMAP5')
-    assert cosmology.get_default() == cosmology.WMAP5
-    cosmology.set_default(cosmo)
-    assert cosmology.get_default() == cosmo
+    cosmo = core.get_default()
+    assert cosmo == core.WMAP7
+    core.set_default('WMAP5')
+    assert core.get_default() == core.WMAP5
+    core.set_default(cosmo)
+    assert core.get_default() == cosmo
