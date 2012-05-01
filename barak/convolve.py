@@ -1,5 +1,4 @@
-""" Functions related to convolution
-""" 
+""" Functions related to convolution.""" 
 import numpy as np
 from utilities import nan2num
 
@@ -24,10 +23,10 @@ def convolve_psf(a, fwhm, edge='invert', replace_nan=True, debug=False):
     
     Notes
     -----
-    The Gaussian kernel xis calculated for as many pixels required
-    until it drops to 1% of its peak value. Note that the data will be
-    spoiled at distances n/2 (rounding down) from the edges, where n
-    is the width of the Gaussian in pixels.
+    The Gaussian kernel is calculated for as many pixels required
+    until it drops to 1% of its peak value. The data will be spoiled
+    at distances `n`/2 (rounding down) from the edges, where `n` is
+    the width of the Gaussian in pixels.
     """
     const2   = 2.354820046             # 2*sqrt(2*ln(2))
     const100 = 3.034854259             # sqrt(2*ln(100))

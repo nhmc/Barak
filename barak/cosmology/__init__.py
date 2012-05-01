@@ -4,17 +4,17 @@ barak.cosmology contains routines for cosmological distance measures
 and other quantities. References for most of the quantities calculated
 in this package are given by Hogg (astro-ph/9905116).
 
-The following objects are imported to the barak.cosmology namespace:
+The following objects are available in the barak.cosmology namespace:
 
   Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
   arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
   radec_to_xyz, get_default, set_default, WMAP5, WMAP7
 
-See the barak.cosmology.core module for documentation on these.
+The code for these lives in the barak.cosmology.core module.
 
-Most of the functionality is enabled by the Cosmology object. For
-example, to create a new `Cosmology` object with arguments giving the
-hubble parameter, omega matter and omega lambda (all at z=0)::
+Most of the functionality is enabled by the `Cosmology` object. To
+create a new `Cosmology` object with arguments giving the hubble
+parameter, omega matter and omega lambda (all at z=0)::
 
   >>> from barak.cosmology import Cosmology
   >>> cosmo = Cosmology(H0=70, Om=0.3, Ol=0.7)

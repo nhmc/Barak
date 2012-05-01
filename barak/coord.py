@@ -151,7 +151,7 @@ def _dec2s(ra, dec,
     return s_ra,s_dec
 
 def dec2s(ra, dec):
-    """ Convert and RA an Dec from degrees to sexigesimal.
+    """ Convert an RA and Dec from degrees to sexigesimal.
 
     Parameters
     ----------
@@ -168,7 +168,7 @@ def dec2s(ra, dec):
     except TypeError:
         pass
     radec = [_dec2s(r,d) for r, d in zip(ra, dec)]
-    return zip(*radec)
+    return tuple(zip(*radec))
 
 def _s2dec(ra,dec):
     """ Converts two strings of sexigesimal RA and Dec to decimal.
@@ -204,20 +204,32 @@ def s2dec(ra, dec):
     Parameters
     ----------
     ra, dec: str or arrays of str, shape (N,)
-      The RA and Dec in 'hour:min:s' 'deg:min:s' format. The
-      separators may be spaces or colons.
+      The RA and Dec in 'hour:min:s' 'deg:min:s' format. Separators
+      may be whitespace, colons, 'h', 'm', 's' or 'd'.
 
     Returns
     -------
     ra, dec: floats or arrays of floats, shape (N,)
       The RA and Dec in degrees.
+
+    Examples
+    --------
+    >>> s2dec('02h59m00.56s', '-80d10m04.3s')
+    (44.75233333333333, -80.16786111111112)
+
+    >>> sras = ['10:12:01.25', '10:14:06.13']
+    >>> sdecs =['01:01:45.65', '01:13:47.02']
+    >>> ra, dec = s2dec(sras, sdecs)
+    >>> print zip(ra, dec)
+    [(153.00520833333334, 1.0293472222222222),
+    (153.52554166666667, 1.229727777777778)]
     """
     try:
         return _s2dec(ra, dec)
     except TypeError:
         pass
     radec = [_s2dec(r,d) for r, d in zip(ra, dec)]
-    return map(np.array, zip(*radec))
+    return tuple(map(np.array, zip(*radec)))
 
 def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
     """ Given two sets of numpy arrays of ra,dec and a tolerance tol,

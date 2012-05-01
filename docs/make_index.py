@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+""" Crawl through all the modules and find the functions we want to
+document. Then create an index.rst file for sphinx to process
+autosummaries for.
+""" 
+
+
 import sys, os, inspect
 
 header = """\
@@ -43,16 +49,19 @@ def is_mod_class(mod, cla):
     return inspect.isclass(cla) and inspect.getmodule(cla) == mod
 
 def list_functions(mod):
+    """ List public functions for a module. """ 
     return [func.__name__ for func in mod.__dict__.itervalues()
-            if is_mod_function(mod, func)]
+            if is_mod_function(mod, func) and
+            not func.__name__.startswith('_')]
 
 def list_classes(mod):
     return [cla.__name__ for cla in mod.__dict__.itervalues()
             if is_mod_class(mod, cla)]
 
 def list_methods(cla):
+    """ List public methods for a class. """ 
     return [name for name,_ in inspect.getmembers(
-        cla, predicate=inspect.ismethod) if not name.startswith('__')]
+        cla, predicate=inspect.ismethod) if not name.startswith('_')]
 
 def parse_module(modname, prefix='barak.'):
 
@@ -96,12 +105,14 @@ if 1:
         modname = n.replace('./', '')[:-3]
         s += parse_module(modname)
 
-    # next level down
+    # one more level down
     while True:
         try:
             name, temp, filenames = gen.next()
         except StopIteration:
             break
+        
+        # skip these directories, or if we're deeper than one level
         if name.startswith(package_dir + '/data') or \
            name.startswith(package_dir + '/sphinx') or \
            name.startswith(package_dir + '/tests') or \
