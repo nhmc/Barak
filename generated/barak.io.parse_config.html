@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.io.readtabfits" href="barak.io.readtabfits.html" />
+    <link rel="next" title="barak.io.readsex" href="barak.io.readsex.html" />
     <link rel="prev" title="barak.io.loadobj" href="barak.io.loadobj.html" /> 
   </head>
   <body>
@@ -43,7 +43,7 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.io.readtabfits.html">barak.io.readtabfits</a>&#160;&#160;»
+        <a href="barak.io.readsex.html">barak.io.readsex</a>&#160;&#160;»
         </p>
 
       </div>
@@ -68,23 +68,28 @@
 <blockquote>
 <div><p>A dictionary with default values for options.</p>
 </div></blockquote>
-<p><strong>The options are returned as a dictionary that can also be indexed</strong> :</p>
-<p><strong>by attribute.</strong> :</p>
-<p><strong>Ignores blank lines, lines starting with &#8216;#&#8217;, and anything on a</strong> :</p>
-<p><strong>line after a &#8216;#&#8217;.</strong> :</p>
-<p><strong>Sample format::</strong> :</p>
-<blockquote>
-<div><p># this is the file with the line list
-lines = lines.dat    
-x = 20
-save = True    # save the data</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>d</strong> : dictionary</p>
+<blockquote class="last">
+<div><p>The options are returned as a dictionary that can also be
+indexed by attribute.</p>
 </div></blockquote>
-<p><strong>Attempts to convert the values to int, float, boolean otherwise</strong> :</p>
-<p class="last"><strong>string.</strong> :</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Notes</p>
+<p>Ignores blank lines, lines starting with &#8216;#&#8217;, and anything on a
+line after a &#8216;#&#8217;. The parser attempts to convert the values to
+int, float or boolean, otherwise they are left as strings.</p>
+<p>Sample format:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># this is the file with the line list</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">dat</span>    
+<span class="n">x</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">save</span> <span class="o">=</span> <span class="bp">True</span>    <span class="c"># save the data</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -98,7 +103,7 @@ save = True    # save the data</p>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.io.readtabfits.html">barak.io.readtabfits</a>&#160;&#160;»
+        <a href="barak.io.readsex.html">barak.io.readsex</a>&#160;&#160;»
         </p>
 
       </div>

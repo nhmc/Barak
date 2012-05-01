@@ -393,11 +393,17 @@
 <span class="sd">    defaults : dict</span>
 <span class="sd">      A dictionary with default values for options.</span>
 
-<span class="sd">    The options are returned as a dictionary that can also be indexed</span>
-<span class="sd">    by attribute.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d : dictionary</span>
+<span class="sd">      The options are returned as a dictionary that can also be</span>
+<span class="sd">      indexed by attribute.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
 <span class="sd">    Ignores blank lines, lines starting with &#39;#&#39;, and anything on a</span>
-<span class="sd">    line after a &#39;#&#39;.</span>
+<span class="sd">    line after a &#39;#&#39;. The parser attempts to convert the values to</span>
+<span class="sd">    int, float or boolean, otherwise they are left as strings.</span>
 
 <span class="sd">    Sample format::</span>
 
@@ -405,9 +411,6 @@
 <span class="sd">     lines = lines.dat    </span>
 <span class="sd">     x = 20</span>
 <span class="sd">     save = True    # save the data</span>
-
-<span class="sd">    Attempts to convert the values to int, float, boolean otherwise</span>
-<span class="sd">    string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">adict</span><span class="p">()</span>
     
@@ -432,7 +435,180 @@
         <span class="n">cfg</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">cfg</span></div>
+    <span class="k">return</span> <span class="n">cfg</span>
+</div>
+<div class="viewcode-block" id="readsex"><a class="viewcode-back" href="../../generated/barak.io.readsex.html#barak.io.readsex">[docs]</a><span class="k">def</span> <span class="nf">readsex</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">catnum</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Read a sextractor catalogue into a Numpy record array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">      Sextractor output catalogue name</span>
+<span class="sd">    catnum : int, optional</span>
+<span class="sd">      If the Sextractor file is in LDAC_FITS format and contains more</span>
+<span class="sd">      than one catalogue, this option specifies the catalogue number.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    s : numpy record array</span>
+<span class="sd">      Record array with field names the same as those in the</span>
+<span class="sd">      sextractor catalogue.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="c"># get the header</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;=&#39;</span><span class="p">:</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c"># assume a fits file</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pyfits</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Install Pyfits to read fits files&quot;</span><span class="p">)</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">catnum</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;specify catalogue number&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">catnum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">catnum</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
+    <span class="n">hd</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">row</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="n">hd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c"># get column numbers and names</span>
+    <span class="n">number</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">hd</span><span class="p">])[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">indcol</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">number</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
+        <span class="n">dup</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="k">if</span> <span class="n">names</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;fields with same names: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">dup</span><span class="p">)</span>
+    <span class="c"># read in the data</span>
+    <span class="k">return</span> <span class="n">readtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">indcol</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="sex_to_DS9reg"><a class="viewcode-back" href="../../generated/barak.io.sex_to_DS9reg.html#barak.io.sex_to_DS9reg">[docs]</a><span class="k">def</span> <span class="nf">sex_to_DS9reg</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s">&#39;green&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">withtext</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write a DS9 region file from SExtractor output.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">      Region file name.</span>
+<span class="sd">    s : array</span>
+<span class="sd">      The output of `readsex`.</span>
+<span class="sd">    colour : str (&#39;green&#39;)</span>
+<span class="sd">      Region colour. One of {cyan blue magenta red green yellow white</span>
+<span class="sd">      black}</span>
+<span class="sd">    tag : str (&#39;all&#39;)</span>
+<span class="sd">      DS9 tag for all the regions</span>
+<span class="sd">    with_text : bool (False)</span>
+<span class="sd">      If True, then mark each region with either its magnitude (if</span>
+<span class="sd">      given), otherwise its index in the input array `s`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;global font=&quot;helvetica 10 normal&quot; select=1 highlite=1 &#39;</span>
+               <span class="s">&#39;edit=0 move=1 delete=1 include=1 fixed=0 source&#39;</span><span class="p">]</span>
+    <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;image&#39;</span><span class="p">)</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;X_IMAGE&#39;</span><span class="p">,</span> <span class="s">&#39;Y_IMAGE&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s">&#39;X_IMAGE&#39;</span> <span class="ow">in</span> <span class="n">names</span> <span class="ow">and</span> <span class="s">&#39;Y_IMAGE&#39;</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;XWIN_IMAGE&#39;</span><span class="p">,</span> <span class="s">&#39;YWIN_IMAGE&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s">&#39;XWIN_IMAGE&#39;</span> <span class="ow">in</span> <span class="n">names</span> <span class="ow">and</span> <span class="s">&#39;YWIN_IMAGE&#39;</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;require either X_IMAGE and Y_IMAGE &#39;</span>
+                             <span class="s">&#39;or XWIN_IMAGE and YWIN_IMAGE&#39;</span><span class="p">)</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;ellipse(</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">) # text={</span><span class="si">%s</span><span class="s">} color=</span><span class="si">%s</span><span class="s"> tag={</span><span class="si">%s</span><span class="s">}&#39;</span>
+    <span class="n">ellipse_vals</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;A_IMAGE&#39;</span><span class="p">,</span><span class="s">&#39;B_IMAGE&#39;</span><span class="p">,</span><span class="s">&#39;THETA_IMAGE&#39;</span><span class="p">]</span>
+    <span class="n">ellipsewin_vals</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;AWIN_IMAGE&#39;</span><span class="p">,</span><span class="s">&#39;BWIN_IMAGE&#39;</span><span class="p">,</span><span class="s">&#39;THETAWIN_IMAGE&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ellipse_vals</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">+</span>  <span class="n">ellipse_vals</span>
+    <span class="k">elif</span> <span class="nb">all</span><span class="p">((</span><span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ellipsewin_vals</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">+</span>  <span class="n">ellipsewin_vals</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># we don&#39;t have any ellipticity info, just write points.</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;point(</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">) # point=circle text={</span><span class="si">%s</span><span class="s">} color=</span><span class="si">%s</span><span class="s"> tag={</span><span class="si">%s</span><span class="s">}&#39;</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">rec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">rec</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">withtext</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&#39;MAG_AUTO&#39;</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%i</span><span class="s"> </span><span class="si">%.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">rec</span><span class="p">[</span><span class="s">&#39;MAG_AUTO&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">text</span><span class="p">,</span> <span class="n">colour</span><span class="p">,</span> <span class="n">tag</span><span class="p">])</span>
+        <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmt</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
+
+    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">regions</span><span class="p">))</span>
+    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="write_DS9reg"><a class="viewcode-back" href="../../generated/barak.io.write_DS9reg.html#barak.io.write_DS9reg">[docs]</a><span class="k">def</span> <span class="nf">write_DS9reg</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">coord</span><span class="o">=</span><span class="s">&#39;IMAGE&#39;</span><span class="p">,</span> <span class="n">ptype</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                 <span class="n">c</span><span class="o">=</span><span class="s">&#39;green&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write a region file for ds9 for a  list of coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x, y : arrays of floats, shape (N,)</span>
+<span class="sd">      The coordinates. These may be image or WCS.</span>
+<span class="sd">    filename : str, optional</span>
+<span class="sd">      A filename to write to.</span>
+<span class="sd">    coord : str  (&#39;IMAGE&#39;)</span>
+<span class="sd">      The coordinate type. For example IMAGE (pixel coordinates) or</span>
+<span class="sd">      J2000.</span>
+<span class="sd">    ptype : str (&#39;x&#39;)</span>
+<span class="sd">      DS9 point type. One of {circle box diamond cross x arrow</span>
+<span class="sd">      boxcircle}</span>
+<span class="sd">    size : int (20)</span>
+<span class="sd">      DS9 point size.</span>
+<span class="sd">    c : str (&#39;green&#39;)</span>
+<span class="sd">      point colour: one of {cyan blue magenta red green yellow white</span>
+<span class="sd">      black}.</span>
+<span class="sd">    tag : str (&#39;all&#39;)</span>
+<span class="sd">      DS9 tag.</span>
+<span class="sd">    width : int (1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;global font=&quot;helvetica 10 normal&quot; select=1 highlite=1 &#39;</span>
+               <span class="s">&#39;edit=0 move=1 delete=1 include=1 fixed=0 source</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">]</span>
+    <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coord</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">iscontainer</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">ptype</span><span class="p">):</span>
+        <span class="n">ptype</span> <span class="o">=</span> <span class="p">[</span><span class="n">ptype</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="p">[</span><span class="n">size</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="p">[</span><span class="n">width</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;point(</span><span class="si">%12.8f</span><span class="s">,</span><span class="si">%12.8f</span><span class="s">) # </span><span class="se">\</span>
+<span class="s">point=</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> width=</span><span class="si">%s</span><span class="s"> text={</span><span class="si">%s</span><span class="s">} color=</span><span class="si">%s</span><span class="s"> tag={</span><span class="si">%s</span><span class="s">}</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ptype</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">width</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tag</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmt</span> <span class="o">%</span> <span class="n">vals</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">regions</span></div>
 </pre></div>
 
       </div>

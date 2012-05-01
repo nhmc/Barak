@@ -18,11 +18,15 @@ from ions and molecules.
 .. autosummary::
    :toctree: generated/
 
+   b_to_T
    calc_Wr
    calc_iontau
    calctau
    find_tau
-   getT
+   findtrans
+   read_HITRAN
+   readatom
+   split_trans_name
 
 abundances
 ----------
@@ -173,9 +177,12 @@ Functions to read and write text, fits and pickle files.
 
    loadobj
    parse_config
+   readsex
    readtabfits
    readtxt
    saveobj
+   sex_to_DS9reg
+   write_DS9reg
    writetabfits
    writetxt
 
@@ -216,14 +223,11 @@ bundled with this package).
    VpfitModel.writef13
    VpfitModel.writef26
    calc_v90
-   findatom
-   findtrans
    make_autovpin_input
    make_rdgen_input
    parse_entry
    parse_lines
    parse_regions
-   readatom
    readf13
    readf26
    sumlines
@@ -509,6 +513,16 @@ Both these cosmologies are flat (omega matter + omega lambda = 1).
 .. autosummary::
    :toctree: generated/
 
+
+Command line scripts
+--------------------
+========== =======================================================================================================
+ run_nproc Run a shell command on a list of files using multiple processors.                                      
+   qso_jhk Plot the spectrum of a QSO in the IR overlayed with atmospheric absorption and sky background emission.
+      fhdr Print the whole header or selected cards for a list of FITS files.                                     
+sex2DS9reg Make a ds9 region file from a SExtractor catalogue.                                                    
+     finfo Print a short summary for one or more FITS files.                                                      
+========== =======================================================================================================
 
 
 .. Indices and tables

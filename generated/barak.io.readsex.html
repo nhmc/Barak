@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.io.writetabfits &mdash; Barak 0.1dev documentation</title>
+    <title>barak.io.readsex &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,50 +28,53 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.io.writetxt" href="barak.io.writetxt.html" />
-    <link rel="prev" title="barak.io.write_DS9reg" href="barak.io.write_DS9reg.html" /> 
+    <link rel="next" title="barak.io.readtabfits" href="barak.io.readtabfits.html" />
+    <link rel="prev" title="barak.io.parse_config" href="barak.io.parse_config.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.io.writetabfits</span></h2>
+        <h2 class="heading"><span>barak.io.readsex</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.io.write_DS9reg.html">barak.io.write_DS9reg</a>
+        «&#160;&#160;<a href="barak.io.parse_config.html">barak.io.parse_config</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.io.writetxt.html">barak.io.writetxt</a>&#160;&#160;»
+        <a href="barak.io.readtabfits.html">barak.io.readtabfits</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-io-writetabfits">
-<h1>barak.io.writetabfits<a class="headerlink" href="#barak-io-writetabfits" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-io-readsex">
+<h1>barak.io.readsex<a class="headerlink" href="#barak-io-readsex" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.io.writetabfits">
-<tt class="descclassname">barak.io.</tt><tt class="descname">writetabfits</tt><big>(</big><em>filename</em>, <em>rec</em>, <em>units=None</em>, <em>overwrite=True</em><big>)</big><a class="reference internal" href="../_modules/barak/io.html#writetabfits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.io.writetabfits" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a list of numpy arrays or a structured array to a
-binary fits table. Works best with structured arrays.</p>
+<dt id="barak.io.readsex">
+<tt class="descclassname">barak.io.</tt><tt class="descname">readsex</tt><big>(</big><em>filename</em>, <em>catnum=None</em><big>)</big><a class="reference internal" href="../_modules/barak/io.html#readsex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.io.readsex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a sextractor catalogue into a Numpy record array.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>filename</strong> : str</p>
 <blockquote>
-<div><p>Filename to write to.</p>
+<div><p>Sextractor output catalogue name</p>
 </div></blockquote>
-<p><strong>rec</strong> : Sequence of arrays or record array</p>
+<p><strong>catnum</strong> : int, optional</p>
 <blockquote>
-<div><p>Data to write.</p>
+<div><p>If the Sextractor file is in LDAC_FITS format and contains more
+than one catalogue, this option specifies the catalogue number.</p>
 </div></blockquote>
-<p><strong>units</strong> : list of str (default None)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>s</strong> : numpy record array</p>
 <blockquote class="last">
-<div><p>Sequence of strings giving the units for each column.</p>
+<div><p>Record array with field names the same as those in the
+sextractor catalogue.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -86,11 +89,11 @@ binary fits table. Works best with structured arrays.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.io.write_DS9reg.html">barak.io.write_DS9reg</a>
+        «&#160;&#160;<a href="barak.io.parse_config.html">barak.io.parse_config</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.io.writetxt.html">barak.io.writetxt</a>&#160;&#160;»
+        <a href="barak.io.readtabfits.html">barak.io.readtabfits</a>&#160;&#160;»
         </p>
 
       </div>

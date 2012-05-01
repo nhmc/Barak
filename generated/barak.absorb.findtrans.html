@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.io.readtabfits &mdash; Barak 0.1dev documentation</title>
+    <title>barak.absorb.findtrans &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,35 +28,38 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.io.readtxt" href="barak.io.readtxt.html" />
-    <link rel="prev" title="barak.io.readsex" href="barak.io.readsex.html" /> 
+    <link rel="next" title="barak.absorb.read_HITRAN" href="barak.absorb.read_HITRAN.html" />
+    <link rel="prev" title="barak.absorb.find_tau" href="barak.absorb.find_tau.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.io.readtabfits</span></h2>
+        <h2 class="heading"><span>barak.absorb.findtrans</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.io.readsex.html">barak.io.readsex</a>
+        «&#160;&#160;<a href="barak.absorb.find_tau.html">barak.absorb.find_tau</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.io.readtxt.html">barak.io.readtxt</a>&#160;&#160;»
+        <a href="barak.absorb.read_HITRAN.html">barak.absorb.read_HITRAN</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-io-readtabfits">
-<h1>barak.io.readtabfits<a class="headerlink" href="#barak-io-readtabfits" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-absorb-findtrans">
+<h1>barak.absorb.findtrans<a class="headerlink" href="#barak-absorb-findtrans" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.io.readtabfits">
-<tt class="descclassname">barak.io.</tt><tt class="descname">readtabfits</tt><big>(</big><em>filename</em>, <em>ext=None</em><big>)</big><a class="reference internal" href="../_modules/barak/io.html#readtabfits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.io.readtabfits" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read fits binary table data, such as that written by
-<em class="xref py py-obj">writetabfits()</em>.</p>
+<dt id="barak.absorb.findtrans">
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">findtrans</tt><big>(</big><em>name</em>, <em>atomdat</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#findtrans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.findtrans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an ion and wavelength and list of transitions read with
+readatom(), return the best matching entry in atom.dat.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">name</span><span class="p">,</span> <span class="n">tr</span> <span class="o">=</span> <span class="n">findtrans</span><span class="p">(</span><span class="s">&#39;CIV 1550&#39;</span><span class="p">,</span> <span class="n">atomdat</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -66,11 +69,11 @@
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.io.readsex.html">barak.io.readsex</a>
+        «&#160;&#160;<a href="barak.absorb.find_tau.html">barak.absorb.find_tau</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.io.readtxt.html">barak.io.readtxt</a>&#160;&#160;»
+        <a href="barak.absorb.read_HITRAN.html">barak.absorb.read_HITRAN</a>&#160;&#160;»
         </p>
 
       </div>

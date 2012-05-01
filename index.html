@@ -68,6 +68,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#cosmology">cosmology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cosmology-core">cosmology.core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cosmology-parameters">cosmology.parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-scripts">Command line scripts</a></li>
 </ul>
 </li>
 </ul>
@@ -82,20 +83,32 @@ from ions and molecules.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;ew,&nbsp;ewer,&nbsp;tr)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T" title="barak.absorb.b_to_T"><tt class="xref py py-obj docutils literal"><span class="pre">b_to_T</span></tt></a>(atom,&nbsp;bvals)</td>
+<td>Convert b parameters (km/s) to a temperature in K for an atom</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;ew,&nbsp;ewer,&nbsp;tr)</td>
 <td>Find the rest equivalent width of a feature, and column density assuming optically thin.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau" title="barak.absorb.calc_iontau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_iontau</span></tt></a>(wa,&nbsp;ion,&nbsp;zp1,&nbsp;logN,&nbsp;b[,&nbsp;debug,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau" title="barak.absorb.calc_iontau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_iontau</span></tt></a>(wa,&nbsp;ion,&nbsp;zp1,&nbsp;logN,&nbsp;b[,&nbsp;debug,&nbsp;...])</td>
 <td>Returns tau values at each wavelength for transitions in ion.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calctau.html#barak.absorb.calctau" title="barak.absorb.calctau"><tt class="xref py py-obj docutils literal"><span class="pre">calctau</span></tt></a>(v,&nbsp;wav0,&nbsp;osc,&nbsp;gam,&nbsp;logN[,&nbsp;T,&nbsp;btemp,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calctau.html#barak.absorb.calctau" title="barak.absorb.calctau"><tt class="xref py py-obj docutils literal"><span class="pre">calctau</span></tt></a>(v,&nbsp;wav0,&nbsp;osc,&nbsp;gam,&nbsp;logN[,&nbsp;T,&nbsp;btemp,&nbsp;...])</td>
 <td>Returns the optical depth (Voigt profile) for a transition.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.find_tau.html#barak.absorb.find_tau" title="barak.absorb.find_tau"><tt class="xref py py-obj docutils literal"><span class="pre">find_tau</span></tt></a>(wa,&nbsp;lines,&nbsp;atom[,&nbsp;per_trans])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.find_tau.html#barak.absorb.find_tau" title="barak.absorb.find_tau"><tt class="xref py py-obj docutils literal"><span class="pre">find_tau</span></tt></a>(wa,&nbsp;lines,&nbsp;atom[,&nbsp;per_trans])</td>
 <td>Given a wavelength array, a reference atom.dat file read with readatom, and a list of lines giving the ion, redshift, log10(column density) and b parameter, return the tau at each wavelength from all these transitions.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.getT.html#barak.absorb.getT" title="barak.absorb.getT"><tt class="xref py py-obj docutils literal"><span class="pre">getT</span></tt></a>(atom,&nbsp;bvals)</td>
-<td>Convert b parameters (km/s) to a temperature in K for an atom</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.findtrans.html#barak.absorb.findtrans" title="barak.absorb.findtrans"><tt class="xref py py-obj docutils literal"><span class="pre">findtrans</span></tt></a>(name,&nbsp;atomdat)</td>
+<td>Given an ion and wavelength and list of transitions read with readatom(), return the best matching entry in atom.dat.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.read_HITRAN.html#barak.absorb.read_HITRAN" title="barak.absorb.read_HITRAN"><tt class="xref py py-obj docutils literal"><span class="pre">read_HITRAN</span></tt></a>([thelot])</td>
+<td>Return a list of molecular absorption features in the HITRAN</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.readatom.html#barak.absorb.readatom" title="barak.absorb.readatom"><tt class="xref py py-obj docutils literal"><span class="pre">readatom</span></tt></a>([filename,&nbsp;debug,&nbsp;flat,&nbsp;molecules,&nbsp;...])</td>
+<td>Reads in atomic transitions from a vpfit atom.dat file.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.split_trans_name.html#barak.absorb.split_trans_name" title="barak.absorb.split_trans_name"><tt class="xref py py-obj docutils literal"><span class="pre">split_trans_name</span></tt></a>(name)</td>
+<td>Given an transition string (say MgII), return the name of the atom</td>
 </tr>
 </tbody>
 </table>
@@ -442,19 +455,28 @@ astrophysical gas</td>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.io.parse_config.html#barak.io.parse_config" title="barak.io.parse_config"><tt class="xref py py-obj docutils literal"><span class="pre">parse_config</span></tt></a>(filename[,&nbsp;defaults])</td>
 <td>Read options for a configuration file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.readtabfits.html#barak.io.readtabfits" title="barak.io.readtabfits"><tt class="xref py py-obj docutils literal"><span class="pre">readtabfits</span></tt></a>(filename[,&nbsp;ext])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.readsex.html#barak.io.readsex" title="barak.io.readsex"><tt class="xref py py-obj docutils literal"><span class="pre">readsex</span></tt></a>(filename[,&nbsp;catnum])</td>
+<td>Read a sextractor catalogue into a Numpy record array.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.io.readtabfits.html#barak.io.readtabfits" title="barak.io.readtabfits"><tt class="xref py py-obj docutils literal"><span class="pre">readtabfits</span></tt></a>(filename[,&nbsp;ext])</td>
 <td>Read fits binary table data, such as that written by</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.io.readtxt.html#barak.io.readtxt" title="barak.io.readtxt"><tt class="xref py py-obj docutils literal"><span class="pre">readtxt</span></tt></a>(fh[,&nbsp;sep,&nbsp;usecols,&nbsp;comment,&nbsp;skip,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.readtxt.html#barak.io.readtxt" title="barak.io.readtxt"><tt class="xref py py-obj docutils literal"><span class="pre">readtxt</span></tt></a>(fh[,&nbsp;sep,&nbsp;usecols,&nbsp;comment,&nbsp;skip,&nbsp;...])</td>
 <td>Reads columns from a text file into arrays, converting to int, float or str where appropriate.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.saveobj.html#barak.io.saveobj" title="barak.io.saveobj"><tt class="xref py py-obj docutils literal"><span class="pre">saveobj</span></tt></a>(filename,&nbsp;obj[,&nbsp;overwrite])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.io.saveobj.html#barak.io.saveobj" title="barak.io.saveobj"><tt class="xref py py-obj docutils literal"><span class="pre">saveobj</span></tt></a>(filename,&nbsp;obj[,&nbsp;overwrite])</td>
 <td>Save a python object to filename using pickle.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.io.writetabfits.html#barak.io.writetabfits" title="barak.io.writetabfits"><tt class="xref py py-obj docutils literal"><span class="pre">writetabfits</span></tt></a>(filename,&nbsp;rec[,&nbsp;units,&nbsp;overwrite])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.sex_to_DS9reg.html#barak.io.sex_to_DS9reg" title="barak.io.sex_to_DS9reg"><tt class="xref py py-obj docutils literal"><span class="pre">sex_to_DS9reg</span></tt></a>(filename,&nbsp;s[,&nbsp;colour,&nbsp;tag,&nbsp;...])</td>
+<td>Write a DS9 region file from SExtractor output.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.io.write_DS9reg.html#barak.io.write_DS9reg" title="barak.io.write_DS9reg"><tt class="xref py py-obj docutils literal"><span class="pre">write_DS9reg</span></tt></a>(x,&nbsp;y[,&nbsp;filename,&nbsp;coord,&nbsp;ptype,&nbsp;...])</td>
+<td>Write a region file for ds9 for a  list of coordinates.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.writetabfits.html#barak.io.writetabfits" title="barak.io.writetabfits"><tt class="xref py py-obj docutils literal"><span class="pre">writetabfits</span></tt></a>(filename,&nbsp;rec[,&nbsp;units,&nbsp;overwrite])</td>
 <td>Writes a list of numpy arrays or a structured array to a binary fits table.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.io.writetxt.html#barak.io.writetxt" title="barak.io.writetxt"><tt class="xref py py-obj docutils literal"><span class="pre">writetxt</span></tt></a>(fh,&nbsp;cols[,&nbsp;sep,&nbsp;names,&nbsp;header,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.io.writetxt.html#barak.io.writetxt" title="barak.io.writetxt"><tt class="xref py py-obj docutils literal"><span class="pre">writetxt</span></tt></a>(fh,&nbsp;cols[,&nbsp;sep,&nbsp;names,&nbsp;header,&nbsp;...])</td>
 <td>Write data to a column-aligned text file.</td>
 </tr>
 </tbody>
@@ -523,12 +545,6 @@ bundled with this package).</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.calc_v90.html#barak.pyvpfit.calc_v90" title="barak.pyvpfit.calc_v90"><tt class="xref py py-obj docutils literal"><span class="pre">calc_v90</span></tt></a>(vp[,&nbsp;plot,&nbsp;z0,&nbsp;wav0,&nbsp;osc,&nbsp;gam])</td>
 <td>For a vp model, we want to calculate the velocity width that</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.findatom.html#barak.pyvpfit.findatom" title="barak.pyvpfit.findatom"><tt class="xref py py-obj docutils literal"><span class="pre">findatom</span></tt></a>(name)</td>
-<td>Given an ion string (say MgII), return just the name of the</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.findtrans.html#barak.pyvpfit.findtrans" title="barak.pyvpfit.findtrans"><tt class="xref py py-obj docutils literal"><span class="pre">findtrans</span></tt></a>(name,&nbsp;atomdat)</td>
-<td>Given an ion and wavelength and list of transitions read with readatom(), return the best matching entry in atom.dat.</td>
-</tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.make_autovpin_input.html#barak.pyvpfit.make_autovpin_input" title="barak.pyvpfit.make_autovpin_input"><tt class="xref py py-obj docutils literal"><span class="pre">make_autovpin_input</span></tt></a>(specfilename,&nbsp;filename)</td>
 <td></td>
 </tr>
@@ -544,16 +560,13 @@ bundled with this package).</p>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.parse_regions.html#barak.pyvpfit.parse_regions" title="barak.pyvpfit.parse_regions"><tt class="xref py py-obj docutils literal"><span class="pre">parse_regions</span></tt></a>(rows[,&nbsp;res])</td>
 <td>Parses the region information from a f26 or fort.13 file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.readatom.html#barak.pyvpfit.readatom" title="barak.pyvpfit.readatom"><tt class="xref py py-obj docutils literal"><span class="pre">readatom</span></tt></a>([filename,&nbsp;debug,&nbsp;flat,&nbsp;molecules,&nbsp;...])</td>
-<td>Reads in atomic transitions from a vpfit atom.dat file.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.readf13.html#barak.pyvpfit.readf13" title="barak.pyvpfit.readf13"><tt class="xref py py-obj docutils literal"><span class="pre">readf13</span></tt></a>(filename[,&nbsp;read_regions,&nbsp;res])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.readf13.html#barak.pyvpfit.readf13" title="barak.pyvpfit.readf13"><tt class="xref py py-obj docutils literal"><span class="pre">readf13</span></tt></a>(filename[,&nbsp;read_regions,&nbsp;res])</td>
 <td>Reads a fort.13 style file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.readf26.html#barak.pyvpfit.readf26" title="barak.pyvpfit.readf26"><tt class="xref py py-obj docutils literal"><span class="pre">readf26</span></tt></a>(filename[,&nbsp;res])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.readf26.html#barak.pyvpfit.readf26" title="barak.pyvpfit.readf26"><tt class="xref py py-obj docutils literal"><span class="pre">readf26</span></tt></a>(filename[,&nbsp;res])</td>
 <td>Reads a f26 style file and returns a VpfitModel object. If the</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.sumlines.html#barak.pyvpfit.sumlines" title="barak.pyvpfit.sumlines"><tt class="xref py py-obj docutils literal"><span class="pre">sumlines</span></tt></a>(lines)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.sumlines.html#barak.pyvpfit.sumlines" title="barak.pyvpfit.sumlines"><tt class="xref py py-obj docutils literal"><span class="pre">sumlines</span></tt></a>(lines)</td>
 <td>Given several lines (record array), returns them in the vpfit</td>
 </tr>
 </tbody>
@@ -1072,6 +1085,32 @@ given cosmology.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+</tbody>
+</table>
+</div>
+<div class="section" id="command-line-scripts">
+<h2>Command line scripts<a class="headerlink" href="#command-line-scripts" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="91%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>run_nproc</td>
+<td>Run a shell command on a list of files using multiple processors.</td>
+</tr>
+<tr class="row-even"><td>qso_jhk</td>
+<td>Plot the spectrum of a QSO in the IR overlayed with atmospheric absorption and sky background emission.</td>
+</tr>
+<tr class="row-odd"><td>fhdr</td>
+<td>Print the whole header or selected cards for a list of FITS files.</td>
+</tr>
+<tr class="row-even"><td>sex2DS9reg</td>
+<td>Make a ds9 region file from a SExtractor catalogue.</td>
+</tr>
+<tr class="row-odd"><td>finfo</td>
+<td>Print a short summary for one or more FITS files.</td>
+</tr>
 </tbody>
 </table>
 </div>

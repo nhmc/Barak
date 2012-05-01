@@ -54,10 +54,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">wrap</span>
-<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">indexnear</span><span class="p">,</span> <span class="n">get_data_path</span>
 <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">c_kms</span>
-
-<span class="n">DATAPATH</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
 
 <span class="c"># the data types of the lines and regions numpy arrays:</span>
 
@@ -415,107 +412,7 @@
             <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">locals</span><span class="p">()</span> <span class="p">)</span>
     <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
-    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="findtrans"><a class="viewcode-back" href="../../generated/barak.pyvpfit.findtrans.html#barak.pyvpfit.findtrans">[docs]</a><span class="k">def</span> <span class="nf">findtrans</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">atomdat</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Given an ion and wavelength and list of transitions read with</span>
-<span class="sd">    readatom(), return the best matching entry in atom.dat.</span>
-
-<span class="sd">    &gt;&gt;&gt; name, tr = findtrans(&#39;CIV 1550&#39;, atomdat)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">name</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;H2J0&#39;</span><span class="p">,</span><span class="s">&#39;H2J1&#39;</span><span class="p">,</span><span class="s">&#39;H2J2&#39;</span><span class="p">,</span><span class="s">&#39;H2J3&#39;</span><span class="p">,</span><span class="s">&#39;H2J4&#39;</span><span class="p">,</span><span class="s">&#39;H2J5&#39;</span><span class="p">]:</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">or</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;*&#39;</span><span class="p">:</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="n">ion</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">wa</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:])</span>
-    <span class="c"># must be sorted lowest to highest for indexnear</span>
-    <span class="n">isort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span><span class="o">.</span><span class="n">wa</span><span class="p">)</span>
-    <span class="n">sortwa</span> <span class="o">=</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span><span class="o">.</span><span class="n">wa</span><span class="p">[</span><span class="n">isort</span><span class="p">]</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="n">indexnear</span><span class="p">(</span><span class="n">sortwa</span><span class="p">,</span> <span class="n">wa</span><span class="p">)</span>
-    <span class="n">tr</span> <span class="o">=</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">][</span><span class="n">isort</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
-    <span class="c"># Make a short string that describes the transition, like &#39;CIV 1550&#39;</span>
-    <span class="n">wavstr</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;</span><span class="si">%.1f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">tr</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">trstr</span> <span class="o">=</span>  <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ion</span><span class="p">,</span> <span class="n">wavstr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">trstr</span><span class="p">,</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">][</span><span class="n">isort</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
-</div>
-<div class="viewcode-block" id="findatom"><a class="viewcode-back" href="../../generated/barak.pyvpfit.findatom.html#barak.pyvpfit.findatom">[docs]</a><span class="k">def</span> <span class="nf">findatom</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Given an ion string (say MgII), return just the name of the</span>
-<span class="sd">    atom (Mg)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">&#39;XVI&#39;</span><span class="p">:</span>
-        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-    
-</div>
-<div class="viewcode-block" id="readatom"><a class="viewcode-back" href="../../generated/barak.pyvpfit.readatom.html#barak.pyvpfit.readatom">[docs]</a><span class="k">def</span> <span class="nf">readatom</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-             <span class="n">flat</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">isotopes</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Reads in atomic transitions from a vpfit atom.dat file.  Single</span>
-<span class="sd">    argument is atom.dat filename.</span>
-
-<span class="sd">    Returns a dictionary of atoms.</span>
-
-<span class="sd">    if flat, return a flat array of atoms as well as a dictionary.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-
-<span class="sd">    &gt;&gt;&gt; at = readatom(&#39;data/atom.dat.gz&#39;)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c"># first 2 chars - element.</span>
-    <span class="c">#        Check that only alphabetic characters</span>
-    <span class="c">#        are used (if not, discard line).</span>
-    <span class="c"># next 4 chars - ionization state (I, II, II*, etc)</span>
-    <span class="c"># remove first 6 characters, then:</span>
-    <span class="c"># first string - wavelength</span>
-    <span class="c"># second string - osc strength</span>
-    <span class="c"># third string - lifetime? (intrinsic width constant)</span>
-    <span class="c"># ignore anything else on the line</span>
-
-    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/linelists/atom.dat.gz&#39;</span>
-
-    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.gz&#39;</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">gzip</span>
-        <span class="n">fh</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-    <span class="n">atom</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">atomflat</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>  <span class="k">print</span> <span class="n">line</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>  <span class="k">continue</span>
-        <span class="n">ion</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">molecules</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">ion</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;HD&#39;</span><span class="p">,</span><span class="s">&#39;CO&#39;</span><span class="p">,</span><span class="s">&#39;H2&#39;</span><span class="p">]):</span>
-                <span class="k">continue</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">isotopes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">ion</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s">&#39;abc&#39;</span> <span class="ow">or</span> <span class="n">ion</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;C3I&#39;</span><span class="p">:</span>
-                <span class="k">continue</span>
-        <span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]]</span>
-        <span class="k">if</span> <span class="n">ion</span> <span class="ow">in</span> <span class="n">atom</span><span class="p">:</span>
-            <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">)]</span>
-        <span class="n">atomflat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">ion</span><span class="p">,</span><span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">)</span> <span class="p">)</span>
-
-    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="c"># turn each ion into a record array</span>
-    <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="n">atom</span><span class="p">:</span>
-        <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;wa,osc,gam&#39;</span><span class="p">)</span>
-
-    <span class="n">atomflat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">atomflat</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="s">&#39;name,wa,osc,gam&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">flat</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">atom</span><span class="p">,</span> <span class="n">atomflat</span>
-    <span class="k">else</span><span class="p">:</span> 
-        <span class="k">return</span> <span class="n">atom</span></div>
+    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>
 
       </div>
