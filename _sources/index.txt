@@ -29,27 +29,27 @@ abundances
 
 Abundances and condensation temperatures.
 
-Contains:
+This contains the following two datasets:
 
-`Asolar`: an ordered dictionary of abundances from Lodders 2003, ApJ,
-591, 1220. (http://adsabs.harvard.edu/abs/2003ApJ...591.1220L)
+Asolar:
+  An ordered dictionary of abundances from `Lodders 2003, ApJ, 591,
+  1220 <http://adsabs.harvard.edu/abs/2003ApJ...591.1220L>`_. It
+  contains a value A for each element `el`, where A is defined::
 
-This gives a value A for each element, where A is defined for an
-element el as::
+    A(el) = log10 n(el)/n(H) - 12
 
-  A(el) = log10 n(el)/n(H) - 12
+  `n(el)` is the number density of atoms of that element, and `n(H)`
+  is the number density of hydrogen.
 
-n(el) is the number density of atoms of that element, and n(H) is the
-number density of hydrogen.
+cond_temp:
+  An array of condensation temperatures for each element from the same
+  reference.  The condensation temperature is the temperature at which
+  an element in a gaseous state attaches to dust grains.
 
-and
-
-`cond_temp`: an array of condensation temperatures (the temperature at
-which an element in a gaseous state attaches to dust grains) for each
-element from the same reference. In this array, `tc` is the
-condensation temperature in K when condensation begins and `tc50` is
-the 50% condensation temperature in K, when 50% of the element is left
-in a gaseous state.
+  It contains the values `tc` and `tc50` for each element, where `tc`
+  is the condensation temperature in K when condensation begins, and
+  `tc50` is the temperature when 50% of the element is left in a
+  gaseous state.
 
 .. currentmodule:: barak.abundances
 
@@ -129,7 +129,7 @@ Constants defined:
 convolve
 --------
 
-Functions related to convolution
+Functions related to convolution.
 
 .. currentmodule:: barak.convolve
 
@@ -149,8 +149,6 @@ Astronomical coordinate functions.
 .. autosummary::
    :toctree: generated/
 
-   _dec2s
-   _s2dec
    ang_sep
    check_ra_dec
    dec2s
@@ -260,7 +258,6 @@ copied from there (LGPL): http://astlib.sourceforge.net
    SED.plot
    SED.redshift_to
    Jy2Mag
-   _listfiles
    calc_extinction_Calzetti
    flux2mag
    get_SEDs
@@ -324,7 +321,6 @@ Spline-related functions.
    :toctree: generated/
 
    InterpCubicSpline
-   InterpCubicSpline._tridiag
    InterpCubicSpline.set_d2
    fit_spline
    interp_spline
@@ -383,17 +379,17 @@ barak.cosmology contains routines for cosmological distance measures
 and other quantities. References for most of the quantities calculated
 in this package are given by Hogg (astro-ph/9905116).
 
-The following objects are imported to the barak.cosmology namesapce:
+The following objects are available in the barak.cosmology namespace:
 
   Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
   arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
   radec_to_xyz, get_default, set_default, WMAP5, WMAP7
 
-See the barak.cosmology.core module for documentation for these.
+The code for these lives in the barak.cosmology.core module.
 
-Most of the functionality is enabled by the Cosmology object. For
-example, to create a new `Cosmology` object with arguments giving the
-hubble parameter, omega matter and omega lambda (all at z=0)::
+Most of the functionality is enabled by the `Cosmology` object. To
+create a new `Cosmology` object with arguments giving the hubble
+parameter, omega matter and omega lambda (all at z=0)::
 
   >>> from barak.cosmology import Cosmology
   >>> cosmo = Cosmology(H0=70, Om=0.3, Ol=0.7)
@@ -455,10 +451,6 @@ cosmology.core
 
    Cosmology
    Cosmology.H
-   Cosmology._efunc
-   Cosmology._inv_efunc
-   Cosmology._tfunc
-   Cosmology._xfunc
    Cosmology.absorption_distance
    Cosmology.age
    Cosmology.angular_diameter_distance

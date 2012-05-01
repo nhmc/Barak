@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.sed.calc_extinction_Calzetti &mdash; Barak 0.1dev documentation</title>
+    <title>barak.cosmology.core.distmod &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,43 +28,34 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.sed.flux2mag" href="barak.sed.flux2mag.html" />
-    <link rel="prev" title="barak.sed.Jy2Mag" href="barak.sed.Jy2Mag.html" /> 
+    <link rel="next" title="barak.cosmology.core.get_default" href="barak.cosmology.core.get_default.html" />
+    <link rel="prev" title="barak.cosmology.core.arcsec_per_kpc_proper" href="barak.cosmology.core.arcsec_per_kpc_proper.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.sed.calc_extinction_Calzetti</span></h2>
+        <h2 class="heading"><span>barak.cosmology.core.distmod</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.sed.Jy2Mag.html">barak.sed.Jy2Mag</a>
+        «&#160;&#160;<a href="barak.cosmology.core.arcsec_per_kpc_proper.html">barak.cosmology.core.arcsec_per_kpc_proper</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.sed.flux2mag.html">barak.sed.flux2mag</a>&#160;&#160;»
+        <a href="barak.cosmology.core.get_default.html">barak.cosmology.core.get_default</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-sed-calc-extinction-calzetti">
-<h1>barak.sed.calc_extinction_Calzetti<a class="headerlink" href="#barak-sed-calc-extinction-calzetti" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-cosmology-core-distmod">
+<h1>barak.cosmology.core.distmod<a class="headerlink" href="#barak-cosmology-core-distmod" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.sed.calc_extinction_Calzetti">
-<tt class="descclassname">barak.sed.</tt><tt class="descname">calc_extinction_Calzetti</tt><big>(</big><em>wa</em>, <em>EBmV</em><big>)</big><a class="reference internal" href="../_modules/barak/sed.html#calc_extinction_Calzetti"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.sed.calc_extinction_Calzetti" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the extinction as a function of wavelength for the given
-E(B-V) using the relation from Calzetti et al. 2000 (ApJ, 533,
-682).  R_v&#8217; = 4.05 is assumed (see equation (5) of Calzetti et
-al.) E(B-V) is the extinction in the stellar continuum.</p>
-<p>The wavelength array wa must be in Angstroms and sorted lowest -&gt;
-highest.</p>
-<p>Returns reddening such that:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">extincted_flux</span> <span class="o">=</span> <span class="n">unextincted_flux</span> <span class="o">*</span> <span class="n">reddening</span>
-</pre></div>
-</div>
+<dt id="barak.cosmology.core.distmod">
+<tt class="descclassname">barak.cosmology.core.</tt><tt class="descname">distmod</tt><big>(</big><em>z</em>, <em>cosmo=None</em><big>)</big><a class="reference internal" href="../_modules/barak/cosmology/core.html#distmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.cosmology.core.distmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance modulus at redshift <em class="xref py py-obj">z</em>.</p>
 </dd></dl>
 
 </div>
@@ -74,11 +65,11 @@ highest.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.sed.Jy2Mag.html">barak.sed.Jy2Mag</a>
+        «&#160;&#160;<a href="barak.cosmology.core.arcsec_per_kpc_proper.html">barak.cosmology.core.arcsec_per_kpc_proper</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.sed.flux2mag.html">barak.sed.flux2mag</a>&#160;&#160;»
+        <a href="barak.cosmology.core.get_default.html">barak.cosmology.core.get_default</a>&#160;&#160;»
         </p>
 
       </div>

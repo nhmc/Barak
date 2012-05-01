@@ -1,0 +1,6 @@
+barak.cosmology.core.distmod
+============================
+
+.. currentmodule:: barak.cosmology.core
+
+.. autofunction:: distmod

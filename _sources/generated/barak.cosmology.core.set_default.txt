@@ -1,0 +1,6 @@
+barak.cosmology.core.set_default
+================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. autofunction:: set_default

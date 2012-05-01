@@ -103,22 +103,27 @@ from ions and molecules.</p>
 <div class="section" id="abundances">
 <h2>abundances<a class="headerlink" href="#abundances" title="Permalink to this headline">¶</a></h2>
 <p>Abundances and condensation temperatures.</p>
-<p>Contains:</p>
-<p><em class="xref py py-obj">Asolar</em>: an ordered dictionary of abundances from Lodders 2003, ApJ,
-591, 1220. (<a class="reference external" href="http://adsabs.harvard.edu/abs/2003ApJ...591.1220L">http://adsabs.harvard.edu/abs/2003ApJ...591.1220L</a>)</p>
-<p>This gives a value A for each element, where A is defined for an
-element el as:</p>
+<p>This contains the following two datasets:</p>
+<dl class="docutils">
+<dt>Asolar:</dt>
+<dd><p class="first">An ordered dictionary of abundances from <a class="reference external" href="http://adsabs.harvard.edu/abs/2003ApJ...591.1220L">Lodders 2003, ApJ, 591,
+1220</a>. It
+contains a value A for each element <em class="xref py py-obj">el</em>, where A is defined:</p>
 <div class="highlight-python"><pre>A(el) = log10 n(el)/n(H) - 12</pre>
 </div>
-<p>n(el) is the number density of atoms of that element, and n(H) is the
-number density of hydrogen.</p>
-<p>and</p>
-<p><em class="xref py py-obj">cond_temp</em>: an array of condensation temperatures (the temperature at
-which an element in a gaseous state attaches to dust grains) for each
-element from the same reference. In this array, <em class="xref py py-obj">tc</em> is the
-condensation temperature in K when condensation begins and <em class="xref py py-obj">tc50</em> is
-the 50% condensation temperature in K, when 50% of the element is left
-in a gaseous state.</p>
+<p class="last"><em class="xref py py-obj">n(el)</em> is the number density of atoms of that element, and <em class="xref py py-obj">n(H)</em>
+is the number density of hydrogen.</p>
+</dd>
+<dt>cond_temp:</dt>
+<dd><p class="first">An array of condensation temperatures for each element from the same
+reference.  The condensation temperature is the temperature at which
+an element in a gaseous state attaches to dust grains.</p>
+<p class="last">It contains the values <em class="xref py py-obj">tc</em> and <em class="xref py py-obj">tc50</em> for each element, where <em class="xref py py-obj">tc</em>
+is the condensation temperature in K when condensation begins, and
+<em class="xref py py-obj">tc50</em> is the temperature when 50% of the element is left in a
+gaseous state.</p>
+</dd>
+</dl>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -361,7 +366,7 @@ astrophysical gas</td>
 </div>
 <div class="section" id="convolve">
 <h2>convolve<a class="headerlink" href="#convolve" title="Permalink to this headline">¶</a></h2>
-<p>Functions related to convolution</p>
+<p>Functions related to convolution.</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -386,12 +391,6 @@ astrophysical gas</td>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord._dec2s.html#barak.coord._dec2s" title="barak.coord._dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">_dec2s</span></tt></a>(ra,&nbsp;dec[,&nbsp;raformat,&nbsp;decformat])</td>
-<td>Converts decimal RA and Dec to sexigesimal.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord._s2dec.html#barak.coord._s2dec" title="barak.coord._s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">_s2dec</span></tt></a>(ra,&nbsp;dec)</td>
-<td>Converts two strings of sexigesimal RA and Dec to decimal.</td>
-</tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.ang_sep.html#barak.coord.ang_sep" title="barak.coord.ang_sep"><tt class="xref py py-obj docutils literal"><span class="pre">ang_sep</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2)</td>
 <td>Returns the angular separation in degrees on the celestial</td>
 </tr>
@@ -399,7 +398,7 @@ astrophysical gas</td>
 <td>Check 0 &lt;= RA &lt; 360 and -90 &lt;= Dec &lt;= 90.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.dec2s.html#barak.coord.dec2s" title="barak.coord.dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec2s</span></tt></a>(ra,&nbsp;dec)</td>
-<td>Convert and RA an Dec from degrees to sexigesimal.</td>
+<td>Convert an RA and Dec from degrees to sexigesimal.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.distsq.html#barak.coord.distsq" title="barak.coord.distsq"><tt class="xref py py-obj docutils literal"><span class="pre">distsq</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2)</td>
 <td>Find the distance squared in xyz space between two RAs and</td>
@@ -615,28 +614,25 @@ copied from there (LGPL): <a class="reference external" href="http://astlib.sour
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.Jy2Mag.html#barak.sed.Jy2Mag" title="barak.sed.Jy2Mag"><tt class="xref py py-obj docutils literal"><span class="pre">Jy2Mag</span></tt></a>(fluxJy)</td>
 <td>Converts flux density in Jy into AB magnitude.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed._listfiles.html#barak.sed._listfiles" title="barak.sed._listfiles"><tt class="xref py py-obj docutils literal"><span class="pre">_listfiles</span></tt></a>(topdir)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.calc_extinction_Calzetti.html#barak.sed.calc_extinction_Calzetti" title="barak.sed.calc_extinction_Calzetti"><tt class="xref py py-obj docutils literal"><span class="pre">calc_extinction_Calzetti</span></tt></a>(wa,&nbsp;EBmV)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.calc_extinction_Calzetti.html#barak.sed.calc_extinction_Calzetti" title="barak.sed.calc_extinction_Calzetti"><tt class="xref py py-obj docutils literal"><span class="pre">calc_extinction_Calzetti</span></tt></a>(wa,&nbsp;EBmV)</td>
 <td>Find the extinction as a function of wavelength for the given</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.flux2mag.html#barak.sed.flux2mag" title="barak.sed.flux2mag"><tt class="xref py py-obj docutils literal"><span class="pre">flux2mag</span></tt></a>(flux,&nbsp;fluxerr,&nbsp;band)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.flux2mag.html#barak.sed.flux2mag" title="barak.sed.flux2mag"><tt class="xref py py-obj docutils literal"><span class="pre">flux2mag</span></tt></a>(flux,&nbsp;fluxerr,&nbsp;band)</td>
 <td>Converts given flux and uncertainty in erg/s/cm^2/Angstrom into</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.get_SEDs.html#barak.sed.get_SEDs" title="barak.sed.get_SEDs"><tt class="xref py py-obj docutils literal"><span class="pre">get_SEDs</span></tt></a>([kind,&nbsp;names])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.get_SEDs.html#barak.sed.get_SEDs" title="barak.sed.get_SEDs"><tt class="xref py py-obj docutils literal"><span class="pre">get_SEDs</span></tt></a>([kind,&nbsp;names])</td>
 <td>Get one or more SEDs based on their type and filename</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.get_bands.html#barak.sed.get_bands" title="barak.sed.get_bands"><tt class="xref py py-obj docutils literal"><span class="pre">get_bands</span></tt></a>([instr,&nbsp;names,&nbsp;ccd])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.get_bands.html#barak.sed.get_bands" title="barak.sed.get_bands"><tt class="xref py py-obj docutils literal"><span class="pre">get_bands</span></tt></a>([instr,&nbsp;names,&nbsp;ccd])</td>
 <td>Get one or more passbands by giving the instrument and filename.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.get_extinction.html#barak.sed.get_extinction" title="barak.sed.get_extinction"><tt class="xref py py-obj docutils literal"><span class="pre">get_extinction</span></tt></a>([filename,&nbsp;airmass])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.get_extinction.html#barak.sed.get_extinction" title="barak.sed.get_extinction"><tt class="xref py py-obj docutils literal"><span class="pre">get_extinction</span></tt></a>([filename,&nbsp;airmass])</td>
 <td>return the atmospheric extinction from the given file.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.mag2Jy.html#barak.sed.mag2Jy" title="barak.sed.mag2Jy"><tt class="xref py py-obj docutils literal"><span class="pre">mag2Jy</span></tt></a>(ABmag)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.mag2Jy.html#barak.sed.mag2Jy" title="barak.sed.mag2Jy"><tt class="xref py py-obj docutils literal"><span class="pre">mag2Jy</span></tt></a>(ABmag)</td>
 <td>Converts an AB magnitude into flux density in Jy.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.mag2flux.html#barak.sed.mag2flux" title="barak.sed.mag2flux"><tt class="xref py py-obj docutils literal"><span class="pre">mag2flux</span></tt></a>(ABmag,&nbsp;ABmagerr,&nbsp;band)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.mag2flux.html#barak.sed.mag2flux" title="barak.sed.mag2flux"><tt class="xref py py-obj docutils literal"><span class="pre">mag2flux</span></tt></a>(ABmag,&nbsp;ABmagerr,&nbsp;band)</td>
 <td>Converts given AB magnitude and uncertainty into flux in the</td>
 </tr>
 </tbody>
@@ -763,19 +759,16 @@ spectrum-related functions.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline.html#barak.spline.InterpCubicSpline" title="barak.spline.InterpCubicSpline"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline</span></tt></a>(x,&nbsp;y[,&nbsp;firstderiv,&nbsp;...])</td>
 <td>Interpolate a cubic spline through a set of points.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline._tridiag.html#barak.spline.InterpCubicSpline._tridiag" title="barak.spline.InterpCubicSpline._tridiag"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline._tridiag</span></tt></a>(temp,&nbsp;d2)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline.set_d2.html#barak.spline.InterpCubicSpline.set_d2" title="barak.spline.InterpCubicSpline.set_d2"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline.set_d2</span></tt></a>([firstderiv,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.InterpCubicSpline.set_d2.html#barak.spline.InterpCubicSpline.set_d2" title="barak.spline.InterpCubicSpline.set_d2"><tt class="xref py py-obj docutils literal"><span class="pre">InterpCubicSpline.set_d2</span></tt></a>([firstderiv,&nbsp;...])</td>
 <td>Calculates the second derivative of a cubic spline function y = f(x) for each value in array x.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.fit_spline.html#barak.spline.fit_spline" title="barak.spline.fit_spline"><tt class="xref py py-obj docutils literal"><span class="pre">fit_spline</span></tt></a>(x,&nbsp;y[,&nbsp;bins,&nbsp;estimator])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.fit_spline.html#barak.spline.fit_spline" title="barak.spline.fit_spline"><tt class="xref py py-obj docutils literal"><span class="pre">fit_spline</span></tt></a>(x,&nbsp;y[,&nbsp;bins,&nbsp;estimator])</td>
 <td>Find a smooth function that approximates <em class="xref py py-obj">x</em>, <em class="xref py py-obj">y</em>.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.interp_spline.html#barak.spline.interp_spline" title="barak.spline.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.interp_spline.html#barak.spline.interp_spline" title="barak.spline.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
 <td>Like np.interp, but using spline instead of linear interpolation.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.splice.html#barak.spline.splice" title="barak.spline.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.splice.html#barak.spline.splice" title="barak.spline.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
 <td>Join two overlapping curves smoothly using a cubic spline.</td>
 </tr>
 </tbody>
@@ -882,15 +875,15 @@ spectrum-related functions.</p>
 <p>barak.cosmology contains routines for cosmological distance measures
 and other quantities. References for most of the quantities calculated
 in this package are given by Hogg (astro-ph/9905116).</p>
-<p>The following objects are imported to the barak.cosmology namesapce:</p>
+<p>The following objects are available in the barak.cosmology namespace:</p>
 <blockquote>
 <div>Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
 arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
 radec_to_xyz, get_default, set_default, WMAP5, WMAP7</div></blockquote>
-<p>See the barak.cosmology.core module for documentation for these.</p>
-<p>Most of the functionality is enabled by the Cosmology object. For
-example, to create a new <em class="xref py py-obj">Cosmology</em> object with arguments giving the
-hubble parameter, omega matter and omega lambda (all at z=0):</p>
+<p>The code for these lives in the barak.cosmology.core module.</p>
+<p>Most of the functionality is enabled by the <em class="xref py py-obj">Cosmology</em> object. To
+create a new <em class="xref py py-obj">Cosmology</em> object with arguments giving the hubble
+parameter, omega matter and omega lambda (all at z=0):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">barak.cosmology</span> <span class="kn">import</span> <span class="n">Cosmology</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cosmo</span> <span class="o">=</span> <span class="n">Cosmology</span><span class="p">(</span><span class="n">H0</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">Om</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">Ol</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cosmo</span>
@@ -957,18 +950,6 @@ it&#8217;s set to the 7 year WMAP cosmology.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.H.html#barak.cosmology.core.Cosmology.H" title="barak.cosmology.core.Cosmology.H"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.H</span></tt></a>(z)</td>
 <td>Hubble parameter (km/s/Mpc) at redshift <em class="xref py py-obj">z</em>.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._efunc.html#barak.cosmology.core.Cosmology._efunc" title="barak.cosmology.core.Cosmology._efunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._efunc</span></tt></a>(z)</td>
-<td>Function used to calculate the hubble parameter as a function of redshift.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._inv_efunc.html#barak.cosmology.core.Cosmology._inv_efunc" title="barak.cosmology.core.Cosmology._inv_efunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._inv_efunc</span></tt></a>(z)</td>
-<td>Integrand of the comoving distance.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._tfunc.html#barak.cosmology.core.Cosmology._tfunc" title="barak.cosmology.core.Cosmology._tfunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._tfunc</span></tt></a>(z)</td>
-<td>Integrand of the lookback time.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology._xfunc.html#barak.cosmology.core.Cosmology._xfunc" title="barak.cosmology.core.Cosmology._xfunc"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology._xfunc</span></tt></a>(z)</td>
-<td>Integrand of the absorption distance.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.cosmology.core.Cosmology.absorption_distance.html#barak.cosmology.core.Cosmology.absorption_distance" title="barak.cosmology.core.Cosmology.absorption_distance"><tt class="xref py py-obj docutils literal"><span class="pre">Cosmology.absorption_distance</span></tt></a>(z)</td>
 <td>Absorption distance at redshift <em class="xref py py-obj">z</em>.</td>

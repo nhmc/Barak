@@ -63,8 +63,8 @@ decimal degrees.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ra, dec: str or arrays of str, shape (N,)</strong> :</p>
 <blockquote>
-<div><p>The RA and Dec in &#8216;hour:min:s&#8217; &#8216;deg:min:s&#8217; format. The
-separators may be spaces or colons.</p>
+<div><p>The RA and Dec in &#8216;hour:min:s&#8217; &#8216;deg:min:s&#8217; format. Separators
+may be whitespace, colons, &#8216;h&#8217;, &#8216;m&#8217;, &#8216;s&#8217; or &#8216;d&#8217;.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -76,6 +76,19 @@ separators may be spaces or colons.</p>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s2dec</span><span class="p">(</span><span class="s">&#39;02h59m00.56s&#39;</span><span class="p">,</span> <span class="s">&#39;-80d10m04.3s&#39;</span><span class="p">)</span>
+<span class="go">(44.75233333333333, -80.16786111111112)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sras</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10:12:01.25&#39;</span><span class="p">,</span> <span class="s">&#39;10:14:06.13&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sdecs</span> <span class="o">=</span><span class="p">[</span><span class="s">&#39;01:01:45.65&#39;</span><span class="p">,</span> <span class="s">&#39;01:13:47.02&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="n">s2dec</span><span class="p">(</span><span class="n">sras</span><span class="p">,</span> <span class="n">sdecs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+<span class="go">[(153.00520833333334, 1.0293472222222222),</span>
+<span class="go">(153.52554166666667, 1.229727777777778)]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

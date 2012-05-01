@@ -168,7 +168,7 @@
     <span class="n">d2</span> <span class="o">=</span> <span class="n">distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">DEG_PER_RAD</span> <span class="o">*</span> <span class="n">distsq_to_radians</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="_dec2s"><a class="viewcode-back" href="../../generated/barak.coord._dec2s.html#barak.coord._dec2s">[docs]</a><span class="k">def</span> <span class="nf">_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span>
            <span class="n">raformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%06.3f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">decformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%05.2f</span><span class="s">&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Converts decimal RA and Dec to sexigesimal.</span>
 
@@ -197,9 +197,9 @@
     <span class="k">else</span><span class="p">:</span>  <span class="n">s_dec</span> <span class="o">=</span> <span class="s">&#39;+&#39;</span> <span class="o">+</span> <span class="n">decformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">decd</span><span class="p">,</span> <span class="n">decm</span><span class="p">,</span> <span class="n">decs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">s_ra</span><span class="p">,</span><span class="n">s_dec</span>
-</div>
+
 <div class="viewcode-block" id="dec2s"><a class="viewcode-back" href="../../generated/barak.coord.dec2s.html#barak.coord.dec2s">[docs]</a><span class="k">def</span> <span class="nf">dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Convert and RA an Dec from degrees to sexigesimal.</span>
+    <span class="sd">&quot;&quot;&quot; Convert an RA and Dec from degrees to sexigesimal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -216,9 +216,9 @@
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="n">radec</span> <span class="o">=</span> <span class="p">[</span><span class="n">_dec2s</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">))</span>
 </div>
-<div class="viewcode-block" id="_s2dec"><a class="viewcode-back" href="../../generated/barak.coord._s2dec.html#barak.coord._s2dec">[docs]</a><span class="k">def</span> <span class="nf">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Converts two strings of sexigesimal RA and Dec to decimal.</span>
 
 <span class="sd">    The separators between h/m/s and deg/arcmin/arcsec can be</span>
@@ -244,7 +244,7 @@
     <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>  <span class="n">d_dec</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
 
     <span class="k">return</span> <span class="n">d_ra</span><span class="p">,</span> <span class="n">d_dec</span>
-</div>
+
 <div class="viewcode-block" id="s2dec"><a class="viewcode-back" href="../../generated/barak.coord.s2dec.html#barak.coord.s2dec">[docs]</a><span class="k">def</span> <span class="nf">s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert a sexigesimal ra and dec (or list of ras and decs) to</span>
 <span class="sd">    decimal degrees.</span>
@@ -252,20 +252,32 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ra, dec: str or arrays of str, shape (N,)</span>
-<span class="sd">      The RA and Dec in &#39;hour:min:s&#39; &#39;deg:min:s&#39; format. The</span>
-<span class="sd">      separators may be spaces or colons.</span>
+<span class="sd">      The RA and Dec in &#39;hour:min:s&#39; &#39;deg:min:s&#39; format. Separators</span>
+<span class="sd">      may be whitespace, colons, &#39;h&#39;, &#39;m&#39;, &#39;s&#39; or &#39;d&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ra, dec: floats or arrays of floats, shape (N,)</span>
 <span class="sd">      The RA and Dec in degrees.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; s2dec(&#39;02h59m00.56s&#39;, &#39;-80d10m04.3s&#39;)</span>
+<span class="sd">    (44.75233333333333, -80.16786111111112)</span>
+
+<span class="sd">    &gt;&gt;&gt; sras = [&#39;10:12:01.25&#39;, &#39;10:14:06.13&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; sdecs =[&#39;01:01:45.65&#39;, &#39;01:13:47.02&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; ra, dec = s2dec(sras, sdecs)</span>
+<span class="sd">    &gt;&gt;&gt; print zip(ra, dec)</span>
+<span class="sd">    [(153.00520833333334, 1.0293472222222222),</span>
+<span class="sd">    (153.52554166666667, 1.229727777777778)]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="n">radec</span> <span class="o">=</span> <span class="p">[</span><span class="n">_s2dec</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">)))</span>
 </div>
 <div class="viewcode-block" id="match"><a class="viewcode-back" href="../../generated/barak.coord.match.html#barak.coord.match">[docs]</a><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">allmatches</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Given two sets of numpy arrays of ra,dec and a tolerance tol,</span>

@@ -1,0 +1,6 @@
+barak.cosmology.core.radec_to_xyz
+=================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. autofunction:: radec_to_xyz
