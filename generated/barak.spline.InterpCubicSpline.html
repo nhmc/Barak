@@ -56,9 +56,20 @@
 <dt id="barak.spline.InterpCubicSpline">
 <em class="property">class </em><tt class="descclassname">barak.spline.</tt><tt class="descname">InterpCubicSpline</tt><big>(</big><em>x</em>, <em>y</em>, <em>firstderiv=None</em>, <em>lastderiv=None</em>, <em>nochecks=False</em><big>)</big><a class="reference internal" href="../_modules/barak/spline.html#InterpCubicSpline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spline.InterpCubicSpline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate a cubic spline through a set of points.</p>
-<p>Instantiate the class with two arrays of points: x and
-y = f(x).</p>
-<table class="docutils field-list" frame="void" rules="none">
+<p>After initialisation, an instance can be called with an array of
+values xp, and will return the cubic-spline interpolated values yp
+= f(xp).</p>
+<p>The spline can be reset to use a new first and last derivative
+while still using the same initial points by calling the set_d2()
+method.</p>
+<p>If you want to calculate a new spline using a different set of x
+and y values, you&#8217;ll have to instantiate a new class.</p>
+<p>The spline generation is based on the NR algorithms (but not their
+routines.)</p>
+<dl class="method">
+<dt id="barak.spline.InterpCubicSpline.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em>, <em>firstderiv=None</em>, <em>lastderiv=None</em>, <em>nochecks=False</em><big>)</big><a class="reference internal" href="../_modules/barak/spline.html#InterpCubicSpline.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spline.InterpCubicSpline.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -75,28 +86,15 @@ y = f(x).</p>
 <div><p>Derivative of f(x) at x[-1]</p>
 </div></blockquote>
 <p><strong>nochecks</strong> : bool (False)</p>
-<blockquote>
+<blockquote class="last">
 <div><p>If False, check the x array is sorted and unique. Set to True
 for increased speed.</p>
 </div></blockquote>
-<p><strong>After initialisation, the instance can be called with an array of</strong> :</p>
-<p><strong>values xp, and will return the cubic-spline interpolated values</strong> :</p>
-<p><strong>yp = f(xp).</strong> :</p>
-<p><strong>The spline can be reset to use a new first and last derivative</strong> :</p>
-<p><strong>while still using the same initial points by calling the set_d2()</strong> :</p>
-<p><strong>method.</strong> :</p>
-<p><strong>If you want to calculate a new spline using a different set of x</strong> :</p>
-<p><strong>and y values, you&#8217;ll have to instantiate a new class.</strong> :</p>
-<p><strong>The spline generation is based on the NR algorithms (but not their</strong> :</p>
-<p class="last"><strong>routines.)</strong> :</p>
 </td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="barak.spline.InterpCubicSpline.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em>, <em>firstderiv=None</em>, <em>lastderiv=None</em>, <em>nochecks=False</em><big>)</big><a class="reference internal" href="../_modules/barak/spline.html#InterpCubicSpline.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spline.InterpCubicSpline.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -106,7 +104,15 @@ for increased speed.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#barak.spline.InterpCubicSpline.__init__" title="barak.spline.InterpCubicSpline.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(x,&nbsp;y[,&nbsp;firstderiv,&nbsp;lastderiv,&nbsp;nochecks])</td>
-<td></td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="barak.spline.InterpCubicSpline.set_d2.html#barak.spline.InterpCubicSpline.set_d2" title="barak.spline.InterpCubicSpline.set_d2"><tt class="xref py py-obj docutils literal"><span class="pre">set_d2</span></tt></a>([firstderiv,&nbsp;lastderiv,&nbsp;verbose])</td>
 <td>Calculates the second derivative of a cubic spline function y = f(x) for each value in array x.</td>

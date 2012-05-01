@@ -766,7 +766,7 @@ spectrum-related functions.</p>
 <td>Find a smooth function that approximates <em class="xref py py-obj">x</em>, <em class="xref py py-obj">y</em>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.spline.interp_spline.html#barak.spline.interp_spline" title="barak.spline.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
-<td>Like np.interp, but using spline instead of linear interpolation.</td>
+<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.7.dev-3cb783e)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spline.splice.html#barak.spline.splice" title="barak.spline.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
 <td>Join two overlapping curves smoothly using a cubic spline.</td>
@@ -872,15 +872,15 @@ spectrum-related functions.</p>
 </div>
 <div class="section" id="cosmology">
 <h2>cosmology<a class="headerlink" href="#cosmology" title="Permalink to this headline">¶</a></h2>
-<p>barak.cosmology contains routines for cosmological distance measures
+<p><tt class="xref py py-obj docutils literal"><span class="pre">barak.cosmology</span></tt> contains routines for cosmological distance measures
 and other quantities. References for most of the quantities calculated
 in this package are given by Hogg (astro-ph/9905116).</p>
-<p>The following objects are available in the barak.cosmology namespace:</p>
+<p>The following objects are available in the <tt class="xref py py-obj docutils literal"><span class="pre">barak.cosmology</span></tt> namespace:</p>
 <blockquote>
 <div>Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
 arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
 radec_to_xyz, get_default, set_default, WMAP5, WMAP7</div></blockquote>
-<p>The code for these lives in the barak.cosmology.core module.</p>
+<p>The code for these lives in <tt class="xref py py-obj docutils literal"><span class="pre">barak.cosmology.core</span></tt>.</p>
 <p>Most of the functionality is enabled by the <em class="xref py py-obj">Cosmology</em> object. To
 create a new <em class="xref py py-obj">Cosmology</em> object with arguments giving the hubble
 parameter, omega matter and omega lambda (all at z=0):</p>
@@ -917,10 +917,10 @@ available.  There are several standard cosmologies already defined:</p>
 <p>There are also several convenience functions that calculate quantities
 without needing to create a Cosmology object. These use a &#8216;default&#8217;
 cosmology if no cosmology instance is explicitly passed to them. The
-default can be set with <em class="xref py py-obj">cosmology.set_default()</em> and is accessed with
-<em class="xref py py-obj">cosmology.get_default()</em>. If you don&#8217;t set the default explicitly,
-then the first time it is accessed a warning message is printed and
-it&#8217;s set to the 7 year WMAP cosmology.</p>
+default can be set with <em class="xref py py-obj">set_default</em> and is accessed with
+<em class="xref py py-obj">get_default</em>. If you don&#8217;t set the default explicitly, then the
+first time it is accessed a warning message is printed and it&#8217;s set to
+the 7 year WMAP cosmology.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">astropy</span> <span class="kn">import</span> <span class="n">cosmology</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cosmology</span><span class="o">.</span><span class="n">kpc_proper_per_arcmin</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="go">472.91882815884907</span>

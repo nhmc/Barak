@@ -54,24 +54,9 @@
 <div class="viewcode-block" id="InterpCubicSpline"><a class="viewcode-back" href="../../generated/barak.spline.InterpCubicSpline.html#barak.spline.InterpCubicSpline">[docs]</a><span class="k">class</span> <span class="nc">InterpCubicSpline</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Interpolate a cubic spline through a set of points.</span>
 
-<span class="sd">    Instantiate the class with two arrays of points: x and</span>
-<span class="sd">    y = f(x).</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x, y : arrays of floats, shape (N,)</span>
-<span class="sd">      x and y = f(x).</span>
-<span class="sd">    firstderiv : float (None)</span>
-<span class="sd">      Derivative of f(x) at x[0]</span>
-<span class="sd">    lastderiv : float (None)</span>
-<span class="sd">      Derivative of f(x) at x[-1]</span>
-<span class="sd">    nochecks : bool (False)</span>
-<span class="sd">      If False, check the x array is sorted and unique. Set to True</span>
-<span class="sd">      for increased speed.</span>
-
-<span class="sd">    After initialisation, the instance can be called with an array of</span>
-<span class="sd">    values xp, and will return the cubic-spline interpolated values</span>
-<span class="sd">    yp = f(xp).</span>
+<span class="sd">    After initialisation, an instance can be called with an array of</span>
+<span class="sd">    values xp, and will return the cubic-spline interpolated values yp</span>
+<span class="sd">    = f(xp).</span>
 
 <span class="sd">    The spline can be reset to use a new first and last derivative</span>
 <span class="sd">    while still using the same initial points by calling the set_d2()</span>
@@ -84,6 +69,19 @@
 <span class="sd">    routines.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="InterpCubicSpline.__init__"><a class="viewcode-back" href="../../generated/barak.spline.InterpCubicSpline.html#barak.spline.InterpCubicSpline.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">firstderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x, y : arrays of floats, shape (N,)</span>
+<span class="sd">          x and y = f(x).</span>
+<span class="sd">        firstderiv : float (None)</span>
+<span class="sd">          Derivative of f(x) at x[0]</span>
+<span class="sd">        lastderiv : float (None)</span>
+<span class="sd">          Derivative of f(x) at x[-1]</span>
+<span class="sd">        nochecks : bool (False)</span>
+<span class="sd">          If False, check the x array is sorted and unique. Set to True</span>
+<span class="sd">          for increased speed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">if</span> <span class="s">&#39;i&#39;</span> <span class="ow">in</span>  <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
@@ -182,7 +180,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">d2</span> <span class="o">=</span> <span class="n">d2</span>
 </div></div>
 <div class="viewcode-block" id="interp_spline"><a class="viewcode-back" href="../../generated/barak.spline.interp_spline.html#barak.spline.interp_spline">[docs]</a><span class="k">def</span> <span class="nf">interp_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Like np.interp, but using spline instead of linear</span>
+    <span class="sd">&quot;&quot;&quot; Like `numpy.interp`, but using spline instead of linear</span>
 <span class="sd">    interpolation.</span>
 
 <span class="sd">    This is a convenience function wrapped around InterpCubicSpline.</span>
