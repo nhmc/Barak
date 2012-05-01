@@ -140,9 +140,8 @@ def poisson_noise(nflux, nsigma, seed=None):
     nflux : array of floats, shape (N,)
        Normalised flux values (i.e. flux values divided by
        the continuum).
-
-    If `seed` is given, it is used to seed the random number
-    generator.
+    seed : int, optional
+      If given, this is used to seed the random number generator.
 
     Returns
     -------

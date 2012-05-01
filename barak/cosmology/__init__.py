@@ -1,16 +1,16 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 """
-barak.cosmology contains routines for cosmological distance measures
+`barak.cosmology` contains routines for cosmological distance measures
 and other quantities. References for most of the quantities calculated
 in this package are given by Hogg (astro-ph/9905116).
 
-The following objects are available in the barak.cosmology namespace:
+The following objects are available in the `barak.cosmology` namespace:
 
   Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
   arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
   radec_to_xyz, get_default, set_default, WMAP5, WMAP7
 
-The code for these lives in the barak.cosmology.core module.
+The code for these lives in `barak.cosmology.core`.
 
 Most of the functionality is enabled by the `Cosmology` object. To
 create a new `Cosmology` object with arguments giving the hubble
@@ -47,10 +47,10 @@ available.  There are several standard cosmologies already defined:
 There are also several convenience functions that calculate quantities
 without needing to create a Cosmology object. These use a 'default'
 cosmology if no cosmology instance is explicitly passed to them. The
-default can be set with `cosmology.set_default()` and is accessed with
-`cosmology.get_default()`. If you don't set the default explicitly,
-then the first time it is accessed a warning message is printed and
-it's set to the 7 year WMAP cosmology.
+default can be set with `set_default` and is accessed with
+`get_default`. If you don't set the default explicitly, then the
+first time it is accessed a warning message is printed and it's set to
+the 7 year WMAP cosmology.
 
   >>> from astropy import cosmology
   >>> cosmology.kpc_proper_per_arcmin(3)

@@ -6,24 +6,9 @@ from utilities import between
 class InterpCubicSpline:
     """Interpolate a cubic spline through a set of points.
 
-    Instantiate the class with two arrays of points: x and
-    y = f(x).
-
-    Parameters
-    ----------
-    x, y : arrays of floats, shape (N,)
-      x and y = f(x).
-    firstderiv : float (None)
-      Derivative of f(x) at x[0]
-    lastderiv : float (None)
-      Derivative of f(x) at x[-1]
-    nochecks : bool (False)
-      If False, check the x array is sorted and unique. Set to True
-      for increased speed.
-
-    After initialisation, the instance can be called with an array of
-    values xp, and will return the cubic-spline interpolated values
-    yp = f(xp).
+    After initialisation, an instance can be called with an array of
+    values xp, and will return the cubic-spline interpolated values yp
+    = f(xp).
 
     The spline can be reset to use a new first and last derivative
     while still using the same initial points by calling the set_d2()
@@ -36,6 +21,19 @@ class InterpCubicSpline:
     routines.)
     """
     def __init__(self, x, y, firstderiv=None, lastderiv=None, nochecks=False):
+        """
+        Parameters
+        ----------
+        x, y : arrays of floats, shape (N,)
+          x and y = f(x).
+        firstderiv : float (None)
+          Derivative of f(x) at x[0]
+        lastderiv : float (None)
+          Derivative of f(x) at x[-1]
+        nochecks : bool (False)
+          If False, check the x array is sorted and unique. Set to True
+          for increased speed.
+        """
         x = np.asarray(x)
         y = np.asarray(y)
         if 'i' in  (x.dtype.str[1], y.dtype.str[1]):
@@ -134,7 +132,7 @@ class InterpCubicSpline:
         self.d2 = d2
 
 def interp_spline(x, xvals, yvals, nochecks=False):
-    """ Like np.interp, but using spline instead of linear
+    """ Like `numpy.interp`, but using spline instead of linear
     interpolation.
 
     This is a convenience function wrapped around InterpCubicSpline.

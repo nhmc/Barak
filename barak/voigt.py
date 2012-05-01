@@ -1018,15 +1018,15 @@ H3 = np.array(
 def voigt_wofz(a, u):
     """ Compute the Voigt function using Scipy's wofz().
 
-    Parameters::
-    
-     a: float
-       Ratio of Lorentzian to Gaussian linewidths.
-     u: array of floats
-       The frequency or velocity offsets from the line centre, in units
-       of the Gaussian broadening linewidth.
+    Parameters
+    ----------
+    a: float
+      Ratio of Lorentzian to Gaussian linewidths.
+    u: array of floats
+      The frequency or velocity offsets from the line centre, in units
+      of the Gaussian broadening linewidth.
 
-    See the notes for voigt() for more details.
+    See the notes for `voigt` for more details.
     """
     try:
          from scipy.special import wofz
