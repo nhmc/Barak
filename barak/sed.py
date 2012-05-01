@@ -166,6 +166,7 @@ class Passband(object):
             self.tr *= self.effic
 
         extinctmap = dict(LBC='kpno_atmos.dat', FORS='paranal_atmos.dat',
+                          HawkI='paranal_atmos.dat',
                           KPNO_Mosaic='kpno_atmos.dat',
                           CTIO_Mosaic='ctio_atmos.dat')
 
@@ -539,7 +540,7 @@ VEGA = SED('reference/Vega_bohlin2006')
 SUN = SED('reference/sun_stis')
 
 
-wa = np.logspace(1, 8, 1e5)
+wa = np.logspace(1, 10, 1e5)
 # AB SED has constant flux density 3631 Jy
 fl = 1e-8 * 3631 * Jy * c / (wa * 1e-8)**2  # erg/s/cm^2/Ang
 AB = SED(wa=wa, fl=fl)
