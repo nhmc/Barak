@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+""" Run a shell command on a list of files using multiple processors.
+""" 
 from multiprocessing import Pool
 from subprocess import call
 import sys, time

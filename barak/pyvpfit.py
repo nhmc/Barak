@@ -6,10 +6,7 @@ bundled with this package).
 import os
 import numpy as np
 from textwrap import wrap
-from utilities import indexnear, get_data_path
 from constants import c_kms
-
-DATAPATH = get_data_path()
 
 # the data types of the lines and regions numpy arrays:
 
@@ -368,103 +365,3 @@ def make_autovpin_input(specfilename, filename):
     fh = open(filename,'w')
     fh.write(temp)
     fh.close()
-
-def findtrans(name, atomdat):
-    """ Given an ion and wavelength and list of transitions read with
-    readatom(), return the best matching entry in atom.dat.
-
-    >>> name, tr = findtrans('CIV 1550', atomdat)
-    """
-    i = 0
-    name = name.strip()
-    if name[:4] in ['H2J0','H2J1','H2J2','H2J3','H2J4','H2J5']:
-        i = 4
-    else:
-        while name[i].isalpha() or name[i] == '*': i += 1
-    ion = name[:i]
-    wa = float(name[i:])
-    # must be sorted lowest to highest for indexnear
-    isort = np.argsort(atomdat[ion].wa)
-    sortwa = atomdat[ion].wa[isort]
-    ind = indexnear(sortwa, wa)
-    tr = atomdat[ion][isort[ind]]
-    # Make a short string that describes the transition, like 'CIV 1550'
-    wavstr = ('%.1f' % tr['wa']).split('.')[0]
-    trstr =  '%s %s' % (ion, wavstr)
-    return trstr, atomdat[ion][isort[ind]]
-
-def findatom(name):
-    """ Given an ion string (say MgII), return just the name of the
-    atom (Mg)
-    """
-    i = 0
-    while name[i] not in 'XVI':
-        i += 1
-    return name[:i]
-    
-
-def readatom(filename=None, debug=False,
-             flat=False, molecules=False, isotopes=False):
-    """ Reads in atomic transitions from a vpfit atom.dat file.  Single
-    argument is atom.dat filename.
-
-    Returns a dictionary of atoms.
-
-    if flat, return a flat array of atoms as well as a dictionary.
-
-    Examples
-    --------
-
-    >>> at = readatom('data/atom.dat.gz')
-    """
-
-    # first 2 chars - element.
-    #        Check that only alphabetic characters
-    #        are used (if not, discard line).
-    # next 4 chars - ionization state (I, II, II*, etc)
-    # remove first 6 characters, then:
-    # first string - wavelength
-    # second string - osc strength
-    # third string - lifetime? (intrinsic width constant)
-    # ignore anything else on the line
-
-    if filename is None:
-        filename = DATAPATH + '/linelists/atom.dat.gz'
-
-    if filename.endswith('.gz'):
-        import gzip
-        fh = gzip.open(filename)
-    else:
-        fh = open(filename)
-
-    atom = dict()
-    atomflat = []
-
-    for line in fh:
-        if debug:  print line
-        if not line[0].isupper():  continue
-        ion = line[:6].replace(' ','')
-        if not molecules:
-            if ion[:2] in set(['HD','CO','H2']):
-                continue
-        if not isotopes:
-            if ion[-1] in 'abc' or ion[:3] == 'C3I':
-                continue
-        wav,osc,gam = [float(item) for item in line[6:].split()[:3]]
-        if ion in atom:
-            atom[ion].append((wav,osc,gam))
-        else:
-            atom[ion] = [(wav,osc,gam)]
-        atomflat.append( (ion,wav,osc,gam) )
-
-    fh.close()
-    # turn each ion into a record array
-    for ion in atom:
-        atom[ion] = np.rec.fromrecords(atom[ion], names='wa,osc,gam')
-
-    atomflat = np.rec.fromrecords(atomflat,names='name,wa,osc,gam')
-
-    if flat:
-        return atom, atomflat
-    else: 
-        return atom

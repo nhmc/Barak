@@ -345,11 +345,17 @@ def parse_config(filename, defaults={}):
     defaults : dict
       A dictionary with default values for options.
 
-    The options are returned as a dictionary that can also be indexed
-    by attribute.
+    Returns
+    -------
+    d : dictionary
+      The options are returned as a dictionary that can also be
+      indexed by attribute.
 
+    Notes
+    -----
     Ignores blank lines, lines starting with '#', and anything on a
-    line after a '#'.
+    line after a '#'. The parser attempts to convert the values to
+    int, float or boolean, otherwise they are left as strings.
 
     Sample format::
 
@@ -357,9 +363,6 @@ def parse_config(filename, defaults={}):
      lines = lines.dat    
      x = 20
      save = True    # save the data
-
-    Attempts to convert the values to int, float, boolean otherwise
-    string.
     """
     cfg = adict()
     
@@ -385,3 +388,176 @@ def parse_config(filename, defaults={}):
 
     fh.close()
     return cfg
+
+def readsex(filename, catnum=None):
+    """ Read a sextractor catalogue into a Numpy record array.
+
+    Parameters
+    ----------
+    filename : str
+      Sextractor output catalogue name
+    catnum : int, optional
+      If the Sextractor file is in LDAC_FITS format and contains more
+      than one catalogue, this option specifies the catalogue number.
+
+    Returns
+    -------
+    s : numpy record array
+      Record array with field names the same as those in the
+      sextractor catalogue.
+    """
+    fh = open(filename)
+    # get the header
+    row = fh.next()
+    while not row.strip():
+        row = fh.next()
+    if row[8] == '=':
+        fh.close()
+        # assume a fits file
+        try:
+            import pyfits
+        except ImportError:
+            raise ValueError("Install Pyfits to read fits files")
+        fh = pyfits.open(filename)
+        if len(fh) > 3 and catnum is None:
+            raise ValueError("specify catalogue number")
+        elif catnum is not None:
+            return pyfits.getdata(filename, catnum*2).view(np.recarray)
+        else:
+            return pyfits.getdata(filename, 2).view(np.recarray)
+    hd = []
+    while row.startswith('#'):
+        if row[1:].strip():
+            hd.append(row)
+        row = fh.next()
+    fh.close()
+    # get column numbers and names
+    number, names = zip(*[row.split() for row in hd])[1:3]
+    indcol = [int(c)-1 for c in number]
+    if len(names) - len(set(names)):
+        dup = [n for n in set(names) if names.count(n) > 1]
+        raise ValueError('fields with same names: %s' % dup)
+    # read in the data
+    return readtxt(filename, names=names, usecols=indcol)
+
+def sex_to_DS9reg(filename, s, colour='green', tag='all', withtext=False):
+    """Write a DS9 region file from SExtractor output.
+
+    Parameters
+    ----------
+    filename : str
+      Region file name.
+    s : array
+      The output of `readsex`.
+    colour : str ('green')
+      Region colour. One of {cyan blue magenta red green yellow white
+      black}
+    tag : str ('all')
+      DS9 tag for all the regions
+    with_text : bool (False)
+      If True, then mark each region with either its magnitude (if
+      given), otherwise its index in the input array `s`.
+    """
+
+    names = set(s.dtype.names)
+    regions = ['global font="helvetica 10 normal" select=1 highlite=1 '
+               'edit=0 move=1 delete=1 include=1 fixed=0 source']
+    regions.append('image')
+    fields = ['X_IMAGE', 'Y_IMAGE']
+    if not ('X_IMAGE' in names and 'Y_IMAGE' in names):
+        fields = ['XWIN_IMAGE', 'YWIN_IMAGE']
+        if not ('XWIN_IMAGE' in names and 'YWIN_IMAGE' in names):
+            raise ValueError('require either X_IMAGE and Y_IMAGE '
+                             'or XWIN_IMAGE and YWIN_IMAGE')
+
+    fmt = 'ellipse(%s %s %s %s %s) # text={%s} color=%s tag={%s}'
+    ellipse_vals = ['A_IMAGE','B_IMAGE','THETA_IMAGE']
+    ellipsewin_vals = ['AWIN_IMAGE','BWIN_IMAGE','THETAWIN_IMAGE']
+    if all((n in names) for n in ellipse_vals):
+        fields = list(fields) +  ellipse_vals
+    elif all((n in names) for n in ellipsewin_vals):
+        fields = list(fields) +  ellipsewin_vals
+    else:
+        # we don't have any ellipticity info, just write points.
+        fmt = 'point(%s %s) # point=circle text={%s} color=%s tag={%s}'
+
+    for i,rec in enumerate(s):
+        vals = [rec[f] for f in fields]
+        if withtext:
+            if 'MAG_AUTO' in names:
+                text = '%i %.2f' % (i+1, rec['MAG_AUTO'])
+            else:
+                text = i+1
+        else:
+            text = ''
+        vals.extend([text, colour, tag])
+        regions.append(fmt % tuple(vals))
+
+    fh = open(filename,'w')
+    fh.write('\n'.join(regions))
+    fh.close()
+    
+def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
+                 c='green', tag='all', width=1, text=None):
+    """Write a region file for ds9 for a  list of coordinates.
+
+    Parameters
+    ----------
+    x, y : arrays of floats, shape (N,)
+      The coordinates. These may be image or WCS.
+    filename : str, optional
+      A filename to write to.
+    coord : str  ('IMAGE')
+      The coordinate type. For example IMAGE (pixel coordinates) or
+      J2000.
+    ptype : str ('x')
+      DS9 point type. One of {circle box diamond cross x arrow
+      boxcircle}
+    size : int (20)
+      DS9 point size.
+    c : str ('green')
+      point colour: one of {cyan blue magenta red green yellow white
+      black}.
+    tag : str ('all')
+      DS9 tag.
+    width : int (1)
+    """
+    regions = ['global font="helvetica 10 normal" select=1 highlite=1 '
+               'edit=0 move=1 delete=1 include=1 fixed=0 source\n']
+    regions.append(coord + '\n')
+
+    def iscontainer(s):
+        try:
+            it = iter(s)
+        except TypeError:
+            return False
+        else:
+            if isinstance(s, basestring) and len(s) != len(x):
+                return False
+        return True
+    
+    if not iscontainer(ptype):
+        ptype = [ptype] * len(x)
+    if not iscontainer(size):
+        size = [size] * len(x)
+    if not iscontainer(width):
+        width = [width] * len(x)
+    if not iscontainer(text):
+        text = range(len(x))
+    if not iscontainer(c):
+        c = [c] * len(x)
+    if not iscontainer(tag):
+        tag = [tag] * len(x)
+        
+    fmt = ('point(%12.8f,%12.8f) # \
+point=%s %s width=%s text={%s} color=%s tag={%s}\n')
+    for i in xrange(len(x)):
+        vals = (x[i], y[i], ptype[i], size[i], width[i], text[i],
+                c[i], tag[i])
+        regions.append(fmt % vals)
+
+    if filename is not None: 
+        fh = open(filename,'w')
+        fh.writelines(regions)
+        fh.close()
+    return regions

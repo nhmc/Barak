@@ -1,24 +1,25 @@
 #!/usr/bin/env python
-"""\
+""" Print the whole header or selected cards for a list of FITS files.
+
 Examples
 --------
-* Print the second extension header for data.fits
+Print the second extension header for data.fits
 
-fhdr -1 data.fits
+>>> fhdr -1 data.fits
 
-* Print the headers for all extensions for data.fits
+Print the headers for all extensions for data.fits
 
-fhdr -all data1.fits
+>>> fhdr -all data1.fits
 
-* List the first headers of data1.fits and data2.fits, and grab any
-  lines that have 'OBS' in them
+List the first headers of data1.fits and data2.fits, and grab any
+lines that have 'OBS' in them
 
-fhdr data1.fits data2.fits | grep 'OBS'
+>>> fhdr data1.fits data2.fits | grep 'OBS'
 
-* List the values of the NAXIS CD1_1 and OBID keywords for all the
-  files ending in .fits in the current directory.
+List the values of the NAXIS CD1_1 and OBID keywords for all the files
+ending in .fits in the current directory.
 
-fhdr *.fits NAXIS CD1_1 OBSID
+>>> fhdr *.fits NAXIS CD1_1 OBSID
 """
 import sys
 import warnings

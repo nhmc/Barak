@@ -90,6 +90,30 @@ def parse_module(modname, prefix='barak.'):
 
     return s
 
+def process_scripts(pkgdir, filenames):
+    descriptions = []
+    nwidth = dwidth = 0
+    for n in filenames:
+        fh = open(pkgdir + '/scripts/' + n)
+        s = fh.read()
+        fh.close()
+        i = s.index('"""') + 3
+        j = i + min(s[i:].index('"""'), s[i:].index('\n\n'))
+        d = s[i:j].strip(' \n\\').replace('\n', ' ')
+        descriptions.append(d)
+        nwidth = max(len(n), nwidth)
+        dwidth = max(len(d), dwidth)
+
+    s = """\
+Command line scripts
+--------------------
+"""
+    s += '='*nwidth + ' ' + '='*dwidth + '\n'
+    for i in range(len(filenames)):
+        s += '%*s %-*s\n' % (nwidth, filenames[i], dwidth, descriptions[i])
+    s += '='*nwidth + ' ' + '='*dwidth + '\n\n'
+
+    return s
 
 if 1:
     package_dir = '../barak'
@@ -100,7 +124,7 @@ if 1:
 
     filenames = [n for n in filenames if
                  n.endswith('.py') and n != '__init__.py']
-    s = header    
+    s = header
     for n in sorted(filenames):
         modname = n.replace('./', '')[:-3]
         s += parse_module(modname)
@@ -114,11 +138,14 @@ if 1:
         
         # skip these directories, or if we're deeper than one level
         if name.startswith(package_dir + '/data') or \
-           name.startswith(package_dir + '/sphinx') or \
            name.startswith(package_dir + '/tests') or \
-           name.startswith(package_dir + '/scripts') or \
+           name.startswith(package_dir + '/sphinx') or \
            len(name[len(package_dir)+1:].split('/')) > 1:
             continue
+        if name.startswith(package_dir + '/scripts'):
+            scripts = process_scripts(package_dir, filenames)
+            continue
+            
         filenames = [n for n in filenames if
                      n.endswith('.py') and n != '__init__.py']
         prefix = 'barak.' + name[len(package_dir)+1:] + '.'
@@ -129,7 +156,9 @@ if 1:
         for n in sorted(filenames):
             modname = n.replace('./', '')[:-3]
             s += parse_module(modname, prefix=prefix)
-        
+
+    s += scripts
+    
     s += footer
     
     open('index.rst', 'w').write(s)

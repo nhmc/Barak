@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+""" Print a short summary for one or more FITS files."""
 import sys
 if len(sys.argv) < 2:
     sys.exit('usage: finfo [filenames] ')

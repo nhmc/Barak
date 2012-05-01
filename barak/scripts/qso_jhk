@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-from ..sed import get_bands
-from ..spec import qso_template
-from ..utilities import between, get_data_path
-from ..io import readtxt
+""" Plot the spectrum of a QSO in the IR overlayed with atmospheric
+absorption and sky background emission.
+"""
+from barak.sed import get_bands
+from barak.spec import qso_template
+from barak.utilities import between, get_data_path
+from barak.io import readtxt
 
 import pylab as pl
 import numpy as np
@@ -12,7 +15,7 @@ if 1:
     z = float(sys.argv[1])
     wa = np.logspace(np.log10(10000), np.log10(30000), 1e4)
     fl = qso_template(wa, z)
-    datadir = get_data_path
+    datadir = get_data_path()
     J,H,K = get_bands('NIRI', ['niri_J.txt','niri_H.txt','niri_K.txt'])
 
     sky = readtxt(datadir + '/sky/ir_sky.dat', names='wa,em')

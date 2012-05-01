@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+""" Make a ds9 region file from a SExtractor catalogue."""
+from barak.io import readsex, sex_to_DS9reg
+
+usage = """\
+Usage: sex2DS9reg sextractor_catalogue_filename [DS9region_filename]
+
+Create a DS9 region file from a SExtractor output catalogue. It must
+contain either X_IMAGE and Y_IMAGE, or XWIN_IMAGE and YWIN_IMAGE. If
+A, B and THETA columns are also present, then ellipse regions are
+drawn, otherwise just points.
+"""
+
+def main(args):
+
+    if len(args) not in (1,2):
+        print usage
+        sys.exit()
+
+    catname = args[0] 
+    if len(args) == 1:
+        regname = catname.rsplit('.')[0] + '.reg'
+    else:
+        regname = args[1]
+
+    print 'Reading', catname
+    s = readsex(catname)
+    print 'writing to', regname
+    sex_to_DS9reg(regname, s)
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv[1:])
+
