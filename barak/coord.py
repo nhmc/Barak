@@ -3,7 +3,7 @@ import re
 import numpy as np
 from numpy.core.records import fromarrays
 
-from math import pi
+from math import pi, cos
 
 DEG_PER_HR = 360. / 24.           
 DEG_PER_MIN = DEG_PER_HR / 60.    
