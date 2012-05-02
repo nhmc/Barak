@@ -349,3 +349,45 @@ def histo(a, fmt='b', bins=10, ax=None, lw=2, log=False, **kwargs):
     if pl.isinteractive():
         pl.show()
     return vals,bins
+
+def arrplot(x, y, a, ax=None):
+    """ Plot an array with coordinates.
+
+    Label coordinates such that each coloured patch representing a
+    value in `a` is centred on its x,y coordinate.
+
+    Parameters
+    ----------
+    a : array, shape (N, M)
+      Values at each coordinate.
+    x : shape (N,)
+      Coordinates, must be equally spaced.
+    y : shape (M,)
+      Coordinates, must be equally spaced.
+    """
+    assert (len(x), len(y)) == a.shape
+
+    if ax is None:
+        pl.figure()
+        ax = pl.gca()
+    
+    x = np.sort(x)
+    y = np.sort(y)
+
+    dxvals = x[1:] - x[:-1]
+    dx = dxvals[0]
+    assert np.allclose(dx, dxvals[1:])
+    x0, x1 = x[0] - 0.5*dx, x[-1] + 0.5*dx
+
+    dyvals = y[1:] - y[:-1]
+    dy = dyvals[0]
+    assert np.allclose(dy, dyvals[1:])
+    y0, y1 = y[0] - 0.5*dy, y[-1] + 0.5*dy
+    
+    ax.imshow(a.T, aspect='auto', extent=(x0, x1, y0, y1),
+              interpolation='nearest')
+
+    if pl.isinteractive():
+        pl.show()
+
+    return ax

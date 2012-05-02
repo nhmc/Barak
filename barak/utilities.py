@@ -441,3 +441,33 @@ def get_data_path():
     """ Return the path to the data directory for this package.
     """
     return os.path.abspath(__file__).rsplit('/', 1)[0] + '/data/'
+
+def indices_from_grid(c, ref):
+    """ Convert coordinates to indices defined by grid of reference
+    values.
+
+    Parameters
+    ----------
+    c : array of floats, shape (M,)
+      Coordinates.
+    ref : array of floats, shape (N,)
+      Reference grid coordinates. They must be equally spaced.
+
+    Returns
+    -------
+    ind : arrays of floats
+      Coordinates mapped onto the indices of the reference grid.
+    """
+    ref = np.sort(ref)
+
+    dref = ref[1:] - ref[:-1]
+    dref0 = float(dref[0])
+    assert np.allclose(dref0, dref[1:])
+
+    c = np.sort(c)
+    
+    assert c[0] >= ref[0] and c[-1] <= ref[-1] 
+
+    ind = (c - ref[0]) / dref0
+    return ind
+

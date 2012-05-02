@@ -1,7 +1,8 @@
 """ Spline-related functions.
 """ 
 import numpy as np
-from utilities import between
+from utilities import between, indices_from_grid
+
 
 class InterpCubicSpline:
     """Interpolate a cubic spline through a set of points.
@@ -213,3 +214,77 @@ def splice(co0, co1, i, j, forced=None):
     newco[j:] = co1[j:].copy()
 
     return newco
+
+
+def _interp3d(ix, iy, iz, a):
+    """ Trilinear interpolation.
+
+    Parameters
+    ----------
+    ix, iy, iz : arrays of floats, shape (M, )
+      Coordinates of the points at which to interpolate. Values should
+      be floats from 0 - I-1, 0 - J-1 and 0 - K-1.
+    a: array of floats, shape (I, J, K)
+
+    Returns
+    -------
+    output : array of floats, shape (M,)
+
+    Notes
+    -----
+    This function isn't intended to be used directly. The public
+    trilinear interpolation function is `trilinear_interp`.
+    """
+    assert len(ix) == len(iy) == len(iz)
+
+    output = np.empty(len(ix))
+
+    x0 = ix.astype(int)
+    y0 = iy.astype(int)
+    z0 = iz.astype(int)
+    x1 = x0 + 1
+    y1 = y0 + 1
+    z1 = z0 + 1
+
+    x = ix - x0
+    y = iy - y0
+    z = iz - z0
+    output = (a[x0,y0,z0]*(1-x)*(1-y)*(1-z) +
+              a[x1,y0,z0]*x*(1-y)*(1-z) +
+              a[x0,y1,z0]*(1-x)*y*(1-z) +
+              a[x0,y0,z1]*(1-x)*(1-y)*z +
+              a[x1,y0,z1]*x*(1-y)*z +
+              a[x0,y1,z1]*(1-x)*y*z +
+              a[x1,y1,z0]*x*y*(1-z) +
+              a[x1,y1,z1]*x*y*z)
+
+    return output
+
+def trilinear_interp(x, y, z, xref, yref, zref, vals):
+    """ Trilinear interpolation.
+
+    Parameters
+    ----------
+    x, y, z : arrays of floats, shapes (M,), (N,), (O,)
+      Coordinate grid at which to interpolate `vals`.
+    xref, yref, zref : array of floats, shapes (I,), (J,), (K,)
+      Reference coordinate grid. The grid must be equally spaced along
+      each direction, but the spacing can be different between
+      directions.
+    vals: array of floats, shape (I, J, K)
+      Reference values at the reference grid positions.
+
+    Returns
+    -------
+    output : array of floats, shape (M,)
+    """
+    assert (len(xref), len(yref), len(zref)) == vals.shape
+    
+    ix = indices_from_grid(x, xref)
+    iy = indices_from_grid(y, yref)
+    iz = indices_from_grid(z, zref)
+    iX, iY, iZ = (a.ravel() for a in meshgrid_nd(ix, iy, iz))
+    out = _interp3d(iX, iY, iZ, vals)
+
+    # Note the index order and transpose!
+    return out.reshape(len(z), len(y), len(x)).T
