@@ -252,14 +252,14 @@ def _interp3d(ix, iy, iz, a):
     x = ix - x0
     y = iy - y0
     z = iz - z0
-    output = (a[x0,y0,z0]*(1-x)*(1-y)*(1-z) +
-              a[x1,y0,z0]*x*(1-y)*(1-z) +
-              a[x0,y1,z0]*(1-x)*y*(1-z) +
-              a[x0,y0,z1]*(1-x)*(1-y)*z +
-              a[x1,y0,z1]*x*(1-y)*z +
-              a[x0,y1,z1]*(1-x)*y*z +
-              a[x1,y1,z0]*x*y*(1-z) +
-              a[x1,y1,z1]*x*y*z)
+    output = (a[x0,y0,z0] * (1-x) * (1-y) * (1-z) +
+              a[x1,y0,z0] * x * (1-y) * (1-z) +
+              a[x0,y1,z0] * (1-x) * y * (1-z) +
+              a[x0,y0,z1] * (1-x) * (1-y) * z +
+              a[x1,y0,z1] * x * (1-y) * z +
+              a[x0,y1,z1] * (1-x) * y *z +
+              a[x1,y1,z0] * x * y * (1-z) +
+              a[x1,y1,z1] * x * y * z)
 
     return output
 
@@ -274,12 +274,12 @@ def trilinear_interp(x, y, z, xref, yref, zref, vals):
       Reference coordinate grid. The grid must be equally spaced along
       each direction, but the spacing can be different between
       directions.
-    vals: array of floats, shape (I, J, K)
+    vals : array of floats, shape (I, J, K)
       Reference values at the reference grid positions.
 
     Returns
     -------
-    output : array of floats, shape (M,)
+    output : array of floats, shape (M, N, O)
     """
     assert (len(xref), len(yref), len(zref)) == vals.shape
     

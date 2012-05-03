@@ -23,13 +23,13 @@ def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
     Parameters
     ----------
     v : array of floats, shape (N,)
-      velocities
+      Velocities in km/s.
     wav0 : float
-      Rest wavelength opf transition in Angstroms.
+      Rest wavelength op transition in Angstroms.
     osc : float
-      Oscillator strength of transition.
+      Oscillator strength of transition (dimensionless).
     gam : float
-      Gamma parameter for the transition.
+      Gamma parameter for the transition (dimensionless).
     logN : float:
       log10 of the column density in absorbers per cm^2.
     btemp : float (20)
@@ -42,16 +42,15 @@ def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
     Returns
     -------
     tau : array of floats, shape (N,)
-      The optical depth as a function of v
+      The optical depth as a function of `v`.
 
     Notes
     -----
     The step size for `v` must be small enough to properly
     sample the profile.
 
-    Examples
-    --------
-    To map the velocity array to some wavelength:
+    To map the velocity array to some wavelength for a transitions
+    with rest wavelength wav0 at redshift z:
 
     >>> z = 3.0
     >>> wa = wav0 * (1 + z) * (1 + v/c_kms)
@@ -71,7 +70,6 @@ def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
 
     fwhml = gam_v / (2.*pi)                # cm/s
     fwhmg = 2. * sqrt_ln2 * b                # cm/s
-
 
     ##### sampling check, first get velocity width ######
     ic = np.searchsorted(v, 0)
@@ -276,7 +274,7 @@ def b_to_T(atom, bvals):
 
 def read_HITRAN(thelot=False):
     """ Return a list of molecular absorption features in the HITRAN
-    2004 list with wavelengths < 24000 Ang (Journal of Quantitative
+    2004 list with wavelengths < 25000 Ang (Journal of Quantitative
     Spectroscopy & Radiative Transfer 96, 2005, 139-204).
 
     By default only lines with intensity > 5e-26 are returned. Set
@@ -296,12 +294,27 @@ def read_HITRAN(thelot=False):
 
 def readatom(filename=None, debug=False,
              flat=False, molecules=False, isotopes=False):
-    """ Reads in atomic transitions from a vpfit atom.dat file.  Single
-    argument is atom.dat filename.
+    """ Reads atomic transition data from a vpfit-style atom.dat file.
 
-    Returns a dictionary of atoms.
-
-    if flat, return a flat array of atoms as well as a dictionary.
+    Parameters
+    ----------
+    filename : str, optional
+      The name of the atom.dat-style file. If not given, then the
+      version bundled with `barak` is used.
+    flat : bool (False)
+      If True, return a flattened array, with the data not grouped by
+      transition.
+    molecules : bool (False)
+      If True, also return data for H2 and CO molecules.
+    isotopes : bool (False)
+      If True, also return data for isotopes.
+      
+    Returns
+    -------
+    atom [, atom_flat] : dict [, dict]
+      A dictionary of transition data, in general grouped by
+      electronic transition (MgI, MgII and so on). If `flat` = True,
+      also return a flattened version of the same data.
     """
 
     # first 2 chars - element.
@@ -380,8 +393,8 @@ def findtrans(name, atomdat):
     return trstr, atomdat[ion][isort[ind]]
 
 def split_trans_name(name):
-    """ Given an transition string (say MgII), return the name of the atom
-    and the ionization string (Mg, II).
+    """ Given a transition string (say MgII), return the name of the
+    atom and the ionization string (Mg, II).
     """
     i = 0
     while name[i] not in 'XVI':
