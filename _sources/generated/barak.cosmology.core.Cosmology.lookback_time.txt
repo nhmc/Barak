@@ -1,0 +1,6 @@
+barak.cosmology.core.Cosmology.lookback_time
+============================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. automethod:: Cosmology.lookback_time

@@ -1,0 +1,6 @@
+barak.cosmology.core.Cosmology.luminosity_distance
+==================================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. automethod:: Cosmology.luminosity_distance

@@ -1,0 +1,6 @@
+barak.cosmology.core.Cosmology.comoving_transverse_distance
+===========================================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. automethod:: Cosmology.comoving_transverse_distance

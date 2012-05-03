@@ -1,0 +1,127 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.absorb.calc_iontau &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.absorb.calctau" href="barak.absorb.calctau.html" />
+    <link rel="prev" title="barak.absorb.calc_Wr" href="barak.absorb.calc_Wr.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.absorb.calc_iontau</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.calc_Wr.html">barak.absorb.calc_Wr</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.absorb.calctau.html">barak.absorb.calctau</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-absorb-calc-iontau">
+<h1>barak.absorb.calc_iontau<a class="headerlink" href="#barak-absorb-calc-iontau" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.absorb.calc_iontau">
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_iontau</tt><big>(</big><em>wa</em>, <em>ion</em>, <em>zp1</em>, <em>logN</em>, <em>b</em>, <em>debug=False</em>, <em>ticks=False</em>, <em>maxdv=1000.0</em>, <em>label_tau_threshold=0.01</em>, <em>vpad=500.0</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_iontau"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_iontau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tau values at each wavelength for transitions in ion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>wa</strong> : array of floats</p>
+<blockquote>
+<div><p>wavelength array</p>
+</div></blockquote>
+<p><strong>ion</strong> : atom.data entry</p>
+<blockquote>
+<div><p>ion entry from readatom output dictionary</p>
+</div></blockquote>
+<p><strong>zp1</strong> : float</p>
+<blockquote>
+<div><p>redshift + 1</p>
+</div></blockquote>
+<p><strong>logN</strong> : float</p>
+<blockquote>
+<div><p>log10(column density in cm**-2)</p>
+</div></blockquote>
+<p><strong>b</strong> : float</p>
+<blockquote>
+<div><p>b parameter (km/s).  Assumes thermal broadening.</p>
+</div></blockquote>
+<p><strong>maxdv</strong> : float (default 1000)</p>
+<blockquote>
+<div><p>For performance reasons, only calculate the Voigt profile for a
+single line to +/- maxdv.  Increase this if you expect DLA-type
+extended wings. None for no maximum.</p>
+</div></blockquote>
+<p><strong>vpad</strong> : float (default 500)</p>
+<blockquote>
+<div><p>Include transitions that are within vpad km/s of either edge of
+the wavelength array.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>tau</strong> : array of floats</p>
+<blockquote class="last">
+<div><p>Array of optical depth values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.calc_Wr.html">barak.absorb.calc_Wr</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.absorb.calctau.html">barak.absorb.calctau</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

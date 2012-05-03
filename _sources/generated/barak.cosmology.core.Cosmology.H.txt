@@ -1,0 +1,6 @@
+barak.cosmology.core.Cosmology.H
+================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. automethod:: Cosmology.H

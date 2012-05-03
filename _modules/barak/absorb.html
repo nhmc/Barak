@@ -1,0 +1,454 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.absorb &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.absorb</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.absorb</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; This module has routines for analysing the absorption profiles</span>
+<span class="sd">from ions and molecules.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">voigt</span>
+<span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
+<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span><span class="p">,</span> <span class="n">adict</span><span class="p">,</span> <span class="n">get_data_path</span><span class="p">,</span> <span class="n">indexnear</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">Ar</span><span class="p">,</span> <span class="n">me</span><span class="p">,</span> <span class="n">mp</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">sqrt_ln2</span><span class="p">,</span> <span class="n">c_kms</span>
+
+<div class="viewcode-block" id="calctau"><a class="viewcode-back" href="../../generated/barak.absorb.calctau.html#barak.absorb.calctau">[docs]</a><span class="k">def</span> <span class="nf">calctau</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">wav0</span><span class="p">,</span> <span class="n">osc</span><span class="p">,</span> <span class="n">gam</span><span class="p">,</span> <span class="n">logN</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">btemp</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">bturb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns the optical depth (Voigt profile) for a transition.</span>
+
+<span class="sd">    Given an transition with rest wavelength wav0, osc strength,</span>
+<span class="sd">    natural linewidth gam; b parameter (doppler and turbulent); and</span>
+<span class="sd">    log10 (column density), returns the optical depth in velocity</span>
+<span class="sd">    space. v is an array of velocity values in km/s. The absorption</span>
+<span class="sd">    line must be centred at v=0.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : array of floats, shape (N,)</span>
+<span class="sd">      velocities</span>
+<span class="sd">    wav0 : float</span>
+<span class="sd">      Rest wavelength opf transition in Angstroms.</span>
+<span class="sd">    osc : float</span>
+<span class="sd">      Oscillator strength of transition.</span>
+<span class="sd">    gam : float</span>
+<span class="sd">      Gamma parameter for the transition.</span>
+<span class="sd">    logN : float:</span>
+<span class="sd">      log10 of the column density in absorbers per cm^2.</span>
+<span class="sd">    btemp : float (20)</span>
+<span class="sd">      *b* parameter from doppler temperature broadening (km/s)</span>
+<span class="sd">    bturb : float (0)</span>
+<span class="sd">      *b* parameter from doppler turbulent broadening (km/s)</span>
+<span class="sd">    T : float (None)</span>
+<span class="sd">      Temperature of cloud in Kelvin (overrides btemp).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tau : array of floats, shape (N,)</span>
+<span class="sd">      The optical depth as a function of v</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The step size for `v` must be small enough to properly</span>
+<span class="sd">    sample the profile.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To map the velocity array to some wavelength:</span>
+
+<span class="sd">    &gt;&gt;&gt; z = 3.0</span>
+<span class="sd">    &gt;&gt;&gt; wa = wav0 * (1 + z) * (1 + v/c_kms)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># note units are cgs</span>
+    <span class="n">wav0</span> <span class="o">=</span> <span class="n">wav0</span> <span class="o">*</span> <span class="mf">1e-8</span>                    <span class="c"># cm</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span>                          <span class="c"># absorbers/cm^2</span>
+    <span class="k">if</span> <span class="n">T</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">btemp</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">T</span> <span class="o">/</span> <span class="n">mp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-5</span>     <span class="c"># km/s</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">btemp</span><span class="p">,</span> <span class="n">bturb</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e5</span>    <span class="c"># cm/s</span>
+    <span class="n">nu0</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="n">wav0</span>                        <span class="c"># rest frequency, s^-1</span>
+    <span class="c"># Now use doppler relation between v and nu assuming gam &lt;&lt; nu0</span>
+    <span class="n">gam_v</span> <span class="o">=</span> <span class="n">gam</span> <span class="o">/</span> <span class="n">nu0</span> <span class="o">*</span> <span class="n">c</span>             <span class="c"># cm/s</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="k">print</span> <span class="p">(</span><span class="s">&#39;Widths in km/s (Lorentzian Gamma, Gaussian b):&#39;</span><span class="p">,</span>
+               <span class="n">gam_v</span><span class="o">/</span><span class="mf">1.e5</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="mf">1.e5</span><span class="p">)</span>
+
+    <span class="n">fwhml</span> <span class="o">=</span> <span class="n">gam_v</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span>                <span class="c"># cm/s</span>
+    <span class="n">fwhmg</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">sqrt_ln2</span> <span class="o">*</span> <span class="n">b</span>                <span class="c"># cm/s</span>
+
+
+    <span class="c">##### sampling check, first get velocity width ######</span>
+    <span class="n">ic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># it&#39;s ok if the transition is outside the fitting region.</span>
+        <span class="k">if</span> <span class="n">ic</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">ic</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">ic</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ic</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">vstep</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="n">ic</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">ic</span><span class="p">,</span> <span class="n">ic</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="n">fwhm</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">gam_v</span><span class="o">/</span><span class="mf">1.e5</span><span class="p">,</span> <span class="n">fwhmg</span><span class="o">/</span><span class="mf">1.e5</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">vstep</span> <span class="o">&gt;</span> <span class="n">fwhm</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Warning: tau profile undersampled!&#39;</span>
+        <span class="k">print</span> <span class="s">&#39;  Pixel width: </span><span class="si">%f</span><span class="s"> km/s, transition fwhm: </span><span class="si">%f</span><span class="s"> km/s&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vstep</span><span class="p">,</span><span class="n">fwhm</span><span class="p">)</span>
+        <span class="c"># best not to correct for this here, because even if we do,</span>
+        <span class="c"># we&#39;ll get nonsense if we convolve the resulting flux with an</span>
+        <span class="c"># instrumental profile.  Need to use smaller dv size</span>
+        <span class="c"># throughout tau, exp(-tau) and convolution of exp(-tau)</span>
+        <span class="c"># calculations, only re-binning back to original dv size after</span>
+        <span class="c"># all these steps.</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="mf">1.e5</span> <span class="o">/</span> <span class="n">b</span> <span class="o">*</span> <span class="n">v</span>                      <span class="c"># dimensionless</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">gam_v</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>                       <span class="c"># dimensionless</span>
+    <span class="n">vp</span> <span class="o">=</span> <span class="n">voigt</span><span class="o">.</span><span class="n">voigt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>                     <span class="c"># dimensionless</span>
+    <span class="n">const</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">me</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>                 <span class="c"># m^2/s</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">const</span><span class="o">*</span><span class="n">N</span><span class="o">*</span><span class="n">osc</span><span class="o">*</span><span class="n">wav0</span> <span class="o">/</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">vp</span> <span class="c"># dimensionless</span>
+
+    <span class="k">return</span> <span class="n">tau</span>
+</div>
+<div class="viewcode-block" id="calc_iontau"><a class="viewcode-back" href="../../generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau">[docs]</a><span class="k">def</span> <span class="nf">calc_iontau</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">ion</span><span class="p">,</span> <span class="n">zp1</span><span class="p">,</span> <span class="n">logN</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxdv</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span>
+                <span class="n">label_tau_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns tau values at each wavelength for transitions in ion.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wa : array of floats</span>
+<span class="sd">      wavelength array</span>
+<span class="sd">    ion : atom.data entry</span>
+<span class="sd">      ion entry from readatom output dictionary</span>
+<span class="sd">    zp1 : float</span>
+<span class="sd">      redshift + 1</span>
+<span class="sd">    logN : float</span>
+<span class="sd">      log10(column density in cm**-2)</span>
+<span class="sd">    b : float</span>
+<span class="sd">      b parameter (km/s).  Assumes thermal broadening.</span>
+<span class="sd">    maxdv : float (default 1000)</span>
+<span class="sd">      For performance reasons, only calculate the Voigt profile for a</span>
+<span class="sd">      single line to +/- maxdv.  Increase this if you expect DLA-type</span>
+<span class="sd">      extended wings. None for no maximum.</span>
+<span class="sd">    vpad : float (default 500)</span>
+<span class="sd">      Include transitions that are within vpad km/s of either edge of</span>
+<span class="sd">      the wavelength array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tau : array of floats</span>
+<span class="sd">      Array of optical depth values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">zp1</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">psize</span> <span class="o">=</span>  <span class="n">c_kms</span> <span class="o">*</span> <span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;approx pixel width </span><span class="si">%.1f</span><span class="s"> km/s at </span><span class="si">%.1f</span><span class="s"> Ang&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">psize</span><span class="p">,</span> <span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="c">#select only ions with redshifted central wavelengths inside wa,</span>
+    <span class="c">#+/- the padding velocity range vpad.</span>
+    <span class="n">obswavs</span> <span class="o">=</span> <span class="n">ion</span><span class="o">.</span><span class="n">wa</span> <span class="o">*</span> <span class="n">zp1</span>
+    <span class="n">wmin</span> <span class="o">=</span> <span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">vpad</span> <span class="o">/</span> <span class="n">c_kms</span><span class="p">)</span>
+    <span class="n">wmax</span> <span class="o">=</span> <span class="n">wa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">vpad</span> <span class="o">/</span> <span class="n">c_kms</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">ion</span><span class="p">[</span><span class="n">between</span><span class="p">(</span><span class="n">obswavs</span><span class="p">,</span> <span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trans</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;No transitions found overlapping with wavelength array&#39;</span>
+
+    <span class="n">tickmarks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sumtau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="n">i1</span> <span class="o">=</span> <span class="bp">None</span> 
+    <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">wav0</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trans</span><span class="p">):</span>
+        <span class="n">refwav</span> <span class="o">=</span> <span class="n">wav0</span> <span class="o">*</span> <span class="n">zp1</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="p">(</span><span class="n">wa</span> <span class="o">-</span> <span class="n">refwav</span><span class="p">)</span> <span class="o">/</span> <span class="n">refwav</span> <span class="o">*</span> <span class="n">c_kms</span>
+        <span class="k">if</span> <span class="n">maxdv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">i0</span><span class="p">,</span><span class="n">i1</span> <span class="o">=</span> <span class="n">dv</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">([</span><span class="o">-</span><span class="n">maxdv</span><span class="p">,</span> <span class="n">maxdv</span><span class="p">])</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="n">calctau</span><span class="p">(</span><span class="n">dv</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">],</span> <span class="n">wav0</span><span class="p">,</span> <span class="n">osc</span><span class="p">,</span> <span class="n">gam</span><span class="p">,</span> <span class="n">logN</span><span class="p">,</span> <span class="n">btemp</span><span class="o">=</span><span class="n">b</span><span class="p">,</span>
+                      <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ticks</span> <span class="ow">and</span> <span class="n">tau</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">label_tau_threshold</span><span class="p">:</span>
+            <span class="n">tickmarks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">refwav</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">wav0</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+        <span class="n">sumtau</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tau</span>
+
+    <span class="k">if</span> <span class="n">ticks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sumtau</span><span class="p">,</span> <span class="n">tickmarks</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sumtau</span>
+</div>
+<div class="viewcode-block" id="find_tau"><a class="viewcode-back" href="../../generated/barak.absorb.find_tau.html#barak.absorb.find_tau">[docs]</a><span class="k">def</span> <span class="nf">find_tau</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">per_trans</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Given a wavelength array, a reference atom.dat file read with</span>
+<span class="sd">    readatom, and a list of lines giving the ion, redshift,</span>
+<span class="sd">    log10(column density) and b parameter, return the tau at each</span>
+<span class="sd">    wavelength from all these transitions.</span>
+
+<span class="sd">    Note this assumes the wavelength array has small enough pixel</span>
+<span class="sd">    separations so that the profiles are properly sampled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
+    <span class="c">#print &#39;finding tau...&#39;</span>
+    <span class="n">ticks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">taus</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ion</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">logN</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="c">#print &#39;z, logN, b&#39;, z, logN, b</span>
+        <span class="n">maxdv</span> <span class="o">=</span> <span class="mi">20000</span> <span class="k">if</span> <span class="n">logN</span> <span class="o">&gt;</span> <span class="mi">18</span> <span class="k">else</span> <span class="mi">1000</span>
+        <span class="n">t</span><span class="p">,</span><span class="n">tick</span> <span class="o">=</span> <span class="n">calc_iontau</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">],</span> <span class="n">z</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">logN</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">maxdv</span><span class="o">=</span><span class="n">maxdv</span><span class="p">)</span>
+        <span class="n">tau</span> <span class="o">+=</span> <span class="n">t</span>
+        <span class="k">if</span> <span class="n">per_trans</span><span class="p">:</span>
+            <span class="n">taus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">ticks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tick</span><span class="p">)</span>
+        <span class="n">ions</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">ion</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">tick</span><span class="p">))</span>
+
+    <span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromarrays</span><span class="p">([</span><span class="n">ions</span><span class="p">]</span> <span class="o">+</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">ticks</span><span class="p">),</span><span class="n">names</span><span class="o">=</span><span class="s">&#39;name,wa,z,wa0,ind&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">per_trans</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">taus</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ticks</span>
+
+</div>
+<div class="viewcode-block" id="calc_Wr"><a class="viewcode-back" href="../../generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr">[docs]</a><span class="k">def</span> <span class="nf">calc_Wr</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">ew</span><span class="p">,</span> <span class="n">ewer</span><span class="p">,</span> <span class="n">tr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the rest equivalent width of a feature, and column</span>
+<span class="sd">    density assuming optically thin.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    i0, i1 : int</span>
+<span class="sd">      Start and end indices of feature (inclusive).</span>
+<span class="sd">    wa : array of floats, shape (N,)</span>
+<span class="sd">      Observed wavelengths.</span>
+<span class="sd">    ew : array of floats, shape (N,)</span>
+<span class="sd">      Equivalent width per pixel.</span>
+<span class="sd">    ewer : array of floats, shape (N,)</span>
+<span class="sd">      Equivalent width 1 sigma error per pixel.</span>
+<span class="sd">    tr : atom.dat entry</span>
+<span class="sd">      Transition entry from an atom.dat array read by pyvpfit.readatom(),</span>
+<span class="sd">      with attributes wav (rest wavelength) and osc (oscillator strength).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A dictionary with keys:</span>
+
+<span class="sd">    ======== =========================================================</span>
+<span class="sd">    logN     1 sigma low val, value, 1 sigma upper val</span>
+<span class="sd">    Ndetlim  log N 5 sigma upper limit</span>
+<span class="sd">    Wr       Rest equivalent width in same units as wa</span>
+<span class="sd">    Wre      1 sigma error on rest equivalent width</span>
+<span class="sd">    zp1      1 + redshift</span>
+<span class="sd">    ngoodpix number of good pixels contributing to the measurements </span>
+<span class="sd">    Nmult    multiplier to get from equivalent width to column density</span>
+<span class="sd">    ======== =========================================================</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ew1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ew</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ewer1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ewer</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">wa1</span> <span class="o">=</span> <span class="n">wa</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c"># interpolate over bad values</span>
+    <span class="n">good</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ew1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ewer1</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">good</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">ew1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ew1</span><span class="p">[</span><span class="n">good</span><span class="p">])</span>
+        <span class="n">ewer1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ewer1</span><span class="p">[</span><span class="n">good</span><span class="p">])</span> 
+    <span class="n">W</span> <span class="o">=</span> <span class="n">ew1</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">We</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">ewer1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">zp1</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">wa1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">tr</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">]</span>
+    <span class="n">Wr</span> <span class="o">=</span> <span class="n">W</span> <span class="o">/</span> <span class="n">zp1</span>
+    <span class="n">Wre</span> <span class="o">=</span> <span class="n">We</span> <span class="o">/</span> <span class="n">zp1</span>
+    <span class="c"># Assume we are on the linear part of curve of growth (will be an</span>
+    <span class="c"># underestimate if saturated)</span>
+    <span class="n">Nmult</span> <span class="o">=</span> <span class="mf">1.13e20</span> <span class="o">/</span> <span class="p">(</span><span class="n">tr</span><span class="p">[</span><span class="s">&#39;osc&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">tr</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">+</span> <span class="n">Wre</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Nmult</span> <span class="o">*</span> <span class="n">Wr</span><span class="p">)</span>
+    <span class="n">clo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">-</span> <span class="n">Wre</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">Nwa</span> <span class="o">=</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="n">ew1</span> <span class="o">/</span> <span class="n">zp1</span>
+    <span class="c"># 5 sigma detection limit</span>
+    <span class="n">detlim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="mi">5</span><span class="o">*</span><span class="n">Wre</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">adict</span><span class="p">(</span><span class="n">logN</span><span class="o">=</span><span class="p">(</span><span class="n">clo</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">chi</span><span class="p">),</span> <span class="n">Ndetlim</span><span class="o">=</span><span class="n">detlim</span><span class="p">,</span> <span class="n">Wr</span><span class="o">=</span><span class="n">Wr</span><span class="p">,</span> <span class="n">Wre</span><span class="o">=</span><span class="n">Wre</span><span class="p">,</span> <span class="n">zp1</span><span class="o">=</span><span class="n">zp1</span><span class="p">,</span>
+                 <span class="n">ngoodpix</span><span class="o">=</span><span class="n">good</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">Nmult</span><span class="o">=</span><span class="n">Nmult</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="b_to_T"><a class="viewcode-back" href="../../generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T">[docs]</a><span class="k">def</span> <span class="nf">b_to_T</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">bvals</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert b parameters (km/s) to a temperature in K for an atom</span>
+<span class="sd">    with mass amu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">bvals</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e5</span>
+
+    <span class="c"># convert everything to cgs</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">amu</span> <span class="o">*</span> <span class="n">mp</span> <span class="o">/</span> <span class="n">k</span>
+    
+    <span class="c"># b \propto sqrt(2kT/m)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span>  <span class="n">T</span>
+</div>
+<div class="viewcode-block" id="read_HITRAN"><a class="viewcode-back" href="../../generated/barak.absorb.read_HITRAN.html#barak.absorb.read_HITRAN">[docs]</a><span class="k">def</span> <span class="nf">read_HITRAN</span><span class="p">(</span><span class="n">thelot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return a list of molecular absorption features in the HITRAN</span>
+<span class="sd">    2004 list with wavelengths &lt; 24000 Ang (Journal of Quantitative</span>
+<span class="sd">    Spectroscopy &amp; Radiative Transfer 96, 2005, 139-204).</span>
+
+<span class="sd">    By default only lines with intensity &gt; 5e-26 are returned. Set</span>
+<span class="sd">    thelot=True if you really want the whole catalogue.</span>
+
+<span class="sd">    The returned wavelengths are in Angstroms.</span>
+
+<span class="sd">    The strongest absorption features in the optical range is</span>
+<span class="sd">    typically O2.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/linelists/HITRAN2004_wa_lt_25000.fits.gz&#39;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">readtabfits</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">thelot</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">lines</span><span class="o">.</span><span class="n">intensity</span> <span class="o">&gt;</span> <span class="mf">5e-26</span><span class="p">]</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s">&#39;wav&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lines</span>
+</div>
+<div class="viewcode-block" id="readatom"><a class="viewcode-back" href="../../generated/barak.absorb.readatom.html#barak.absorb.readatom">[docs]</a><span class="k">def</span> <span class="nf">readatom</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+             <span class="n">flat</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">isotopes</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Reads in atomic transitions from a vpfit atom.dat file.  Single</span>
+<span class="sd">    argument is atom.dat filename.</span>
+
+<span class="sd">    Returns a dictionary of atoms.</span>
+
+<span class="sd">    if flat, return a flat array of atoms as well as a dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># first 2 chars - element.</span>
+    <span class="c">#        Check that only alphabetic characters</span>
+    <span class="c">#        are used (if not, discard line).</span>
+    <span class="c"># next 4 chars - ionization state (I, II, II*, etc)</span>
+    <span class="c"># remove first 6 characters, then:</span>
+    <span class="c"># first string - wavelength</span>
+    <span class="c"># second string - osc strength</span>
+    <span class="c"># third string - lifetime? (intrinsic width constant)</span>
+    <span class="c"># ignore anything else on the line</span>
+
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/linelists/atom.dat.gz&#39;</span>
+
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.gz&#39;</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">gzip</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">atom</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">atomflat</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>  <span class="k">print</span> <span class="n">line</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>  <span class="k">continue</span>
+        <span class="n">ion</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">molecules</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ion</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;HD&#39;</span><span class="p">,</span><span class="s">&#39;CO&#39;</span><span class="p">,</span><span class="s">&#39;H2&#39;</span><span class="p">]):</span>
+                <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isotopes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ion</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s">&#39;abc&#39;</span> <span class="ow">or</span> <span class="n">ion</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;C3I&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">ion</span> <span class="ow">in</span> <span class="n">atom</span><span class="p">:</span>
+            <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">)]</span>
+        <span class="n">atomflat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">ion</span><span class="p">,</span><span class="n">wav</span><span class="p">,</span><span class="n">osc</span><span class="p">,</span><span class="n">gam</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c"># turn each ion into a record array</span>
+    <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="n">atom</span><span class="p">:</span>
+        <span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">ion</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;wa,osc,gam&#39;</span><span class="p">)</span>
+
+    <span class="n">atomflat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">atomflat</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="s">&#39;name,wa,osc,gam&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">flat</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">atom</span><span class="p">,</span> <span class="n">atomflat</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">return</span> <span class="n">atom</span>
+</div>
+<div class="viewcode-block" id="findtrans"><a class="viewcode-back" href="../../generated/barak.absorb.findtrans.html#barak.absorb.findtrans">[docs]</a><span class="k">def</span> <span class="nf">findtrans</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">atomdat</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Given an ion and wavelength and list of transitions read with</span>
+<span class="sd">    readatom(), return the best matching entry in atom.dat.</span>
+
+<span class="sd">    &gt;&gt;&gt; name, tr = findtrans(&#39;CIV 1550&#39;, atomdat)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;H2J0&#39;</span><span class="p">,</span><span class="s">&#39;H2J1&#39;</span><span class="p">,</span><span class="s">&#39;H2J2&#39;</span><span class="p">,</span><span class="s">&#39;H2J3&#39;</span><span class="p">,</span><span class="s">&#39;H2J4&#39;</span><span class="p">,</span><span class="s">&#39;H2J5&#39;</span><span class="p">]:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">or</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;*&#39;</span><span class="p">:</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">ion</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">wa</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:])</span>
+    <span class="c"># must be sorted lowest to highest for indexnear</span>
+    <span class="n">isort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span><span class="o">.</span><span class="n">wa</span><span class="p">)</span>
+    <span class="n">sortwa</span> <span class="o">=</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">]</span><span class="o">.</span><span class="n">wa</span><span class="p">[</span><span class="n">isort</span><span class="p">]</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">indexnear</span><span class="p">(</span><span class="n">sortwa</span><span class="p">,</span> <span class="n">wa</span><span class="p">)</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">][</span><span class="n">isort</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
+    <span class="c"># Make a short string that describes the transition, like &#39;CIV 1550&#39;</span>
+    <span class="n">wavstr</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;</span><span class="si">%.1f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">tr</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">trstr</span> <span class="o">=</span>  <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ion</span><span class="p">,</span> <span class="n">wavstr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trstr</span><span class="p">,</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">][</span><span class="n">isort</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
+</div>
+<div class="viewcode-block" id="split_trans_name"><a class="viewcode-back" href="../../generated/barak.absorb.split_trans_name.html#barak.absorb.split_trans_name">[docs]</a><span class="k">def</span> <span class="nf">split_trans_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Given an transition string (say MgII), return the name of the atom</span>
+<span class="sd">    and the ionization string (Mg, II).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">&#39;XVI&#39;</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

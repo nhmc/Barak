@@ -1,0 +1,6 @@
+barak.utilities.blackbody_lam
+=============================
+
+.. currentmodule:: barak.utilities
+
+.. autofunction:: blackbody_lam

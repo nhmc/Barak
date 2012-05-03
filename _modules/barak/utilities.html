@@ -1,0 +1,538 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.utilities &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.utilities</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.utilities</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Various general-use functions.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">wrap</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span>
+
+<div class="viewcode-block" id="Bunch"><a class="viewcode-back" href="../../generated/barak.utilities.Bunch.html#barak.utilities.Bunch">[docs]</a><span class="k">class</span> <span class="nc">Bunch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bunch class from the python cookbook with __str__ and __repr__</span>
+<span class="sd">    methods.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; s = Bunch(a=1, b=2, c=[&#39;bar&#39;, 99])</span>
+<span class="sd">    &gt;&gt;&gt; s.a</span>
+<span class="sd">    1</span>
+<span class="sd">    &gt;&gt;&gt; s.c</span>
+<span class="sd">    [&#39;bar&#39;, 99]</span>
+<span class="sd">    &gt;&gt;&gt; s</span>
+<span class="sd">    Bunch(a, b, c)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Bunch.__init__"><a class="viewcode-back" href="../../generated/barak.utilities.Bunch.html#barak.utilities.Bunch.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="s">&#39;Bunch(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">      &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wrap</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">69</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="adict"><a class="viewcode-back" href="../../generated/barak.utilities.adict.html#barak.utilities.adict">[docs]</a><span class="k">class</span> <span class="nc">adict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A dictionary with attribute-style access. It maps attribute</span>
+<span class="sd">    access to the real dictionary.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="adict.__init__"><a class="viewcode-back" href="../../generated/barak.utilities.adict.html#barak.utilities.adict.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">dict</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c"># the following two methods allow pickling</span></div>
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare a state of pickling.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Unpickle. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__delitem__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="c"># make sure existing methods are not overwritten by new</span>
+            <span class="c"># keys.</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="n">__getattr__</span> <span class="o">=</span> <span class="n">__getitem__</span>
+
+<div class="viewcode-block" id="adict.copy"><a class="viewcode-back" href="../../generated/barak.utilities.adict.copy.html#barak.utilities.adict.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">adict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="nan2num"><a class="viewcode-back" href="../../generated/barak.utilities.nan2num.html#barak.utilities.nan2num">[docs]</a><span class="k">def</span> <span class="nf">nan2num</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Replace `nan` or `inf` entries with the `replace` keyword</span>
+<span class="sd">    value.</span>
+
+<span class="sd">    If replace is &quot;mean&quot;, use the mean of the array to replace</span>
+<span class="sd">    values. If it&#39;s &quot;interp&quot;, intepolate from the nearest values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">bad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">replace</span> <span class="o">==</span> <span class="s">&#39;mean&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="o">~</span><span class="n">bad</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">replace</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="o">~</span><span class="n">bad</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">replace</span> <span class="o">==</span> <span class="s">&#39;interp&#39;</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="n">replace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">bad</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">~</span><span class="n">bad</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="o">~</span><span class="n">bad</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        
+    <span class="n">b</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">b</span>
+</div>
+<div class="viewcode-block" id="indgroupby"><a class="viewcode-back" href="../../generated/barak.utilities.indgroupby.html#barak.utilities.indgroupby">[docs]</a><span class="k">def</span> <span class="nf">indgroupby</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the indices giving rows in `a` that have common values</span>
+<span class="sd">    for the field `name`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : structured array</span>
+<span class="sd">       Find the indices for rows in this array.</span>
+<span class="sd">    name : str</span>
+<span class="sd">       Field of `a`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    unique_vals, indices:</span>
+<span class="sd">       unique sorted values of `a[name]`, and a list of indices into</span>
+<span class="sd">       `a` giving the rows with each unique value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="n">isort</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+    <span class="c"># find indices in the sorted array where we change to a new value</span>
+    <span class="c"># of name.</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">isort</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="p">[</span><span class="n">isort</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">jbreaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">temp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)]])</span>
+    <span class="c"># make a list of indices into a for each unique value</span>
+    <span class="k">for</span> <span class="n">j0</span><span class="p">,</span><span class="n">j1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">jbreaks</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">jbreaks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">isort</span><span class="p">[</span><span class="n">j0</span><span class="p">:</span><span class="n">j1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="c"># yield the unique value, and the indices into `a` giving rows</span>
+        <span class="c"># with that value</span>
+        <span class="k">yield</span> <span class="n">b</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">ind</span>
+</div>
+<div class="viewcode-block" id="between"><a class="viewcode-back" href="../../generated/barak.utilities.between.html#barak.utilities.between">[docs]</a><span class="k">def</span> <span class="nf">between</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return a boolean array True where vmin &lt;= a &lt; vmax.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Careful of floating point issues when dealing with equalities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">vmax</span>
+    <span class="n">c</span> <span class="o">&amp;=</span> <span class="n">a</span> <span class="o">&gt;=</span> <span class="n">vmin</span>
+    <span class="k">return</span> <span class="n">c</span>
+    </div>
+<div class="viewcode-block" id="poisson_noise"><a class="viewcode-back" href="../../generated/barak.utilities.poisson_noise.html#barak.utilities.poisson_noise">[docs]</a><span class="k">def</span> <span class="nf">poisson_noise</span><span class="p">(</span><span class="n">nflux</span><span class="p">,</span> <span class="n">nsigma</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Adds poisson noise to a normalised flux array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nsigma : float</span>
+<span class="sd">       One sigma error in the flux at the continuum level (where</span>
+<span class="sd">       normalised flux=1).  </span>
+<span class="sd">    nflux : array of floats, shape (N,)</span>
+<span class="sd">       Normalised flux values (i.e. flux values divided by</span>
+<span class="sd">       the continuum).</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">      If given, this is used to seed the random number generator.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flux, error : arrays of floats, shape (N,)</span>
+<span class="sd">      flux with noise added and one sigma error array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="n">nflux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nflux</span><span class="p">)</span>
+    <span class="n">nsigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">nsigma</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nflux</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>  <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Flux values must be &gt;= 0!&#39;</span><span class="p">)</span>
+    <span class="n">lamb</span> <span class="o">=</span> <span class="n">nflux</span> <span class="o">/</span> <span class="p">(</span><span class="n">nsigma</span> <span class="o">*</span> <span class="n">nsigma</span><span class="p">)</span>              <span class="c"># variance per pixel</span>
+    <span class="n">fout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lamb</span><span class="p">)</span>
+    <span class="n">fout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lamb</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fout</span><span class="o">/</span><span class="n">lamb</span> <span class="o">*</span> <span class="n">nflux</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">sigout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lamb</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nflux</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lamb</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fout</span><span class="p">,</span> <span class="n">sigout</span>
+</div>
+<div class="viewcode-block" id="addnoise"><a class="viewcode-back" href="../../generated/barak.utilities.addnoise.html#barak.utilities.addnoise">[docs]</a><span class="k">def</span> <span class="nf">addnoise</span><span class="p">(</span><span class="n">nflux</span><span class="p">,</span> <span class="n">nsigma</span><span class="p">,</span> <span class="n">minsig</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Add noise to a normalised flux array.</span>
+
+<span class="sd">    Either gaussian, or a combination of poisson and gaussian noise is</span>
+<span class="sd">    added to the flux array, depending on the keyword minsig.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nflux : array of floats, shape (N,)</span>
+<span class="sd">      Array of normalised flux values.</span>
+<span class="sd">    nsigma : float</span>
+<span class="sd">      Total desired noise at the continuum (flux=1). Note the</span>
+<span class="sd">      signal-to-noise ratio (SNR) = 1 / nsigma.</span>
+<span class="sd">    minsig : float, optional</span>
+<span class="sd">      By default minsig is `None`, which means gaussian noise with</span>
+<span class="sd">      standard deviation `nsigma` is added to the flux. If minsig is</span>
+<span class="sd">      given, a combination of poisson and gaussian noise is added to</span>
+<span class="sd">      the flux to give an error of `sigma` at the continuum. In this</span>
+<span class="sd">      case the gaussian noise component has st. dev. of `minsig`,</span>
+<span class="sd">      which must be less than `nsigma`.</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">      If seed is given, it is used to seed the random number generator.</span>
+<span class="sd">      By default the seed is not reset.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flux, error : arrays of floats, shape (N,)</span>
+<span class="sd">      Normalised flux with noise added, one sigma error array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nsigma</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">nsigma</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">minsig</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">nflux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nflux</span><span class="p">)</span>
+        <span class="n">dev</span> <span class="o">=</span> <span class="n">nsigma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nflux</span><span class="p">))</span>
+        <span class="n">er</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">nflux</span><span class="p">)</span>
+        <span class="n">er</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">nsigma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nflux</span> <span class="o">+</span> <span class="n">dev</span><span class="p">,</span> <span class="n">er</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">minsig</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">minsig</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">minsig</span> <span class="o">&gt;</span> <span class="n">nsigma</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Noise at continuum must be bigger than minsig!&#39;</span><span class="p">)</span>
+        <span class="c"># gaussian variance</span>
+        <span class="n">var_g</span> <span class="o">=</span> <span class="n">minsig</span><span class="o">*</span><span class="n">minsig</span>
+        <span class="c"># normalised sigma of poisson noise at the continuum</span>
+        <span class="n">sig_p_cont</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nsigma</span><span class="o">*</span><span class="n">nsigma</span> <span class="o">-</span> <span class="n">var_g</span><span class="p">)</span>
+
+        <span class="n">flnew</span><span class="p">,</span><span class="n">sig_p</span> <span class="o">=</span> <span class="n">poisson_noise</span><span class="p">(</span><span class="n">nflux</span><span class="p">,</span> <span class="n">sig_p_cont</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="c"># gaussian error</span>
+        <span class="n">flnew</span> <span class="o">+=</span> <span class="n">minsig</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nflux</span><span class="p">))</span>
+        <span class="c"># total sigma</span>
+        <span class="n">er</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sig_p</span> <span class="o">*</span> <span class="n">sig_p</span> <span class="o">+</span> <span class="n">var_g</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">flnew</span><span class="p">,</span> <span class="n">er</span>
+
+</div>
+<div class="viewcode-block" id="wmean"><a class="viewcode-back" href="../../generated/barak.utilities.wmean.html#barak.utilities.wmean">[docs]</a><span class="k">def</span> <span class="nf">wmean</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return the weighted mean and error. Uses inverse variances as</span>
+<span class="sd">    weights.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    val : array with shape (N,)</span>
+<span class="sd">      Array of values.</span>
+<span class="sd">    sig : array with shape (N,)</span>
+<span class="sd">      One sigma errors (``sqrt(variance)``) of the array values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wmean, wsigma : floats</span>
+<span class="sd">       The weighted mean and error on the weighted mean.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+    <span class="c"># remove any values with bad errors</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">condition</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;No good values!&#39;</span><span class="p">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span>
+
+    <span class="c"># normalisation</span>
+    <span class="n">inverse_variance</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">sig</span><span class="o">*</span><span class="n">sig</span><span class="p">)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inverse_variance</span><span class="p">)</span>
+
+    <span class="n">wmean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inverse_variance</span><span class="o">*</span><span class="n">val</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span>
+    <span class="n">wsigma</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wmean</span><span class="p">,</span> <span class="n">wsigma</span>
+
+</div>
+<div class="viewcode-block" id="indexnear"><a class="viewcode-back" href="../../generated/barak.utilities.indexnear.html#barak.utilities.indexnear">[docs]</a><span class="k">def</span> <span class="nf">indexnear</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the element in an array closest to a given value.</span>
+
+<span class="sd">    The input array must be sorted lowest to highest.  Returns the</span>
+<span class="sd">    index of the element with a value closest to the given value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ar : array_like</span>
+<span class="sd">      Input array. It must be sorted smallest to largest.</span>
+<span class="sd">    val : float</span>
+<span class="sd">      Find the element of `ar` that is closest to `val`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    index : int</span>
+<span class="sd">       Index of the `ar` element with the closest value to `val`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; wa = np.linspace(4000, 4500, 100)</span>
+<span class="sd">    &gt;&gt;&gt; i = indexnear(wa, 4302.5)</span>
+<span class="sd">    &gt;&gt;&gt; print i, wa[i]</span>
+<span class="sd">    60 4303.03030303</span>
+<span class="sd">    &gt;&gt;&gt; i = indexnear(wa, 4600.0)</span>
+<span class="sd">    &gt;&gt;&gt; print i, wa[i]</span>
+<span class="sd">    99 4500.0</span>
+<span class="sd">    &gt;&gt;&gt; i = indexnear(wa, 3000.0)</span>
+<span class="sd">    &gt;&gt;&gt; print i, wa[i]</span>
+<span class="sd">    0 4000.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="c"># following needed because searchsort rounds up</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">i</span>
+    <span class="c"># note if i == len(ar) then ar[i] is invalid, but won&#39;t get tested.</span>
+    <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span> <span class="ow">or</span> <span class="n">val</span> <span class="o">-</span> <span class="n">ar</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ar</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">val</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">i</span>
+
+</div>
+<div class="viewcode-block" id="calc_Mstar_b"><a class="viewcode-back" href="../../generated/barak.utilities.calc_Mstar_b.html#barak.utilities.calc_Mstar_b">[docs]</a><span class="k">def</span> <span class="nf">calc_Mstar_b</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find M* at a given redshift.</span>
+
+<span class="sd">    Find the Schechter parameter M* in the rest frame B band at</span>
+<span class="sd">    redshift z, by interpolating over the Faber at al. 2007 DEEP2</span>
+<span class="sd">    averaged values, and assuming M*_B = -20.0 at z=0 (rough average</span>
+<span class="sd">    of the z=0.07-0.1 points in Faber 2007) .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="mf">1.5</span>
+    <span class="n">zvals</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.1</span>
+    <span class="n">Mvals</span> <span class="o">=</span> <span class="o">-</span><span class="mf">20.00</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.51</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.36</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.54</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">zvals</span><span class="p">,</span> <span class="n">Mvals</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="combinations"><a class="viewcode-back" href="../../generated/barak.utilities.combinations.html#barak.utilities.combinations">[docs]</a><span class="k">def</span> <span class="nf">combinations</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A generator of combinations from `items`.</span>
+
+<span class="sd">    This returns a generator for the number of ways you can take n</span>
+<span class="sd">    items (order unimportant) from a list of items.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:],</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="p">[</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="n">c</span>
+</div>
+<div class="viewcode-block" id="permutations"><a class="viewcode-back" href="../../generated/barak.utilities.permutations.html#barak.utilities.permutations">[docs]</a><span class="k">def</span> <span class="nf">permutations</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generator for permutations from `items`.</span>
+
+<span class="sd">    These are a special case of `combinations`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">combinations</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="find_edges_true_regions"><a class="viewcode-back" href="../../generated/barak.utilities.find_edges_true_regions.html#barak.utilities.find_edges_true_regions">[docs]</a><span class="k">def</span> <span class="nf">find_edges_true_regions</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Finds the indices for the edges of contiguous regions where</span>
+<span class="sd">    condition is True.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([3,0,1,4,6,7,8,6,3,2,0,3,4,5,6,4,2,0,2,5,0,3])</span>
+<span class="sd">    &gt;&gt;&gt; ileft, iright = find_edges_true_regions(a &gt; 2)</span>
+<span class="sd">    &gt;&gt;&gt; zip(ileft, iright)</span>
+<span class="sd">    [(0, 0), (3, 8), (11, 15), (19, 19), (21, 21)]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">indices</span><span class="p">,</span> <span class="o">=</span> <span class="n">condition</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="n">iright</span><span class="p">,</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">indices</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+    <span class="n">ileft</span> <span class="o">=</span> <span class="n">iright</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">iright</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">iright</span><span class="p">,</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+    <span class="n">ileft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">ileft</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">indices</span><span class="p">[</span><span class="n">ileft</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="n">iright</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="stats"><a class="viewcode-back" href="../../generated/barak.utilities.stats.html#barak.utilities.stats">[docs]</a><span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Show the minimum, maximum median, mean, shape and size of an</span>
+<span class="sd">    array.</span>
+
+<span class="sd">    Also show the number of NaN entries (if any).</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">bad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">nbad</span> <span class="o">=</span> <span class="n">bad</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">nbad</span> <span class="o">==</span> <span class="n">size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;#NaN </span><span class="si">%i</span><span class="s"> of </span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nbad</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nbad</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="o">~</span><span class="n">bad</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">median</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">median</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="s">&#39;min </span><span class="si">%.5g</span><span class="s"> max </span><span class="si">%.5g</span><span class="s"> median </span><span class="si">%.5g</span><span class="s"> mean </span><span class="si">%.5g</span><span class="s"> shape </span><span class="si">%s</span><span class="s"> #NaN </span><span class="si">%i</span><span class="s"> of </span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">median</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">shape</span><span class="p">,</span> <span class="n">nbad</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Gaussian"><a class="viewcode-back" href="../../generated/barak.utilities.Gaussian.html#barak.utilities.Gaussian">[docs]</a><span class="k">def</span> <span class="nf">Gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Gaussian.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">height</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="blackbody_nu"><a class="viewcode-back" href="../../generated/barak.utilities.blackbody_nu.html#barak.utilities.blackbody_nu">[docs]</a><span class="k">def</span> <span class="nf">blackbody_nu</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Blackbody as a function of frequency (Hz) and temperature (K).</span>
+
+<span class="sd">    returns units of erg/s/cm^2/Hz/Steradian</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">nu</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="blackbody_lam"><a class="viewcode-back" href="../../generated/barak.utilities.blackbody_lam.html#barak.utilities.blackbody_lam">[docs]</a><span class="k">def</span> <span class="nf">blackbody_lam</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Blackbody as a function of wavelength (cm) and temperature (K).</span>
+
+<span class="sd">    returns units of erg/s/cm^2/cm/Steradian</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">**</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">h</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="meshgrid_nd"><a class="viewcode-back" href="../../generated/barak.utilities.meshgrid_nd.html#barak.utilities.meshgrid_nd">[docs]</a><span class="k">def</span> <span class="nf">meshgrid_nd</span><span class="p">(</span><span class="o">*</span><span class="n">arrs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Like numpy&#39;s meshgrid, but works on more than two dimensions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arrs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">arrs</span><span class="p">))</span>
+    <span class="n">lens</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">arrs</span><span class="p">)</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrs</span><span class="p">)</span>
+
+    <span class="n">sz</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">lens</span><span class="p">:</span>
+        <span class="n">sz</span><span class="o">*=</span><span class="n">s</span>
+
+    <span class="n">ans</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arrs</span><span class="p">):</span>
+        <span class="n">slc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dim</span>
+        <span class="n">slc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">slc</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">sz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lens</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">sz</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">j</span><span class="p">)</span> 
+        <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arr2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ans</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="autocorr"><a class="viewcode-back" href="../../generated/barak.utilities.autocorr.html#barak.utilities.autocorr">[docs]</a><span class="k">def</span> <span class="nf">autocorr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the autocorrelation of x.</span>
+
+<span class="sd">    The mean is subtracted from x before correlating. Correlation</span>
+<span class="sd">    values are calculated in offset steps from 0 up to maxlag.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span>
+    <span class="n">maxlag</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">maxlag</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">):</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="n">k</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">:])</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="n">k</span><span class="p">],</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="n">k</span><span class="p">])</span>
+        <span class="n">v3</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">:],</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">:])</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v1</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">v2</span><span class="o">*</span><span class="n">v3</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">a</span>
+</div>
+<div class="viewcode-block" id="get_data_path"><a class="viewcode-back" href="../../generated/barak.utilities.get_data_path.html#barak.utilities.get_data_path">[docs]</a><span class="k">def</span> <span class="nf">get_data_path</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Return the path to the data directory for this package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;/data/&#39;</span>
+</div>
+<div class="viewcode-block" id="indices_from_grid"><a class="viewcode-back" href="../../generated/barak.utilities.indices_from_grid.html#barak.utilities.indices_from_grid">[docs]</a><span class="k">def</span> <span class="nf">indices_from_grid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert coordinates to indices defined by grid of reference</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    c : array of floats, shape (M,)</span>
+<span class="sd">      Coordinates.</span>
+<span class="sd">    ref : array of floats, shape (N,)</span>
+<span class="sd">      Reference grid coordinates. They must be equally spaced.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ind : arrays of floats</span>
+<span class="sd">      Coordinates mapped onto the indices of the reference grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+
+    <span class="n">dref</span> <span class="o">=</span> <span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">ref</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dref0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">dref0</span><span class="p">,</span> <span class="n">dref</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">dref0</span>
+
+    <span class="k">return</span> <span class="n">ind</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

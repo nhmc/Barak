@@ -1,0 +1,6 @@
+barak.cosmology.core.Cosmology.age
+==================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. automethod:: Cosmology.age

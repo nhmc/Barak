@@ -1,0 +1,89 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.sed.get_SEDs &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.sed.get_bands" href="barak.sed.get_bands.html" />
+    <link rel="prev" title="barak.sed.flux2mag" href="barak.sed.flux2mag.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.sed.get_SEDs</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.sed.flux2mag.html">barak.sed.flux2mag</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.sed.get_bands.html">barak.sed.get_bands</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-sed-get-seds">
+<h1>barak.sed.get_SEDs<a class="headerlink" href="#barak-sed-get-seds" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.sed.get_SEDs">
+<tt class="descclassname">barak.sed.</tt><tt class="descname">get_SEDs</tt><big>(</big><em>kind=None</em>, <em>names=None</em><big>)</big><a class="reference internal" href="../_modules/barak/sed.html#get_SEDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.sed.get_SEDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get one or more SEDs based on their type and filename</p>
+<p>If <em class="xref py py-obj">names</em> is not given, then every SED of that type is returned.
+SED types and filenames are listed in the dictionary TEMPLATES.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pickles</span> <span class="o">=</span> <span class="n">get_SEDs</span><span class="p">(</span><span class="s">&#39;pickles&#39;</span><span class="p">)</span>   <span class="c"># pickles stellar library SEDs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lbga</span> <span class="o">=</span> <span class="n">get_SEDs</span><span class="p">(</span><span class="s">&#39;LBG&#39;</span><span class="p">,</span> <span class="s">&#39;lbg_abs.dat&#39;</span><span class="p">)</span>  <span class="c"># LBG absorption spectrum</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.sed.flux2mag.html">barak.sed.flux2mag</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.sed.get_bands.html">barak.sed.get_bands</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

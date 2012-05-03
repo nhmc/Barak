@@ -1,0 +1,536 @@
+Welcome to Barak's documentation
+================================
+
+.. toctree::
+   :maxdepth: 2
+
+   index.rst
+
+
+absorb
+------
+
+This module has routines for analysing the absorption profiles
+from ions and molecules.
+
+.. currentmodule:: barak.absorb
+
+.. autosummary::
+   :toctree: generated/
+
+   b_to_T
+   calc_Wr
+   calc_iontau
+   calctau
+   find_tau
+   findtrans
+   read_HITRAN
+   readatom
+   split_trans_name
+
+abundances
+----------
+
+Abundances and condensation temperatures.
+
+This contains the following two datasets:
+
+Asolar:
+  An ordered dictionary of abundances from `Lodders 2003, ApJ, 591,
+  1220 <http://adsabs.harvard.edu/abs/2003ApJ...591.1220L>`_. It
+  contains a value A for each element `el`, where A is defined::
+
+    A(el) = log10 n(el)/n(H) - 12
+
+  `n(el)` is the number density of atoms of that element, and `n(H)`
+  is the number density of hydrogen.
+
+cond_temp:
+  An array of condensation temperatures for each element from the same
+  reference.  The condensation temperature is the temperature at which
+  an element in a gaseous state attaches to dust grains.
+
+  It contains the values `tc` and `tc50` for each element, where `tc`
+  is the condensation temperature in K when condensation begins, and
+  `tc50` is the temperature when 50% of the element is left in a
+  gaseous state.
+
+.. currentmodule:: barak.abundances
+
+.. autosummary::
+   :toctree: generated/
+
+
+constants
+---------
+
+Useful physical and mathematical values. Physical constants in
+Gaussian cgs units when not indicated otherwise. From 2010 CODATA
+recommended values where available (see
+http://physics.nist.gov/cuu/Constants/index.html).
+
+>>> import constants as c
+>>> from math import sqrt 
+>>> Planck_length = sqrt(c.hbar * c.G / c.c**3)    # cm 
+>>> Planck_mass = sqrt(c.hbar * c.c / c.G)         # g
+>>> Planck_time = sqrt(c.hbar * c.G / c.c**5)      # s
+
+Constants defined:
+
+ ======== ===================== =============== ===============================
+ c         2.99792458e10        cm/s            speed of light
+ G         6.67384e-8           cm^3/g/s^2      gravitational constant
+ h         6.6260775e-27        erg s           Planck's constant
+ hbar      1.054571726e-27      erg s           1/(4*pi) * Planck's constant
+ k         1.3806488e-16        erg/K           Boltzmann constant
+ mp        1.67261777e-24       g               proton mass
+ me        9.10938291e-28       g               electron mass
+ eV        1.602176565e-12      ergs            electron volt
+ e         4.80320451e-10       esu             magnitude of charge on electron
+ sigma     5.670373e-5          erg/s/cm^2/K^4  Stefan-Boltzmann constant
+ Ryd       2.179872171e-11      ergs            Rydberg: energy needed to
+                                                dissociate H atom from
+                                                ground state
+ Jy        1e-23                ergs/s/cm^2/Hz  Jansky
+ sigmaT    6.652458734e-25      cm^2            Thomson cross section
+ Mmoon     7.348e25             g               Moon mass
+ Rmoon     1.7374e8             cm              Moon radius
+ Mearth    5.9742e27            g               Earth mass
+ Rearth    6.3781e8             cm              Earth radius
+ Msun      1.989e33             g               Solar mass
+ Lsun      3.90e33              erg/s           Solar luminosity
+ Rsun      6.96e10              cm              Solar radius
+ au        1.496e13             cm              Distance from Earth to Sun
+ ly        9.4607304725808e16   cm              light year
+ pc        3.08567802e18        cm              parsec
+ kpc       3.08567802e21        cm              kiloparsec
+ Mpc       3.08567802e24        cm              megaparsec
+ yr        3.155815e7           s               year
+ Gyr       3.155815e16          s               gigayear
+ mu        0.62                 unitless        mean molecular weight of
+                                                astrophysical gas
+ mile      160934.              cm              mile
+ a0        hbar**2 / me / e**2  cm              Bohr radius
+ alpha     e**2 / (hbar*c)      unitless        Fine structure constant
+ Ryd_Ang   h * c * 1.0e8 / Ryd  Angstroms       Rydberg in Angstroms
+ c_kms     2.99792458e5         km/s            speed of light
+          
+ sqrt_ln2  0.832554611158       sqrt(ln(2))
+ pi       
+  
+ wlya      1215.6701            Angstroms       Wavelength of HI Lya transition
+ wlyb      1025.72              Angstroms       Wavelength of HI Lyb transition
+  
+ Ar                                             dictionary of atomic weights
+ ======== ===================== =============== ===============================
+
+.. currentmodule:: barak.constants
+
+.. autosummary::
+   :toctree: generated/
+
+
+convolve
+--------
+
+Functions related to convolution.
+
+.. currentmodule:: barak.convolve
+
+.. autosummary::
+   :toctree: generated/
+
+   convolve_psf
+   convolve_window
+
+coord
+-----
+
+Astronomical coordinate functions.
+
+.. currentmodule:: barak.coord
+
+.. autosummary::
+   :toctree: generated/
+
+   ang_sep
+   check_ra_dec
+   dec2s
+   distsq
+   distsq_to_radians
+   indmatch
+   match
+   radec_to_xyz
+   radians_to_distsq
+   s2dec
+   unique_radec
+
+interp
+------
+
+Interpolation-related functions.
+
+.. currentmodule:: barak.interp
+
+.. autosummary::
+   :toctree: generated/
+
+   InterpCubicSpline
+   InterpCubicSpline.set_d2
+   fit_spline
+   interp_spline
+   splice
+   trilinear_interp
+
+io
+--
+
+Functions to read and write text, fits and pickle files.
+
+.. currentmodule:: barak.io
+
+.. autosummary::
+   :toctree: generated/
+
+   loadobj
+   parse_config
+   readsex
+   readtabfits
+   readtxt
+   saveobj
+   sex_to_DS9reg
+   write_DS9reg
+   writetabfits
+   writetxt
+
+plot
+----
+
+Plotting routines.
+
+.. currentmodule:: barak.plot
+
+.. autosummary::
+   :toctree: generated/
+
+   arrplot
+   axvfill
+   axvlines
+   correct_marker_size
+   dhist
+   distplot
+   errplot
+   histo
+   puttext
+
+pyvpfit
+-------
+
+Contains a class, VpfitModel, useful for parsing f26 and fort.13
+files, and writing out fort.13 files. Also has functions for reading
+and searching an atom.dat file that originally came with vpfit (also
+bundled with this package).
+
+.. currentmodule:: barak.pyvpfit
+
+.. autosummary::
+   :toctree: generated/
+
+   VpfitModel
+   VpfitModel.copy
+   VpfitModel.writef13
+   VpfitModel.writef26
+   calc_v90
+   make_autovpin_input
+   make_rdgen_input
+   parse_entry
+   parse_lines
+   parse_regions
+   readf13
+   readf26
+   sumlines
+
+sed
+---
+
+Perform calculations on Spectral Energy Distributions (SEDs).
+
+Based on the SED module in astLib by Matt Hilton, with some routines
+copied from there (LGPL): http://astlib.sourceforge.net
+
+- VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.
+- AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.
+- SUN: The SED of the Sun.
+
+.. currentmodule:: barak.sed
+
+.. autosummary::
+   :toctree: generated/
+
+   Passband
+   Passband.plot
+   SED
+   SED.apply_extinction
+   SED.calc_colour
+   SED.calc_flux
+   SED.calc_mag
+   SED.copy
+   SED.integrate
+   SED.normalise_to_mag
+   SED.plot
+   SED.redshift_to
+   Jy2Mag
+   calc_extinction_Calzetti
+   flux2mag
+   get_SEDs
+   get_bands
+   get_extinction
+   mag2Jy
+   mag2flux
+
+spec
+----
+
+Contains an object to describe a spectrum, and various
+spectrum-related functions.
+
+.. currentmodule:: barak.spec
+
+.. autosummary::
+   :toctree: generated/
+
+   Spectrum
+   Spectrum.multiply
+   Spectrum.plot
+   Spectrum.rebin
+   Spectrum.rebin_simple
+   Spectrum.stats
+   Spectrum.write
+   air2vac_ciddor
+   air2vac_morton
+   combine
+   convolve_constant_dv
+   cr_reject
+   cr_reject2
+   find_cont
+   find_err
+   find_wa_edges
+   getwave
+   make_constant_dv_wa_scale
+   make_wa_scale
+   pca_qso_cont
+   plot
+   plotatmos
+   plotlines
+   qso_template
+   read
+   rebin
+   rebin_simple
+   scale_overlap
+   scalemult
+   vac2air_ciddor
+   vac2air_morton
+   writesp
+
+utilities
+---------
+
+Various general-use functions.
+
+.. currentmodule:: barak.utilities
+
+.. autosummary::
+   :toctree: generated/
+
+   Bunch
+   adict
+   adict.copy
+   Gaussian
+   addnoise
+   autocorr
+   between
+   blackbody_lam
+   blackbody_nu
+   calc_Mstar_b
+   combinations
+   find_edges_true_regions
+   get_data_path
+   indexnear
+   indgroupby
+   indices_from_grid
+   meshgrid_nd
+   nan2num
+   permutations
+   poisson_noise
+   stats
+   wmean
+
+voigt
+-----
+
+A fast implementation of the Voigt function.
+
+.. currentmodule:: barak.voigt
+
+.. autosummary::
+   :toctree: generated/
+
+   voigt
+   voigt_slow
+   voigt_wofz
+
+cosmology
+---------
+
+`barak.cosmology` contains routines for cosmological distance measures
+and other quantities. References for most of the quantities calculated
+in this package are given by Hogg (astro-ph/9905116).
+
+The following objects are available in the `barak.cosmology` namespace:
+
+  Cosmology, kpc_comoving_per_arcmin, kpc_proper_per_arcmin,
+  arcsec_per_kpc_comoving, arcsec_per_kpc_proper, distmod,
+  radec_to_xyz, get_default, set_default, WMAP5, WMAP7
+
+The code for these lives in `barak.cosmology.core`.
+
+Most of the functionality is enabled by the `Cosmology` object. To
+create a new `Cosmology` object with arguments giving the hubble
+parameter, omega matter and omega lambda (all at z=0)::
+
+  >>> from barak.cosmology import Cosmology
+  >>> cosmo = Cosmology(H0=70, Om=0.3, Ol=0.7)
+  >>> cosmo
+  Cosmology(H0=70, Om=0.3, Ol=0.7, Ok=0)
+
+The methods of this object calculate commonly used quantities with
+your cosmology. So the comoving distance in Mpc at redshift 4 is given
+by:
+
+  >>> cosmo.comoving_distance(4)
+  7170.366414463296
+
+The age of the universe at z = 0 in Gyr::
+
+  >>> cosmo.age(0)
+  13.46698402784007
+
+See the `Cosmology` object docstring for all the methods and variables
+available.  There are several standard cosmologies already defined:
+
+  >>> from cosmology import WMAP7    # Parameters from the 7-year WMAP results
+  >>> WMAP7.critical_density0        # Critical density at z=0 in g/cm^3
+  9.31000313202047e-30
+
+  >>> from cosmology import WMAP5    # From the 5-year WMAP results
+  >>> WMAP5.H(3)                     # Hubble parameter at z=3 in km/s/Mpc
+  301.54148311633674
+
+There are also several convenience functions that calculate quantities
+without needing to create a Cosmology object. These use a 'default'
+cosmology if no cosmology instance is explicitly passed to them. The
+default can be set with `set_default` and is accessed with
+`get_default`. If you don't set the default explicitly, then the
+first time it is accessed a warning message is printed and it's set to
+the 7 year WMAP cosmology.
+
+  >>> from astropy import cosmology
+  >>> cosmology.kpc_proper_per_arcmin(3)
+  472.91882815884907
+  >>> cosmology.arcsec_per_kpc_proper(3)
+  0.12687166682195736
+
+.. currentmodule:: barak.cosmology
+
+.. autosummary::
+   :toctree: generated/
+
+
+cosmology.core
+--------------
+
+
+
+.. currentmodule:: barak.cosmology.core
+
+.. autosummary::
+   :toctree: generated/
+
+   Cosmology
+   Cosmology.H
+   Cosmology.absorption_distance
+   Cosmology.age
+   Cosmology.angular_diameter_distance
+   Cosmology.angular_diameter_distance_z1z2
+   Cosmology.comoving_distance
+   Cosmology.comoving_transverse_distance
+   Cosmology.comoving_volume
+   Cosmology.critical_density
+   Cosmology.distmod
+   Cosmology.lookback_time
+   Cosmology.luminosity_distance
+   Cosmology.scale_factor
+   arcsec_per_kpc_comoving
+   arcsec_per_kpc_proper
+   distmod
+   get_default
+   kpc_comoving_per_arcmin
+   kpc_proper_per_arcmin
+   radec_to_xyz
+   set_default
+
+cosmology.parameters
+--------------------
+
+This module contains dictionaries with sets of parameters for a
+given cosmology.
+
+Each cosmology has the following parameters defined:
+
+    =========== ====================================
+    Oc          Omega cold dark matter
+    Ob          Omega baryon
+    Om          Omega matter
+    Ol          Omega lambda
+    H0          Hubble parameter at z=0 in km/s/Mpc
+    n           Density perturbation spectral index
+    sigma8      Density perturbation amplitude
+    tau         Ionisation optical depth
+    z_reion     Redshift of hydrogen reionisation
+    t0          Age of the universe in Gyr
+    =========== ====================================
+
+The list of cosmologies available are given by the tuple
+`available`. Current cosmologies available:
+
+WMAP 7 year parameters from Komatsu et al. 2011, ApJS, 192, 18. Table
+1 (WMAP + BAO + H0 ML).
+
+WMAP 5 year parameters from Komatsu et al. 2009, ApJS, 180, 330. Table
+1 (WMAP + BAO + SN ML).
+
+Both these cosmologies are flat (omega matter + omega lambda = 1).
+
+.. currentmodule:: barak.cosmology.parameters
+
+.. autosummary::
+   :toctree: generated/
+
+
+Command line scripts
+--------------------
+========== =======================================================================================================
+ run_nproc Run a shell command on a list of files using multiple processors.                                      
+   qso_jhk Plot the spectrum of a QSO in the IR overlayed with atmospheric absorption and sky background emission.
+      fhdr Print the whole header or selected cards for a list of FITS files.                                     
+sex2DS9reg Make a ds9 region file from a SExtractor catalogue.                                                    
+     finfo Print a short summary for one or more FITS files.                                                      
+========== =======================================================================================================
+
+
+.. Indices and tables
+.. ==================
+
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

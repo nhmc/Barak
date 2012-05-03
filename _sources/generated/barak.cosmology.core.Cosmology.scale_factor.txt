@@ -1,0 +1,6 @@
+barak.cosmology.core.Cosmology.scale_factor
+===========================================
+
+.. currentmodule:: barak.cosmology.core
+
+.. automethod:: Cosmology.scale_factor

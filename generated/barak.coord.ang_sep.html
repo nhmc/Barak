@@ -1,0 +1,105 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.coord.ang_sep &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.coord.check_ra_dec" href="barak.coord.check_ra_dec.html" />
+    <link rel="prev" title="barak.convolve.convolve_window" href="barak.convolve.convolve_window.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.coord.ang_sep</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.convolve.convolve_window.html">barak.convolve.convolve_window</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.coord.check_ra_dec.html">barak.coord.check_ra_dec</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-coord-ang-sep">
+<h1>barak.coord.ang_sep<a class="headerlink" href="#barak-coord-ang-sep" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.coord.ang_sep">
+<tt class="descclassname">barak.coord.</tt><tt class="descname">ang_sep</tt><big>(</big><em>ra1</em>, <em>dec1</em>, <em>ra2</em>, <em>dec2</em><big>)</big><a class="reference internal" href="../_modules/barak/coord.html#ang_sep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.coord.ang_sep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the angular separation in degrees on the celestial
+sphere between two RA/Dec coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ra1, dec1</strong> : floats or arrays of floats, shape (N,)</p>
+<blockquote>
+<div><p>First set of coordinates in degrees.</p>
+</div></blockquote>
+<p><strong>ra2, dec2</strong> : floats or arrays of floats, shape (M,)</p>
+<blockquote>
+<div><p>Second set of coordinates in degrees.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>separation_in_degrees</strong> : array of floats shape (N, M)</p>
+<blockquote class="last">
+<div><p>If N or M is 1, that dimension is suppressed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.convolve.convolve_window.html">barak.convolve.convolve_window</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.coord.check_ra_dec.html">barak.coord.check_ra_dec</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
