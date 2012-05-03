@@ -469,5 +469,5 @@ def indices_from_grid(c, ref):
     assert c[0] >= ref[0] and c[-1] <= ref[-1] 
 
     ind = (c - ref[0]) / dref0
-    return ind
 
+    return ind

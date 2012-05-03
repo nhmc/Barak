@@ -1,8 +1,7 @@
-""" Spline-related functions.
+""" Interpolation-related functions.
 """ 
 import numpy as np
-from utilities import between, indices_from_grid
-
+from utilities import between, indices_from_grid, meshgrid_nd
 
 class InterpCubicSpline:
     """Interpolate a cubic spline through a set of points.
@@ -245,6 +244,10 @@ def _interp3d(ix, iy, iz, a):
     x1 = x0 + 1
     y1 = y0 + 1
     z1 = z0 + 1
+
+    x1[x1 == a.shape[0]] = a.shape[0] - 1
+    y1[y1 == a.shape[1]] = a.shape[1] - 1
+    z1[z1 == a.shape[2]] = a.shape[2] - 1
 
     x = ix - x0
     y = iy - y0
