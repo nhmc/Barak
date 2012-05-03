@@ -55,10 +55,41 @@
 <dl class="function">
 <dt id="barak.absorb.readatom">
 <tt class="descclassname">barak.absorb.</tt><tt class="descname">readatom</tt><big>(</big><em>filename=None</em>, <em>debug=False</em>, <em>flat=False</em>, <em>molecules=False</em>, <em>isotopes=False</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#readatom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.readatom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads in atomic transitions from a vpfit atom.dat file.  Single
-argument is atom.dat filename.</p>
-<p>Returns a dictionary of atoms.</p>
-<p>if flat, return a flat array of atoms as well as a dictionary.</p>
+<dd><p>Reads atomic transition data from a vpfit-style atom.dat file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>filename</strong> : str, optional</p>
+<blockquote>
+<div><p>The name of the atom.dat-style file. If not given, then the
+version bundled with <tt class="xref py py-obj docutils literal"><span class="pre">barak</span></tt> is used.</p>
+</div></blockquote>
+<p><strong>flat</strong> : bool (False)</p>
+<blockquote>
+<div><p>If True, return a flattened array, with the data not grouped by
+transition.</p>
+</div></blockquote>
+<p><strong>molecules</strong> : bool (False)</p>
+<blockquote>
+<div><p>If True, also return data for H2 and CO molecules.</p>
+</div></blockquote>
+<p><strong>isotopes</strong> : bool (False)</p>
+<blockquote>
+<div><p>If True, also return data for isotopes.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>atom [, atom_flat]</strong> : dict [, dict]</p>
+<blockquote class="last">
+<div><p>A dictionary of transition data, in general grouped by
+electronic transition (MgI, MgII and so on). If <em class="xref py py-obj">flat</em> = True,
+also return a flattened version of the same data.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

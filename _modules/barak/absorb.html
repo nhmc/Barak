@@ -71,13 +71,13 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    v : array of floats, shape (N,)</span>
-<span class="sd">      velocities</span>
+<span class="sd">      Velocities in km/s.</span>
 <span class="sd">    wav0 : float</span>
-<span class="sd">      Rest wavelength opf transition in Angstroms.</span>
+<span class="sd">      Rest wavelength op transition in Angstroms.</span>
 <span class="sd">    osc : float</span>
-<span class="sd">      Oscillator strength of transition.</span>
+<span class="sd">      Oscillator strength of transition (dimensionless).</span>
 <span class="sd">    gam : float</span>
-<span class="sd">      Gamma parameter for the transition.</span>
+<span class="sd">      Gamma parameter for the transition (dimensionless).</span>
 <span class="sd">    logN : float:</span>
 <span class="sd">      log10 of the column density in absorbers per cm^2.</span>
 <span class="sd">    btemp : float (20)</span>
@@ -90,16 +90,15 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tau : array of floats, shape (N,)</span>
-<span class="sd">      The optical depth as a function of v</span>
+<span class="sd">      The optical depth as a function of `v`.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The step size for `v` must be small enough to properly</span>
 <span class="sd">    sample the profile.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    To map the velocity array to some wavelength:</span>
+<span class="sd">    To map the velocity array to some wavelength for a transitions</span>
+<span class="sd">    with rest wavelength wav0 at redshift z:</span>
 
 <span class="sd">    &gt;&gt;&gt; z = 3.0</span>
 <span class="sd">    &gt;&gt;&gt; wa = wav0 * (1 + z) * (1 + v/c_kms)</span>
@@ -119,7 +118,6 @@
 
     <span class="n">fwhml</span> <span class="o">=</span> <span class="n">gam_v</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span>                <span class="c"># cm/s</span>
     <span class="n">fwhmg</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">sqrt_ln2</span> <span class="o">*</span> <span class="n">b</span>                <span class="c"># cm/s</span>
-
 
     <span class="c">##### sampling check, first get velocity width ######</span>
     <span class="n">ic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -324,7 +322,7 @@
 </div>
 <div class="viewcode-block" id="read_HITRAN"><a class="viewcode-back" href="../../generated/barak.absorb.read_HITRAN.html#barak.absorb.read_HITRAN">[docs]</a><span class="k">def</span> <span class="nf">read_HITRAN</span><span class="p">(</span><span class="n">thelot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Return a list of molecular absorption features in the HITRAN</span>
-<span class="sd">    2004 list with wavelengths &lt; 24000 Ang (Journal of Quantitative</span>
+<span class="sd">    2004 list with wavelengths &lt; 25000 Ang (Journal of Quantitative</span>
 <span class="sd">    Spectroscopy &amp; Radiative Transfer 96, 2005, 139-204).</span>
 
 <span class="sd">    By default only lines with intensity &gt; 5e-26 are returned. Set</span>
@@ -344,12 +342,27 @@
 </div>
 <div class="viewcode-block" id="readatom"><a class="viewcode-back" href="../../generated/barak.absorb.readatom.html#barak.absorb.readatom">[docs]</a><span class="k">def</span> <span class="nf">readatom</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
              <span class="n">flat</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">isotopes</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Reads in atomic transitions from a vpfit atom.dat file.  Single</span>
-<span class="sd">    argument is atom.dat filename.</span>
+    <span class="sd">&quot;&quot;&quot; Reads atomic transition data from a vpfit-style atom.dat file.</span>
 
-<span class="sd">    Returns a dictionary of atoms.</span>
-
-<span class="sd">    if flat, return a flat array of atoms as well as a dictionary.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str, optional</span>
+<span class="sd">      The name of the atom.dat-style file. If not given, then the</span>
+<span class="sd">      version bundled with `barak` is used.</span>
+<span class="sd">    flat : bool (False)</span>
+<span class="sd">      If True, return a flattened array, with the data not grouped by</span>
+<span class="sd">      transition.</span>
+<span class="sd">    molecules : bool (False)</span>
+<span class="sd">      If True, also return data for H2 and CO molecules.</span>
+<span class="sd">    isotopes : bool (False)</span>
+<span class="sd">      If True, also return data for isotopes.</span>
+<span class="sd">      </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    atom [, atom_flat] : dict [, dict]</span>
+<span class="sd">      A dictionary of transition data, in general grouped by</span>
+<span class="sd">      electronic transition (MgI, MgII and so on). If `flat` = True,</span>
+<span class="sd">      also return a flattened version of the same data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c"># first 2 chars - element.</span>
@@ -428,8 +441,8 @@
     <span class="k">return</span> <span class="n">trstr</span><span class="p">,</span> <span class="n">atomdat</span><span class="p">[</span><span class="n">ion</span><span class="p">][</span><span class="n">isort</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span>
 </div>
 <div class="viewcode-block" id="split_trans_name"><a class="viewcode-back" href="../../generated/barak.absorb.split_trans_name.html#barak.absorb.split_trans_name">[docs]</a><span class="k">def</span> <span class="nf">split_trans_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Given an transition string (say MgII), return the name of the atom</span>
-<span class="sd">    and the ionization string (Mg, II).</span>
+    <span class="sd">&quot;&quot;&quot; Given a transition string (say MgII), return the name of the</span>
+<span class="sd">    atom and the ionization string (Mg, II).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">&#39;XVI&#39;</span><span class="p">:</span>
