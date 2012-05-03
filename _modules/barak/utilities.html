@@ -488,7 +488,37 @@
 <div class="viewcode-block" id="get_data_path"><a class="viewcode-back" href="../../generated/barak.utilities.get_data_path.html#barak.utilities.get_data_path">[docs]</a><span class="k">def</span> <span class="nf">get_data_path</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Return the path to the data directory for this package.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;/data/&#39;</span></div>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;/data/&#39;</span>
+</div>
+<div class="viewcode-block" id="indices_from_grid"><a class="viewcode-back" href="../../generated/barak.utilities.indices_from_grid.html#barak.utilities.indices_from_grid">[docs]</a><span class="k">def</span> <span class="nf">indices_from_grid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert coordinates to indices defined by grid of reference</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    c : array of floats, shape (M,)</span>
+<span class="sd">      Coordinates.</span>
+<span class="sd">    ref : array of floats, shape (N,)</span>
+<span class="sd">      Reference grid coordinates. They must be equally spaced.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ind : arrays of floats</span>
+<span class="sd">      Coordinates mapped onto the indices of the reference grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+
+    <span class="n">dref</span> <span class="o">=</span> <span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">ref</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dref0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">dref0</span><span class="p">,</span> <span class="n">dref</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">dref0</span>
+
+    <span class="k">return</span> <span class="n">ind</span></div>
 </pre></div>
 
       </div>

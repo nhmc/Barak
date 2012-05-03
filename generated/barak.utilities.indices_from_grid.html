@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.plot.axvfill &mdash; Barak 0.1dev documentation</title>
+    <title>barak.utilities.indices_from_grid &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,57 +28,53 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.plot.axvlines" href="barak.plot.axvlines.html" />
-    <link rel="prev" title="barak.plot.arrplot" href="barak.plot.arrplot.html" /> 
+    <link rel="next" title="barak.utilities.meshgrid_nd" href="barak.utilities.meshgrid_nd.html" />
+    <link rel="prev" title="barak.utilities.indgroupby" href="barak.utilities.indgroupby.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.plot.axvfill</span></h2>
+        <h2 class="heading"><span>barak.utilities.indices_from_grid</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.plot.arrplot.html">barak.plot.arrplot</a>
+        «&#160;&#160;<a href="barak.utilities.indgroupby.html">barak.utilities.indgroupby</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.plot.axvlines.html">barak.plot.axvlines</a>&#160;&#160;»
+        <a href="barak.utilities.meshgrid_nd.html">barak.utilities.meshgrid_nd</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-plot-axvfill">
-<h1>barak.plot.axvfill<a class="headerlink" href="#barak-plot-axvfill" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-utilities-indices-from-grid">
+<h1>barak.utilities.indices_from_grid<a class="headerlink" href="#barak-utilities-indices-from-grid" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.plot.axvfill">
-<tt class="descclassname">barak.plot.</tt><tt class="descname">axvfill</tt><big>(</big><em>xvals</em>, <em>ax=None</em>, <em>color='k'</em>, <em>alpha=0.1</em>, <em>edgecolor='none'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/barak/plot.html#axvfill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.plot.axvfill" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fill vertical regions defined by a sequence of (left, right)
-positions.</p>
+<dt id="barak.utilities.indices_from_grid">
+<tt class="descclassname">barak.utilities.</tt><tt class="descname">indices_from_grid</tt><big>(</big><em>c</em>, <em>ref</em><big>)</big><a class="reference internal" href="../_modules/barak/utilities.html#indices_from_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.utilities.indices_from_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert coordinates to indices defined by grid of reference
+values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>xvals: list</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>c</strong> : array of floats, shape (M,)</p>
 <blockquote>
-<div><p>Sequence of pairs specifying the left and right extent of each
-region. e.g. (3,4) or [(0,1),(3,4)]</p>
+<div><p>Coordinates.</p>
 </div></blockquote>
-<p><strong>ax</strong> : matplotlib axes instance (default is the current axes)</p>
+<p><strong>ref</strong> : array of floats, shape (N,)</p>
 <blockquote>
-<div><p>The axes to plot regions on.</p>
+<div><p>Reference grid coordinates. They must be equally spaced.</p>
 </div></blockquote>
-<p><strong>color</strong> : mpl colour (default &#8216;g&#8217;)</p>
-<blockquote>
-<div><p>Color of the regions.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>ind</strong> : arrays of floats</p>
+<blockquote class="last">
+<div><p>Coordinates mapped onto the indices of the reference grid.</p>
 </div></blockquote>
-<p><strong>alpha</strong> : float (default 0.3)</p>
-<blockquote>
-<div><p>Opacity of the regions (1=opaque).</p>
-</div></blockquote>
-<p class="last"><strong>Other keywords arguments are passed to PolyCollection.</strong> :</p>
 </td>
 </tr>
 </tbody>
@@ -92,11 +88,11 @@ region. e.g. (3,4) or [(0,1),(3,4)]</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.plot.arrplot.html">barak.plot.arrplot</a>
+        «&#160;&#160;<a href="barak.utilities.indgroupby.html">barak.utilities.indgroupby</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.plot.axvlines.html">barak.plot.axvlines</a>&#160;&#160;»
+        <a href="barak.utilities.meshgrid_nd.html">barak.utilities.meshgrid_nd</a>&#160;&#160;»
         </p>
 
       </div>

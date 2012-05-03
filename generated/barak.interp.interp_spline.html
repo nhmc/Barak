@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.utilities.meshgrid_nd &mdash; Barak 0.1dev documentation</title>
+    <title>barak.interp.interp_spline &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,34 +28,36 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.utilities.nan2num" href="barak.utilities.nan2num.html" />
-    <link rel="prev" title="barak.utilities.indices_from_grid" href="barak.utilities.indices_from_grid.html" /> 
+    <link rel="next" title="barak.interp.splice" href="barak.interp.splice.html" />
+    <link rel="prev" title="barak.interp.fit_spline" href="barak.interp.fit_spline.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.utilities.meshgrid_nd</span></h2>
+        <h2 class="heading"><span>barak.interp.interp_spline</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.utilities.indices_from_grid.html">barak.utilities.indices_from_grid</a>
+        «&#160;&#160;<a href="barak.interp.fit_spline.html">barak.interp.fit_spline</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.utilities.nan2num.html">barak.utilities.nan2num</a>&#160;&#160;»
+        <a href="barak.interp.splice.html">barak.interp.splice</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-utilities-meshgrid-nd">
-<h1>barak.utilities.meshgrid_nd<a class="headerlink" href="#barak-utilities-meshgrid-nd" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-interp-interp-spline">
+<h1>barak.interp.interp_spline<a class="headerlink" href="#barak-interp-interp-spline" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.utilities.meshgrid_nd">
-<tt class="descclassname">barak.utilities.</tt><tt class="descname">meshgrid_nd</tt><big>(</big><em>*arrs</em><big>)</big><a class="reference internal" href="../_modules/barak/utilities.html#meshgrid_nd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.utilities.meshgrid_nd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Like numpy&#8217;s meshgrid, but works on more than two dimensions.</p>
+<dt id="barak.interp.interp_spline">
+<tt class="descclassname">barak.interp.</tt><tt class="descname">interp_spline</tt><big>(</big><em>x</em>, <em>xvals</em>, <em>yvals</em>, <em>nochecks=False</em><big>)</big><a class="reference internal" href="../_modules/barak/interp.html#interp_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.interp.interp_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.7.dev-0b99c90)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear
+interpolation.</p>
+<p>This is a convenience function wrapped around InterpCubicSpline.</p>
 </dd></dl>
 
 </div>
@@ -65,11 +67,11 @@
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.utilities.indices_from_grid.html">barak.utilities.indices_from_grid</a>
+        «&#160;&#160;<a href="barak.interp.fit_spline.html">barak.interp.fit_spline</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.utilities.nan2num.html">barak.utilities.nan2num</a>&#160;&#160;»
+        <a href="barak.interp.splice.html">barak.interp.splice</a>&#160;&#160;»
         </p>
 
       </div>

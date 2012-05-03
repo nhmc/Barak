@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.plot.axvfill &mdash; Barak 0.1dev documentation</title>
+    <title>barak.interp.trilinear_interp &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,57 +28,55 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.plot.axvlines" href="barak.plot.axvlines.html" />
-    <link rel="prev" title="barak.plot.arrplot" href="barak.plot.arrplot.html" /> 
+    <link rel="next" title="barak.io.loadobj" href="barak.io.loadobj.html" />
+    <link rel="prev" title="barak.interp.splice" href="barak.interp.splice.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.plot.axvfill</span></h2>
+        <h2 class="heading"><span>barak.interp.trilinear_interp</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.plot.arrplot.html">barak.plot.arrplot</a>
+        «&#160;&#160;<a href="barak.interp.splice.html">barak.interp.splice</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.plot.axvlines.html">barak.plot.axvlines</a>&#160;&#160;»
+        <a href="barak.io.loadobj.html">barak.io.loadobj</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-plot-axvfill">
-<h1>barak.plot.axvfill<a class="headerlink" href="#barak-plot-axvfill" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-interp-trilinear-interp">
+<h1>barak.interp.trilinear_interp<a class="headerlink" href="#barak-interp-trilinear-interp" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.plot.axvfill">
-<tt class="descclassname">barak.plot.</tt><tt class="descname">axvfill</tt><big>(</big><em>xvals</em>, <em>ax=None</em>, <em>color='k'</em>, <em>alpha=0.1</em>, <em>edgecolor='none'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/barak/plot.html#axvfill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.plot.axvfill" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fill vertical regions defined by a sequence of (left, right)
-positions.</p>
+<dt id="barak.interp.trilinear_interp">
+<tt class="descclassname">barak.interp.</tt><tt class="descname">trilinear_interp</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em>, <em>xref</em>, <em>yref</em>, <em>zref</em>, <em>vals</em><big>)</big><a class="reference internal" href="../_modules/barak/interp.html#trilinear_interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.interp.trilinear_interp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trilinear interpolation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>xvals: list</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x, y, z</strong> : arrays of floats, shapes (M,), (N,), (O,)</p>
 <blockquote>
-<div><p>Sequence of pairs specifying the left and right extent of each
-region. e.g. (3,4) or [(0,1),(3,4)]</p>
+<div><p>Coordinate grid at which to interpolate <em class="xref py py-obj">vals</em>.</p>
 </div></blockquote>
-<p><strong>ax</strong> : matplotlib axes instance (default is the current axes)</p>
+<p><strong>xref, yref, zref</strong> : array of floats, shapes (I,), (J,), (K,)</p>
 <blockquote>
-<div><p>The axes to plot regions on.</p>
+<div><p>Reference coordinate grid. The grid must be equally spaced along
+each direction, but the spacing can be different between
+directions.</p>
 </div></blockquote>
-<p><strong>color</strong> : mpl colour (default &#8216;g&#8217;)</p>
+<p><strong>vals: array of floats, shape (I, J, K)</strong> :</p>
 <blockquote>
-<div><p>Color of the regions.</p>
+<div><p>Reference values at the reference grid positions.</p>
 </div></blockquote>
-<p><strong>alpha</strong> : float (default 0.3)</p>
-<blockquote>
-<div><p>Opacity of the regions (1=opaque).</p>
-</div></blockquote>
-<p class="last"><strong>Other keywords arguments are passed to PolyCollection.</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>output</strong> : array of floats, shape (M,)</p>
 </td>
 </tr>
 </tbody>
@@ -92,11 +90,11 @@ region. e.g. (3,4) or [(0,1),(3,4)]</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.plot.arrplot.html">barak.plot.arrplot</a>
+        «&#160;&#160;<a href="barak.interp.splice.html">barak.interp.splice</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.plot.axvlines.html">barak.plot.axvlines</a>&#160;&#160;»
+        <a href="barak.io.loadobj.html">barak.io.loadobj</a>&#160;&#160;»
         </p>
 
       </div>

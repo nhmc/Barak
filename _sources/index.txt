@@ -165,6 +165,23 @@ Astronomical coordinate functions.
    s2dec
    unique_radec
 
+interp
+------
+
+Interpolation-related functions.
+
+.. currentmodule:: barak.interp
+
+.. autosummary::
+   :toctree: generated/
+
+   InterpCubicSpline
+   InterpCubicSpline.set_d2
+   fit_spline
+   interp_spline
+   splice
+   trilinear_interp
+
 io
 --
 
@@ -196,6 +213,7 @@ Plotting routines.
 .. autosummary::
    :toctree: generated/
 
+   arrplot
    axvfill
    axvlines
    correct_marker_size
@@ -314,22 +332,6 @@ spectrum-related functions.
    vac2air_morton
    writesp
 
-spline
-------
-
-Spline-related functions.
-
-.. currentmodule:: barak.spline
-
-.. autosummary::
-   :toctree: generated/
-
-   InterpCubicSpline
-   InterpCubicSpline.set_d2
-   fit_spline
-   interp_spline
-   splice
-
 utilities
 ---------
 
@@ -355,6 +357,7 @@ Various general-use functions.
    get_data_path
    indexnear
    indgroupby
+   indices_from_grid
    meshgrid_nd
    nan2num
    permutations
