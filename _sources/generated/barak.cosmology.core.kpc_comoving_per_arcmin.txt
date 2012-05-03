@@ -1,6 +1,0 @@
-barak.cosmology.core.kpc_comoving_per_arcmin
-============================================
-
-.. currentmodule:: barak.cosmology.core
-
-.. autofunction:: kpc_comoving_per_arcmin

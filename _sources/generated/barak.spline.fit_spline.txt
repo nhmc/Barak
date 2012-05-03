@@ -1,6 +1,0 @@
-barak.spline.fit_spline
-=======================
-
-.. currentmodule:: barak.spline
-
-.. autofunction:: fit_spline

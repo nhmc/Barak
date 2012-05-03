@@ -1,6 +1,0 @@
-barak.pyvpfit.VpfitModel.__repr__
-=================================
-
-.. currentmodule:: barak.pyvpfit
-
-.. automethod:: VpfitModel.__repr__

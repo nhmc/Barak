@@ -1,6 +1,0 @@
-barak.utilities.adict.__delitem__
-=================================
-
-.. currentmodule:: barak.utilities
-
-.. automethod:: adict.__delitem__

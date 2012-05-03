@@ -1,6 +1,0 @@
-barak.utilities.adict.__setitem__
-=================================
-
-.. currentmodule:: barak.utilities
-
-.. automethod:: adict.__setitem__

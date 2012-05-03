@@ -1,6 +1,0 @@
-barak.cosmology.core.Cosmology.absorption_distance
-==================================================
-
-.. currentmodule:: barak.cosmology.core
-
-.. automethod:: Cosmology.absorption_distance

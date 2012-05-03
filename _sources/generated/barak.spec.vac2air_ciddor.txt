@@ -1,6 +1,0 @@
-barak.spec.vac2air_ciddor
-=========================
-
-.. currentmodule:: barak.spec
-
-.. autofunction:: vac2air_ciddor

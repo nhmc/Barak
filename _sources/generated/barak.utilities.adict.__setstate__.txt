@@ -1,6 +1,0 @@
-barak.utilities.adict.__setstate__
-==================================
-
-.. currentmodule:: barak.utilities
-
-.. automethod:: adict.__setstate__

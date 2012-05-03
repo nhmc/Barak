@@ -1,6 +1,0 @@
-barak.pyvpfit.findtrans
-=======================
-
-.. currentmodule:: barak.pyvpfit
-
-.. autofunction:: findtrans

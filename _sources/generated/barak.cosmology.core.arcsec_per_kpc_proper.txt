@@ -1,6 +1,0 @@
-barak.cosmology.core.arcsec_per_kpc_proper
-==========================================
-
-.. currentmodule:: barak.cosmology.core
-
-.. autofunction:: arcsec_per_kpc_proper

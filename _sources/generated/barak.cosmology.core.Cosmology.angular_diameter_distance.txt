@@ -1,6 +1,0 @@
-barak.cosmology.core.Cosmology.angular_diameter_distance
-========================================================
-
-.. currentmodule:: barak.cosmology.core
-
-.. automethod:: Cosmology.angular_diameter_distance

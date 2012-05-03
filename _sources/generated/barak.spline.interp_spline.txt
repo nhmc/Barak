@@ -1,6 +1,0 @@
-barak.spline.interp_spline
-==========================
-
-.. currentmodule:: barak.spline
-
-.. autofunction:: interp_spline

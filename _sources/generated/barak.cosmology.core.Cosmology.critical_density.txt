@@ -1,6 +1,0 @@
-barak.cosmology.core.Cosmology.critical_density
-===============================================
-
-.. currentmodule:: barak.cosmology.core
-
-.. automethod:: Cosmology.critical_density

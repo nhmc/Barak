@@ -1,6 +1,0 @@
-barak.spec.Spectrum.__init__
-============================
-
-.. currentmodule:: barak.spec
-
-.. automethod:: Spectrum.__init__

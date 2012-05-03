@@ -1,6 +1,0 @@
-barak.absorb.getT
-=================
-
-.. currentmodule:: barak.absorb
-
-.. autofunction:: getT

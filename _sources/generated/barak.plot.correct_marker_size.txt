@@ -1,6 +1,0 @@
-barak.plot.correct_marker_size
-==============================
-
-.. currentmodule:: barak.plot
-
-.. autofunction:: correct_marker_size

@@ -1,6 +1,0 @@
-barak.sed.calc_extinction_Calzetti
-==================================
-
-.. currentmodule:: barak.sed
-
-.. autofunction:: calc_extinction_Calzetti

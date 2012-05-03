@@ -1,6 +1,0 @@
-barak.sed.SED.__init__
-======================
-
-.. currentmodule:: barak.sed
-
-.. automethod:: SED.__init__

@@ -1,6 +1,0 @@
-barak.cosmology.core.Cosmology.comoving_volume
-==============================================
-
-.. currentmodule:: barak.cosmology.core
-
-.. automethod:: Cosmology.comoving_volume

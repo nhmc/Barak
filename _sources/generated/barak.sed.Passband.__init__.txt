@@ -1,6 +1,0 @@
-barak.sed.Passband.__init__
-===========================
-
-.. currentmodule:: barak.sed
-
-.. automethod:: Passband.__init__

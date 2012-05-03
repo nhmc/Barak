@@ -1,6 +1,0 @@
-barak.utilities.adict.__setattr__
-=================================
-
-.. currentmodule:: barak.utilities
-
-.. automethod:: adict.__setattr__
