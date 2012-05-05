@@ -41,8 +41,7 @@ Constants defined:
  Mpc       3.08567802e24        cm              megaparsec
  yr        3.155815e7           s               year
  Gyr       3.155815e16          s               gigayear
- mu        0.62                 unitless        mean molecular weight of
-                                                astrophysical gas
+ mu        0.62                 unitless        mean molecular weight of astrophysical gas
  mile      160934.              cm              mile
  a0        hbar**2 / me / e**2  cm              Bohr radius
  alpha     e**2 / (hbar*c)      unitless        Fine structure constant

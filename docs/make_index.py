@@ -85,6 +85,7 @@ def parse_module(modname, prefix='barak.'):
         c.extend(temp)
 
     for obj in c + functions:
+        
         s += '   ' + obj + '\n'
     s += '\n'
 

@@ -80,7 +80,7 @@ def distsq_to_radians(distsq):
 def check_ra_dec(ra, dec):
     """ Check 0 <= RA < 360 and -90 <= Dec <= 90.
 
-    Raises a ValueError if any value is outside these limits.
+    Raises a ValueError outside these limits.
     
     Parameters
     ----------
@@ -112,7 +112,7 @@ def ang_sep(ra1, dec1, ra2, dec2):
 
     Returns
     -------
-    separation_in_degrees : array of floats shape (N, M)
+    separation_in_degrees : array of floats, shape (N, M)
        If N or M is 1, that dimension is suppressed.
     """
     check_ra_dec(ra1, dec1)
@@ -244,6 +244,10 @@ def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
     return the index and separation of everything in the second array
     within the search tolerance, not just the closest match.
 
+    See Also
+    --------
+    indmatch, unique_radec
+
     Notes
     -----
     To get the indices of objects in ra2, dec2 without a match, use
@@ -303,7 +307,7 @@ def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
                 else:
                     break
             match.append(fromarrays([isorted[jclose], seps],
-                                    dtype=[('ind','i8'),('sep','f8')]))
+                                    dtype=[('ind','i8'), ('sep','f8')]))
 
     if not allmatches:
         # return both indices and separations in a recarray
@@ -331,6 +335,10 @@ def indmatch(ra1, dec1, ra2, dec2, tol):
     i1 : arrays of int, shape (P,)
       `i1` are the indices into ra1,dec1 that have matches in the ra2,
       dec2. `i2` are the indices into ra2,dec2 giving the matching objects.
+
+    See Also
+    --------
+    match, unique_radec
     """
     m = match(ra1, dec1, ra2, dec2, tol)
     c = m.ind > -1
@@ -346,10 +354,17 @@ def unique_radec(ra, dec, tol):
     tol is the tolerance for matching in arcsec. Any coord separated by
     less that this amount are assumed to be the same.
 
-    Returns two arrays.  The first is an array of indices giving the
-    first occurence of a unique coordinate in the input list.  The
-    second is a list giving the indices of all coords that were
-    matched to a given unique coord.
+    Returns
+    -------
+    ind1 : ndarray of ints, shape (N,)
+      Indices of the first occurence of a unique coordinate in the
+      input array.
+    ind2 : list of int arrays, length N
+      Indices of all coords that were matched to a given unique coordinate.
+
+    See Also
+    --------
+    indmatch, match
 
     The matching algorithm is confusing, but hopefully correct and not too
     slow. Potential for improvement...

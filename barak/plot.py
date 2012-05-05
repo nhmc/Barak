@@ -208,29 +208,35 @@ def distplot(vals, xvals=None, perc=(68, 95), showmean=False,
 
 def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
             ecolor=None, elw=None, zorder=None, nonposval=None, **kwargs):
-    """ Plot a graph with y errors.
+    """ Plot a graph with errors.
 
     Parameters
     ----------
-    x, y: arrays of shape (N,)
+    x, y : arrays of shape (N,)
         Data.
-    yerrs: array of shape (N,) or shape (N,2)
-        Either an array with the same length y, or a list of two such
-        arrays, giving lower and upper limits to plot.
-    xerrs:
-        Optional x errors.
-    fmt: str
-        Passed to the plot command for the x,y points.
-    ms, mew: floats
+    yerrs : array of shape (N,) or (N,2)
+        Either an array with the same length as `y`, or a list of two
+        such arrays, giving lower and upper limits to plot.
+    xerrs : array, shape (N,) or (N,2), optional
+        Optional x errors. The format is the same as for `yerrs`.
+    fmt : str
+        A matplotlib format string that is passed to `pylab.plot`.
+    ms, mew : floats
         Plotting marker size and edge width.
-    ecolor: matplotlib color (None)
+    ecolor : matplotlib color (None)
         Color of the error bars. By default this will be the same color
         as the markers.
     elw: matplotlib line width (None)
-    nonposval: float (None)
-        If given, replace any non-positive values of y with this
+        Error bar line width.
+    nonposval : float (None)
+        Replace any non-positive values of y with `nonposval`.
     """
-    yerrs = np.array(yerrs)
+
+    if ax is None:
+        fig = pl.figure()
+        ax = fig.add_subplot(111)
+
+    yerrs = np.asarray(yerrs)
     if yerrs.ndim > 1:
         lo = yerrs[0]
         hi = yerrs[1]
@@ -238,9 +244,6 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
         lo = y - yerrs
         hi = y + yerrs
 
-    if ax is None:
-        fig = pl.figure()
-        ax = fig.add_subplot(111)
     if nonposval is not None:
         y = np.where(y <= 0, nonposval, y)
 
@@ -262,7 +265,7 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
     col = ax.vlines(x, lo, hi, color=ecolor, lw=elw, label='__nolabel__')
 
     if xerrs is not None:
-        xerrs = np.array(xerrs)
+        xerrs = np.asarray(xerrs)
         if xerrs.ndim > 1:
             lo = xerrs[0]
             hi = xerrs[1]
@@ -276,6 +279,9 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
         l.set_zorder(zorder)
         if xerrs is not None:
             col2.set_zorder(zorder)
+
+    if pl.isinteractive():
+        pl.show()
 
     return ax
 
@@ -292,6 +298,7 @@ def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
     if chist is None:
         chist = c
     if ax is None:
+        pl.figure()
         ax = pl.gca()
 
     loc = [l.strip().lower() for l in loc.split(',')]
@@ -329,6 +336,8 @@ def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
 
     ax.set_xlim(xbins[0], xbins[-1])
     ax.set_ylim(ybins[0], ybins[-1])
+    if pl.isinteractive():
+        pl.show()
 
     return ax, dict(x=x, y=y, xbinedges=xbins, ybinedges=ybins)
 
@@ -350,8 +359,8 @@ def histo(a, fmt='b', bins=10, ax=None, lw=2, log=False, **kwargs):
         pl.show()
     return vals,bins
 
-def arrplot(x, y, a, ax=None):
-    """ Plot an array with coordinates.
+def arrplot(x, y, a, ax=None, **kwargs):
+    """ Plot a 2D array with coordinates.
 
     Label coordinates such that each coloured patch representing a
     value in `a` is centred on its x,y coordinate.
@@ -384,10 +393,10 @@ def arrplot(x, y, a, ax=None):
     assert np.allclose(dy, dyvals[1:])
     y0, y1 = y[0] - 0.5*dy, y[-1] + 0.5*dy
     
-    ax.imshow(a.T, aspect='auto', extent=(x0, x1, y0, y1),
-              interpolation='nearest')
+    col = ax.imshow(a.T, aspect='auto', extent=(x0, x1, y0, y1),
+              interpolation='nearest', **kwargs)
 
     if pl.isinteractive():
         pl.show()
 
-    return ax
+    return col
