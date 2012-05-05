@@ -11,7 +11,8 @@ be handled are:
   * Fit a smooth continuum to a spectrum with many emission or
     absorption features.
 
-More details are given the documentation here: http://nhmc.github.com/Barak
+More details are given in the documentation here:
+http://nhmc.github.com/Barak
 
 To install, just copy the the barak/ to directory to a location
 pointed to by your PYTHONPATH variable.

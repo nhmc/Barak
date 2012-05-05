@@ -31,6 +31,7 @@ def text_calc_iontau():
     assert abs(tau.min() - 0.0) < 1e-6
 
 def test_findtrans():
+    atomdat = readatom()
     name, tr = findtrans('CIV 1550', atomdat)
     assert np.allclose(tr['wa'], 1550.7812)
 

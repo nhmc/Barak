@@ -1,5 +1,6 @@
 from ..interp import trilinear_interp
 import numpy as np
+from math import pi
 
 def test_trilinear_interp():
     Nx, Ny, Nz = 10., 12., 14.

@@ -10,6 +10,8 @@ from convolve import convolve_psf
 from utilities import between, adict, get_data_path, indexnear
 from constants import Ar, me, mp, k, c, e, sqrt_ln2, c_kms
 
+DATAPATH = get_data_path()
+
 def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
             debug=False, verbose=True):
     """ Returns the optical depth (Voigt profile) for a transition.
