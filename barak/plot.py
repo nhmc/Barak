@@ -9,8 +9,8 @@ import matplotlib.transforms as mtransforms
 A4LANDSCAPE = 11.7, 8.3
 A4PORTRAIT = 8.3, 11.7
 
-def correct_marker_size(fmt):
-    """ Find a default marker size such that different marker types
+def default_marker_size(fmt):
+    """ Find a default matplotlib marker size such that different marker types
     look roughly the same size.
     """
     temp = fmt.replace('.-', '')
@@ -76,8 +76,7 @@ def axvlines(xvals, ymin=0, ymax=1, ax=None, ls='-', color='0.7', **kwargs):
 
 
 def puttext(x,y,text,ax, xcoord='ax', ycoord='ax', **kwargs):
-    """ Convenience function for printing text on an axis using axes
-    coords."""
+    """ Print text on an axis using axes coordinates."""
     if xcoord == 'data' and ycoord == 'ax':
         trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
     elif xcoord == 'ax' and ycoord == 'data':
@@ -100,7 +99,6 @@ def distplot(vals, xvals=None, perc=(68, 95), showmean=False,
 
     Parameters
     ----------
-    
     vals : sequence of arrays
         2-d array or a sequence of 1-d arrays.
     xvals : array of floats
@@ -248,7 +246,7 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
         y = np.where(y <= 0, nonposval, y)
 
     if ms is None:
-        ms = correct_marker_size(fmt)
+        ms = default_marker_size(fmt)
 
     l, = ax.plot(x, y, fmt, ms=ms, mew=mew, **kwargs)
     # find the error colour
@@ -304,7 +302,7 @@ def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
     loc = [l.strip().lower() for l in loc.split(',')]
 
     if ms is None:
-        ms = correct_marker_size(fmt)
+        ms = default_marker_size(fmt)
 
     ax.plot(xvals, yvals, fmt, color=c, ms=ms, label=label, **kwargs)
     x0,x1,y0,y1 = ax.axis()

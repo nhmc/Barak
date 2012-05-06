@@ -1242,13 +1242,24 @@ def air2vac_ciddor(airw):
     return vacw
 
 def qso_template(wa, z):
-    """ return a QSO spectrum at redshift z.
+    """ Return a composite QSO spectrum at redshift z.
 
     The SDSS composite spectrum as a function of F_lambda is returned
     at each wavelength of wa. wa must be in angstroms.
     """
     r = readtabfits(DATAPATH + '/templates/qso/dr1QSOspec.fits')
-    return np.interp(wa, r.wa*(1+z), r.fl)
+    return np.interp(wa, r.wa*(1 + z), r.fl)
+
+def qso_template_uv(wa, z, smooth_fwhmpix=6):
+    """ Return a composite UV QSO spectrum at redshift z.
+
+    wavelengths must be in Angstroms.
+    """
+    w, f, e = np.loadtxt(DATAPATH + 'templates/qso/telfer_composite_qso.txt',
+                         unpack=1)
+    fl = np.interp(wa, w*(1 + z), f)
+    fl = convolve_psf(fl, smooth_fwhmpix)
+    return fl
 
 def make_constant_dv_wa_scale(wmin, wmax, dv):
     """ Make a constant velocity width scale given a start and end

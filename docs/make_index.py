@@ -8,14 +8,45 @@ autosummaries for.
 import sys, os, inspect
 
 header = """\
-Welcome to Barak's documentation
-================================
+Barak's Documentation
+=====================
+
+This package contains functions useful for scientific programming,
+with a focus on astronomical research. The documentation details
+everything that is available, but some example tasks that can be
+handled are:
+
+  * Calculate cosmological distance measures for various cosmologies.
+  * Find the expected broad-band magnitudes given a spectral energy
+    distribution.
+  * Calculate absorption profiles for various ions observed in
+    astrophysical environments.
+  * Fit a smooth continuum to a spectrum with many emission or
+    absorption features.
+
+The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
+
+To install, just copy the ``barak/`` directory to a location pointed
+to by your PYTHONPATH variable.
+
+To run the tests you need `py.test <http://pytest.org/latest/>`_
+installed.  Then run::
+
+   py.test barak 
+
+from the ``barak/`` directory.
+
+Feel free to email me if you have any questions: neilcrighton
+.at. gmail .dot. com
+
+.. raw:: html
+
+ <a href="https://github.com/nhmc/Barak"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
 
 .. toctree::
    :maxdepth: 2
 
    index.rst
-
 
 """
 
@@ -126,6 +157,7 @@ if 1:
     filenames = [n for n in filenames if
                  n.endswith('.py') and n != '__init__.py']
     s = header
+
     for n in sorted(filenames):
         modname = n.replace('./', '')[:-3]
         s += parse_module(modname)
