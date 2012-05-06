@@ -1290,13 +1290,24 @@
     <span class="k">return</span> <span class="n">vacw</span>
 </div>
 <div class="viewcode-block" id="qso_template"><a class="viewcode-back" href="../../generated/barak.spec.qso_template.html#barak.spec.qso_template">[docs]</a><span class="k">def</span> <span class="nf">qso_template</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; return a QSO spectrum at redshift z.</span>
+    <span class="sd">&quot;&quot;&quot; Return a composite QSO spectrum at redshift z.</span>
 
 <span class="sd">    The SDSS composite spectrum as a function of F_lambda is returned</span>
 <span class="sd">    at each wavelength of wa. wa must be in angstroms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">readtabfits</span><span class="p">(</span><span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/templates/qso/dr1QSOspec.fits&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">wa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">z</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">fl</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">wa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">fl</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="qso_template_uv"><a class="viewcode-back" href="../../generated/barak.spec.qso_template_uv.html#barak.spec.qso_template_uv">[docs]</a><span class="k">def</span> <span class="nf">qso_template_uv</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">smooth_fwhmpix</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return a composite UV QSO spectrum at redshift z.</span>
+
+<span class="sd">    wavelengths must be in Angstroms.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;templates/qso/telfer_composite_qso.txt&#39;</span><span class="p">,</span>
+                         <span class="n">unpack</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">fl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">w</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">fl</span> <span class="o">=</span> <span class="n">convolve_psf</span><span class="p">(</span><span class="n">fl</span><span class="p">,</span> <span class="n">smooth_fwhmpix</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fl</span>
 </div>
 <div class="viewcode-block" id="make_constant_dv_wa_scale"><a class="viewcode-back" href="../../generated/barak.spec.make_constant_dv_wa_scale.html#barak.spec.make_constant_dv_wa_scale">[docs]</a><span class="k">def</span> <span class="nf">make_constant_dv_wa_scale</span><span class="p">(</span><span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span><span class="p">,</span> <span class="n">dv</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Make a constant velocity width scale given a start and end</span>

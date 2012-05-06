@@ -55,41 +55,44 @@
 <dl class="function">
 <dt id="barak.plot.errplot">
 <tt class="descclassname">barak.plot.</tt><tt class="descname">errplot</tt><big>(</big><em>x</em>, <em>y</em>, <em>yerrs</em>, <em>xerrs=None</em>, <em>fmt='.b'</em>, <em>ax=None</em>, <em>ms=None</em>, <em>mew=0.5</em>, <em>ecolor=None</em>, <em>elw=None</em>, <em>zorder=None</em>, <em>nonposval=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/barak/plot.html#errplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.plot.errplot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot a graph with y errors.</p>
+<dd><p>Plot a graph with errors.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x, y: arrays of shape (N,)</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x, y</strong> : arrays of shape (N,)</p>
 <blockquote>
 <div><p>Data.</p>
 </div></blockquote>
-<p><strong>yerrs: array of shape (N,) or shape (N,2)</strong> :</p>
+<p><strong>yerrs</strong> : array of shape (N,) or (N,2)</p>
 <blockquote>
-<div><p>Either an array with the same length y, or a list of two such
-arrays, giving lower and upper limits to plot.</p>
+<div><p>Either an array with the same length as <em class="xref py py-obj">y</em>, or a list of two
+such arrays, giving lower and upper limits to plot.</p>
 </div></blockquote>
-<p><strong>xerrs:</strong> :</p>
+<p><strong>xerrs</strong> : array, shape (N,) or (N,2), optional</p>
 <blockquote>
-<div><p>Optional x errors.</p>
+<div><p>Optional x errors. The format is the same as for <em class="xref py py-obj">yerrs</em>.</p>
 </div></blockquote>
-<p><strong>fmt: str</strong> :</p>
+<p><strong>fmt</strong> : str</p>
 <blockquote>
-<div><p>Passed to the plot command for the x,y points.</p>
+<div><p>A matplotlib format string that is passed to <tt class="xref py py-obj docutils literal"><span class="pre">pylab.plot</span></tt>.</p>
 </div></blockquote>
-<p><strong>ms, mew: floats</strong> :</p>
+<p><strong>ms, mew</strong> : floats</p>
 <blockquote>
 <div><p>Plotting marker size and edge width.</p>
 </div></blockquote>
-<p><strong>ecolor: matplotlib color (None)</strong> :</p>
+<p><strong>ecolor</strong> : matplotlib color (None)</p>
 <blockquote>
 <div><p>Color of the error bars. By default this will be the same color
 as the markers.</p>
 </div></blockquote>
 <p><strong>elw: matplotlib line width (None)</strong> :</p>
-<p><strong>nonposval: float (None)</strong> :</p>
+<blockquote>
+<div><p>Error bar line width.</p>
+</div></blockquote>
+<p><strong>nonposval</strong> : float (None)</p>
 <blockquote class="last">
-<div><p>If given, replace any non-positive values of y with this</p>
+<div><p>Replace any non-positive values of y with <em class="xref py py-obj">nonposval</em>.</p>
 </div></blockquote>
 </td>
 </tr>

@@ -1,11 +1,42 @@
-Welcome to Barak's documentation
-================================
+Barak's Documentation
+=====================
+
+This package contains functions useful for scientific programming,
+with a focus on astronomical research. The documentation details
+everything that is available, but some example tasks that can be
+handled are:
+
+  * Calculate cosmological distance measures for various cosmologies.
+  * Find the expected broad-band magnitudes given a spectral energy
+    distribution.
+  * Calculate absorption profiles for various ions observed in
+    astrophysical environments.
+  * Fit a smooth continuum to a spectrum with many emission or
+    absorption features.
+
+The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
+
+To install, just copy the ``barak/`` directory to a location pointed
+to by your PYTHONPATH variable.
+
+To run the tests you need `py.test <http://pytest.org/latest/>`_
+installed.  Then run::
+
+   py.test barak 
+
+from the ``barak/`` directory.
+
+Feel free to email me if you have any questions: neilcrighton
+.at. gmail .dot. com
+
+.. raw:: html
+
+ <a href="https://github.com/nhmc/Barak"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
 
 .. toctree::
    :maxdepth: 2
 
    index.rst
-
 
 absorb
 ------
@@ -107,8 +138,7 @@ Constants defined:
  Mpc       3.08567802e24        cm              megaparsec
  yr        3.155815e7           s               year
  Gyr       3.155815e16          s               gigayear
- mu        0.62                 unitless        mean molecular weight of
-                                                astrophysical gas
+ mu        0.62                 unitless        mean molecular weight of astrophysical gas
  mile      160934.              cm              mile
  a0        hbar**2 / me / e**2  cm              Bohr radius
  alpha     e**2 / (hbar*c)      unitless        Fine structure constant
@@ -165,6 +195,26 @@ Astronomical coordinate functions.
    s2dec
    unique_radec
 
+fitcont
+-------
+
+Functions and Classes used to fit an estimate of an unabsorbed
+continuum to a QSO spectrum.
+
+.. currentmodule:: barak.fitcont
+
+.. autosummary::
+   :toctree: generated/
+
+   InteractiveCoFit
+   InteractiveCoFit.modifypoints
+   InteractiveCoFit.on_button_release
+   InteractiveCoFit.on_keypress
+   InteractiveCoFit.plotinit
+   InteractiveCoFit.update
+   fitqsocont
+   spline_continuum
+
 interp
 ------
 
@@ -216,7 +266,7 @@ Plotting routines.
    arrplot
    axvfill
    axvlines
-   correct_marker_size
+   default_marker_size
    dhist
    distplot
    errplot
@@ -323,6 +373,7 @@ spectrum-related functions.
    plotatmos
    plotlines
    qso_template
+   qso_template_uv
    read
    rebin
    rebin_simple

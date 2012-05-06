@@ -1,0 +1,106 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.fitcont.spline_continuum &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.interp.InterpCubicSpline" href="barak.interp.InterpCubicSpline.html" />
+    <link rel="prev" title="barak.fitcont.fitqsocont" href="barak.fitcont.fitqsocont.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.fitcont.spline_continuum</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.fitcont.fitqsocont.html">barak.fitcont.fitqsocont</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.interp.InterpCubicSpline.html">barak.interp.InterpCubicSpline</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-fitcont-spline-continuum">
+<h1>barak.fitcont.spline_continuum<a class="headerlink" href="#barak-fitcont-spline-continuum" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.fitcont.spline_continuum">
+<tt class="descclassname">barak.fitcont.</tt><tt class="descname">spline_continuum</tt><big>(</big><em>wa</em>, <em>fl</em>, <em>er</em>, <em>edges</em>, <em>minfrac=0.01</em>, <em>nsig=3.0</em>, <em>resid_std=1.3</em>, <em>debug=False</em><big>)</big><a class="reference internal" href="../_modules/barak/fitcont.html#spline_continuum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.fitcont.spline_continuum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a section of spectrum, fit a continuum to it very
+loosely based on the method in Aguirre et al. 2002.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>wa</strong> : Wavelengths.</p>
+<p><strong>fl</strong> : Fluxes.</p>
+<p><strong>er</strong> : One sigma errors.</p>
+<p><strong>edges</strong> : Wavelengths giving the chunk edges.</p>
+<p><strong>minfrac = 0.01</strong> : At least this fraction of pixels in a single chunk</p>
+<blockquote>
+<div><p>contributes to the fit.</p>
+</div></blockquote>
+<p><strong>nsig = 3.0</strong> : No. of sigma for rejection for clipping.</p>
+<p><strong>resid_std = 1.3</strong> : Maximum residual st. dev. in a given chunk.</p>
+<p><strong>debug = False</strong> : If True, make helpful plots.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Continuum array, spline points, first derivative at first and last</strong> :</p>
+<p class="last"><strong>spline points</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.fitcont.fitqsocont.html">barak.fitcont.fitqsocont</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.interp.InterpCubicSpline.html">barak.interp.InterpCubicSpline</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

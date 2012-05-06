@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.interp.InterpCubicSpline" href="barak.interp.InterpCubicSpline.html" />
+    <link rel="next" title="barak.fitcont.InteractiveCoFit" href="barak.fitcont.InteractiveCoFit.html" />
     <link rel="prev" title="barak.coord.s2dec" href="barak.coord.s2dec.html" /> 
   </head>
   <body>
@@ -43,7 +43,7 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.interp.InterpCubicSpline.html">barak.interp.InterpCubicSpline</a>&#160;&#160;»
+        <a href="barak.fitcont.InteractiveCoFit.html">barak.fitcont.InteractiveCoFit</a>&#160;&#160;»
         </p>
 
       </div>
@@ -59,12 +59,27 @@
 <p>RA and Dec must be arrays of the same length, and in degrees.</p>
 <p>tol is the tolerance for matching in arcsec. Any coord separated by
 less that this amount are assumed to be the same.</p>
-<p>Returns two arrays.  The first is an array of indices giving the
-first occurence of a unique coordinate in the input list.  The
-second is a list giving the indices of all coords that were
-matched to a given unique coord.</p>
-<p>The matching algorithm is confusing, but hopefully correct and not too
-slow. Potential for improvement...</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>ind1</strong> : ndarray of ints, shape (N,)</p>
+<blockquote>
+<div><p>Indices of the first occurence of a unique coordinate in the
+input array.</p>
+</div></blockquote>
+<p><strong>ind2</strong> : list of int arrays, length N</p>
+<blockquote class="last">
+<div><p>Indices of all coords that were matched to a given unique coordinate.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="barak.coord.indmatch.html#barak.coord.indmatch" title="barak.coord.indmatch"><tt class="xref py py-obj docutils literal"><span class="pre">indmatch</span></tt></a>, <a class="reference internal" href="barak.coord.match.html#barak.coord.match" title="barak.coord.match"><tt class="xref py py-obj docutils literal"><span class="pre">match</span></tt></a>, <tt class="xref py py-obj docutils literal"><span class="pre">The</span></tt>, <tt class="xref py py-obj docutils literal"><span class="pre">but</span></tt>, <tt class="xref py py-obj docutils literal"><span class="pre">slow.</span></tt></p>
+</div>
 </dd></dl>
 
 </div>
@@ -78,7 +93,7 @@ slow. Potential for improvement...</p>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.interp.InterpCubicSpline.html">barak.interp.InterpCubicSpline</a>&#160;&#160;»
+        <a href="barak.fitcont.InteractiveCoFit.html">barak.fitcont.InteractiveCoFit</a>&#160;&#160;»
         </p>
 
       </div>

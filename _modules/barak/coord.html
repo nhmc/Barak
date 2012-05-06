@@ -128,7 +128,7 @@
 <div class="viewcode-block" id="check_ra_dec"><a class="viewcode-back" href="../../generated/barak.coord.check_ra_dec.html#barak.coord.check_ra_dec">[docs]</a><span class="k">def</span> <span class="nf">check_ra_dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Check 0 &lt;= RA &lt; 360 and -90 &lt;= Dec &lt;= 90.</span>
 
-<span class="sd">    Raises a ValueError if any value is outside these limits.</span>
+<span class="sd">    Raises a ValueError outside these limits.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -160,7 +160,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    separation_in_degrees : array of floats shape (N, M)</span>
+<span class="sd">    separation_in_degrees : array of floats, shape (N, M)</span>
 <span class="sd">       If N or M is 1, that dimension is suppressed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">check_ra_dec</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
@@ -292,6 +292,10 @@
 <span class="sd">    return the index and separation of everything in the second array</span>
 <span class="sd">    within the search tolerance, not just the closest match.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    indmatch, unique_radec</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    To get the indices of objects in ra2, dec2 without a match, use</span>
@@ -351,7 +355,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="n">match</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fromarrays</span><span class="p">([</span><span class="n">isorted</span><span class="p">[</span><span class="n">jclose</span><span class="p">],</span> <span class="n">seps</span><span class="p">],</span>
-                                    <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;ind&#39;</span><span class="p">,</span><span class="s">&#39;i8&#39;</span><span class="p">),(</span><span class="s">&#39;sep&#39;</span><span class="p">,</span><span class="s">&#39;f8&#39;</span><span class="p">)]))</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;ind&#39;</span><span class="p">,</span><span class="s">&#39;i8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;sep&#39;</span><span class="p">,</span><span class="s">&#39;f8&#39;</span><span class="p">)]))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">allmatches</span><span class="p">:</span>
         <span class="c"># return both indices and separations in a recarray</span>
@@ -379,6 +383,10 @@
 <span class="sd">    i1 : arrays of int, shape (P,)</span>
 <span class="sd">      `i1` are the indices into ra1,dec1 that have matches in the ra2,</span>
 <span class="sd">      dec2. `i2` are the indices into ra2,dec2 giving the matching objects.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    match, unique_radec</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">ind</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
@@ -394,10 +402,17 @@
 <span class="sd">    tol is the tolerance for matching in arcsec. Any coord separated by</span>
 <span class="sd">    less that this amount are assumed to be the same.</span>
 
-<span class="sd">    Returns two arrays.  The first is an array of indices giving the</span>
-<span class="sd">    first occurence of a unique coordinate in the input list.  The</span>
-<span class="sd">    second is a list giving the indices of all coords that were</span>
-<span class="sd">    matched to a given unique coord.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ind1 : ndarray of ints, shape (N,)</span>
+<span class="sd">      Indices of the first occurence of a unique coordinate in the</span>
+<span class="sd">      input array.</span>
+<span class="sd">    ind2 : list of int arrays, length N</span>
+<span class="sd">      Indices of all coords that were matched to a given unique coordinate.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    indmatch, match</span>
 
 <span class="sd">    The matching algorithm is confusing, but hopefully correct and not too</span>
 <span class="sd">    slow. Potential for improvement...</span>
