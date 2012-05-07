@@ -449,7 +449,65 @@
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">&#39;XVI&#39;</span><span class="p">:</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span></div>
+    <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
+</div>
+<div class="viewcode-block" id="tau_LL"><a class="viewcode-back" href="../../generated/barak.absorb.tau_LL.html#barak.absorb.tau_LL">[docs]</a><span class="k">def</span> <span class="nf">tau_LL</span><span class="p">(</span><span class="n">logN</span><span class="p">,</span> <span class="n">wa</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the optical depth at the neutral hydrogen Lyman limit.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    logN : float</span>
+<span class="sd">      log10 of neutral hydrogen column density in cm^-2.</span>
+<span class="sd">    wa : array_like</span>
+<span class="sd">      Wavelength in Angstroms.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tau : ndarray</span>
+<span class="sd">      The optical depth at each wavelength.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At the Lyman limit, the optical depth tau is given by::</span>
+
+<span class="sd">      tau = NHI * sigma_0 </span>
+
+<span class="sd">    where sigma_0 = 6.304 e-18 cm^-2. The energy dependence of the</span>
+<span class="sd">    cross section is::</span>
+
+<span class="sd">      sigma_nu ~ sigma_0 * (h*nu / I_H)^-3 = sigma_0 * (lam / 912)^3</span>
+
+<span class="sd">    where I_H is the energy needed to ionise hydrogen (1 Rydberg, 13.6</span>
+<span class="sd">    eV), nu is frequency and lam is the wavelength in Angstroms. This</span>
+<span class="sd">    expression is valid for I_H &lt; I &lt; 100* I_H.</span>
+
+<span class="sd">    So the normalised continuum bluewards of the Lyman limit is::</span>
+
+<span class="sd">      F/F_cont = exp(-tau) = exp(-NHI * sigma_lam)</span>
+<span class="sd">      = exp(-NHI * sigma_0 * (lam/912)^3)</span>
+
+<span class="sd">    Where F is the absorbed flux and F_cont is the unabsorbed</span>
+<span class="sd">    continuum.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Draine, 2011, &quot;Physics of the Interstellar Medium&quot;.</span>
+<span class="sd">    ISBN 978-0-691-12214-4: p84, and p128 for the photoionization cross</span>
+<span class="sd">    section.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; logN = 17.2                  # log10(N in cm^-2)</span>
+<span class="sd">    &gt;&gt;&gt; wa = np.linspace(100, 912, 100)</span>
+<span class="sd">    &gt;&gt;&gt; z = 2.24</span>
+<span class="sd">    &gt;&gt;&gt; for logN in np.arange(17, 21., 0.5):</span>
+<span class="sd">    ...    fl = exp(-tau_LL(logN, wa))</span>
+<span class="sd">    ...    plt.plot(wa*(1+z), fl, lw=2, label=&#39;%.2f&#39; % logN)</span>
+<span class="sd">    &gt;&gt;&gt; plt.legend()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sigma0</span> <span class="o">=</span> <span class="mf">6.304e-18</span>           <span class="c"># cm^2</span>
+
+    <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span> <span class="o">*</span> <span class="n">sigma0</span> <span class="o">*</span> <span class="p">(</span><span class="n">wa</span> <span class="o">/</span> <span class="mi">912</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span></div>
 </pre></div>
 
       </div>

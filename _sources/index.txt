@@ -58,6 +58,7 @@ from ions and molecules.
    read_HITRAN
    readatom
    split_trans_name
+   tau_LL
 
 abundances
 ----------

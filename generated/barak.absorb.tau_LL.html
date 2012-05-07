@@ -1,0 +1,136 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.absorb.tau_LL &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.convolve.convolve_psf" href="barak.convolve.convolve_psf.html" />
+    <link rel="prev" title="barak.absorb.split_trans_name" href="barak.absorb.split_trans_name.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.absorb.tau_LL</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.split_trans_name.html">barak.absorb.split_trans_name</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.convolve.convolve_psf.html">barak.convolve.convolve_psf</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-absorb-tau-ll">
+<h1>barak.absorb.tau_LL<a class="headerlink" href="#barak-absorb-tau-ll" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.absorb.tau_LL">
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">tau_LL</tt><big>(</big><em>logN</em>, <em>wa</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#tau_LL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.tau_LL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the optical depth at the neutral hydrogen Lyman limit.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>logN</strong> : float</p>
+<blockquote>
+<div><p>log10 of neutral hydrogen column density in cm^-2.</p>
+</div></blockquote>
+<p><strong>wa</strong> : array_like</p>
+<blockquote>
+<div><p>Wavelength in Angstroms.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>tau</strong> : ndarray</p>
+<blockquote class="last">
+<div><p>The optical depth at each wavelength.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>At the Lyman limit, the optical depth tau is given by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tau</span> <span class="o">=</span> <span class="n">NHI</span> <span class="o">*</span> <span class="n">sigma_0</span> 
+</pre></div>
+</div>
+<p>where sigma_0 = 6.304 e-18 cm^-2. The energy dependence of the
+cross section is:</p>
+<div class="highlight-python"><pre>sigma_nu ~ sigma_0 * (h*nu / I_H)^-3 = sigma_0 * (lam / 912)^3</pre>
+</div>
+<p>where I_H is the energy needed to ionise hydrogen (1 Rydberg, 13.6
+eV), nu is frequency and lam is the wavelength in Angstroms. This
+expression is valid for I_H &lt; I &lt; 100* I_H.</p>
+<p>So the normalised continuum bluewards of the Lyman limit is:</p>
+<div class="highlight-python"><pre>F/F_cont = exp(-tau) = exp(-NHI * sigma_lam)
+= exp(-NHI * sigma_0 * (lam/912)^3)</pre>
+</div>
+<p>Where F is the absorbed flux and F_cont is the unabsorbed
+continuum.</p>
+<p class="rubric">References</p>
+<p>Draine, 2011, &#8220;Physics of the Interstellar Medium&#8221;.
+ISBN 978-0-691-12214-4: p84, and p128 for the photoionization cross
+section.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">logN</span> <span class="o">=</span> <span class="mf">17.2</span>                  <span class="c"># log10(N in cm^-2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">912</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="mf">2.24</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">logN</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mf">21.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="n">fl</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tau_LL</span><span class="p">(</span><span class="n">logN</span><span class="p">,</span> <span class="n">wa</span><span class="p">))</span>
+<span class="gp">... </span>   <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">z</span><span class="p">),</span> <span class="n">fl</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">logN</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.split_trans_name.html">barak.absorb.split_trans_name</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.convolve.convolve_psf.html">barak.convolve.convolve_psf</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
