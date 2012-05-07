@@ -35,3 +35,8 @@ def test_findtrans():
     name, tr = findtrans('CIV 1550', atomdat)
     assert np.allclose(tr['wa'], 1550.7812)
 
+def test_tau_LL():
+    assert np.allclose(
+        tau_LL(18, np.linspace(800, 912, 10)),
+        [ 4.25502044, 4.4566929, 4.66463913, 4.8789552, 5.09973723,
+          5.3270813, 5.56108352, 5.80183997, 6.04944677, 6.304  ])

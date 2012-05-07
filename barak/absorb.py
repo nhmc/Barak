@@ -402,3 +402,61 @@ def split_trans_name(name):
     while name[i] not in 'XVI':
         i += 1
     return name[:i], name[i:]
+
+def tau_LL(logN, wa):
+    """ Find the optical depth at the neutral hydrogen Lyman limit.
+
+    Parameters
+    ----------
+    logN : float
+      log10 of neutral hydrogen column density in cm^-2.
+    wa : array_like
+      Wavelength in Angstroms.
+
+    Returns
+    -------
+    tau : ndarray
+      The optical depth at each wavelength.
+
+    Notes
+    -----
+    At the Lyman limit, the optical depth tau is given by::
+
+      tau = NHI * sigma_0 
+
+    where sigma_0 = 6.304 e-18 cm^-2. The energy dependence of the
+    cross section is::
+
+      sigma_nu ~ sigma_0 * (h*nu / I_H)^-3 = sigma_0 * (lam / 912)^3
+
+    where I_H is the energy needed to ionise hydrogen (1 Rydberg, 13.6
+    eV), nu is frequency and lam is the wavelength in Angstroms. This
+    expression is valid for I_H < I < 100* I_H.
+
+    So the normalised continuum bluewards of the Lyman limit is::
+
+      F/F_cont = exp(-tau) = exp(-NHI * sigma_lam)
+      = exp(-NHI * sigma_0 * (lam/912)^3)
+
+    Where F is the absorbed flux and F_cont is the unabsorbed
+    continuum.
+
+    References
+    ----------
+    Draine, 2011, "Physics of the Interstellar Medium".
+    ISBN 978-0-691-12214-4: p84, and p128 for the photoionization cross
+    section.
+
+    Examples
+    --------
+    >>> logN = 17.2                  # log10(N in cm^-2)
+    >>> wa = np.linspace(100, 912, 100)
+    >>> z = 2.24
+    >>> for logN in np.arange(17, 21., 0.5):
+    ...    fl = exp(-tau_LL(logN, wa))
+    ...    plt.plot(wa*(1+z), fl, lw=2, label='%.2f' % logN)
+    >>> plt.legend()
+    """
+    sigma0 = 6.304e-18           # cm^2
+
+    return 10**logN * sigma0 * (wa / 912)**3
