@@ -112,7 +112,7 @@ from ions and molecules.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T" title="barak.absorb.b_to_T"><tt class="xref py py-obj docutils literal"><span class="pre">b_to_T</span></tt></a>(atom,&nbsp;bvals)</td>
 <td>Convert b parameters (km/s) to a temperature in K for an atom</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;ew,&nbsp;ewer,&nbsp;tr)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;tr[,&nbsp;ew,&nbsp;ewer,&nbsp;fl,&nbsp;er,&nbsp;...])</td>
 <td>Find the rest equivalent width of a feature, and column density assuming optically thin.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau" title="barak.absorb.calc_iontau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_iontau</span></tt></a>(wa,&nbsp;ion,&nbsp;zp1,&nbsp;logN,&nbsp;b[,&nbsp;debug,&nbsp;...])</td>
@@ -151,7 +151,7 @@ from ions and molecules.</p>
 <dd><p class="first">An ordered dictionary of abundances from <a class="reference external" href="http://adsabs.harvard.edu/abs/2003ApJ...591.1220L">Lodders 2003, ApJ, 591,
 1220</a>. It
 contains a value A for each element <em class="xref py py-obj">el</em>, where A is defined:</p>
-<div class="highlight-python"><pre>A(el) = log10 n(el)/n(H) - 12</pre>
+<div class="highlight-python"><pre>A(el) = log10 n(el)/n(H) + 12</pre>
 </div>
 <p class="last"><em class="xref py py-obj">n(el)</em> is the number density of atoms of that element, and <em class="xref py py-obj">n(H)</em>
 is the number density of hydrogen.</p>
@@ -524,7 +524,7 @@ continuum to a QSO spectrum.</p>
 <td>Find a smooth function that approximates <em class="xref py py-obj">x</em>, <em class="xref py py-obj">y</em>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.interp.interp_spline.html#barak.interp.interp_spline" title="barak.interp.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
-<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.7.dev-d609dff)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
+<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.7.dev-084eed7)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.interp.splice.html#barak.interp.splice" title="barak.interp.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
 <td>Join two overlapping curves smoothly using a cubic spline.</td>

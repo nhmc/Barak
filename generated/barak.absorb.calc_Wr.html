@@ -54,7 +54,7 @@
 <h1>barak.absorb.calc_Wr<a class="headerlink" href="#barak-absorb-calc-wr" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.absorb.calc_Wr">
-<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_Wr</tt><big>(</big><em>i0</em>, <em>i1</em>, <em>wa</em>, <em>ew</em>, <em>ewer</em>, <em>tr</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_Wr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_Wr" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_Wr</tt><big>(</big><em>i0</em>, <em>i1</em>, <em>wa</em>, <em>tr</em>, <em>ew=None</em>, <em>ewer=None</em>, <em>fl=None</em>, <em>er=None</em>, <em>co=None</em>, <em>cohi=0.02</em>, <em>colo=0.02</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_Wr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_Wr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the rest equivalent width of a feature, and column
 density assuming optically thin.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -69,18 +69,42 @@ density assuming optically thin.</p>
 <blockquote>
 <div><p>Observed wavelengths.</p>
 </div></blockquote>
-<p><strong>ew</strong> : array of floats, shape (N,)</p>
+<p><strong>tr</strong> : atom.dat entry</p>
+<blockquote>
+<div><p>Transition entry from an atom.dat array read by <em class="xref py py-obj">readatom()</em>.</p>
+</div></blockquote>
+<p><strong>ew</strong> : array of floats, shape (N,), optional</p>
 <blockquote>
 <div><p>Equivalent width per pixel.</p>
 </div></blockquote>
-<p><strong>ewer</strong> : array of floats, shape (N,)</p>
+<p><strong>ewer</strong> : array of floats, shape (N,), optional</p>
 <blockquote>
-<div><p>Equivalent width 1 sigma error per pixel.</p>
-</div></blockquote>
-<p><strong>tr</strong> : atom.dat entry</p>
-<blockquote>
-<div><p>Transition entry from an atom.dat array read by pyvpfit.readatom(),
+<div><p>Equivalent width 1 sigma error per pixel.
 with attributes wav (rest wavelength) and osc (oscillator strength).</p>
+</div></blockquote>
+<p><strong>fl</strong> : array of floats, shape (N,), optional</p>
+<blockquote>
+<div><p>Observed flux.</p>
+</div></blockquote>
+<p><strong>er</strong> : array of floats, shape (N,), optional</p>
+<blockquote>
+<div><p>Observed flux 1 sigma error.</p>
+</div></blockquote>
+<p><strong>co</strong> : array of floats, shape (N,), optional</p>
+<blockquote>
+<div><p>Observed continuum.</p>
+</div></blockquote>
+<p><strong>cohi</strong> : float (0.02)</p>
+<blockquote>
+<div><p>When calculating one sigma upper error and detection limit,
+increase the continuum by this fractional amount. Only used if
+fl, er and co are also given.</p>
+</div></blockquote>
+<p><strong>colo</strong> : float (0.02)</p>
+<blockquote>
+<div><p>When calculating one sigma lower error decrease the continuum by
+this fractional amount.  Only used if fl, er and co are also
+given.</p>
 </div></blockquote>
 </td>
 </tr>

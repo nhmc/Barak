@@ -57,6 +57,7 @@
 <span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span><span class="p">,</span> <span class="n">adict</span><span class="p">,</span> <span class="n">get_data_path</span><span class="p">,</span> <span class="n">indexnear</span>
 <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">Ar</span><span class="p">,</span> <span class="n">me</span><span class="p">,</span> <span class="n">mp</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">sqrt_ln2</span><span class="p">,</span> <span class="n">c_kms</span>
+<span class="kn">from</span> <span class="nn">spec</span> <span class="kn">import</span> <span class="n">find_wa_edges</span>
 
 <span class="n">DATAPATH</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
 
@@ -249,7 +250,8 @@
         <span class="k">return</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ticks</span>
 
 </div>
-<div class="viewcode-block" id="calc_Wr"><a class="viewcode-back" href="../../generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr">[docs]</a><span class="k">def</span> <span class="nf">calc_Wr</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">ew</span><span class="p">,</span> <span class="n">ewer</span><span class="p">,</span> <span class="n">tr</span><span class="p">):</span>
+<div class="viewcode-block" id="calc_Wr"><a class="viewcode-back" href="../../generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr">[docs]</a><span class="k">def</span> <span class="nf">calc_Wr</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ew</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ewer</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fl</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">er</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">cohi</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">colo</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find the rest equivalent width of a feature, and column</span>
 <span class="sd">    density assuming optically thin.</span>
 
@@ -259,14 +261,28 @@
 <span class="sd">      Start and end indices of feature (inclusive).</span>
 <span class="sd">    wa : array of floats, shape (N,)</span>
 <span class="sd">      Observed wavelengths.</span>
-<span class="sd">    ew : array of floats, shape (N,)</span>
-<span class="sd">      Equivalent width per pixel.</span>
-<span class="sd">    ewer : array of floats, shape (N,)</span>
-<span class="sd">      Equivalent width 1 sigma error per pixel.</span>
 <span class="sd">    tr : atom.dat entry</span>
-<span class="sd">      Transition entry from an atom.dat array read by pyvpfit.readatom(),</span>
+<span class="sd">      Transition entry from an atom.dat array read by `readatom()`.</span>
+<span class="sd">    ew : array of floats, shape (N,), optional</span>
+<span class="sd">      Equivalent width per pixel.</span>
+<span class="sd">    ewer : array of floats, shape (N,), optional</span>
+<span class="sd">      Equivalent width 1 sigma error per pixel.</span>
 <span class="sd">      with attributes wav (rest wavelength) and osc (oscillator strength).</span>
-
+<span class="sd">    fl : array of floats, shape (N,), optional</span>
+<span class="sd">      Observed flux.</span>
+<span class="sd">    er : array of floats, shape (N,), optional</span>
+<span class="sd">      Observed flux 1 sigma error.</span>
+<span class="sd">    co : array of floats, shape (N,), optional</span>
+<span class="sd">      Observed continuum.</span>
+<span class="sd">    cohi : float (0.02)</span>
+<span class="sd">      When calculating one sigma upper error and detection limit,</span>
+<span class="sd">      increase the continuum by this fractional amount. Only used if</span>
+<span class="sd">      fl, er and co are also given.</span>
+<span class="sd">    colo : float (0.02)</span>
+<span class="sd">      When calculating one sigma lower error decrease the continuum by</span>
+<span class="sd">      this fractional amount.  Only used if fl, er and co are also</span>
+<span class="sd">      given.</span>
+<span class="sd">      </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    A dictionary with keys:</span>
@@ -280,30 +296,66 @@
 <span class="sd">    ngoodpix number of good pixels contributing to the measurements </span>
 <span class="sd">    Nmult    multiplier to get from equivalent width to column density</span>
 <span class="sd">    ======== =========================================================</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ew1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ew</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">ewer1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ewer</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">wa1</span> <span class="o">=</span> <span class="n">wa</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ew</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">wedge</span> <span class="o">=</span> <span class="n">find_wa_edges</span><span class="p">(</span><span class="n">wa1</span><span class="p">)</span>
+        <span class="n">dw</span> <span class="o">=</span> <span class="n">wedge</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">wedge</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ew1</span> <span class="o">=</span> <span class="n">dw</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">fl</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">co</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> 
+        <span class="n">ewer1</span> <span class="o">=</span> <span class="n">dw</span> <span class="o">*</span> <span class="n">er</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">co</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cohi</span><span class="p">)</span> <span class="o">*</span> <span class="n">co</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ew1hi</span> <span class="o">=</span> <span class="n">dw</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">fl</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>
+        <span class="n">ewer1hi</span> <span class="o">=</span> <span class="n">dw</span> <span class="o">*</span> <span class="n">er</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">c</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">colo</span><span class="p">)</span> <span class="o">*</span> <span class="n">co</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ew1lo</span> <span class="o">=</span> <span class="n">dw</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">fl</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>
+        <span class="n">ewer1lo</span> <span class="o">=</span> <span class="n">dw</span> <span class="o">*</span> <span class="n">er</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">c</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ew1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ew</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ewer1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ewer</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
     <span class="c"># interpolate over bad values</span>
     <span class="n">good</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ew1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ewer1</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">good</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="n">ew1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ew1</span><span class="p">[</span><span class="n">good</span><span class="p">])</span>
         <span class="n">ewer1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ewer1</span><span class="p">[</span><span class="n">good</span><span class="p">])</span> 
+        <span class="k">if</span> <span class="n">fl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ew1hi</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ew1hi</span><span class="p">[</span><span class="n">good</span><span class="p">])</span>
+            <span class="n">ewer1hi</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ewer1hi</span><span class="p">[</span><span class="n">good</span><span class="p">])</span> 
+            <span class="n">ew1lo</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ew1lo</span><span class="p">[</span><span class="n">good</span><span class="p">])</span>
+            <span class="n">ewer1lo</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="o">~</span><span class="n">good</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="n">good</span><span class="p">],</span> <span class="n">ewer1lo</span><span class="p">[</span><span class="n">good</span><span class="p">])</span> 
+
     <span class="n">W</span> <span class="o">=</span> <span class="n">ew1</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">We</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">ewer1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">fl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">Whi</span> <span class="o">=</span> <span class="n">ew1hi</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">Wehi</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">ewer1hi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">Wlo</span> <span class="o">=</span> <span class="n">ew1lo</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">Welo</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">ewer1lo</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
     <span class="n">zp1</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">wa1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">tr</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">]</span>
     <span class="n">Wr</span> <span class="o">=</span> <span class="n">W</span> <span class="o">/</span> <span class="n">zp1</span>
     <span class="n">Wre</span> <span class="o">=</span> <span class="n">We</span> <span class="o">/</span> <span class="n">zp1</span>
+    <span class="k">if</span> <span class="n">fl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">Wrhi</span> <span class="o">=</span> <span class="n">Whi</span> <span class="o">/</span> <span class="n">zp1</span>
+        <span class="n">Wrehi</span> <span class="o">=</span> <span class="n">Wehi</span> <span class="o">/</span> <span class="n">zp1</span>
+        <span class="n">Wrlo</span> <span class="o">=</span> <span class="n">Wlo</span> <span class="o">/</span> <span class="n">zp1</span>
+        <span class="n">Wrelo</span> <span class="o">=</span> <span class="n">Welo</span> <span class="o">/</span> <span class="n">zp1</span>
+    
     <span class="c"># Assume we are on the linear part of curve of growth (will be an</span>
     <span class="c"># underestimate if saturated)</span>
     <span class="n">Nmult</span> <span class="o">=</span> <span class="mf">1.13e20</span> <span class="o">/</span> <span class="p">(</span><span class="n">tr</span><span class="p">[</span><span class="s">&#39;osc&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">tr</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">+</span> <span class="n">Wre</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Nmult</span> <span class="o">*</span> <span class="n">Wr</span><span class="p">)</span>
-    <span class="n">clo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">-</span> <span class="n">Wre</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">Nwa</span> <span class="o">=</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="n">ew1</span> <span class="o">/</span> <span class="n">zp1</span>
+
     <span class="c"># 5 sigma detection limit</span>
     <span class="n">detlim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="mi">5</span><span class="o">*</span><span class="n">Wre</span> <span class="p">)</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Nmult</span> <span class="o">*</span> <span class="n">Wr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wrhi</span> <span class="o">+</span> <span class="n">Wrehi</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">clo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wrlo</span> <span class="o">-</span> <span class="n">Wrelo</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">+</span> <span class="n">Wre</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">clo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">Nmult</span> <span class="o">*</span> <span class="p">(</span><span class="n">Wr</span> <span class="o">-</span> <span class="n">Wre</span><span class="p">)</span> <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">adict</span><span class="p">(</span><span class="n">logN</span><span class="o">=</span><span class="p">(</span><span class="n">clo</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">chi</span><span class="p">),</span> <span class="n">Ndetlim</span><span class="o">=</span><span class="n">detlim</span><span class="p">,</span> <span class="n">Wr</span><span class="o">=</span><span class="n">Wr</span><span class="p">,</span> <span class="n">Wre</span><span class="o">=</span><span class="n">Wre</span><span class="p">,</span> <span class="n">zp1</span><span class="o">=</span><span class="n">zp1</span><span class="p">,</span>
                  <span class="n">ngoodpix</span><span class="o">=</span><span class="n">good</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">Nmult</span><span class="o">=</span><span class="n">Nmult</span><span class="p">)</span>
 </div>
