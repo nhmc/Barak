@@ -7,7 +7,7 @@ Asolar:
   1220 <http://adsabs.harvard.edu/abs/2003ApJ...591.1220L>`_. It
   contains a value A for each element `el`, where A is defined::
 
-    A(el) = log10 n(el)/n(H) - 12
+    A(el) = log10 n(el)/n(H) + 12
 
   `n(el)` is the number density of atoms of that element, and `n(H)`
   is the number density of hydrogen.

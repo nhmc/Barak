@@ -9,6 +9,7 @@ import voigt
 from convolve import convolve_psf
 from utilities import between, adict, get_data_path, indexnear
 from constants import Ar, me, mp, k, c, e, sqrt_ln2, c_kms
+from spec import find_wa_edges
 
 DATAPATH = get_data_path()
 
@@ -201,7 +202,8 @@ def find_tau(wa, lines, atom, per_trans=False):
         return tau, ticks
 
 
-def calc_Wr(i0, i1, wa, ew, ewer, tr):
+def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
+            cohi=0.02, colo=0.02):
     """ Find the rest equivalent width of a feature, and column
     density assuming optically thin.
 
@@ -211,14 +213,28 @@ def calc_Wr(i0, i1, wa, ew, ewer, tr):
       Start and end indices of feature (inclusive).
     wa : array of floats, shape (N,)
       Observed wavelengths.
-    ew : array of floats, shape (N,)
-      Equivalent width per pixel.
-    ewer : array of floats, shape (N,)
-      Equivalent width 1 sigma error per pixel.
     tr : atom.dat entry
-      Transition entry from an atom.dat array read by pyvpfit.readatom(),
+      Transition entry from an atom.dat array read by `readatom()`.
+    ew : array of floats, shape (N,), optional
+      Equivalent width per pixel.
+    ewer : array of floats, shape (N,), optional
+      Equivalent width 1 sigma error per pixel.
       with attributes wav (rest wavelength) and osc (oscillator strength).
-
+    fl : array of floats, shape (N,), optional
+      Observed flux.
+    er : array of floats, shape (N,), optional
+      Observed flux 1 sigma error.
+    co : array of floats, shape (N,), optional
+      Observed continuum.
+    cohi : float (0.02)
+      When calculating one sigma upper error and detection limit,
+      increase the continuum by this fractional amount. Only used if
+      fl, er and co are also given.
+    colo : float (0.02)
+      When calculating one sigma lower error decrease the continuum by
+      this fractional amount.  Only used if fl, er and co are also
+      given.
+      
     Returns
     -------
     A dictionary with keys:
@@ -232,30 +248,66 @@ def calc_Wr(i0, i1, wa, ew, ewer, tr):
     ngoodpix number of good pixels contributing to the measurements 
     Nmult    multiplier to get from equivalent width to column density
     ======== =========================================================
-
     """
-    ew1 = np.array(ew[i0:i1+1])
-    ewer1 = np.array(ewer[i0:i1+1])
     wa1 = wa[i0:i1+1]
+    if ew is None:
+        wedge = find_wa_edges(wa1)
+        dw = wedge[1:] - wedge[:-1]
+        ew1 = dw * (1 - fl[i0:i1+1] / co[i0:i1+1]) 
+        ewer1 = dw * er[i0:i1+1] / co[i0:i1+1]
+        c = (1 + cohi) * co[i0:i1+1]
+        ew1hi = dw * (1 - fl[i0:i1+1] / c)
+        ewer1hi = dw * er[i0:i1+1] / c
+        c = (1 - colo) * co[i0:i1+1]
+        ew1lo = dw * (1 - fl[i0:i1+1] / c)
+        ewer1lo = dw * er[i0:i1+1] / c
+    else:
+        ew1 = np.array(ew[i0:i1+1])
+        ewer1 = np.array(ewer[i0:i1+1])
+
     # interpolate over bad values
     good = ~np.isnan(ew1) & (ewer1 > 0)
     if not good.all():
         ew1[~good] = np.interp(wa1[~good], wa1[good], ew1[good])
         ewer1[~good] = np.interp(wa1[~good], wa1[good], ewer1[good]) 
+        if fl is not None:
+            ew1hi[~good] = np.interp(wa1[~good], wa1[good], ew1hi[good])
+            ewer1hi[~good] = np.interp(wa1[~good], wa1[good], ewer1hi[good]) 
+            ew1lo[~good] = np.interp(wa1[~good], wa1[good], ew1lo[good])
+            ewer1lo[~good] = np.interp(wa1[~good], wa1[good], ewer1lo[good]) 
+
     W = ew1.sum()
     We = sqrt((ewer1**2).sum())
+    if fl is not None:
+        Whi = ew1hi.sum()
+        Wehi = sqrt((ewer1hi**2).sum())
+        Wlo = ew1lo.sum()
+        Welo = sqrt((ewer1lo**2).sum())
+
     zp1 = 0.5*(wa1[0] + wa1[-1]) / tr['wa']
     Wr = W / zp1
     Wre = We / zp1
+    if fl is not None:
+        Wrhi = Whi / zp1
+        Wrehi = Wehi / zp1
+        Wrlo = Wlo / zp1
+        Wrelo = Welo / zp1
+    
     # Assume we are on the linear part of curve of growth (will be an
     # underestimate if saturated)
     Nmult = 1.13e20 / (tr['osc'] * tr['wa']**2)
-    chi = np.log10( Nmult * (Wr + Wre) )
-    c = np.log10(Nmult * Wr)
-    clo = np.log10( Nmult * (Wr - Wre) )
-    Nwa = Nmult * ew1 / zp1
+
     # 5 sigma detection limit
     detlim = np.log10( Nmult * 5*Wre )
+
+    c = np.log10(Nmult * Wr)
+    if fl is not None:
+        chi = np.log10( Nmult * (Wrhi + Wrehi) )
+        clo = np.log10( Nmult * (Wrlo - Wrelo) )
+    else:
+        chi = np.log10( Nmult * (Wr + Wre) )
+        clo = np.log10( Nmult * (Wr - Wre) )
+
     return adict(logN=(clo,c,chi), Ndetlim=detlim, Wr=Wr, Wre=Wre, zp1=zp1,
                  ngoodpix=good.sum(), Nmult=Nmult)
 
