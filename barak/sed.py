@@ -211,7 +211,7 @@ class Passband(object):
     def __repr__(self):
         return 'Passband "%s"' % self.name
 
-    def plot(self, effic=False, atmos=False, ymax=None):
+    def plot(self, effic=False, atmos=False, ymax=None, **kwargs):
         """ Plots the passband. We plot the non-normalised
         transmission. This may or may not include ccd efficiency,
         losses from the atmosphere and telescope optics.
@@ -219,12 +219,13 @@ class Passband(object):
         tr = self.tr
         if ymax is not None:
             tr = self.tr / self.tr.max() * ymax
-        pl.plot(self.wa, tr)
+        pl.plot(self.wa, tr, **kwargs)
         if self.effic is not None and effic:
-            pl.plot(self.wa, self.effic, label='applied ccd efficiency')
+            pl.plot(self.wa, self.effic,
+                    label='applied ccd efficiency', **kwargs)
         if self.atmos is not None and atmos:
             pl.plot(self.wa, self.atmos,
-                    label='applied atmospheric extinction')
+                    label='applied atmospheric extinction', **kwargs)
 
         pl.xlabel("Wavelength ($\AA$)")
         pl.ylabel("Transmission")
@@ -303,16 +304,16 @@ class SED(object):
 
         return fl
 
-    def plot(self, log=False, ymax=None):
+    def plot(self, log=False, ymax=None, **kwargs):
         fl = self.fl
         if ymax is not None:
             fl = self.fl / self.fl.max() * ymax
 
         label = '%s z=%.1f E(B-V)=%.2f' % (self.label, self.z, self.EBmV)
         if log:
-            pl.loglog(self.wa, fl, label=label)
+            pl.loglog(self.wa, fl, label=label, **kwargs)
         else:
-            pl.plot(self.wa, fl, label=label)
+            pl.plot(self.wa, fl, label=label, **kwargs)
         pl.xlabel('Wavelength ($\AA$)')
         pl.ylabel('Flux (ergs s$^{-1}$cm$^{-2}$ $\AA^{-1}$)')
         #pl.legend()
@@ -381,9 +382,9 @@ class SED(object):
         return flux
 
     def calc_mag(self, band, system="Vega"):
-        """Calculates magnitude in the given passband. The distance
-        modulus (5.0*log10*(dl*1e5), where dl is the luminosity
-        distance in Mpc at the redshift of the L{SED}) is added.
+        """Calculates magnitude in the given passband.
+
+        Note that the distance modulus is not added.
 
         `system` is either 'Vega' or 'AB'
         """
@@ -394,7 +395,7 @@ class SED(object):
             # Add 0.026 because Vega has V=0.026 (e.g. Bohlin & Gilliland 2004)
             if system == "Vega":
                 mag += 0.026        
-            mag += self.distance_modulus
+            #mag += self.distance_modulus
         else:
             mag = np.inf
 

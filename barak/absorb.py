@@ -98,13 +98,32 @@ def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
         # calculations, only re-binning back to original dv size after
         # all these steps.
 
-    u = 1.e5 / b * v                      # dimensionless
+    u = 1.e5 / b * v                           # dimensionless
     a = gam_v / (4*pi*b)                       # dimensionless
     vp = voigt.voigt(a, u)                     # dimensionless
     const = pi * e**2 / (me*c)                 # m^2/s
     tau = const*N*osc*wav0 / (sqrt(pi)*b) * vp # dimensionless
 
     return tau
+
+def calc_tau_peak(logN, b, trans):
+    """
+    Estimate of  the peak optical depth of a transition assuming we are on the
+    linear part of the curve of growth.
+
+    logN is log10 of column density in cm^-2
+    b is b parameter in km/s
+    trans is  a transisition, e.e.g 'HI 1215'
+    """
+    b_cm_s = b * 1e5
+    if isinstance(trans, basestring):
+        tname, trans = findtrans(trans, readatom())
+    wav0 = trans[0] * 1e-8 # cm
+    osc = trans[1]
+    const = pi * e**2 / (me*c)
+    #gauss_norm = 1 / (sigma * sqrt(2*pi))
+    return 10**logN * osc * wav0 * const / (b_cm_s * sqrt(pi))
+
 
 def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
                 label_tau_threshold=0.01, vpad=500., verbose=True):
@@ -326,6 +345,22 @@ def b_to_T(atom, bvals):
         return T[0]
     return  T
 
+def T_to_b(atom, T):
+    """ Convert temperatues in K to b parameters (km/s) for an atom
+    with mass amu.
+    """
+    amu = Ar[atom]
+    T = np.atleast_1d(T)
+    b_cms = np.sqrt(2 * k * T / (mp *amu))
+    
+    b_kms = b_cms / 1e5
+
+    # b \propto sqrt(2kT/m)
+    if len(b_kms) == 1:
+        return b_kms[0]
+    return  b_kms
+
+
 def read_HITRAN(thelot=False):
     """ Return a list of molecular absorption features in the HITRAN
     2004 list with wavelengths < 25000 Ang (Journal of Quantitative
@@ -382,7 +417,7 @@ def readatom(filename=None, debug=False,
     # ignore anything else on the line
 
     if filename is None:
-        filename = DATAPATH + '/linelists/atom.dat.gz'
+        filename = DATAPATH + '/linelists/atom.dat'
 
     if filename.endswith('.gz'):
         import gzip

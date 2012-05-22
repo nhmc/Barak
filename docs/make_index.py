@@ -10,21 +10,23 @@ import sys, os, inspect
 header = """\
 Barak's Documentation
 =====================
-
 This package contains functions useful for scientific programming,
 with a focus on astronomical research. The documentation details
 everything that is available, but some example tasks that can be
 handled are:
 
-  * Calculate cosmological distance measures for various cosmologies.
-  * Find the expected broad-band magnitudes given a spectral energy
-    distribution.
   * Calculate absorption profiles for various ions observed in
     astrophysical environments.
   * Fit a smooth continuum to a spectrum with many emission or
     absorption features.
+  * Find the expected broad-band magnitudes given a spectral energy
+    distribution.
+  * Calculate cosmological distance measures for various cosmologies.
 
 The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
+
+If you are interested in an astrophysics related Python package, also
+take a look at the `astropy <www.astropy.org>`_ project.
 
 To install, just copy the ``barak/`` directory to a location pointed
 to by your PYTHONPATH variable.

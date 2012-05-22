@@ -383,6 +383,8 @@ def parse_config(filename, defaults={}):
                     value = True
                 elif value == 'False':
                     value = False
+                elif value == 'None':
+                    value = None
 
         cfg[option] = value
 

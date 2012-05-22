@@ -9,6 +9,7 @@ from utilities import between, Gaussian, stats, indexnear
 from convolve import convolve_psf
 from io import loadobj, saveobj
 from interp import InterpCubicSpline
+from spec import qso_template_uv
 
 import os
 
@@ -214,7 +215,8 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
                               (1900., 1940.,  5),
                               (1940., 2240., 15),
                               (2240., 3000., 25),
-                              (3000., 4000., 20)], names='left,right,num')
+                              (3000., 6000., 80),
+                              ], names='left,right,num')
 
     div.num[2:] = np.ceil(div.num[2:] * divmult)
     div.num[:2] = np.ceil(div.num[:2] * forest_divmult)    
