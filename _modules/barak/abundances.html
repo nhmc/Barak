@@ -1,0 +1,139 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.abundances &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.abundances</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.abundances</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Abundances and condensation temperatures.</span>
+
+<span class="sd">This contains the following two datasets:</span>
+
+<span class="sd">Asolar:</span>
+<span class="sd">  An ordered dictionary of abundances from `Lodders 2003, ApJ, 591,</span>
+<span class="sd">  1220 &lt;http://adsabs.harvard.edu/abs/2003ApJ...591.1220L&gt;`_. It</span>
+<span class="sd">  contains a value A for each element `el`, where A is defined::</span>
+
+<span class="sd">    A(el) = log10 n(el)/n(H) + 12</span>
+
+<span class="sd">  `n(el)` is the number density of atoms of that element, and `n(H)`</span>
+<span class="sd">  is the number density of hydrogen.</span>
+
+<span class="sd">cond_temp:</span>
+<span class="sd">  An array of condensation temperatures for each element from the same</span>
+<span class="sd">  reference.  The condensation temperature is the temperature at which</span>
+<span class="sd">  an element in a gaseous state attaches to dust grains.</span>
+
+<span class="sd">  It contains the values `tc` and `tc50` for each element, where `tc`</span>
+<span class="sd">  is the condensation temperature in K when condensation begins, and</span>
+<span class="sd">  `tc50` is the temperature when 50% of the element is left in a</span>
+<span class="sd">  gaseous state.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">get_data_path</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">readtxt</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="n">datapath</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
+
+<span class="n">Asolar</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">el</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">A</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span>
+    <span class="n">readtxt</span><span class="p">(</span><span class="n">datapath</span> <span class="o">+</span> <span class="s">&#39;abundances/SolarAbundance.txt&#39;</span><span class="p">,</span> <span class="n">readnames</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">cond_temp</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="n">datapath</span> <span class="o">+</span>
+                    <span class="s">&#39;abundances/CondensationTemperatures.txt&#39;</span><span class="p">,</span>
+                    <span class="n">readnames</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="calc_abund"><a class="viewcode-back" href="../../generated/barak.abundances.calc_abund.html#barak.abundances.calc_abund">[docs]</a><span class="k">def</span> <span class="nf">calc_abund</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">logNX</span><span class="p">,</span> <span class="n">logNY</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the abundance relative to solar given two elements and</span>
+<span class="sd">    their column densities.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X, Y : str</span>
+<span class="sd">      Element identifiers (for example &#39;C&#39;, &#39;Si&#39;, &#39;Mg&#39;).</span>
+<span class="sd">    logNX : array_like, shape (N,)</span>
+<span class="sd">      log10 of element X column density in cm^-2.</span>
+<span class="sd">    logNY : array_like, shape (N,)</span>
+<span class="sd">      log10 of element Y column density in cm^-2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    abundance_ratio : ndarray, shape (N,)</span>
+<span class="sd">       Abundance ratio relative to solar, [X/Y].</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The abundance ratio is defined::</span>
+
+<span class="sd">      [X/Y] = log10 (n_X / n_Y) - log10 (n_Xsun / n_Ysun)</span>
+<span class="sd">    </span>
+<span class="sd">    Where N_Xsun / N_Ysun is the ratio of the number density of</span>
+<span class="sd">    species X to species Y for &#39;proto-solar&#39; abundances (See Lodders</span>
+<span class="sd">    2003, ApJ, 591, 1220). For example, if [X/Y] = 0, it has the same</span>
+<span class="sd">    abundance as the proto-solar values. If [X/Y] = 1, then ten times</span>
+<span class="sd">    larger, [X/Y] = -1, then ten times smaller.</span>
+
+<span class="sd">    If Y is hydrogen, then this estimates the metallicity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">logNX</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">logNY</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="n">X</span><span class="p">]</span> <span class="o">-</span> <span class="n">Asolar</span><span class="p">[</span><span class="n">Y</span><span class="p">])</span>
+    <span class="k">return</span>  <span class="n">Z</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

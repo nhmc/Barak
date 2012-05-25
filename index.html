@@ -55,16 +55,18 @@ everything that is available, but some example tasks that can be
 handled are:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Calculate cosmological distance measures for various cosmologies.</li>
-<li>Find the expected broad-band magnitudes given a spectral energy
-distribution.</li>
 <li>Calculate absorption profiles for various ions observed in
 astrophysical environments.</li>
 <li>Fit a smooth continuum to a spectrum with many emission or
 absorption features.</li>
+<li>Find the expected broad-band magnitudes given a spectral energy
+distribution.</li>
+<li>Calculate cosmological distance measures for various cosmologies.</li>
 </ul>
 </div></blockquote>
 <p>The package can be downloaded <a class="reference external" href="https://github.com/nhmc/Barak">here</a>.</p>
+<p>If you are interested in an astrophysics related Python package, also
+take a look at the <a class="reference external" href="www.astropy.org">astropy</a> project.</p>
 <p>To install, just copy the <tt class="docutils literal"><span class="pre">barak/</span></tt> directory to a location pointed
 to by your PYTHONPATH variable.</p>
 <p>To run the tests you need <a class="reference external" href="http://pytest.org/latest/">py.test</a>
@@ -109,14 +111,20 @@ from ions and molecules.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T" title="barak.absorb.b_to_T"><tt class="xref py py-obj docutils literal"><span class="pre">b_to_T</span></tt></a>(atom,&nbsp;bvals)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.T_to_b.html#barak.absorb.T_to_b" title="barak.absorb.T_to_b"><tt class="xref py py-obj docutils literal"><span class="pre">T_to_b</span></tt></a>(atom,&nbsp;T)</td>
+<td>Convert temperatues in K to b parameters (km/s) for an atom</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T" title="barak.absorb.b_to_T"><tt class="xref py py-obj docutils literal"><span class="pre">b_to_T</span></tt></a>(atom,&nbsp;bvals)</td>
 <td>Convert b parameters (km/s) to a temperature in K for an atom</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;tr[,&nbsp;ew,&nbsp;ewer,&nbsp;fl,&nbsp;er,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;tr[,&nbsp;ew,&nbsp;ewer,&nbsp;fl,&nbsp;er,&nbsp;...])</td>
 <td>Find the rest equivalent width of a feature, and column density assuming optically thin.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau" title="barak.absorb.calc_iontau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_iontau</span></tt></a>(wa,&nbsp;ion,&nbsp;zp1,&nbsp;logN,&nbsp;b[,&nbsp;debug,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau" title="barak.absorb.calc_iontau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_iontau</span></tt></a>(wa,&nbsp;ion,&nbsp;zp1,&nbsp;logN,&nbsp;b[,&nbsp;debug,&nbsp;...])</td>
 <td>Returns tau values at each wavelength for transitions in ion.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_tau_peak.html#barak.absorb.calc_tau_peak" title="barak.absorb.calc_tau_peak"><tt class="xref py py-obj docutils literal"><span class="pre">calc_tau_peak</span></tt></a>(logN,&nbsp;b,&nbsp;trans)</td>
+<td>Estimate of  the peak optical depth of a transition assuming we are on the linear part of the curve of growth.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calctau.html#barak.absorb.calctau" title="barak.absorb.calctau"><tt class="xref py py-obj docutils literal"><span class="pre">calctau</span></tt></a>(v,&nbsp;wav0,&nbsp;osc,&nbsp;gam,&nbsp;logN[,&nbsp;T,&nbsp;btemp,&nbsp;...])</td>
 <td>Returns the optical depth (Voigt profile) for a transition.</td>
@@ -172,6 +180,9 @@ gaseous state.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.abundances.calc_abund.html#barak.abundances.calc_abund" title="barak.abundances.calc_abund"><tt class="xref py py-obj docutils literal"><span class="pre">calc_abund</span></tt></a>(X,&nbsp;Y,&nbsp;logNX,&nbsp;logNY)</td>
+<td>Find the abundance relative to solar given two elements and their column densities.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -524,7 +535,7 @@ continuum to a QSO spectrum.</p>
 <td>Find a smooth function that approximates <em class="xref py py-obj">x</em>, <em class="xref py py-obj">y</em>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.interp.interp_spline.html#barak.interp.interp_spline" title="barak.interp.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
-<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.7.dev-084eed7)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
+<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.7.dev-3f45eaa)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.interp.splice.html#barak.interp.splice" title="barak.interp.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
 <td>Join two overlapping curves smoothly using a cubic spline.</td>

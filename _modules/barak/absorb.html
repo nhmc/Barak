@@ -146,13 +146,32 @@
         <span class="c"># calculations, only re-binning back to original dv size after</span>
         <span class="c"># all these steps.</span>
 
-    <span class="n">u</span> <span class="o">=</span> <span class="mf">1.e5</span> <span class="o">/</span> <span class="n">b</span> <span class="o">*</span> <span class="n">v</span>                      <span class="c"># dimensionless</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="mf">1.e5</span> <span class="o">/</span> <span class="n">b</span> <span class="o">*</span> <span class="n">v</span>                           <span class="c"># dimensionless</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">gam_v</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>                       <span class="c"># dimensionless</span>
     <span class="n">vp</span> <span class="o">=</span> <span class="n">voigt</span><span class="o">.</span><span class="n">voigt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>                     <span class="c"># dimensionless</span>
     <span class="n">const</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">me</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>                 <span class="c"># m^2/s</span>
     <span class="n">tau</span> <span class="o">=</span> <span class="n">const</span><span class="o">*</span><span class="n">N</span><span class="o">*</span><span class="n">osc</span><span class="o">*</span><span class="n">wav0</span> <span class="o">/</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">vp</span> <span class="c"># dimensionless</span>
 
     <span class="k">return</span> <span class="n">tau</span>
+</div>
+<div class="viewcode-block" id="calc_tau_peak"><a class="viewcode-back" href="../../generated/barak.absorb.calc_tau_peak.html#barak.absorb.calc_tau_peak">[docs]</a><span class="k">def</span> <span class="nf">calc_tau_peak</span><span class="p">(</span><span class="n">logN</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">trans</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate of  the peak optical depth of a transition assuming we are on the</span>
+<span class="sd">    linear part of the curve of growth.</span>
+
+<span class="sd">    logN is log10 of column density in cm^-2</span>
+<span class="sd">    b is b parameter in km/s</span>
+<span class="sd">    trans is  a transisition, e.e.g &#39;HI 1215&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">b_cm_s</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="mf">1e5</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">tname</span><span class="p">,</span> <span class="n">trans</span> <span class="o">=</span> <span class="n">findtrans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">readatom</span><span class="p">())</span>
+    <span class="n">wav0</span> <span class="o">=</span> <span class="n">trans</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-8</span> <span class="c"># cm</span>
+    <span class="n">osc</span> <span class="o">=</span> <span class="n">trans</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">const</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">me</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+    <span class="c">#gauss_norm = 1 / (sigma * sqrt(2*pi))</span>
+    <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span> <span class="o">*</span> <span class="n">osc</span> <span class="o">*</span> <span class="n">wav0</span> <span class="o">*</span> <span class="n">const</span> <span class="o">/</span> <span class="p">(</span><span class="n">b_cm_s</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">pi</span><span class="p">))</span>
+
 </div>
 <div class="viewcode-block" id="calc_iontau"><a class="viewcode-back" href="../../generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau">[docs]</a><span class="k">def</span> <span class="nf">calc_iontau</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">ion</span><span class="p">,</span> <span class="n">zp1</span><span class="p">,</span> <span class="n">logN</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxdv</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span>
                 <span class="n">label_tau_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
@@ -374,6 +393,22 @@
         <span class="k">return</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span>  <span class="n">T</span>
 </div>
+<div class="viewcode-block" id="T_to_b"><a class="viewcode-back" href="../../generated/barak.absorb.T_to_b.html#barak.absorb.T_to_b">[docs]</a><span class="k">def</span> <span class="nf">T_to_b</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert temperatues in K to b parameters (km/s) for an atom</span>
+<span class="sd">    with mass amu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">b_cms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="n">mp</span> <span class="o">*</span><span class="n">amu</span><span class="p">))</span>
+    
+    <span class="n">b_kms</span> <span class="o">=</span> <span class="n">b_cms</span> <span class="o">/</span> <span class="mf">1e5</span>
+
+    <span class="c"># b \propto sqrt(2kT/m)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b_kms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">b_kms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span>  <span class="n">b_kms</span>
+
+</div>
 <div class="viewcode-block" id="read_HITRAN"><a class="viewcode-back" href="../../generated/barak.absorb.read_HITRAN.html#barak.absorb.read_HITRAN">[docs]</a><span class="k">def</span> <span class="nf">read_HITRAN</span><span class="p">(</span><span class="n">thelot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Return a list of molecular absorption features in the HITRAN</span>
 <span class="sd">    2004 list with wavelengths &lt; 25000 Ang (Journal of Quantitative</span>
@@ -430,7 +465,7 @@
     <span class="c"># ignore anything else on the line</span>
 
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/linelists/atom.dat.gz&#39;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/linelists/atom.dat&#39;</span>
 
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.gz&#39;</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">gzip</span>

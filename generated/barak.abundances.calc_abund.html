@@ -1,0 +1,120 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.abundances.calc_abund &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.convolve.convolve_psf" href="barak.convolve.convolve_psf.html" />
+    <link rel="prev" title="barak.absorb.tau_LL" href="barak.absorb.tau_LL.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.abundances.calc_abund</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.tau_LL.html">barak.absorb.tau_LL</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.convolve.convolve_psf.html">barak.convolve.convolve_psf</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-abundances-calc-abund">
+<h1>barak.abundances.calc_abund<a class="headerlink" href="#barak-abundances-calc-abund" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.abundances.calc_abund">
+<tt class="descclassname">barak.abundances.</tt><tt class="descname">calc_abund</tt><big>(</big><em>X</em>, <em>Y</em>, <em>logNX</em>, <em>logNY</em><big>)</big><a class="reference internal" href="../_modules/barak/abundances.html#calc_abund"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.abundances.calc_abund" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the abundance relative to solar given two elements and
+their column densities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>X, Y</strong> : str</p>
+<blockquote>
+<div><p>Element identifiers (for example &#8216;C&#8217;, &#8216;Si&#8217;, &#8216;Mg&#8217;).</p>
+</div></blockquote>
+<p><strong>logNX</strong> : array_like, shape (N,)</p>
+<blockquote>
+<div><p>log10 of element X column density in cm^-2.</p>
+</div></blockquote>
+<p><strong>logNY</strong> : array_like, shape (N,)</p>
+<blockquote>
+<div><p>log10 of element Y column density in cm^-2.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>abundance_ratio</strong> : ndarray, shape (N,)</p>
+<blockquote class="last">
+<div><p>Abundance ratio relative to solar, [X/Y].</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The abundance ratio is defined:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">X</span><span class="o">/</span><span class="n">Y</span><span class="p">]</span> <span class="o">=</span> <span class="n">log10</span> <span class="p">(</span><span class="n">n_X</span> <span class="o">/</span> <span class="n">n_Y</span><span class="p">)</span> <span class="o">-</span> <span class="n">log10</span> <span class="p">(</span><span class="n">n_Xsun</span> <span class="o">/</span> <span class="n">n_Ysun</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where N_Xsun / N_Ysun is the ratio of the number density of
+species X to species Y for &#8216;proto-solar&#8217; abundances (See Lodders
+2003, ApJ, 591, 1220). For example, if [X/Y] = 0, it has the same
+abundance as the proto-solar values. If [X/Y] = 1, then ten times
+larger, [X/Y] = -1, then ten times smaller.</p>
+<p>If Y is hydrogen, then this estimates the metallicity.</p>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.tau_LL.html">barak.absorb.tau_LL</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.convolve.convolve_psf.html">barak.convolve.convolve_psf</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

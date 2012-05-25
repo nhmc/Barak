@@ -57,6 +57,7 @@
 <span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">loadobj</span><span class="p">,</span> <span class="n">saveobj</span>
 <span class="kn">from</span> <span class="nn">interp</span> <span class="kn">import</span> <span class="n">InterpCubicSpline</span>
+<span class="kn">from</span> <span class="nn">spec</span> <span class="kn">import</span> <span class="n">qso_template_uv</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 
@@ -262,7 +263,8 @@
                               <span class="p">(</span><span class="mf">1900.</span><span class="p">,</span> <span class="mf">1940.</span><span class="p">,</span>  <span class="mi">5</span><span class="p">),</span>
                               <span class="p">(</span><span class="mf">1940.</span><span class="p">,</span> <span class="mf">2240.</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
                               <span class="p">(</span><span class="mf">2240.</span><span class="p">,</span> <span class="mf">3000.</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
-                              <span class="p">(</span><span class="mf">3000.</span><span class="p">,</span> <span class="mf">4000.</span><span class="p">,</span> <span class="mi">20</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;left,right,num&#39;</span><span class="p">)</span>
+                              <span class="p">(</span><span class="mf">3000.</span><span class="p">,</span> <span class="mf">6000.</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span>
+                              <span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;left,right,num&#39;</span><span class="p">)</span>
 
     <span class="n">div</span><span class="o">.</span><span class="n">num</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">div</span><span class="o">.</span><span class="n">num</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">*</span> <span class="n">divmult</span><span class="p">)</span>
     <span class="n">div</span><span class="o">.</span><span class="n">num</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">div</span><span class="o">.</span><span class="n">num</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">forest_divmult</span><span class="p">)</span>    
