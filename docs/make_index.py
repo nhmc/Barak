@@ -26,7 +26,7 @@ handled are:
 The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 
 If you are interested in an astrophysics related Python package, also
-take a look at the `astropy <www.astropy.org>`_ project.
+take a look at the `astropy <http://www.astropy.org>`_ project.
 
 To install, just copy the ``barak/`` directory to a location pointed
 to by your PYTHONPATH variable.
