@@ -333,8 +333,25 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
 def b_to_T(atom, bvals):
     """ Convert b parameters (km/s) to a temperature in K for an atom
     with mass amu.
+
+    Parameters
+    ----------
+    atom : str or float
+      Either an abbreviation for an element name (for example 'Mg'),
+      or a mass in amu.
+    bvals : array_like
+      One or more b values in km/s
+
+    Returns
+    -------
+    T : ndarray or float
+      The temperature corresponding to each value in `bvals'.
     """
-    amu = Ar[atom]
+    if isinstance(atom, basestring):
+        amu = Ar[atom]
+    else:
+        amu = float(atom)
+
     b = np.atleast_1d(bvals) * 1e5
 
     # convert everything to cgs
@@ -348,8 +365,25 @@ def b_to_T(atom, bvals):
 def T_to_b(atom, T):
     """ Convert temperatues in K to b parameters (km/s) for an atom
     with mass amu.
+
+    Parameters
+    ----------
+    atom : str or float
+      Either an abbreviation for an element name (for example 'Mg'),
+      or a mass in amu.
+    T : array_like
+      One or more temperatures in Kelvin.
+
+    Returns
+    -------
+    b : ndarray or float
+      The b value in km/s corresponding to each input temperature.
     """
-    amu = Ar[atom]
+    if isinstance(atom, basestring):
+        amu = Ar[atom]
+    else:
+        amu = float(atom)
+
     T = np.atleast_1d(T)
     b_cms = np.sqrt(2 * k * T / (mp *amu))
     
