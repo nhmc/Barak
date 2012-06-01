@@ -279,6 +279,30 @@ def readf13(filename, read_regions=True, res=None):
 
     return vp
 
+def calc_Ntot(f26name, trans=None):
+    """ Calculate the total column density in f26-style file 
+
+    Parameters
+    ----------
+    f26name : str
+      f26 filename.
+    trans : str (optional)
+      Transition name ('Mg' for example). By default all column
+      density entries are used.
+    
+    Returns
+    -------
+    logNtot : float
+      Log10 of the total column denisty
+    """
+    f26 = readf26(f26name)
+    logN = f26.lines.logN
+    if trans is not None:
+        logN = f26.lines.logN[f26.lines.name == trans]
+
+    Ntot = np.sum(10**logN)
+    return np.log10(Ntot)
+        
 def calc_v90(vp, plot=False, z0=None,
              wav0=1215.6701, osc=0.4164, gam=6.265e8):
     """ For a vp model, we want to calculate the velocity width that

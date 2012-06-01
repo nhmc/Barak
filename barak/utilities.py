@@ -393,7 +393,7 @@ def blackbody_lam(lam, T):
 
     returns units of erg/s/cm^2/cm/Steradian
     """
-    return 2*h*c**2 / (lam**5 * (np.exp(h / (lam*k*T)) - 1))
+    return 2*h*c**2 / (lam**5 * (np.exp(h*c / (lam*k*T)) - 1))
 
 def meshgrid_nd(*arrs):
     """ Like numpy's meshgrid, but works on more than two dimensions.
