@@ -372,14 +372,15 @@ def arrplot(x, y, a, ax=None, **kwargs):
     y : shape (M,)
       Coordinates, must be equally spaced.
     """
-    assert (len(x), len(y)) == a.shape
+    assert len(x) == a.shape[0]
+    assert len(y) == a.shape[1]
 
     if ax is None:
         pl.figure()
         ax = pl.gca()
     
-    x = np.sort(x)
-    y = np.sort(y)
+    assert x == np.sort(x)
+    assert y == np.sort(y)
 
     dxvals = x[1:] - x[:-1]
     dx = dxvals[0]
@@ -390,9 +391,9 @@ def arrplot(x, y, a, ax=None, **kwargs):
     dy = dyvals[0]
     assert np.allclose(dy, dyvals[1:])
     y0, y1 = y[0] - 0.5*dy, y[-1] + 0.5*dy
-    
+
     col = ax.imshow(a.T, aspect='auto', extent=(x0, x1, y0, y1),
-              interpolation='nearest', **kwargs)
+                    interpolation='nearest', origin='lower', **kwargs)
 
     if pl.isinteractive():
         pl.show()

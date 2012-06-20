@@ -23,7 +23,7 @@ except:
 
 datapath = get_data_path()
 PATH_PASSBAND = datapath + '/passbands/'
-PATH_EXTINCT = datapath + '/extinction/'
+PATH_EXTINCT = datapath + '/atmos_extinction/'
 PATH_TEMPLATE = datapath + '/templates/'
 
 def _listfiles(topdir):
