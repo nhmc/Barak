@@ -1,23 +1,51 @@
-""" Tools for calculating dust exinction.
+r""" Tools for calculating dust attenuation.
 
-  I_\lambda = I_{\lambda,0} exp(-\tau_\lambda)
+**How dust attentuation is expressed in this module**
 
-Here I_\lambda is the observed attenuated intensity and I_{\lambda,0}
-is in unattenuated intensity. \tau_\lambda is the optical depth.
 
-If A(V) is the extinction in magnitudes in the V band, and
+If :math:`I_\lambda` is the observed attenuated intensity of an
+object, and :math:`I_{\lambda,0}` is the unattenuated intensity
+modulated by an optical depth :math:`\tau_\lambda` due to dust
+particles, then:
+
+.. math::
+
+  I_\lambda = I_{\lambda,0}\ e^{-\tau_\lambda}
+
+Generally the attenuation is given in magnitude in a band or at a
+wavelegnth. For example, A(V) refers to the extinction in magnitudes
+in the V band, and
+
+.. math::
 
   E(B - V) \equiv A(B) - A(V)
 
-is the difference in extinction between the B and V bands, then:
+is the difference in extinction between the B and V
+bands. Empirically, dust attenuation is found to have a similar
+functional form in different parts of the Milky Way's ISM that can be
+parametrised with a normalisation A(V) and slope E(B - V). Another
+commonly used quantity is
+
+.. math::
 
   R(V) \equiv A(V) / E(B - V)
 
-The extinction for all the functions in this module is given as
-tau_lambda. This is related to A(lambda) in the following way:
+Analytic approximations for dust attenuation curves are often
+calculated as a function of R(V), and then normalised by A(V) or, more
+commonly, E(B - V). The attenuation for all the public functions in
+this module is returned as :math:`tau_lambda`. This is related to
+`A(\lambda)` in the following way:
 
-  \tau = A(\lambda) / (2.5 log_{10}(e))
+.. math::
 
+  \tau = A(\lambda) / (2.5 \log_{10}(e))
+
+**References**
+
+- 'Astrophysics of Dust in Cold Clouds' by B.T. Draine:
+  http://arxiv.org/abs/astro-ph/0304488
+- 'Interstellar Dust Grains' by B.T. Draine:
+  http://arxiv.org/abs/astro-ph/0304489
 """ 
 
 from utilities import get_data_path
