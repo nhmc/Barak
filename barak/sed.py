@@ -9,12 +9,14 @@ copied from there (LGPL): http://astlib.sourceforge.net
 
 """
 import os, math
+import warnings
+
 import numpy as np
 from convolve import convolve_psf
 from io import readtabfits
-import cosmology
 from constants import c, c_kms, Jy
 from utilities import get_data_path
+import extinction
 
 try:
     import matplotlib.pyplot as pl
@@ -155,7 +157,8 @@ class Passband(object):
             elif filtername.startswith('LBCR') or filtername in 'riz':
                 ccd = 'red'
         elif instr == 'FORS' and ccd is None:
-            raise ValueError('Must specify detector (ccd=red or ccd=blue)')
+            warnings.warn('No cdd ("red" or "blue") given, assuming red.')
+            ccd = 'red'
 
         self.atmos = self.effic = None
         if ccd is not None:
@@ -183,11 +186,19 @@ class Passband(object):
         maxtr = sortedtr[-1]
         imax = isort[-1]
         ind = isort[sortedtr < 1e-4 * maxtr]
-        i,j = ind[ind < imax].max(), ind[ind > imax].min() 
-        i = min(abs(i-2), 0)
-        j += 1
-        self.wa = self.wa[i:j]
-        self.tr = self.tr[i:j]
+        if len(ind) > 0:
+            i = 0
+            c0 = ind < imax
+            if c0.any():
+                i = ind[c0].max() 
+            j = len(self.wa) - 1
+            c0 = ind > imax
+            if c0.any():
+                j = ind[c0].min() 
+            i = min(abs(i-2), 0)
+            j += 1
+            self.wa = self.wa[i:j]
+            self.tr = self.tr[i:j]
         if self.atmos is not None:
             self.atmos = self.atmos[i:j]
         if self.effic is not None:
@@ -270,7 +281,6 @@ class SED(object):
         self.wa = np.array(wa)
         self.fl = np.array(fl)
         self.z = z
-        self.distance_modulus = 0
         self.label = label    
 
         # Store the intrinsic (i.e. unextincted) flux in case we
@@ -335,12 +345,6 @@ class SED(object):
         zfluxtot = np.trapz(self.wa, self.fl)
         self.fl *= z0fluxtot / zfluxtot
         self.z = z
-        if z > 0:
-            if cosmo is None:
-                cosmo = cosmology.get_default()
-            self.distance_modulus = cosmo.distmod(z)
-        else:
-            self.distance_modulus = 0.
 
     def normalise_to_mag(self, ABmag, band):
         """Normalises the SED to match the flux equivalent to the
@@ -394,8 +398,7 @@ class SED(object):
             mag = -2.5 * math.log10(f1/band.flux[system])
             # Add 0.026 because Vega has V=0.026 (e.g. Bohlin & Gilliland 2004)
             if system == "Vega":
-                mag += 0.026        
-            #mag += self.distance_modulus
+                mag += 0.026
         else:
             mag = np.inf
 
@@ -424,7 +427,7 @@ class SED(object):
 
         # Allow us to set EBmV == 0 to turn extinction off
         if EBmV > 1e-10:
-            reddening = calc_extinction_Calzetti(self.z0wa, EBmV)
+            reddening = extinction.starburst_Calzetti00(self.z0wa, EBmV)
             self.z0fl /= reddening
             self.EBmV = EBmV
         else:
@@ -478,62 +481,6 @@ def Jy2Mag(fluxJy):
     """
     ABmag = -2.5 * (np.log10(fluxJy * Jy)) - 48.6
     return ABmag
-
-def calc_extinction_Calzetti(wa, EBmV):
-    """ Find the extinction as a function of wavelength for the given
-    E(B-V) using the relation from Calzetti et al. 2000 (ApJ, 533,
-    682).  R_v' = 4.05 is assumed (see equation (5) of Calzetti et
-    al.) E(B-V) is the extinction in the stellar continuum.
-
-    The wavelength array wa must be in Angstroms and sorted lowest ->
-    highest.
-
-    Returns reddening such that::
-
-     extincted_flux = unextincted_flux * reddening
-    """
-    assert wa[0] < 22000 and wa[-1] > 1200
-
-    # Note that EBmV is assumed to be Es as in equations (2) - (5)
-    
-    # equation (5) of Calzetti et al. 2000
-    Rv = 4.05
-
-    # Constants belwo assume wavelength is in microns.
-    
-    uwa = np.array(wa / 10000.)
-    k = np.zeros_like(wa)
-
-    def kshort(wa):
-        return 2.659*(-2.156 + (1.509 - 0.198/wa + 0.011/wa**2)/wa) + Rv
-
-    def klong(wa):
-        return 2.659*(-1.857 + 1.040/wa) + Rv
-
-    # populate k in a piece-wise fashion, extrapolating
-    # below 1200 and above 22000 Angstroms
-    if uwa[0] < 0.12:
-        slope = (kshort(0.11) - kshort(0.12)) / (0.11 - 0.12)
-        intercept = kshort(0.12) - slope * 0.12
-        i = uwa.searchsorted(0.12)
-        k[:i] = slope * uwa[:i] + intercept
-    if uwa[0] < 0.63 and uwa[-1] > 0.12:
-        i,j = uwa.searchsorted([0.12, 0.63])
-        k[i:j] = kshort(uwa[i:j])
-    if uwa[0] < 2.2 and uwa[-1] > 0.63:
-        i,j = uwa.searchsorted([0.63, 2.2])
-        k[i:j] = klong(uwa[i:j])
-    if uwa[-1] >= 2.2:
-        slope = (klong(2.19) - klong(2.2)) / (2.19 - 2.2)
-        intercept = klong(2.19) - slope * 2.19
-        i = uwa.searchsorted(2.2)
-        k[i:] = slope * uwa[i:] + intercept
-
-    # fudge to stop going negative
-    k[k <= 1e-6] = 1e-6
-        
-    reddening = 10**(0.4 * EBmV * k)
-    return reddening
 
 
 # Data
