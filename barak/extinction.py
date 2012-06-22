@@ -2,7 +2,6 @@ r""" Tools for calculating dust attenuation.
 
 **How dust attentuation is expressed in this module**
 
-
 If :math:`I_\lambda` is the observed attenuated intensity of an
 object, and :math:`I_{\lambda,0}` is the unattenuated intensity
 modulated by an optical depth :math:`\tau_\lambda` due to dust
@@ -46,7 +45,11 @@ this module is returned as :math:`tau_lambda`. This is related to
   http://arxiv.org/abs/astro-ph/0304488
 - 'Interstellar Dust Grains' by B.T. Draine:
   http://arxiv.org/abs/astro-ph/0304489
-""" 
+
+Note that much of the code in this module is adapted from Erik
+Tollerud's `Astropysics <https://github.com/eteq/astropysics>`_, which
+has an Apache licence.
+"""
 
 from utilities import get_data_path
 import numpy as np
@@ -172,11 +175,6 @@ def MW_Cardelli89(wa, EBmV=0.323, Rv=3.1):
     nuv1 = (3.3 <= x) & (x <= 5.9)
     nuv2 = (5.9 <= x) & (x <= 8)
     fuv = (8 <= x) & (x <= 10)
-
-    for i,c in enumerate([ir,vis,nuv1,nuv2,fuv]):
-        #import pdb; pdb.set_trace()
-        if len(wa[c]) > 0:
-            print i, wa[c][0], wa[c][-1]
     
     # Infrared
     temp = x[ir]**1.61
