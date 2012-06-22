@@ -139,7 +139,14 @@ class Passband(object):
     def __init__(self, filename, ccd=None):
         if not filename.startswith(PATH_PASSBAND):
             filepath = PATH_PASSBAND + filename
-        self.wa, self.tr = np.loadtxt(filepath, usecols=(0,1), unpack=True)
+        else:
+            filepath = filename
+        if filepath.endswith('.fits'):
+            import pyfits
+            rec = pyfits.getdata(filepath, 1)
+            self.wa, self.tr = rec.wa, rec.tr
+        else:
+            self.wa, self.tr = np.loadtxt(filepath, usecols=(0,1), unpack=True)
         # check wavelengths are sorted lowest -> highest
         isort = self.wa.argsort()
         self.wa = self.wa[isort]
