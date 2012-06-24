@@ -379,8 +379,8 @@ def arrplot(x, y, a, ax=None, **kwargs):
         pl.figure()
         ax = pl.gca()
     
-    assert x == np.sort(x)
-    assert y == np.sort(y)
+    assert np.allclose(x, np.sort(x))
+    assert np.allclose(y, np.sort(y))
 
     dxvals = x[1:] - x[:-1]
     dx = dxvals[0]

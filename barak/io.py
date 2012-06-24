@@ -26,7 +26,7 @@ def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
     usecols : int or tuple of ints, optional
         Indices of columns to be read. By default all columns are read.
     comment : str (default `#`)
-        Character marking the start of a comment. 
+        Character marking the start of a comment.
     skip : int (default `0`)
         Number of rows to skip (not counting commented or blank lines)
         before reading data.
@@ -159,7 +159,10 @@ def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
 
 def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
              fmt_float='s'):
-    """ Write data to a column-aligned text file.
+    """ This is deprecated. Use `writetable()` with file type '.tbl'
+    instead.
+
+    Write data to a column-aligned text file.
 
     Structured array data written using this function can be read
     again using:
@@ -265,7 +268,10 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
     return
 
 def writetabfits(filename, rec, units=None, overwrite=True):
-    """ Writes a list of numpy arrays or a structured array to a
+    """ This is deprecated. Use `writetable()` with file type '.fits'
+    instead.
+
+    Writes a list of numpy arrays or a structured array to a
     binary fits table. Works best with structured arrays.
 
     Parameters
@@ -278,7 +284,7 @@ def writetabfits(filename, rec, units=None, overwrite=True):
       Sequence of strings giving the units for each column.
     """
     import pyfits
-    
+
     fmts = dict(f4='E', f8='F', i2='I', i4='J', i8='K', b1='L')
 
     try:
@@ -307,6 +313,8 @@ def writetabfits(filename, rec, units=None, overwrite=True):
 def readtabfits(filename, ext=None):
     """ Read fits binary table data, such as that written by
     `writetabfits()`.
+
+    Consider using `atpy.Table(filename)` instead.
     """
     import pyfits
     if ext is not None:
@@ -324,7 +332,7 @@ def saveobj(filename, obj, overwrite=False):
         fh = open(filename, 'wb')
     pickle.dump(obj, fh, protocol=2)
     fh.close()
-    
+
 def loadobj(filename):
     """ Load a python object pickled with saveobj."""
     if filename.endswith('.gz'):
@@ -360,12 +368,12 @@ def parse_config(filename, defaults={}):
     Sample format::
 
      # this is the file with the line list
-     lines = lines.dat    
+     lines = lines.dat
      x = 20
      save = True    # save the data
     """
     cfg = adict()
-    
+
     cfg.update(defaults)
 
     fh = open(filename)
@@ -498,7 +506,7 @@ def sex_to_DS9reg(filename, s, colour='green', tag='all', withtext=False):
     fh = open(filename,'w')
     fh.write('\n'.join(regions))
     fh.close()
-    
+
 def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
                  c='green', tag='all', width=1, text=None):
     """Write a region file for ds9 for a  list of coordinates.
@@ -537,7 +545,7 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
             if isinstance(s, basestring) and len(s) != len(x):
                 return False
         return True
-    
+
     if not iscontainer(ptype):
         ptype = [ptype] * len(x)
     if not iscontainer(size):
@@ -550,7 +558,7 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
         c = [c] * len(x)
     if not iscontainer(tag):
         tag = [tag] * len(x)
-        
+
     fmt = ('point(%12.8f,%12.8f) # \
 point=%s %s width=%s text={%s} color=%s tag={%s}\n')
     for i in xrange(len(x)):
@@ -558,8 +566,93 @@ point=%s %s width=%s text={%s} color=%s tag={%s}\n')
                 c[i], tag[i])
         regions.append(fmt % vals)
 
-    if filename is not None: 
+    if filename is not None:
         fh = open(filename,'w')
         fh.writelines(regions)
         fh.close()
     return regions
+
+def writetable(filename, cols, units=None, names=None, header=None,
+               keywords=None, overwrite=False):
+    """ Write a series of data columns to a file.
+
+    Data written using this function can be read again using:
+
+    >>> atpy.Table(filename)
+
+    Parameters
+    ----------
+    filename :  str
+        The output filename. Its suffix determines the file type. For
+        example '.tbl', '.fits' or '.fits.gz'.
+    cols : structured array, atpy Table instance or a list of columns
+        Data to be written.
+    units : list
+        Units of each column.
+    names : list or string  (None)
+        Column names. Can be a comma-separated string of names. If
+        None and `cols` is a structured array, column names are the
+        array field names.
+    header : str (None)
+        A header written before the data.
+    keywords : dict (None)
+        A dictionary of key-value pairs to write to the header.
+    overwrite : bool (False)
+        If True, overwrite an existing file without prompting.
+    """
+    import atpy
+
+    if isinstance(cols, atpy.Table):
+        t = cols
+        old_formats = [t.columns[k].format for k in t.keys()]
+    else:
+        try:
+            recnames = cols.dtype.names
+        except AttributeError:
+            assert np.allclose(len(cols[0]), [len(col) for col in cols[1:]])
+        else:
+            if names is not None:
+                recnames = names
+            else:
+                names = list(recnames)
+            cols = [cols[n] for n in recnames]
+
+        if names is None:
+            names = ['col%i' % (i+1) for i in range(len(cols))]
+        elif isinstance(names, basestring):
+            names = names.split(',')
+
+        if units is None:
+            units = [''] * len(cols[0])
+
+        t = atpy.Table()
+        for i in xrange(len(cols)):
+            t.add_column(names[i], cols[i], unit=units[i])
+
+        if header is not None:
+            for comment in header.split('\n'):
+                t.add_comment(comment)
+
+        if keywords is not None:
+            for key,value in keywords.iteritems():
+                t.add_keyword(key, value)
+
+    if filename.endswith('.tbl') or filename.endswith('.tbl.gz'):
+        # use ST for int and floats to remove whitespace and make
+        # easily-readable float values in IPAC tables - be warned this
+        # may change the printed float values by about one part in
+        # 1e12.
+        for name in t.keys():
+            if t.columns[name].format == 's':
+                continue
+            width = 0
+            for item in t.data[name]:
+                width = max(width, len(str(item)))
+            t.columns[name].format = str(width) + 's'
+
+    t.write(filename, overwrite=overwrite)
+
+    if isinstance(cols, atpy.Table):
+        # return column formats to their original values
+        for fmt in old_formats:
+            t.columns[name].format = fmt
