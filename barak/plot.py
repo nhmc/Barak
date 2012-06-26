@@ -399,3 +399,56 @@ def arrplot(x, y, a, ax=None, **kwargs):
         pl.show()
 
     return col
+
+def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0,
+                  color='b'):
+    """ Shade a region between two curves including a color gradient.
+    
+    Parameters
+    ----------
+    xvals, yvals : array_like
+      Vertically shade to the line given by xvals, yvals
+    y0 : array_like
+      Start shading from these y values (default 0).
+    blend : float (default 1)
+      Start the cmap blending to white at this distance from `yvals`.
+    color : mpl color
+      Color used to generate the color gradient.
+
+    Returns
+    -------
+    im : mpl image object
+      object represeting the shaded region.
+    """
+    if ax is None:
+        ax = pl.gca()
+
+    import matplotlib as mpl
+
+    yvals = np.asarray(yvals)
+    xvals = np.asarray(xvals)
+    y0 = np.atleast_1d(y0)
+    if len(y0) == 1:
+        y0 = np.ones_like(yvals) * y0[0]
+    else:
+        assert len(y0) == len(yvals)
+        
+    c = [color, '1']
+    cm = mpl.colors.LinearSegmentedColormap.from_list('mycm', c)
+
+    ymax = yvals.max()
+    ymin = y0.min()
+    X, Y = np.meshgrid(xvals, np.linspace(ymin, ymax, 1000))
+    im = np.zeros_like(Y)
+    for i in xrange(len(xvals)):
+        cond = (Y[:, i] > yvals[i] - blend) & (Y[:, i] > y0[i])
+        im[cond, i] = (Y[cond, i] - (yvals[i] - blend)) / blend
+        cond = Y[:, i] > yvals[i]
+        im[cond, i] = 1
+        cond = Y[:, i] < y0[i]
+        im[cond, i] = 0
+
+    im = ax.imshow(im, extent=(xvals[0], xvals[-1], ymin, ymax),
+                   origin='lower', cmap=cm, aspect='auto')
+    return im
+

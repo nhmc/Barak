@@ -536,17 +536,17 @@ def tau_LL(logN, wa):
 
     Returns
     -------
-    tau : ndarray
+    tau : ndarray or float if `wa` is scalar
       The optical depth at each wavelength.
 
     Notes
     -----
     At the Lyman limit, the optical depth tau is given by::
 
-      tau = NHI * sigma_0 
+      tau = N(HI) * sigma_0 
 
-    where sigma_0 = 6.304 e-18 cm^-2. The energy dependence of the
-    cross section is::
+    where sigma_0 = 6.304 e-18 cm^2 and N(HI) is the HI column density
+    in cm^-2. The energy dependence of the cross section is::
 
       sigma_nu ~ sigma_0 * (h*nu / I_H)^-3 = sigma_0 * (lam / 912)^3
 
@@ -556,8 +556,8 @@ def tau_LL(logN, wa):
 
     So the normalised continuum bluewards of the Lyman limit is::
 
-      F/F_cont = exp(-tau) = exp(-NHI * sigma_lam)
-      = exp(-NHI * sigma_0 * (lam/912)^3)
+      F/F_cont = exp(-tau) = exp(-N(HI) * sigma_lam)
+      = exp(-N(HI) * sigma_0 * (lam/912)^3)
 
     Where F is the absorbed flux and F_cont is the unabsorbed
     continuum.
@@ -570,7 +570,6 @@ def tau_LL(logN, wa):
 
     Examples
     --------
-    >>> logN = 17.2                  # log10(N in cm^-2)
     >>> wa = np.linspace(100, 912, 100)
     >>> z = 2.24
     >>> for logN in np.arange(17, 21., 0.5):
