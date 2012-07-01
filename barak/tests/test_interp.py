@@ -1,4 +1,4 @@
-from ..interp import trilinear_interp
+from ..interp import trilinear_interp, interp_Akima
 import numpy as np
 from math import pi
 
@@ -24,3 +24,9 @@ def test_trilinear_interp():
     #arrplot(y0, z0, vals[0, :, :])
     #arrplot(y1, z1, out[0, :, :])
     #pl.show()
+
+def test_interp_Akima():
+    x = np.sort(np.random.random(10) * 10)
+    y = np.random.normal(0.0, 0.1, size=len(x))
+    assert np.allclose(y, interp_Akima(x, x, y))
+

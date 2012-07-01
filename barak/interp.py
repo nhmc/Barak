@@ -3,7 +3,7 @@
 import numpy as np
 from utilities import between, indices_from_grid, meshgrid_nd
 
-class InterpCubicSpline:
+class CubicSpline(object):
     """Interpolate a cubic spline through a set of points.
 
     After initialisation, an instance can be called with an array of
@@ -18,7 +18,7 @@ class InterpCubicSpline:
     and y values, you'll have to instantiate a new class.
 
     The spline generation is based on the NR algorithms (but not their
-    routines.)
+    code.)
     """
     def __init__(self, x, y, firstderiv=None, lastderiv=None, nochecks=False):
         """
@@ -34,10 +34,8 @@ class InterpCubicSpline:
           If False, check the x array is sorted and unique. Set to True
           for increased speed.
         """
-        x = np.asarray(x)
-        y = np.asarray(y)
-        if 'i' in  (x.dtype.str[1], y.dtype.str[1]):
-            raise TypeError('Input arrays must not be integer')
+        x = np.asarray(x, dtype=float)
+        y = np.asarray(y, dtype=float)
         if not nochecks:
             # check all x values are unique
             if len(x) - len(np.unique(x)) > 0:
@@ -131,14 +129,99 @@ class InterpCubicSpline:
 
         self.d2 = d2
 
-def interp_spline(x, xvals, yvals, nochecks=False):
-    """ Like `numpy.interp`, but using spline instead of linear
-    interpolation.
+class AkimaSpline(object):
+    """ An object used to generate an Akima Spline.
 
-    This is a convenience function wrapped around InterpCubicSpline.
+    It must be instantiated with a set of `x` and `y` knot values,
+    and then can be called with a new set of x values `X`. This is
+    used by `interp_Akima`, see its documentation for more
+    information.
+
+    References
+    ----------
+    "A new method of interpolation and smooth curve fitting based
+    on local procedures." Hiroshi Akima, J. ACM, October 1970, 17(4),
+    589-602.
+
+    Notes
+    -----
+    This is adapted from a function written by `Christoph Gohlke
+    <http://www.lfd.uci.edu/~gohlke/>`_ under a BSD license:
+
+    Copyright (c) 2007-2012, Christoph Gohlke
+    Copyright (c) 2007-2012, The Regents of the University of California
+    Produced at the Laboratory for Fluorescence Dynamics
+    All rights reserved.
     """
-    spl = InterpCubicSpline(xvals, yvals, nochecks=nochecks)
-    return spl(x)
+    def __init__(self, x, y):
+        """
+        Parameters
+        ----------
+        x, y : array_like, shape (N,)
+          Reference values. x must be monotonically increasing.
+        """
+
+        x = np.asarray(x, dtype=np.float64)
+        y = np.asarray(y, dtype=np.float64)
+        if x.ndim != 1:
+            raise ValueError("x array must be one dimensional")
+     
+        n = len(x)
+        if n < 3:
+            raise ValueError("Array too small")
+        if n != len(y):
+            raise ValueError("Size of x-array must match data shape")
+     
+        dx = np.diff(x)
+        if (dx <= 0.0).any():
+            raise ValueError("x-axis not valid")
+
+        m = np.diff(y) / dx
+        mm = 2. * m[0] - m[1]
+        mmm = 2. * mm - m[0]
+        mp = 2. * m[n - 2] - m[n - 3]
+        mpp = 2. * mp - m[n - 2]
+     
+        m1 = np.concatenate(([mmm], [mm], m, [mp], [mpp]))
+     
+        dm = np.abs(np.diff(m1))
+        f1 = dm[2:n + 2]
+        f2 = dm[0:n]
+        f12 = f1 + f2
+     
+        ids = np.nonzero(f12 > 1e-9 * f12.max())[0]
+        b = m1[1:n + 1]
+     
+        b[ids] = (f1[ids] * m1[ids + 1] + f2[ids] * m1[ids + 2]) / f12[ids]
+        c = (3. * m - 2. * b[0:n - 1] - b[1:n]) / dx
+        d = (b[0:n - 1] + b[1:n] - 2. * m) / dx ** 2
+
+        self.x, self.y, self.b, self.c, self.d = x, y, b, c, d
+
+    def __call__(self, X):
+        """
+        Parameters
+        ----------
+        X : array_like, shape (M,)
+          Values at which to interpolate.
+
+        Returns
+        -------
+        vals : ndarray, shape (M,)
+           Interpolated values.
+        """
+        X = np.asarray(X, dtype=np.float64)
+        if X.ndim != 1:
+            raise ValueError("Array must be one dimensional")
+        #if any(X < self.x[0]) or any(X > self.x[-1]):
+        #    raise ValueError("Interpolation x-axis out of bounds")
+
+        bins = np.digitize(X, self.x)
+        bins = np.minimum(bins, len(self.x) - 1) - 1
+        b = bins[0:len(X)]
+        wj = X - self.x[b]
+        return ((wj * self.d[b] + self.c[b]) * wj + self.b[b]) * wj + self.y[b] 
+
 
 def fit_spline(x, y, bins=4, estimator=np.median):
     """ Find a smooth function that approximates `x`, `y`.
@@ -172,8 +255,61 @@ def fit_spline(x, y, bins=4, estimator=np.median):
 
     if len(cbins) < 3:
         raise RuntimeError('Too few bins')
-    return InterpCubicSpline(cbins, medvals, nochecks=1)
+    return AkimaSpline(cbins, medvals)
 
+def interp_Akima(x_new, x, y):
+    """Return interpolated data using Akima's method.
+
+    Akima's interpolation method uses a continuously differentiable
+    sub-spline built from piecewise cubic polynomials. The resultant
+    curve passes through the given data points and will appear smooth
+    and natural.
+
+    Parameters
+    ----------
+    x_new : array_like, shape (M,)
+        Values at which to interpolate.
+    x, y : array_like, shape (N,)
+        Reference values. x must be monotonically increasing.
+
+    Returns
+    -------
+    vals : ndarray, shape (M,)
+       Interpolated values.
+
+    References
+    ----------
+    "A new method of interpolation and smooth curve fitting based
+    on local procedures." Hiroshi Akima, J. ACM, October 1970, 17(4),
+    589-602.
+
+    Examples
+    --------
+    Plot interpolated Gaussian noise:
+
+    >>> x = np.sort(np.random.random(10) * 100)
+    >>> y = np.random.normal(0.0, 0.1, size=len(x))
+    >>> x2 = np.arange(x[0], x[-1], 0.02)
+    >>> y2 = interp_Akima(x2, x, y)
+    >>> y3 = interp_spline(x2, x, y)
+    >>> from matplotlib import pyplot as plt
+    >>> plt.plot(x2, y2, 'b-', label='Akima')
+    >>> plt.plot(x2, y3, 'r-', label='Cubic')
+    >>> plt.plot(x, y, 'co')
+    >>> plt.legend()
+    >>> plt.show()
+    """
+    interpolator = AkimaSpline(x, y)
+    return interpolator(x_new)
+
+def interp_spline(x, xvals, yvals, nochecks=False):
+    """ Like `numpy.interp`, but using spline instead of linear
+    interpolation.
+
+    This is a convenience function wrapped around CubicSpline.
+    """
+    spl = CubicSpline(xvals, yvals, nochecks=nochecks)
+    return spl(x)
 
 def splice(co0, co1, i, j, forced=None):
     """ Join two overlapping curves smoothly using a cubic spline.
@@ -207,7 +343,7 @@ def splice(co0, co1, i, j, forced=None):
         covals = [co0[i],co1[j]]
 
     indices = np.array(indices, dtype=float) 
-    spline = InterpCubicSpline(indices, covals,firstderiv=d1, lastderiv=d2)
+    spline = CubicSpline(indices, covals,firstderiv=d1, lastderiv=d2)
     newco[:i] = co0[:i].copy()
     newco[i:j] = spline(range(i,j))
     newco[j:] = co1[j:].copy()
@@ -291,3 +427,4 @@ def trilinear_interp(x, y, z, xref, yref, zref, vals):
 
     # Note the index order and transpose!
     return out.reshape(len(z), len(y), len(x)).T
+

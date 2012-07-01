@@ -8,7 +8,7 @@ import matplotlib.transforms as mtran
 from utilities import between, Gaussian, stats, indexnear
 from convolve import convolve_psf
 from io import loadobj, saveobj
-from interp import InterpCubicSpline
+from interp import AkimaSpline
 from spec import qso_template_uv
 
 import os
@@ -170,9 +170,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
 
     # finally fit a cubic spline through the median values to
     # get a smooth continuum.
-    d1 = (mfl[1] - mfl[0]) / (wavc[1] - wavc[0])
-    d2 = (mfl[-1] - mfl[-2]) / (wavc[-1] - wavc[-2])
-    final = InterpCubicSpline(wavc, mfl, firstderiv=d1, lastderiv=d2)
+    final = AkimaSpline(wavc, mfl)
 
     return final(wa), zip(wavc,mfl), (d1,d2)
 
@@ -394,7 +392,7 @@ class InteractiveCoFit(object):
             cpts = [(x,y) for x,y in self.contpoints if b0 <= x <= b1]
             if len(cpts) == 0:
                 continue 
-            spline = InterpCubicSpline(*zip(*cpts))
+            spline = AkimaSpline(*zip(*cpts))
             i,j = wa.searchsorted([b0,b1])
             co[i:j] = spline(wa[i:j])
         
