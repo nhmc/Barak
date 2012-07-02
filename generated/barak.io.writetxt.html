@@ -29,7 +29,7 @@
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
     <link rel="next" title="barak.plot.arrplot" href="barak.plot.arrplot.html" />
-    <link rel="prev" title="barak.io.writetabfits" href="barak.io.writetabfits.html" /> 
+    <link rel="prev" title="barak.io.writetable" href="barak.io.writetable.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
@@ -39,7 +39,7 @@
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.io.writetabfits.html">barak.io.writetabfits</a>
+        «&#160;&#160;<a href="barak.io.writetable.html">barak.io.writetable</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
@@ -55,7 +55,9 @@
 <dl class="function">
 <dt id="barak.io.writetxt">
 <tt class="descclassname">barak.io.</tt><tt class="descname">writetxt</tt><big>(</big><em>fh</em>, <em>cols</em>, <em>sep=' '</em>, <em>names=None</em>, <em>header=None</em>, <em>overwrite=False</em>, <em>fmt_float='s'</em><big>)</big><a class="reference internal" href="../_modules/barak/io.html#writetxt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.io.writetxt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write data to a column-aligned text file.</p>
+<dd><p>This is deprecated. Use <em class="xref py py-obj">writetable()</em> with file type &#8216;.tbl&#8217;
+instead.</p>
+<p>Write data to a column-aligned text file.</p>
 <p>Structured array data written using this function can be read
 again using:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">readtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">readnames</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -104,7 +106,7 @@ structured array, column names are the array field names.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.io.writetabfits.html">barak.io.writetabfits</a>
+        «&#160;&#160;<a href="barak.io.writetable.html">barak.io.writetable</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;

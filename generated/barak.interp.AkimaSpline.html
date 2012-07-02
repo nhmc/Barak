@@ -1,0 +1,134 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.interp.AkimaSpline &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.interp.CubicSpline" href="barak.interp.CubicSpline.html" />
+    <link rel="prev" title="barak.fitcont.spline_continuum" href="barak.fitcont.spline_continuum.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.interp.AkimaSpline</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.fitcont.spline_continuum.html">barak.fitcont.spline_continuum</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.interp.CubicSpline.html">barak.interp.CubicSpline</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-interp-akimaspline">
+<h1>barak.interp.AkimaSpline<a class="headerlink" href="#barak-interp-akimaspline" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="barak.interp.AkimaSpline">
+<em class="property">class </em><tt class="descclassname">barak.interp.</tt><tt class="descname">AkimaSpline</tt><big>(</big><em>xvals</em>, <em>yvals</em><big>)</big><a class="reference internal" href="../_modules/barak/interp.html#AkimaSpline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.interp.AkimaSpline" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class used to generate an Akima Spline through a set of
+points.</p>
+<p>It must be instantiated with a set of <em class="xref py py-obj">xvals</em> and <em class="xref py py-obj">yvals</em> knot values,
+and then can be called with a new set of x values <em class="xref py py-obj">x</em>. This is
+used by <a class="reference internal" href="barak.interp.interp_Akima.html#barak.interp.interp_Akima" title="barak.interp.interp_Akima"><tt class="xref py py-obj docutils literal"><span class="pre">interp_Akima</span></tt></a>, see its documentation for more
+information.</p>
+<p class="rubric">Notes</p>
+<p>This is adapted from a function written by <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/">Christoph Gohlke</a> under a BSD license:</p>
+<p>Copyright (c) 2007-2012, Christoph Gohlke
+Copyright (c) 2007-2012, The Regents of the University of California
+Produced at the Laboratory for Fluorescence Dynamics
+All rights reserved.</p>
+<p class="rubric">References</p>
+<p>&#8220;A new method of interpolation and smooth curve fitting based
+on local procedures.&#8221; Hiroshi Akima, J. ACM, October 1970, 17(4),
+589-602.</p>
+<dl class="method">
+<dt id="barak.interp.AkimaSpline.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>xvals</em>, <em>yvals</em><big>)</big><a class="reference internal" href="../_modules/barak/interp.html#AkimaSpline.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.interp.AkimaSpline.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>xvals, yvals</strong> : array_like, shape (N,)</p>
+<blockquote class="last">
+<div><p>Reference values. xvals cannot contain duplicates.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#barak.interp.AkimaSpline.__init__" title="barak.interp.AkimaSpline.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(xvals,&nbsp;yvals)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.fitcont.spline_continuum.html">barak.fitcont.spline_continuum</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.interp.CubicSpline.html">barak.interp.CubicSpline</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

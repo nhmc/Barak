@@ -57,12 +57,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">readtabfits</span>
-<span class="kn">import</span> <span class="nn">cosmology</span>
 <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">c</span><span class="p">,</span> <span class="n">c_kms</span><span class="p">,</span> <span class="n">Jy</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">get_data_path</span>
+<span class="kn">import</span> <span class="nn">extinction</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pl</span>
@@ -71,7 +73,7 @@
 
 <span class="n">datapath</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
 <span class="n">PATH_PASSBAND</span> <span class="o">=</span> <span class="n">datapath</span> <span class="o">+</span> <span class="s">&#39;/passbands/&#39;</span>
-<span class="n">PATH_EXTINCT</span> <span class="o">=</span> <span class="n">datapath</span> <span class="o">+</span> <span class="s">&#39;/extinction/&#39;</span>
+<span class="n">PATH_EXTINCT</span> <span class="o">=</span> <span class="n">datapath</span> <span class="o">+</span> <span class="s">&#39;/atmos_extinction/&#39;</span>
 <span class="n">PATH_TEMPLATE</span> <span class="o">=</span> <span class="n">datapath</span> <span class="o">+</span> <span class="s">&#39;/templates/&#39;</span>
 
 <span class="k">def</span> <span class="nf">_listfiles</span><span class="p">(</span><span class="n">topdir</span><span class="p">):</span>
@@ -185,7 +187,14 @@
 <div class="viewcode-block" id="Passband.__init__"><a class="viewcode-back" href="../../generated/barak.sed.Passband.html#barak.sed.Passband.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">ccd</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PATH_PASSBAND</span><span class="p">):</span>
             <span class="n">filepath</span> <span class="o">=</span> <span class="n">PATH_PASSBAND</span> <span class="o">+</span> <span class="n">filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.fits&#39;</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">pyfits</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="n">rec</span><span class="o">.</span><span class="n">tr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="c"># check wavelengths are sorted lowest -&gt; highest</span>
         <span class="n">isort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">[</span><span class="n">isort</span><span class="p">]</span>
@@ -203,7 +212,8 @@
             <span class="k">elif</span> <span class="n">filtername</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;LBCR&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filtername</span> <span class="ow">in</span> <span class="s">&#39;riz&#39;</span><span class="p">:</span>
                 <span class="n">ccd</span> <span class="o">=</span> <span class="s">&#39;red&#39;</span>
         <span class="k">elif</span> <span class="n">instr</span> <span class="o">==</span> <span class="s">&#39;FORS&#39;</span> <span class="ow">and</span> <span class="n">ccd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Must specify detector (ccd=red or ccd=blue)&#39;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&#39;No cdd (&quot;red&quot; or &quot;blue&quot;) given, assuming red.&#39;</span><span class="p">)</span>
+            <span class="n">ccd</span> <span class="o">=</span> <span class="s">&#39;red&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">atmos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">effic</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="n">ccd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -231,11 +241,19 @@
         <span class="n">maxtr</span> <span class="o">=</span> <span class="n">sortedtr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">imax</span> <span class="o">=</span> <span class="n">isort</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="n">isort</span><span class="p">[</span><span class="n">sortedtr</span> <span class="o">&lt;</span> <span class="mf">1e-4</span> <span class="o">*</span> <span class="n">maxtr</span><span class="p">]</span>
-        <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="n">ind</span> <span class="o">&lt;</span> <span class="n">imax</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">ind</span><span class="p">[</span><span class="n">ind</span> <span class="o">&gt;</span> <span class="n">imax</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> 
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">c0</span> <span class="o">=</span> <span class="n">ind</span> <span class="o">&lt;</span> <span class="n">imax</span>
+            <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> 
+            <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">c0</span> <span class="o">=</span> <span class="n">ind</span> <span class="o">&gt;</span> <span class="n">imax</span>
+            <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> 
+            <span class="n">i</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">atmos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">effic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -318,7 +336,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fl</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">distance_modulus</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>    
 
         <span class="c"># Store the intrinsic (i.e. unextincted) flux in case we</span>
@@ -383,12 +400,6 @@
         <span class="n">zfluxtot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fl</span> <span class="o">*=</span> <span class="n">z0fluxtot</span> <span class="o">/</span> <span class="n">zfluxtot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
-        <span class="k">if</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">cosmo</span> <span class="o">=</span> <span class="n">cosmology</span><span class="o">.</span><span class="n">get_default</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">distance_modulus</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">distmod</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">distance_modulus</span> <span class="o">=</span> <span class="mf">0.</span>
 </div>
 <div class="viewcode-block" id="SED.normalise_to_mag"><a class="viewcode-back" href="../../generated/barak.sed.SED.normalise_to_mag.html#barak.sed.SED.normalise_to_mag">[docs]</a>    <span class="k">def</span> <span class="nf">normalise_to_mag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ABmag</span><span class="p">,</span> <span class="n">band</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Normalises the SED to match the flux equivalent to the</span>
@@ -442,8 +453,7 @@
             <span class="n">mag</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">f1</span><span class="o">/</span><span class="n">band</span><span class="o">.</span><span class="n">flux</span><span class="p">[</span><span class="n">system</span><span class="p">])</span>
             <span class="c"># Add 0.026 because Vega has V=0.026 (e.g. Bohlin &amp; Gilliland 2004)</span>
             <span class="k">if</span> <span class="n">system</span> <span class="o">==</span> <span class="s">&quot;Vega&quot;</span><span class="p">:</span>
-                <span class="n">mag</span> <span class="o">+=</span> <span class="mf">0.026</span>        
-            <span class="c">#mag += self.distance_modulus</span>
+                <span class="n">mag</span> <span class="o">+=</span> <span class="mf">0.026</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
 
@@ -472,7 +482,7 @@
 
         <span class="c"># Allow us to set EBmV == 0 to turn extinction off</span>
         <span class="k">if</span> <span class="n">EBmV</span> <span class="o">&gt;</span> <span class="mf">1e-10</span><span class="p">:</span>
-            <span class="n">reddening</span> <span class="o">=</span> <span class="n">calc_extinction_Calzetti</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z0wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="p">)</span>
+            <span class="n">reddening</span> <span class="o">=</span> <span class="n">extinction</span><span class="o">.</span><span class="n">starburst_Calzetti00</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z0wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">z0fl</span> <span class="o">/=</span> <span class="n">reddening</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">EBmV</span> <span class="o">=</span> <span class="n">EBmV</span>
         <span class="k">else</span><span class="p">:</span>
@@ -526,62 +536,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ABmag</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">fluxJy</span> <span class="o">*</span> <span class="n">Jy</span><span class="p">))</span> <span class="o">-</span> <span class="mf">48.6</span>
     <span class="k">return</span> <span class="n">ABmag</span>
-</div>
-<div class="viewcode-block" id="calc_extinction_Calzetti"><a class="viewcode-back" href="../../generated/barak.sed.calc_extinction_Calzetti.html#barak.sed.calc_extinction_Calzetti">[docs]</a><span class="k">def</span> <span class="nf">calc_extinction_Calzetti</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Find the extinction as a function of wavelength for the given</span>
-<span class="sd">    E(B-V) using the relation from Calzetti et al. 2000 (ApJ, 533,</span>
-<span class="sd">    682).  R_v&#39; = 4.05 is assumed (see equation (5) of Calzetti et</span>
-<span class="sd">    al.) E(B-V) is the extinction in the stellar continuum.</span>
-
-<span class="sd">    The wavelength array wa must be in Angstroms and sorted lowest -&gt;</span>
-<span class="sd">    highest.</span>
-
-<span class="sd">    Returns reddening such that::</span>
-
-<span class="sd">     extincted_flux = unextincted_flux * reddening</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">22000</span> <span class="ow">and</span> <span class="n">wa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1200</span>
-
-    <span class="c"># Note that EBmV is assumed to be Es as in equations (2) - (5)</span>
-    
-    <span class="c"># equation (5) of Calzetti et al. 2000</span>
-    <span class="n">Rv</span> <span class="o">=</span> <span class="mf">4.05</span>
-
-    <span class="c"># Constants belwo assume wavelength is in microns.</span>
-    
-    <span class="n">uwa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span> <span class="o">/</span> <span class="mf">10000.</span><span class="p">)</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">kshort</span><span class="p">(</span><span class="n">wa</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mf">2.659</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mf">2.156</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.509</span> <span class="o">-</span> <span class="mf">0.198</span><span class="o">/</span><span class="n">wa</span> <span class="o">+</span> <span class="mf">0.011</span><span class="o">/</span><span class="n">wa</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">wa</span><span class="p">)</span> <span class="o">+</span> <span class="n">Rv</span>
-
-    <span class="k">def</span> <span class="nf">klong</span><span class="p">(</span><span class="n">wa</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mf">2.659</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mf">1.857</span> <span class="o">+</span> <span class="mf">1.040</span><span class="o">/</span><span class="n">wa</span><span class="p">)</span> <span class="o">+</span> <span class="n">Rv</span>
-
-    <span class="c"># populate k in a piece-wise fashion, extrapolating</span>
-    <span class="c"># below 1200 and above 22000 Angstroms</span>
-    <span class="k">if</span> <span class="n">uwa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.12</span><span class="p">:</span>
-        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">kshort</span><span class="p">(</span><span class="mf">0.11</span><span class="p">)</span> <span class="o">-</span> <span class="n">kshort</span><span class="p">(</span><span class="mf">0.12</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mf">0.11</span> <span class="o">-</span> <span class="mf">0.12</span><span class="p">)</span>
-        <span class="n">intercept</span> <span class="o">=</span> <span class="n">kshort</span><span class="p">(</span><span class="mf">0.12</span><span class="p">)</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="mf">0.12</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="n">uwa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="mf">0.12</span><span class="p">)</span>
-        <span class="n">k</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">uwa</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">intercept</span>
-    <span class="k">if</span> <span class="n">uwa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.63</span> <span class="ow">and</span> <span class="n">uwa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.12</span><span class="p">:</span>
-        <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">uwa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">([</span><span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.63</span><span class="p">])</span>
-        <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">kshort</span><span class="p">(</span><span class="n">uwa</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">uwa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">2.2</span> <span class="ow">and</span> <span class="n">uwa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.63</span><span class="p">:</span>
-        <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">uwa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">([</span><span class="mf">0.63</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">])</span>
-        <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">klong</span><span class="p">(</span><span class="n">uwa</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">uwa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">2.2</span><span class="p">:</span>
-        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">klong</span><span class="p">(</span><span class="mf">2.19</span><span class="p">)</span> <span class="o">-</span> <span class="n">klong</span><span class="p">(</span><span class="mf">2.2</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.19</span> <span class="o">-</span> <span class="mf">2.2</span><span class="p">)</span>
-        <span class="n">intercept</span> <span class="o">=</span> <span class="n">klong</span><span class="p">(</span><span class="mf">2.19</span><span class="p">)</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="mf">2.19</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="n">uwa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="mf">2.2</span><span class="p">)</span>
-        <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">uwa</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">+</span> <span class="n">intercept</span>
-
-    <span class="c"># fudge to stop going negative</span>
-    <span class="n">k</span><span class="p">[</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="mf">1e-6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-6</span>
-        
-    <span class="n">reddening</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">EBmV</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">reddening</span>
 
 
 <span class="c"># Data</span></div>

@@ -1,0 +1,125 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.io.writetable &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="next" title="barak.io.writetxt" href="barak.io.writetxt.html" />
+    <link rel="prev" title="barak.io.writetabfits" href="barak.io.writetabfits.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.io.writetable</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.io.writetabfits.html">barak.io.writetabfits</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.io.writetxt.html">barak.io.writetxt</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-io-writetable">
+<h1>barak.io.writetable<a class="headerlink" href="#barak-io-writetable" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.io.writetable">
+<tt class="descclassname">barak.io.</tt><tt class="descname">writetable</tt><big>(</big><em>filename</em>, <em>cols</em>, <em>units=None</em>, <em>names=None</em>, <em>header=None</em>, <em>keywords=None</em>, <em>overwrite=False</em><big>)</big><a class="reference internal" href="../_modules/barak/io.html#writetable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.io.writetable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a series of data columns to a file.</p>
+<p>Data written using this function can be read again using:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">atpy</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>filename</strong> :  str</p>
+<blockquote>
+<div><p>The output filename. Its suffix determines the file type. For
+example &#8216;.tbl&#8217;, &#8216;.fits&#8217; or &#8216;.fits.gz&#8217;.</p>
+</div></blockquote>
+<p><strong>cols</strong> : structured array, atpy Table instance or a list of columns</p>
+<blockquote>
+<div><p>Data to be written.</p>
+</div></blockquote>
+<p><strong>units</strong> : list</p>
+<blockquote>
+<div><p>Units of each column.</p>
+</div></blockquote>
+<p><strong>names</strong> : list or string  (None)</p>
+<blockquote>
+<div><p>Column names. Can be a comma-separated string of names. If
+None and <em class="xref py py-obj">cols</em> is a structured array, column names are the
+array field names.</p>
+</div></blockquote>
+<p><strong>header</strong> : str (None)</p>
+<blockquote>
+<div><p>A header written before the data.</p>
+</div></blockquote>
+<p><strong>keywords</strong> : dict (None)</p>
+<blockquote>
+<div><p>A dictionary of key-value pairs to write to the header.</p>
+</div></blockquote>
+<p><strong>overwrite</strong> : bool (False)</p>
+<blockquote class="last">
+<div><p>If True, overwrite an existing file without prompting.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.io.writetabfits.html">barak.io.writetabfits</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.io.writetxt.html">barak.io.writetxt</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

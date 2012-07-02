@@ -47,9 +47,7 @@
         
   <h1>Source code for barak.pyvpfit</h1><div class="highlight"><pre>
 <span class="sd">&quot;&quot;&quot;Contains a class, VpfitModel, useful for parsing f26 and fort.13</span>
-<span class="sd">files, and writing out fort.13 files. Also has functions for reading</span>
-<span class="sd">and searching an atom.dat file that originally came with vpfit (also</span>
-<span class="sd">bundled with this package).</span>
+<span class="sd">files, and writing out fort.13 files.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -327,6 +325,30 @@
 
     <span class="k">return</span> <span class="n">vp</span>
 </div>
+<div class="viewcode-block" id="calc_Ntot"><a class="viewcode-back" href="../../generated/barak.pyvpfit.calc_Ntot.html#barak.pyvpfit.calc_Ntot">[docs]</a><span class="k">def</span> <span class="nf">calc_Ntot</span><span class="p">(</span><span class="n">f26name</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate the total column density in f26-style file </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f26name : str</span>
+<span class="sd">      f26 filename.</span>
+<span class="sd">    trans : str (optional)</span>
+<span class="sd">      Transition name (&#39;Mg&#39; for example). By default all column</span>
+<span class="sd">      density entries are used.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    logNtot : float</span>
+<span class="sd">      Log10 of the total column denisty</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f26</span> <span class="o">=</span> <span class="n">readf26</span><span class="p">(</span><span class="n">f26name</span><span class="p">)</span>
+    <span class="n">logN</span> <span class="o">=</span> <span class="n">f26</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">logN</span>
+    <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">logN</span> <span class="o">=</span> <span class="n">f26</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">logN</span><span class="p">[</span><span class="n">f26</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">trans</span><span class="p">]</span>
+
+    <span class="n">Ntot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">logN</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Ntot</span><span class="p">)</span>
+        </div>
 <div class="viewcode-block" id="calc_v90"><a class="viewcode-back" href="../../generated/barak.pyvpfit.calc_v90.html#barak.pyvpfit.calc_v90">[docs]</a><span class="k">def</span> <span class="nf">calc_v90</span><span class="p">(</span><span class="n">vp</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
              <span class="n">wav0</span><span class="o">=</span><span class="mf">1215.6701</span><span class="p">,</span> <span class="n">osc</span><span class="o">=</span><span class="mf">0.4164</span><span class="p">,</span> <span class="n">gam</span><span class="o">=</span><span class="mf">6.265e8</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; For a vp model, we want to calculate the velocity width that</span>

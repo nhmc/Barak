@@ -74,7 +74,7 @@
 <span class="sd">    usecols : int or tuple of ints, optional</span>
 <span class="sd">        Indices of columns to be read. By default all columns are read.</span>
 <span class="sd">    comment : str (default `#`)</span>
-<span class="sd">        Character marking the start of a comment. </span>
+<span class="sd">        Character marking the start of a comment.</span>
 <span class="sd">    skip : int (default `0`)</span>
 <span class="sd">        Number of rows to skip (not counting commented or blank lines)</span>
 <span class="sd">        before reading data.</span>
@@ -207,7 +207,10 @@
 </div>
 <div class="viewcode-block" id="writetxt"><a class="viewcode-back" href="../../generated/barak.io.writetxt.html#barak.io.writetxt">[docs]</a><span class="k">def</span> <span class="nf">writetxt</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
              <span class="n">fmt_float</span><span class="o">=</span><span class="s">&#39;s&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Write data to a column-aligned text file.</span>
+    <span class="sd">&quot;&quot;&quot; This is deprecated. Use `writetable()` with file type &#39;.tbl&#39;</span>
+<span class="sd">    instead.</span>
+
+<span class="sd">    Write data to a column-aligned text file.</span>
 
 <span class="sd">    Structured array data written using this function can be read</span>
 <span class="sd">    again using:</span>
@@ -313,7 +316,10 @@
     <span class="k">return</span>
 </div>
 <div class="viewcode-block" id="writetabfits"><a class="viewcode-back" href="../../generated/barak.io.writetabfits.html#barak.io.writetabfits">[docs]</a><span class="k">def</span> <span class="nf">writetabfits</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Writes a list of numpy arrays or a structured array to a</span>
+    <span class="sd">&quot;&quot;&quot; This is deprecated. Use `writetable()` with file type &#39;.fits&#39;</span>
+<span class="sd">    instead.</span>
+
+<span class="sd">    Writes a list of numpy arrays or a structured array to a</span>
 <span class="sd">    binary fits table. Works best with structured arrays.</span>
 
 <span class="sd">    Parameters</span>
@@ -326,7 +332,7 @@
 <span class="sd">      Sequence of strings giving the units for each column.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">pyfits</span>
-    
+
     <span class="n">fmts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">f4</span><span class="o">=</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="n">f8</span><span class="o">=</span><span class="s">&#39;F&#39;</span><span class="p">,</span> <span class="n">i2</span><span class="o">=</span><span class="s">&#39;I&#39;</span><span class="p">,</span> <span class="n">i4</span><span class="o">=</span><span class="s">&#39;J&#39;</span><span class="p">,</span> <span class="n">i8</span><span class="o">=</span><span class="s">&#39;K&#39;</span><span class="p">,</span> <span class="n">b1</span><span class="o">=</span><span class="s">&#39;L&#39;</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -355,6 +361,8 @@
 <div class="viewcode-block" id="readtabfits"><a class="viewcode-back" href="../../generated/barak.io.readtabfits.html#barak.io.readtabfits">[docs]</a><span class="k">def</span> <span class="nf">readtabfits</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Read fits binary table data, such as that written by</span>
 <span class="sd">    `writetabfits()`.</span>
+
+<span class="sd">    Consider using `atpy.Table(filename)` instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">pyfits</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -372,7 +380,7 @@
         <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span>
     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fh</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    </div>
+</div>
 <div class="viewcode-block" id="loadobj"><a class="viewcode-back" href="../../generated/barak.io.loadobj.html#barak.io.loadobj">[docs]</a><span class="k">def</span> <span class="nf">loadobj</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Load a python object pickled with saveobj.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.gz&#39;</span><span class="p">):</span>
@@ -408,12 +416,12 @@
 <span class="sd">    Sample format::</span>
 
 <span class="sd">     # this is the file with the line list</span>
-<span class="sd">     lines = lines.dat    </span>
+<span class="sd">     lines = lines.dat</span>
 <span class="sd">     x = 20</span>
 <span class="sd">     save = True    # save the data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">adict</span><span class="p">()</span>
-    
+
     <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
 
     <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -546,7 +554,7 @@
     <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">regions</span><span class="p">))</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    </div>
+</div>
 <div class="viewcode-block" id="write_DS9reg"><a class="viewcode-back" href="../../generated/barak.io.write_DS9reg.html#barak.io.write_DS9reg">[docs]</a><span class="k">def</span> <span class="nf">write_DS9reg</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">coord</span><span class="o">=</span><span class="s">&#39;IMAGE&#39;</span><span class="p">,</span> <span class="n">ptype</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
                  <span class="n">c</span><span class="o">=</span><span class="s">&#39;green&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a region file for ds9 for a  list of coordinates.</span>
@@ -585,7 +593,7 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
                 <span class="k">return</span> <span class="bp">False</span>
         <span class="k">return</span> <span class="bp">True</span>
-    
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">ptype</span><span class="p">):</span>
         <span class="n">ptype</span> <span class="o">=</span> <span class="p">[</span><span class="n">ptype</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
@@ -598,7 +606,7 @@
         <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iscontainer</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        
+
     <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;point(</span><span class="si">%12.8f</span><span class="s">,</span><span class="si">%12.8f</span><span class="s">) # </span><span class="se">\</span>
 <span class="s">point=</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> width=</span><span class="si">%s</span><span class="s"> text={</span><span class="si">%s</span><span class="s">} color=</span><span class="si">%s</span><span class="s"> tag={</span><span class="si">%s</span><span class="s">}</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
@@ -606,11 +614,96 @@
                 <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tag</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmt</span> <span class="o">%</span> <span class="n">vals</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">regions</span></div>
+    <span class="k">return</span> <span class="n">regions</span>
+</div>
+<div class="viewcode-block" id="writetable"><a class="viewcode-back" href="../../generated/barak.io.writetable.html#barak.io.writetable">[docs]</a><span class="k">def</span> <span class="nf">writetable</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">keywords</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Write a series of data columns to a file.</span>
+
+<span class="sd">    Data written using this function can be read again using:</span>
+
+<span class="sd">    &gt;&gt;&gt; atpy.Table(filename)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename :  str</span>
+<span class="sd">        The output filename. Its suffix determines the file type. For</span>
+<span class="sd">        example &#39;.tbl&#39;, &#39;.fits&#39; or &#39;.fits.gz&#39;.</span>
+<span class="sd">    cols : structured array, atpy Table instance or a list of columns</span>
+<span class="sd">        Data to be written.</span>
+<span class="sd">    units : list</span>
+<span class="sd">        Units of each column.</span>
+<span class="sd">    names : list or string  (None)</span>
+<span class="sd">        Column names. Can be a comma-separated string of names. If</span>
+<span class="sd">        None and `cols` is a structured array, column names are the</span>
+<span class="sd">        array field names.</span>
+<span class="sd">    header : str (None)</span>
+<span class="sd">        A header written before the data.</span>
+<span class="sd">    keywords : dict (None)</span>
+<span class="sd">        A dictionary of key-value pairs to write to the header.</span>
+<span class="sd">    overwrite : bool (False)</span>
+<span class="sd">        If True, overwrite an existing file without prompting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">atpy</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">atpy</span><span class="o">.</span><span class="n">Table</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">cols</span>
+        <span class="n">old_formats</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">format</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">recnames</span> <span class="o">=</span> <span class="n">cols</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">recnames</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">recnames</span><span class="p">)</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">cols</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">recnames</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;col</span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">))]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">atpy</span><span class="o">.</span><span class="n">Table</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)):</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">units</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">keywords</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.tbl&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.tbl.gz&#39;</span><span class="p">):</span>
+        <span class="c"># use ST for int and floats to remove whitespace and make</span>
+        <span class="c"># easily-readable float values in IPAC tables - be warned this</span>
+        <span class="c"># may change the printed float values by about one part in</span>
+        <span class="c"># 1e12.</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s">&#39;s&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;s&#39;</span>
+
+    <span class="n">t</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">atpy</span><span class="o">.</span><span class="n">Table</span><span class="p">):</span>
+        <span class="c"># return column formats to their original values</span>
+        <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">old_formats</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">fmt</span></div>
 </pre></div>
 
       </div>

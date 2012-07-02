@@ -381,8 +381,25 @@
 <div class="viewcode-block" id="b_to_T"><a class="viewcode-back" href="../../generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T">[docs]</a><span class="k">def</span> <span class="nf">b_to_T</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">bvals</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert b parameters (km/s) to a temperature in K for an atom</span>
 <span class="sd">    with mass amu.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atom : str or float</span>
+<span class="sd">      Either an abbreviation for an element name (for example &#39;Mg&#39;),</span>
+<span class="sd">      or a mass in amu.</span>
+<span class="sd">    bvals : array_like</span>
+<span class="sd">      One or more b values in km/s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    T : ndarray or float</span>
+<span class="sd">      The temperature corresponding to each value in `bvals&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">amu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">bvals</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e5</span>
 
     <span class="c"># convert everything to cgs</span>
@@ -396,8 +413,25 @@
 <div class="viewcode-block" id="T_to_b"><a class="viewcode-back" href="../../generated/barak.absorb.T_to_b.html#barak.absorb.T_to_b">[docs]</a><span class="k">def</span> <span class="nf">T_to_b</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert temperatues in K to b parameters (km/s) for an atom</span>
 <span class="sd">    with mass amu.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atom : str or float</span>
+<span class="sd">      Either an abbreviation for an element name (for example &#39;Mg&#39;),</span>
+<span class="sd">      or a mass in amu.</span>
+<span class="sd">    T : array_like</span>
+<span class="sd">      One or more temperatures in Kelvin.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    b : ndarray or float</span>
+<span class="sd">      The b value in km/s corresponding to each input temperature.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">amu</span> <span class="o">=</span> <span class="n">Ar</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">amu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
     <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
     <span class="n">b_cms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="n">mp</span> <span class="o">*</span><span class="n">amu</span><span class="p">))</span>
     
@@ -533,7 +567,7 @@
     <span class="sd">&quot;&quot;&quot; Given a transition string (say MgII), return the name of the</span>
 <span class="sd">    atom and the ionization string (Mg, II).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">while</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s">&#39;XVI&#39;</span><span class="p">:</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
@@ -550,17 +584,17 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tau : ndarray</span>
+<span class="sd">    tau : ndarray or float if `wa` is scalar</span>
 <span class="sd">      The optical depth at each wavelength.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    At the Lyman limit, the optical depth tau is given by::</span>
 
-<span class="sd">      tau = NHI * sigma_0 </span>
+<span class="sd">      tau = N(HI) * sigma_0 </span>
 
-<span class="sd">    where sigma_0 = 6.304 e-18 cm^-2. The energy dependence of the</span>
-<span class="sd">    cross section is::</span>
+<span class="sd">    where sigma_0 = 6.304 e-18 cm^2 and N(HI) is the HI column density</span>
+<span class="sd">    in cm^-2. The energy dependence of the cross section is::</span>
 
 <span class="sd">      sigma_nu ~ sigma_0 * (h*nu / I_H)^-3 = sigma_0 * (lam / 912)^3</span>
 
@@ -570,8 +604,8 @@
 
 <span class="sd">    So the normalised continuum bluewards of the Lyman limit is::</span>
 
-<span class="sd">      F/F_cont = exp(-tau) = exp(-NHI * sigma_lam)</span>
-<span class="sd">      = exp(-NHI * sigma_0 * (lam/912)^3)</span>
+<span class="sd">      F/F_cont = exp(-tau) = exp(-N(HI) * sigma_lam)</span>
+<span class="sd">      = exp(-N(HI) * sigma_0 * (lam/912)^3)</span>
 
 <span class="sd">    Where F is the absorbed flux and F_cont is the unabsorbed</span>
 <span class="sd">    continuum.</span>
@@ -584,7 +618,6 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; logN = 17.2                  # log10(N in cm^-2)</span>
 <span class="sd">    &gt;&gt;&gt; wa = np.linspace(100, 912, 100)</span>
 <span class="sd">    &gt;&gt;&gt; z = 2.24</span>
 <span class="sd">    &gt;&gt;&gt; for logN in np.arange(17, 21., 0.5):</span>

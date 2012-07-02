@@ -46,13 +46,13 @@
         
         
   <h1>Source code for barak.interp</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot; Interpolation-related functions.</span>
+<span class="sd">&quot;&quot;&quot; Interpolation-related functions and classes.</span>
 <span class="sd">&quot;&quot;&quot;</span> 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span><span class="p">,</span> <span class="n">indices_from_grid</span><span class="p">,</span> <span class="n">meshgrid_nd</span>
 
-<div class="viewcode-block" id="InterpCubicSpline"><a class="viewcode-back" href="../../generated/barak.interp.InterpCubicSpline.html#barak.interp.InterpCubicSpline">[docs]</a><span class="k">class</span> <span class="nc">InterpCubicSpline</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Interpolate a cubic spline through a set of points.</span>
+<div class="viewcode-block" id="CubicSpline"><a class="viewcode-back" href="../../generated/barak.interp.CubicSpline.html#barak.interp.CubicSpline">[docs]</a><span class="k">class</span> <span class="nc">CubicSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class to generate a cubic spline through a set of points.</span>
 
 <span class="sd">    After initialisation, an instance can be called with an array of</span>
 <span class="sd">    values xp, and will return the cubic-spline interpolated values yp</span>
@@ -66,9 +66,9 @@
 <span class="sd">    and y values, you&#39;ll have to instantiate a new class.</span>
 
 <span class="sd">    The spline generation is based on the NR algorithms (but not their</span>
-<span class="sd">    routines.)</span>
+<span class="sd">    code.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="InterpCubicSpline.__init__"><a class="viewcode-back" href="../../generated/barak.interp.InterpCubicSpline.html#barak.interp.InterpCubicSpline.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">firstderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CubicSpline.__init__"><a class="viewcode-back" href="../../generated/barak.interp.CubicSpline.html#barak.interp.CubicSpline.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">firstderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -82,10 +82,8 @@
 <span class="sd">          If False, check the x array is sorted and unique. Set to True</span>
 <span class="sd">          for increased speed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s">&#39;i&#39;</span> <span class="ow">in</span>  <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Input arrays must not be integer&#39;</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">nochecks</span><span class="p">:</span>
             <span class="c"># check all x values are unique</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -136,7 +134,7 @@
             <span class="n">temp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">6.</span><span class="o">*</span><span class="n">temp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">temp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">denom</span>
         <span class="k">return</span> <span class="n">temp</span>
 
-<div class="viewcode-block" id="InterpCubicSpline.set_d2"><a class="viewcode-back" href="../../generated/barak.interp.InterpCubicSpline.set_d2.html#barak.interp.InterpCubicSpline.set_d2">[docs]</a>    <span class="k">def</span> <span class="nf">set_d2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firstderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CubicSpline.set_d2"><a class="viewcode-back" href="../../generated/barak.interp.CubicSpline.set_d2.html#barak.interp.CubicSpline.set_d2">[docs]</a>    <span class="k">def</span> <span class="nf">set_d2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firstderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Calculates the second derivative of a cubic spline</span>
 <span class="sd">        function y = f(x) for each value in array x. This is called by</span>
 <span class="sd">        __init__() when a new class instance is created.</span>
@@ -179,14 +177,124 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">d2</span> <span class="o">=</span> <span class="n">d2</span>
 </div></div>
-<div class="viewcode-block" id="interp_spline"><a class="viewcode-back" href="../../generated/barak.interp.interp_spline.html#barak.interp.interp_spline">[docs]</a><span class="k">def</span> <span class="nf">interp_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Like `numpy.interp`, but using spline instead of linear</span>
-<span class="sd">    interpolation.</span>
+<div class="viewcode-block" id="AkimaSpline"><a class="viewcode-back" href="../../generated/barak.interp.AkimaSpline.html#barak.interp.AkimaSpline">[docs]</a><span class="k">class</span> <span class="nc">AkimaSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A class used to generate an Akima Spline through a set of</span>
+<span class="sd">    points.</span>
 
-<span class="sd">    This is a convenience function wrapped around InterpCubicSpline.</span>
+<span class="sd">    It must be instantiated with a set of `xvals` and `yvals` knot values,</span>
+<span class="sd">    and then can be called with a new set of x values `x`. This is</span>
+<span class="sd">    used by `interp_Akima`, see its documentation for more</span>
+<span class="sd">    information.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    &quot;A new method of interpolation and smooth curve fitting based</span>
+<span class="sd">    on local procedures.&quot; Hiroshi Akima, J. ACM, October 1970, 17(4),</span>
+<span class="sd">    589-602.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is adapted from a function written by `Christoph Gohlke</span>
+<span class="sd">    &lt;http://www.lfd.uci.edu/~gohlke/&gt;`_ under a BSD license:</span>
+
+<span class="sd">    Copyright (c) 2007-2012, Christoph Gohlke</span>
+<span class="sd">    Copyright (c) 2007-2012, The Regents of the University of California</span>
+<span class="sd">    Produced at the Laboratory for Fluorescence Dynamics</span>
+<span class="sd">    All rights reserved.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">spl</span> <span class="o">=</span> <span class="n">InterpCubicSpline</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="n">nochecks</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">spl</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<div class="viewcode-block" id="AkimaSpline.__init__"><a class="viewcode-back" href="../../generated/barak.interp.AkimaSpline.html#barak.interp.AkimaSpline.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        xvals, yvals : array_like, shape (N,)</span>
+<span class="sd">          Reference values. xvals cannot contain duplicates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">yvals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;x array must be one dimensional&quot;</span><span class="p">)</span>
+     
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Array too small&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Size of x-array must match data shape&quot;</span><span class="p">)</span>
+     
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dx</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">isort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">isort</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">isort</span><span class="p">]</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">dx</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;x array has duplicate values&quot;</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mmm</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">mm</span> <span class="o">-</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mp</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">m</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="n">mpp</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">mp</span> <span class="o">-</span> <span class="n">m</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+     
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="n">mmm</span><span class="p">],</span> <span class="p">[</span><span class="n">mm</span><span class="p">],</span> <span class="n">m</span><span class="p">,</span> <span class="p">[</span><span class="n">mp</span><span class="p">],</span> <span class="p">[</span><span class="n">mpp</span><span class="p">]))</span>
+     
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">m1</span><span class="p">))</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">dm</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="n">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">]</span>
+        <span class="n">f12</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">+</span> <span class="n">f2</span>
+     
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">f12</span> <span class="o">&gt;</span> <span class="mf">1e-9</span> <span class="o">*</span> <span class="n">f12</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">m1</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+     
+        <span class="n">b</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span> <span class="o">*</span> <span class="n">m1</span><span class="p">[</span><span class="n">ids</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">f2</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span> <span class="o">*</span> <span class="n">m1</span><span class="p">[</span><span class="n">ids</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">f12</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.</span> <span class="o">*</span> <span class="n">m</span> <span class="o">-</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">])</span> <span class="o">/</span> <span class="n">dx</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span>
+</div>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array_like, shape (M,)</span>
+<span class="sd">          Values at which to interpolate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vals : ndarray, shape (M,)</span>
+<span class="sd">           Interpolated values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Array must be one dimensional&quot;</span><span class="p">)</span>
+
+        <span class="n">c0</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">c0</span> <span class="o">|</span> <span class="n">c2</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">x1</span><span class="p">)]</span>
+        <span class="n">wj</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">wj</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">b</span><span class="p">])</span><span class="o">*</span><span class="n">wj</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">b</span><span class="p">])</span><span class="o">*</span><span class="n">wj</span> <span class="o">+</span> \
+                  <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+        <span class="c"># use linear extrapolation for points outside self.xvals</span>
+        <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span>
+            <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">x1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">intercept</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">*</span><span class="n">slope</span> <span class="o">+</span> <span class="n">intercept</span>
+        <span class="k">if</span> <span class="n">c2</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span>
+            <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">x1</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">intercept</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">*</span><span class="n">slope</span> <span class="o">+</span> <span class="n">intercept</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+
 </div>
 <div class="viewcode-block" id="fit_spline"><a class="viewcode-back" href="../../generated/barak.interp.fit_spline.html#barak.interp.fit_spline">[docs]</a><span class="k">def</span> <span class="nf">fit_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find a smooth function that approximates `x`, `y`.</span>
@@ -220,8 +328,61 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cbins</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;Too few bins&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">InterpCubicSpline</span><span class="p">(</span><span class="n">cbins</span><span class="p">,</span> <span class="n">medvals</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">AkimaSpline</span><span class="p">(</span><span class="n">cbins</span><span class="p">,</span> <span class="n">medvals</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="interp_Akima"><a class="viewcode-back" href="../../generated/barak.interp.interp_Akima.html#barak.interp.interp_Akima">[docs]</a><span class="k">def</span> <span class="nf">interp_Akima</span><span class="p">(</span><span class="n">x_new</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return interpolated data using Akima&#39;s method.</span>
 
+<span class="sd">    Akima&#39;s interpolation method uses a continuously differentiable</span>
+<span class="sd">    sub-spline built from piecewise cubic polynomials. The resultant</span>
+<span class="sd">    curve passes through the given data points and will appear smooth</span>
+<span class="sd">    and natural.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x_new : array_like, shape (M,)</span>
+<span class="sd">        Values at which to interpolate.</span>
+<span class="sd">    x, y : array_like, shape (N,)</span>
+<span class="sd">        Reference values. x cannot contain duplicates.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vals : ndarray, shape (M,)</span>
+<span class="sd">       Interpolated values.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    &quot;A new method of interpolation and smooth curve fitting based</span>
+<span class="sd">    on local procedures.&quot; Hiroshi Akima, J. ACM, October 1970, 17(4),</span>
+<span class="sd">    589-602.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plot interpolated Gaussian noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.sort(np.random.random(10) * 100)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.random.normal(0.0, 0.1, size=len(x))</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.arange(x[0], x[-1], 0.02)</span>
+<span class="sd">    &gt;&gt;&gt; y2 = interp_Akima(x2, x, y)</span>
+<span class="sd">    &gt;&gt;&gt; y3 = interp_spline(x2, x, y)</span>
+<span class="sd">    &gt;&gt;&gt; from matplotlib import pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x2, y2, &#39;b-&#39;, label=&#39;Akima&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x2, y3, &#39;r-&#39;, label=&#39;Cubic&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x, y, &#39;co&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">interpolator</span> <span class="o">=</span> <span class="n">AkimaSpline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">interpolator</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="interp_spline"><a class="viewcode-back" href="../../generated/barak.interp.interp_spline.html#barak.interp.interp_spline">[docs]</a><span class="k">def</span> <span class="nf">interp_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Like `numpy.interp`, but using spline instead of linear</span>
+<span class="sd">    interpolation.</span>
+
+<span class="sd">    This is a convenience function wrapped around CubicSpline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">CubicSpline</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="n">nochecks</span><span class="o">=</span><span class="n">nochecks</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spl</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="splice"><a class="viewcode-back" href="../../generated/barak.interp.splice.html#barak.interp.splice">[docs]</a><span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="n">co0</span><span class="p">,</span> <span class="n">co1</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">forced</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Join two overlapping curves smoothly using a cubic spline.</span>
@@ -255,7 +416,7 @@
         <span class="n">covals</span> <span class="o">=</span> <span class="p">[</span><span class="n">co0</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">co1</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
 
     <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> 
-    <span class="n">spline</span> <span class="o">=</span> <span class="n">InterpCubicSpline</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">covals</span><span class="p">,</span><span class="n">firstderiv</span><span class="o">=</span><span class="n">d1</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="n">d2</span><span class="p">)</span>
+    <span class="n">spline</span> <span class="o">=</span> <span class="n">CubicSpline</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">covals</span><span class="p">,</span><span class="n">firstderiv</span><span class="o">=</span><span class="n">d1</span><span class="p">,</span> <span class="n">lastderiv</span><span class="o">=</span><span class="n">d2</span><span class="p">)</span>
     <span class="n">newco</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">co0</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">newco</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
     <span class="n">newco</span><span class="p">[</span><span class="n">j</span><span class="p">:]</span> <span class="o">=</span> <span class="n">co1</span><span class="p">[</span><span class="n">j</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -338,8 +499,8 @@
     <span class="n">out</span> <span class="o">=</span> <span class="n">_interp3d</span><span class="p">(</span><span class="n">iX</span><span class="p">,</span> <span class="n">iY</span><span class="p">,</span> <span class="n">iZ</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
 
     <span class="c"># Note the index order and transpose!</span>
-    <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
-</pre></div>
+    <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+</pre></div></div>
 
       </div>
       <div class="bottomnav">
