@@ -32,11 +32,8 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
 
     Returns
     -------
-    Continuum array, spline points, first derivative at first and last
-    spline points
+    Continuum array and spline points
 
-    Examples
-    --------
     """
 
     # Overview:
@@ -58,7 +55,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
     if len(edges) < 2:
         raise ValueError('must be at least two bin edges!')
 
-    wa,fl,er = (np.asarray(a) for a in (wa,fl,er))
+    wa,fl,er = (np.asarray(a, np.float64) for a in (wa,fl,er))
 
     if debug:
         ax = pl.gca()
@@ -172,7 +169,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
     # get a smooth continuum.
     final = AkimaSpline(wavc, mfl)
 
-    return final(wa), zip(wavc,mfl), (d1,d2)
+    return final(wa), zip(wavc,mfl)
 
 
 def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
@@ -232,7 +229,7 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
     if knots is not None:
         contpoints.extend(knots)
     else:
-        co,cp,deriv = spline_continuum(wa, fl, er, edges[i0:i2], debug=debug)
+        co,cp = spline_continuum(wa, fl, er, edges[i0:i2], debug=debug)
         contpoints.extend(cp)
     fig = pl.figure(figsize=(11, 7))
     fig.subplots_adjust(left=0.05, right=0.95, bottom=0.1, top=0.95)

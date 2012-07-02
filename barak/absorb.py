@@ -519,7 +519,7 @@ def split_trans_name(name):
     """ Given a transition string (say MgII), return the name of the
     atom and the ionization string (Mg, II).
     """
-    i = 0
+    i = 1
     while name[i] not in 'XVI':
         i += 1
     return name[:i], name[i:]

@@ -1,7 +1,5 @@
 """Contains a class, VpfitModel, useful for parsing f26 and fort.13
-files, and writing out fort.13 files. Also has functions for reading
-and searching an atom.dat file that originally came with vpfit (also
-bundled with this package).
+files, and writing out fort.13 files.
 """
 import os
 import numpy as np

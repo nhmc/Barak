@@ -1,10 +1,10 @@
-""" Interpolation-related functions.
+""" Interpolation-related functions and classes.
 """ 
 import numpy as np
 from utilities import between, indices_from_grid, meshgrid_nd
 
 class CubicSpline(object):
-    """Interpolate a cubic spline through a set of points.
+    """ Class to generate a cubic spline through a set of points.
 
     After initialisation, an instance can be called with an array of
     values xp, and will return the cubic-spline interpolated values yp
@@ -130,10 +130,11 @@ class CubicSpline(object):
         self.d2 = d2
 
 class AkimaSpline(object):
-    """ An object used to generate an Akima Spline.
+    """ A class used to generate an Akima Spline through a set of
+    points.
 
-    It must be instantiated with a set of `x` and `y` knot values,
-    and then can be called with a new set of x values `X`. This is
+    It must be instantiated with a set of `xvals` and `yvals` knot values,
+    and then can be called with a new set of x values `x`. This is
     used by `interp_Akima`, see its documentation for more
     information.
 
@@ -153,16 +154,16 @@ class AkimaSpline(object):
     Produced at the Laboratory for Fluorescence Dynamics
     All rights reserved.
     """
-    def __init__(self, x, y):
+    def __init__(self, xvals, yvals):
         """
         Parameters
         ----------
-        x, y : array_like, shape (N,)
-          Reference values. x must be monotonically increasing.
+        xvals, yvals : array_like, shape (N,)
+          Reference values. xvals cannot contain duplicates.
         """
 
-        x = np.asarray(x, dtype=np.float64)
-        y = np.asarray(y, dtype=np.float64)
+        x = np.asarray(xvals, dtype=np.float64)
+        y = np.asarray(yvals, dtype=np.float64)
         if x.ndim != 1:
             raise ValueError("x array must be one dimensional")
      
@@ -174,7 +175,12 @@ class AkimaSpline(object):
      
         dx = np.diff(x)
         if (dx <= 0.0).any():
-            raise ValueError("x-axis not valid")
+            isort = np.argsort(x)
+            x = x[isort]
+            y = y[isort]
+            dx = np.diff(x)
+            if (dx == 0.).any():
+                raise ValueError("x array has duplicate values")
 
         m = np.diff(y) / dx
         mm = 2. * m[0] - m[1]
@@ -196,13 +202,13 @@ class AkimaSpline(object):
         c = (3. * m - 2. * b[0:n - 1] - b[1:n]) / dx
         d = (b[0:n - 1] + b[1:n] - 2. * m) / dx ** 2
 
-        self.x, self.y, self.b, self.c, self.d = x, y, b, c, d
+        self.xvals, self.yvals, self.b, self.c, self.d = x, y, b, c, d
 
-    def __call__(self, X):
+    def __call__(self, x):
         """
         Parameters
         ----------
-        X : array_like, shape (M,)
+        x : array_like, shape (M,)
           Values at which to interpolate.
 
         Returns
@@ -210,17 +216,36 @@ class AkimaSpline(object):
         vals : ndarray, shape (M,)
            Interpolated values.
         """
-        X = np.asarray(X, dtype=np.float64)
-        if X.ndim != 1:
-            raise ValueError("Array must be one dimensional")
-        #if any(X < self.x[0]) or any(X > self.x[-1]):
-        #    raise ValueError("Interpolation x-axis out of bounds")
+        x = np.asarray(x, dtype=np.float64)
 
-        bins = np.digitize(X, self.x)
-        bins = np.minimum(bins, len(self.x) - 1) - 1
-        b = bins[0:len(X)]
-        wj = X - self.x[b]
-        return ((wj * self.d[b] + self.c[b]) * wj + self.b[b]) * wj + self.y[b] 
+        if x.ndim != 1:
+            raise ValueError("Array must be one dimensional")
+
+        c0 = x < self.xvals[0]
+        c2 = x > self.xvals[-1]
+        c1 = ~(c0 | c2)
+        x1 = x[c1]
+        out = np.empty_like(x)
+        bins = np.digitize(x1, self.xvals)
+        bins = np.minimum(bins, len(self.xvals) - 1) - 1
+        b = bins[0:len(x1)]
+        wj = x1 - self.xvals[b]
+        out[c1] = ((wj * self.d[b] + self.c[b])*wj + self.b[b])*wj + \
+                  self.yvals[b]
+
+        # use linear extrapolation for points outside self.xvals
+        if c0.any():
+            y = out[c1]
+            slope = (y[1] - y[0]) / (x1[1] - x1[0])
+            intercept = y[0] - slope * x1[0]
+            out[c0] = x[c0] *slope + intercept
+        if c2.any():
+            y = out[c1]
+            slope = (y[-2] - y[-1]) / (x1[-2] - x1[-1])
+            intercept = y[-1] - slope * x1[-1]
+            out[c2] = x[c2] *slope + intercept
+
+        return out
 
 
 def fit_spline(x, y, bins=4, estimator=np.median):
@@ -270,7 +295,7 @@ def interp_Akima(x_new, x, y):
     x_new : array_like, shape (M,)
         Values at which to interpolate.
     x, y : array_like, shape (N,)
-        Reference values. x must be monotonically increasing.
+        Reference values. x cannot contain duplicates.
 
     Returns
     -------
