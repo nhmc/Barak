@@ -6,6 +6,7 @@ autosummaries for.
 
 
 import sys, os, inspect
+from glob import glob
 
 header = """\
 Barak's Documentation
@@ -133,7 +134,7 @@ def process_scripts(pkgdir, filenames):
     descriptions = []
     nwidth = dwidth = 0
     for n in filenames:
-        fh = open(pkgdir + '/scripts/' + n)
+        fh = open(pkgdir + '/' + n)
         s = fh.read()
         fh.close()
         i = s.index('"""') + 3
@@ -182,9 +183,6 @@ if 1:
            name.startswith(package_dir + '/sphinx') or \
            len(name[len(package_dir)+1:].split('/')) > 1:
             continue
-        if name.startswith(package_dir + '/scripts'):
-            scripts = process_scripts(package_dir, filenames)
-            continue
             
         filenames = [n for n in filenames if
                      n.endswith('.py') and n != '__init__.py']
@@ -197,7 +195,8 @@ if 1:
             modname = n.replace('./', '')[:-3]
             s += parse_module(modname, prefix=prefix)
 
-    s += scripts
+    filenames = sorted(glob('../scripts/*'))
+    s += process_scripts('../scripts/', filenames)
     
     s += footer
     

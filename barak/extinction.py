@@ -33,7 +33,7 @@ Analytic approximations for dust attenuation curves are often
 calculated as a function of R(V), and then normalised by A(V) or, more
 commonly, E(B - V). The attenuation for all the public functions in
 this module is returned as :math:`\tau(\lambda)`. This is related to
-`A(\lambda)` in the following way:
+:math:`A(\lambda)` in the following way:
 
 .. math::
 
