@@ -380,7 +380,7 @@ def parse_config(filename, defaults={}):
     for row in fh:
         if not row.strip() or row.lstrip().startswith('#'):
             continue
-        option, value = [r.strip() for r in row.split('#')[0].lsplit('=', 1)]
+        option, value = [r.strip() for r in row.split('#')[0].split('=', 1)]
         try:
             value = int(value)
         except ValueError:
