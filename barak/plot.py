@@ -452,3 +452,46 @@ def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0,
                    origin='lower', cmap=cm, aspect='auto')
     return im
 
+
+def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
+                c='k', **kwargs):
+    """ Draw arrows that can be used to show limits.
+
+    Extra keyword arguments are passed to `pyplot.scatter()`. To draw
+    a shorter arrow, get the arrow length desired by reducing the `ms`
+    value, then increase capsize until you are happy with the result,
+    vice versa to draw a longer arrow.
+
+    Parameters
+    ----------
+    x, y: float or arrays of shape (N,)
+      x and y positions.
+    direction: str {'up', 'down', 'left', 'right'}
+      The direction in which the arrows should point.
+    
+    """
+    arrowlength=10.
+    capsize = min(capsize, arrowlength)
+    yvert = np.array([0, arrowlength, arrowlength - capsize, arrowlength,
+                      arrowlength - capsize, arrowlength])
+    xvert = np.array([0, 0, 0.5*capsize, 0, -0.5*capsize, 0])
+
+    if direction == 'down':
+        arrow_verts = zip(xvert, -yvert)
+    elif direction == 'up':
+        arrow_verts = zip(xvert, yvert)
+    elif direction == 'left':
+        arrow_verts = zip(-yvert, xvert)
+    elif direction == 'up':
+        arrow_verts = zip(yvert, xvert)
+    else:
+        raise ValueError(
+            "direction must be one of 'up', 'down', 'left', 'right'")
+
+    if ax is None:
+        pl.figure()
+        ax = pl.gca()
+    
+    c = ax.scatter(x, y, s=(1000/6.)*ms, marker=None, verts=arrow_verts,
+                   edgecolors=c, **kwargs)
+    return c

@@ -29,10 +29,7 @@ The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 It requires `NumPy <http://numpy.scipy.org/>`_, `Matplotlib
 <http://matplotlib.sourceforge.net/>`_, `SciPy
 <http://www.scipy.org/>`_, `ATpy <http://atpy.github.com/>`_ and
-`Astropy <www.astropy.org>`_.
-
-If you are interested in an astrophysics related Python package, also
-take a look at the `astropy <http://www.astropy.org>`_ project.
+`Astropy <http://www.astropy.org>`_.
 
 To install, just copy the ``barak/`` directory to a location pointed
 to by your PYTHONPATH variable.

@@ -295,11 +295,17 @@ def calc_Ntot(f26name, trans=None):
     """
     f26 = readf26(f26name)
     logN = f26.lines.logN
+    sig = f26.lines.logNsig
+    
     if trans is not None:
-        logN = f26.lines.logN[f26.lines.name == trans]
+        cond = f26.lines.name == trans
+        logN = f26.lines.logN[cond]
+        sig = f26.lines.logNsig[cond]
 
     Ntot = np.sum(10**logN)
-    return np.log10(Ntot)
+    Nmin = np.sum(10**(logN - sig))
+    Nmax = np.sum(10**(logN + sig))
+    return np.log10(Ntot), np.log10(Nmin), np.log10(Nmax)
         
 def calc_v90(vp, plot=False, z0=None,
              wav0=1215.6701, osc=0.4164, gam=6.265e8):
