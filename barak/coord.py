@@ -89,15 +89,18 @@ def check_ra_dec(ra, dec):
     """
     ra = np.atleast_1d(ra)
     dec = np.atleast_1d(dec)
+    msg = []
     if (ra < 0).any():
-        raise ValueError('RA must be > 0, %f' % ra[ra < 0][0])
+        msg.append('RA must be >= 0, %f' % ra[ra < 0][0])
     if (ra >= 360).any():
-        raise ValueError('RA must be < 360, %f' % ra[ra >= 360][0])
+        msg.append('RA must be < 360, %f' % ra[ra >= 360][0])
     if (dec < -90).any():
-        raise ValueError('Dec must be > -90, %f' % dec[dec < -90][0])
+        msg.append('Dec must be >= -90, %f' % dec[dec < -90][0])
     if (dec > 90).any():
-        raise ValueError('Dec must be < 90, %f' % dec[dec > 90][0])
+        msg.append('Dec must be <= 90, %f' % dec[dec > 90][0])
 
+    if msg:
+        raise ValueError('\n'.join(msg))
 
 def ang_sep(ra1, dec1, ra2, dec2):
     """ Returns the angular separation in degrees on the celestial

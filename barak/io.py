@@ -623,7 +623,7 @@ def writetable(filename, cols, units=None, names=None, header=None,
             names = names.split(',')
 
         if units is None:
-            units = [''] * len(cols[0])
+            units = [''] * len(names)
 
         t = atpy.Table()
         for i in xrange(len(cols)):
