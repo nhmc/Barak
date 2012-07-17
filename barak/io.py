@@ -638,12 +638,12 @@ def writetable(filename, cols, units=None, names=None, header=None,
                 t.add_keyword(key, value)
 
     if filename.endswith('.tbl') or filename.endswith('.tbl.gz'):
-        # use ST for int and floats to remove whitespace and make
+        # use str for int and floats to remove whitespace and make
         # easily-readable float values in IPAC tables - be warned this
         # may change the printed float values by about one part in
         # 1e12.
         for name in t.keys():
-            if t.columns[name].format == 's':
+            if t.columns[name].format.endswith('s'):
                 continue
             width = 0
             for item in t.data[name]:

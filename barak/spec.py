@@ -899,7 +899,7 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
 
 
 def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
-              color='k', trim=False, **kwargs):
+              color='k', trim=False, fontsize=10, **kwargs):
     """ Draw vertical dotted lines showing expected positions of
     absorption and emission lines, given a redshift.
 
@@ -914,7 +914,7 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
     Returns the mpl artists representing the lines.
     """
     if lines is None:
-        lines = readtxt(DATAPATH + 'linelists/galaxy_lines')
+        lines = readtxt(DATAPATH + 'linelists/galaxy_lines', names='wa,name,select')
     else:
         lines = np.rec.fromrecords([(l['name'], l['wa']) for l in lines],
                                    names='name,wa')
@@ -938,7 +938,7 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
                 name = l.name
                 artists.append(puttext(
                     w, 0.7 + i*0.08, name, ax,
-                    xcoord='data', alpha=1, fontsize=10,
+                    xcoord='data', alpha=1, fontsize=fontsize,
                     rotation=90, ha='right'))
     if atmos:
         if atmos == True:
