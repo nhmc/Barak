@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.spec.scalemult &mdash; Barak 0.1dev documentation</title>
+    <title>barak.spec.vac2air_Ciddor &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,40 +28,36 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.spec.vac2air_Ciddor" href="barak.spec.vac2air_Ciddor.html" />
-    <link rel="prev" title="barak.spec.scale_overlap" href="barak.spec.scale_overlap.html" /> 
+    <link rel="next" title="barak.spec.vac2air_Morton" href="barak.spec.vac2air_Morton.html" />
+    <link rel="prev" title="barak.spec.scalemult" href="barak.spec.scalemult.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.spec.scalemult</span></h2>
+        <h2 class="heading"><span>barak.spec.vac2air_Ciddor</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.spec.scale_overlap.html">barak.spec.scale_overlap</a>
+        «&#160;&#160;<a href="barak.spec.scalemult.html">barak.spec.scalemult</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.spec.vac2air_Ciddor.html">barak.spec.vac2air_Ciddor</a>&#160;&#160;»
+        <a href="barak.spec.vac2air_Morton.html">barak.spec.vac2air_Morton</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-spec-scalemult">
-<h1>barak.spec.scalemult<a class="headerlink" href="#barak-spec-scalemult" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-spec-vac2air-ciddor">
+<h1>barak.spec.vac2air_Ciddor<a class="headerlink" href="#barak-spec-vac2air-ciddor" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.spec.scalemult">
-<tt class="descclassname">barak.spec.</tt><tt class="descname">scalemult</tt><big>(</big><em>w0</em>, <em>f0</em>, <em>e0</em>, <em>w1</em>, <em>f1</em>, <em>e1</em>, <em>mask=None</em><big>)</big><a class="reference internal" href="../_modules/barak/spec.html#scalemult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spec.scalemult" title="Permalink to this definition">¶</a></dt>
-<dd><p>find the constant to multipy f1 by so its median will match
-f0 where they overlap in wavelength.</p>
-<p>Errors are just used to identify bad pixels, if they are all &gt; 0
-they are ignored.</p>
-<p><em class="xref py py-obj">mask</em> is optional, and of the form <em class="xref py py-obj">[(3500,4500), (4650,4680)]</em>
-to mask wavelengths from 3500 to 4500 Ang, and 4650 to 4680 Ang
-for example.</p>
+<dt id="barak.spec.vac2air_Ciddor">
+<tt class="descclassname">barak.spec.</tt><tt class="descname">vac2air_Ciddor</tt><big>(</big><em>vacw</em><big>)</big><a class="reference internal" href="../_modules/barak/spec.html#vac2air_Ciddor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spec.vac2air_Ciddor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert vacuum wavelengths in Angstroms to air wavelengths.</p>
+<p>This uses the relation from Ciddor 1996, Applied Optics LP,
+vol. 35, Issue 9, p.1566. Only valid for wavelengths &gt; 2000 Ang.</p>
 </dd></dl>
 
 </div>
@@ -71,11 +67,11 @@ for example.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.spec.scale_overlap.html">barak.spec.scale_overlap</a>
+        «&#160;&#160;<a href="barak.spec.scalemult.html">barak.spec.scalemult</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.spec.vac2air_Ciddor.html">barak.spec.vac2air_Ciddor</a>&#160;&#160;»
+        <a href="barak.spec.vac2air_Morton.html">barak.spec.vac2air_Morton</a>&#160;&#160;»
         </p>
 
       </div>

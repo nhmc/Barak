@@ -499,7 +499,51 @@
     <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xvals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">),</span>
                    <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">im</span>
-</pre></div></div>
+
+</div>
+<div class="viewcode-block" id="draw_arrows"><a class="viewcode-back" href="../../generated/barak.plot.draw_arrows.html#barak.plot.draw_arrows">[docs]</a><span class="k">def</span> <span class="nf">draw_arrows</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="n">ms</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s">&#39;up&#39;</span><span class="p">,</span>
+                <span class="n">c</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Draw arrows that can be used to show limits.</span>
+
+<span class="sd">    Extra keyword arguments are passed to `pyplot.scatter()`. To draw</span>
+<span class="sd">    a shorter arrow, get the arrow length desired by reducing the `ms`</span>
+<span class="sd">    value, then increase capsize until you are happy with the result,</span>
+<span class="sd">    vice versa to draw a longer arrow.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x, y: float or arrays of shape (N,)</span>
+<span class="sd">      x and y positions.</span>
+<span class="sd">    direction: str {&#39;up&#39;, &#39;down&#39;, &#39;left&#39;, &#39;right&#39;}</span>
+<span class="sd">      The direction in which the arrows should point.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arrowlength</span><span class="o">=</span><span class="mf">10.</span>
+    <span class="n">capsize</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">capsize</span><span class="p">,</span> <span class="n">arrowlength</span><span class="p">)</span>
+    <span class="n">yvert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">arrowlength</span><span class="p">,</span> <span class="n">arrowlength</span> <span class="o">-</span> <span class="n">capsize</span><span class="p">,</span> <span class="n">arrowlength</span><span class="p">,</span>
+                      <span class="n">arrowlength</span> <span class="o">-</span> <span class="n">capsize</span><span class="p">,</span> <span class="n">arrowlength</span><span class="p">])</span>
+    <span class="n">xvert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">capsize</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">capsize</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s">&#39;down&#39;</span><span class="p">:</span>
+        <span class="n">arrow_verts</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xvert</span><span class="p">,</span> <span class="o">-</span><span class="n">yvert</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s">&#39;up&#39;</span><span class="p">:</span>
+        <span class="n">arrow_verts</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xvert</span><span class="p">,</span> <span class="n">yvert</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s">&#39;left&#39;</span><span class="p">:</span>
+        <span class="n">arrow_verts</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">-</span><span class="n">yvert</span><span class="p">,</span> <span class="n">xvert</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s">&#39;up&#39;</span><span class="p">:</span>
+        <span class="n">arrow_verts</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">yvert</span><span class="p">,</span> <span class="n">xvert</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s">&quot;direction must be one of &#39;up&#39;, &#39;down&#39;, &#39;left&#39;, &#39;right&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    
+    <span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="mf">6.</span><span class="p">)</span><span class="o">*</span><span class="n">ms</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verts</span><span class="o">=</span><span class="n">arrow_verts</span><span class="p">,</span>
+                   <span class="n">edgecolors</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span></div>
+</pre></div>
 
       </div>
       <div class="bottomnav">

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.spec.plotlines &mdash; Barak 0.1dev documentation</title>
+    <title>barak.plot.draw_arrows &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,49 +28,50 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.spec.qso_template" href="barak.spec.qso_template.html" />
-    <link rel="prev" title="barak.spec.plotatmos" href="barak.spec.plotatmos.html" /> 
+    <link rel="next" title="barak.plot.errplot" href="barak.plot.errplot.html" />
+    <link rel="prev" title="barak.plot.distplot" href="barak.plot.distplot.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.spec.plotlines</span></h2>
+        <h2 class="heading"><span>barak.plot.draw_arrows</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.spec.plotatmos.html">barak.spec.plotatmos</a>
+        «&#160;&#160;<a href="barak.plot.distplot.html">barak.plot.distplot</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.spec.qso_template.html">barak.spec.qso_template</a>&#160;&#160;»
+        <a href="barak.plot.errplot.html">barak.plot.errplot</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-spec-plotlines">
-<h1>barak.spec.plotlines<a class="headerlink" href="#barak-spec-plotlines" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-plot-draw-arrows">
+<h1>barak.plot.draw_arrows<a class="headerlink" href="#barak-plot-draw-arrows" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.spec.plotlines">
-<tt class="descclassname">barak.spec.</tt><tt class="descname">plotlines</tt><big>(</big><em>z</em>, <em>ax</em>, <em>atmos=None</em>, <em>lines=None</em>, <em>labels=False</em>, <em>ls='dotted'</em>, <em>color='k'</em>, <em>trim=False</em>, <em>fontsize=10</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/barak/spec.html#plotlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.spec.plotlines" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw vertical dotted lines showing expected positions of
-absorption and emission lines, given a redshift.</p>
+<dt id="barak.plot.draw_arrows">
+<tt class="descclassname">barak.plot.</tt><tt class="descname">draw_arrows</tt><big>(</big><em>x</em>, <em>y</em>, <em>ax=None</em>, <em>capsize=2</em>, <em>ms=6</em>, <em>direction='up'</em>, <em>c='k'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/barak/plot.html#draw_arrows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.plot.draw_arrows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw arrows that can be used to show limits.</p>
+<p>Extra keyword arguments are passed to <em class="xref py py-obj">pyplot.scatter()</em>. To draw
+a shorter arrow, get the arrow length desired by reducing the <em class="xref py py-obj">ms</em>
+value, then increase capsize until you are happy with the result,
+vice versa to draw a longer arrow.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>atmos</strong> : list of float pairs, or True (None)</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x, y: float or arrays of shape (N,)</strong> :</p>
 <blockquote>
-<div><p>Regions of atmospheric absorption to plot. If True, it uses an
-internal list of regions.</p>
+<div><p>x and y positions.</p>
 </div></blockquote>
-<p><strong>lines</strong> : stuctured array, optional</p>
-<blockquote>
-<div><p>If given, it must be a record array with fields &#8216;name&#8217; and &#8216;wa&#8217;.</p>
+<p><strong>direction: str {&#8216;up&#8217;, &#8216;down&#8217;, &#8216;left&#8217;, &#8216;right&#8217;}</strong> :</p>
+<blockquote class="last">
+<div><p>The direction in which the arrows should point.</p>
 </div></blockquote>
-<p class="last"><strong>Returns the mpl artists representing the lines.</strong> :</p>
 </td>
 </tr>
 </tbody>
@@ -84,11 +85,11 @@ internal list of regions.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.spec.plotatmos.html">barak.spec.plotatmos</a>
+        «&#160;&#160;<a href="barak.plot.distplot.html">barak.plot.distplot</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.spec.qso_template.html">barak.spec.qso_template</a>&#160;&#160;»
+        <a href="barak.plot.errplot.html">barak.plot.errplot</a>&#160;&#160;»
         </p>
 
       </div>

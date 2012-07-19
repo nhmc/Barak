@@ -18,10 +18,7 @@ The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 It requires `NumPy <http://numpy.scipy.org/>`_, `Matplotlib
 <http://matplotlib.sourceforge.net/>`_, `SciPy
 <http://www.scipy.org/>`_, `ATpy <http://atpy.github.com/>`_ and
-`Astropy <www.astropy.org>`_.
-
-If you are interested in an astrophysics related Python package, also
-take a look at the `astropy <http://www.astropy.org>`_ project.
+`Astropy <http://www.astropy.org>`_.
 
 To install, just copy the ``barak/`` directory to a location pointed
 to by your PYTHONPATH variable.
@@ -244,7 +241,7 @@ Analytic approximations for dust attenuation curves are often
 calculated as a function of R(V), and then normalised by A(V) or, more
 commonly, E(B - V). The attenuation for all the public functions in
 this module is returned as :math:`\tau(\lambda)`. This is related to
-`A(\lambda)` in the following way:
+:math:`A(\lambda)` in the following way:
 
 .. math::
 
@@ -348,6 +345,7 @@ Plotting routines.
    default_marker_size
    dhist
    distplot
+   draw_arrows
    errplot
    histo
    puttext
@@ -434,8 +432,8 @@ spectrum-related functions.
    Spectrum.rebin_simple
    Spectrum.stats
    Spectrum.write
-   air2vac_ciddor
-   air2vac_morton
+   air2vac_Ciddor
+   air2vac_Morton
    combine
    convolve_constant_dv
    cr_reject
@@ -457,8 +455,8 @@ spectrum-related functions.
    rebin_simple
    scale_overlap
    scalemult
-   vac2air_ciddor
-   vac2air_morton
+   vac2air_Ciddor
+   vac2air_Morton
    writesp
 
 utilities

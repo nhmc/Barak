@@ -947,7 +947,7 @@
 
 </div>
 <div class="viewcode-block" id="plotlines"><a class="viewcode-back" href="../../generated/barak.spec.plotlines.html#barak.spec.plotlines">[docs]</a><span class="k">def</span> <span class="nf">plotlines</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">atmos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s">&#39;dotted&#39;</span><span class="p">,</span>
-              <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+              <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Draw vertical dotted lines showing expected positions of</span>
 <span class="sd">    absorption and emission lines, given a redshift.</span>
 
@@ -962,7 +962,7 @@
 <span class="sd">    Returns the mpl artists representing the lines.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">lines</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;linelists/galaxy_lines&#39;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">readtxt</span><span class="p">(</span><span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;linelists/galaxy_lines&#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s">&#39;wa,name,select&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">([(</span><span class="n">l</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;wa&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">],</span>
                                    <span class="n">names</span><span class="o">=</span><span class="s">&#39;name,wa&#39;</span><span class="p">)</span>
@@ -986,8 +986,8 @@
                 <span class="n">name</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">artists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">puttext</span><span class="p">(</span>
                     <span class="n">w</span><span class="p">,</span> <span class="mf">0.7</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
-                    <span class="n">xcoord</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                    <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">))</span>
+                    <span class="n">xcoord</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">,</span>
+                    <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">atmos</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">atmos</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
             <span class="n">atmos</span> <span class="o">=</span> <span class="bp">None</span>
@@ -1232,12 +1232,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">co</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="n">sp</span>
 </div>
-<div class="viewcode-block" id="vac2air_ciddor"><a class="viewcode-back" href="../../generated/barak.spec.vac2air_ciddor.html#barak.spec.vac2air_ciddor">[docs]</a><span class="k">def</span> <span class="nf">vac2air_ciddor</span><span class="p">(</span><span class="n">vacw</span><span class="p">):</span>
+<div class="viewcode-block" id="vac2air_Ciddor"><a class="viewcode-back" href="../../generated/barak.spec.vac2air_Ciddor.html#barak.spec.vac2air_Ciddor">[docs]</a><span class="k">def</span> <span class="nf">vac2air_Ciddor</span><span class="p">(</span><span class="n">vacw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert vacuum wavelengths in Angstroms to air wavelengths.</span>
 
 <span class="sd">    This uses the relation from Ciddor 1996, Applied Optics LP,</span>
 <span class="sd">    vol. 35, Issue 9, p.1566. Only valid for wavelengths &gt; 2000 Ang.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vacw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">vacw</span><span class="p">)</span>
     <span class="n">k0</span> <span class="o">=</span> <span class="mf">238.0185</span>
     <span class="n">k1</span> <span class="o">=</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="mf">5792105.</span>
     <span class="n">k2</span> <span class="o">=</span> <span class="mf">57.362</span>
@@ -1246,52 +1247,74 @@
     <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">k1</span><span class="o">/</span><span class="p">(</span><span class="n">k0</span> <span class="o">-</span> <span class="n">s2</span><span class="p">)</span> <span class="o">+</span> <span class="n">k3</span><span class="o">/</span><span class="p">(</span><span class="n">k2</span> <span class="o">-</span> <span class="n">s2</span><span class="p">)</span>
     <span class="n">airw</span> <span class="o">=</span> <span class="n">vacw</span> <span class="o">/</span> <span class="n">n</span>
 
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">airw</span>
 </div>
-<div class="viewcode-block" id="vac2air_morton"><a class="viewcode-back" href="../../generated/barak.spec.vac2air_morton.html#barak.spec.vac2air_morton">[docs]</a><span class="k">def</span> <span class="nf">vac2air_morton</span><span class="p">(</span><span class="n">vacw</span><span class="p">):</span>
+<div class="viewcode-block" id="vac2air_Morton"><a class="viewcode-back" href="../../generated/barak.spec.vac2air_Morton.html#barak.spec.vac2air_Morton">[docs]</a><span class="k">def</span> <span class="nf">vac2air_Morton</span><span class="p">(</span><span class="n">vacw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert vacuum wavelengths in Angstroms to air wavelengths.</span>
 <span class="sd">    </span>
 <span class="sd">    This uses the relation from Morton 1991, ApJS, 77, 119. Only valid</span>
 <span class="sd">    for wavelengths &gt; 2000 Ang.  Use this for compatibility with older</span>
 <span class="sd">    spectra that may have been corrected using the (older) Morton</span>
-<span class="sd">    relation.  The Ciddor relation used in vac2air_ciddor() is claimed</span>
+<span class="sd">    relation.  The Ciddor relation used in vac2air_Ciddor() is claimed</span>
 <span class="sd">    to be more accurate at IR wavelengths.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vacw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">vacw</span><span class="p">)</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e4</span> <span class="o">/</span> <span class="n">vacw</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
     <span class="n">airw</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">6.4328e-5</span> <span class="o">+</span> <span class="mf">2.94981e-2</span><span class="o">/</span><span class="p">(</span><span class="mi">146</span> <span class="o">-</span> <span class="n">temp</span><span class="p">)</span> <span class="o">+</span>
                  <span class="mf">2.5540e-4</span><span class="o">/</span><span class="p">(</span><span class="mi">41</span> <span class="o">-</span> <span class="n">temp</span><span class="p">))</span> <span class="o">*</span> <span class="n">vacw</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">airw</span>
 </div>
-<div class="viewcode-block" id="air2vac_morton"><a class="viewcode-back" href="../../generated/barak.spec.air2vac_morton.html#barak.spec.air2vac_morton">[docs]</a><span class="k">def</span> <span class="nf">air2vac_morton</span><span class="p">(</span><span class="n">airw</span><span class="p">):</span>
+<div class="viewcode-block" id="air2vac_Morton"><a class="viewcode-back" href="../../generated/barak.spec.air2vac_Morton.html#barak.spec.air2vac_Morton">[docs]</a><span class="k">def</span> <span class="nf">air2vac_Morton</span><span class="p">(</span><span class="n">airw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert air wavelengths in Angstroms to vacuum wavelengths.</span>
 <span class="sd">    </span>
 <span class="sd">    Uses linear interpolation of the inverse transformation for</span>
-<span class="sd">    vac2air_morton. The fractional error (wa - watrue) / watrue</span>
-<span class="sd">    introduced by interpolation is &lt; 5e-8.</span>
+<span class="sd">    vac2air_Morton. The fractional error (wa - watrue) / watrue</span>
+<span class="sd">    introduced by interpolation is &lt; 1e-9.</span>
 
 <span class="sd">    Only valid for wa &gt; 2000 Angstroms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nstep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="mf">50.</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">testvac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span> <span class="n">nstep</span><span class="p">)</span>
-    <span class="n">testair</span> <span class="o">=</span> <span class="n">vac2air_morton</span><span class="p">(</span><span class="n">testvac</span><span class="p">)</span>
+    <span class="n">airw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Wavelengths must be sorted lowest to highest&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2000</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Only valid for wavelengths &gt; 2000 Angstroms&#39;</span><span class="p">)</span>
+    <span class="n">dwmax</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vac2air_Morton</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">10</span>
+    <span class="n">dwmin</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vac2air_Morton</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">10</span>
+    <span class="n">testvac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">dwmin</span><span class="p">,</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dwmax</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">testair</span> <span class="o">=</span> <span class="n">vac2air_Morton</span><span class="p">(</span><span class="n">testvac</span><span class="p">)</span>
     <span class="n">vacw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">airw</span><span class="p">,</span> <span class="n">testair</span><span class="p">,</span> <span class="n">testvac</span><span class="p">)</span>
     
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vacw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">vacw</span>
 </div>
-<div class="viewcode-block" id="air2vac_ciddor"><a class="viewcode-back" href="../../generated/barak.spec.air2vac_ciddor.html#barak.spec.air2vac_ciddor">[docs]</a><span class="k">def</span> <span class="nf">air2vac_ciddor</span><span class="p">(</span><span class="n">airw</span><span class="p">):</span>
+<div class="viewcode-block" id="air2vac_Ciddor"><a class="viewcode-back" href="../../generated/barak.spec.air2vac_Ciddor.html#barak.spec.air2vac_Ciddor">[docs]</a><span class="k">def</span> <span class="nf">air2vac_Ciddor</span><span class="p">(</span><span class="n">airw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert air wavelengths in Angstroms to vacuum wavelengths.</span>
 <span class="sd">    </span>
 <span class="sd">    Uses linear interpolation of the inverse transformation for</span>
-<span class="sd">    vac2air_ciddor. The fractional error (wa - watrue) / watrue</span>
-<span class="sd">    introduced by interpolation is &lt; 5e-8.</span>
+<span class="sd">    vac2air_Ciddor. The fractional error (wa - watrue) / watrue</span>
+<span class="sd">    introduced by interpolation is &lt; 1e-9.</span>
 
 <span class="sd">    Only valid for wa &gt; 2000 Angstroms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nstep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="mf">50.</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">testvac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span> <span class="n">nstep</span><span class="p">)</span>
-    <span class="n">testair</span> <span class="o">=</span> <span class="n">vac2air_ciddor</span><span class="p">(</span><span class="n">testvac</span><span class="p">)</span>
+    <span class="n">airw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Wavelengths must be sorted lowest to highest&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2000</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Only valid for wavelengths &gt; 2000 Angstroms&#39;</span><span class="p">)</span>
+
+    <span class="n">dwmax</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vac2air_Ciddor</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">10</span>
+    <span class="n">dwmin</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vac2air_Ciddor</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">10</span>
+    <span class="n">testvac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">dwmin</span><span class="p">,</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dwmax</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">testair</span> <span class="o">=</span> <span class="n">vac2air_Ciddor</span><span class="p">(</span><span class="n">testvac</span><span class="p">)</span>
     <span class="n">vacw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">airw</span><span class="p">,</span> <span class="n">testair</span><span class="p">,</span> <span class="n">testvac</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vacw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">vacw</span>
 </div>
 <div class="viewcode-block" id="qso_template"><a class="viewcode-back" href="../../generated/barak.spec.qso_template.html#barak.spec.qso_template">[docs]</a><span class="k">def</span> <span class="nf">qso_template</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
