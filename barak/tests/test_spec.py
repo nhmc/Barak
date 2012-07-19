@@ -85,3 +85,12 @@ def test_combine():
         csp.fl[~np.isnan(csp.fl)],
         [ 10.2652, 10.9127, 9.1856,
           10.4078, 9.9137, 9.8614, 9.4947, 10.7472, 9.5573])
+
+
+def test_air2vac_vac2air():
+    assert np.allclose(vac2air_Ciddor(air2vac_Ciddor([2000, 80000])),
+                       [2000, 80000], rtol=1e-9)
+    assert np.allclose(vac2air_Morton(air2vac_Morton([2000, 80000])),
+                       [2000, 80000], rtol=1e-9)
+    assert np.allclose(vac2air_Ciddor(air2vac_Ciddor(5000)), 5000, rtol=1e-9)
+    assert np.allclose(vac2air_Morton(air2vac_Morton(5000)), 5000, rtol=1e-9)

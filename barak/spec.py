@@ -939,7 +939,7 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
                 artists.append(puttext(
                     w, 0.7 + i*0.08, name, ax,
                     xcoord='data', alpha=1, fontsize=fontsize,
-                    rotation=90, ha='right'))
+                    rotation=90, ha='right', color=color))
     if atmos:
         if atmos == True:
             atmos = None
@@ -1184,12 +1184,13 @@ def pca_qso_cont(nspec, seed=None, return_weights=False):
     else:
         return co.wa, sp
 
-def vac2air_ciddor(vacw):
+def vac2air_Ciddor(vacw):
     """ Convert vacuum wavelengths in Angstroms to air wavelengths.
 
     This uses the relation from Ciddor 1996, Applied Optics LP,
     vol. 35, Issue 9, p.1566. Only valid for wavelengths > 2000 Ang.
     """
+    vacw = np.atleast_1d(vacw)
     k0 = 238.0185
     k1 = 1e-8 * 5792105.
     k2 = 57.362
@@ -1198,52 +1199,74 @@ def vac2air_ciddor(vacw):
     n = 1 + k1/(k0 - s2) + k3/(k2 - s2)
     airw = vacw / n
 
+    if len(airw) == 1:
+        return airw[0]
     return airw
 
-def vac2air_morton(vacw):
+def vac2air_Morton(vacw):
     """ Convert vacuum wavelengths in Angstroms to air wavelengths.
     
     This uses the relation from Morton 1991, ApJS, 77, 119. Only valid
     for wavelengths > 2000 Ang.  Use this for compatibility with older
     spectra that may have been corrected using the (older) Morton
-    relation.  The Ciddor relation used in vac2air_ciddor() is claimed
+    relation.  The Ciddor relation used in vac2air_Ciddor() is claimed
     to be more accurate at IR wavelengths.
     """
+    vacw = np.atleast_1d(vacw)
     temp = (1e4 / vacw) ** 2
     airw = 1. / (1. + 6.4328e-5 + 2.94981e-2/(146 - temp) +
                  2.5540e-4/(41 - temp)) * vacw
+    if len(airw) == 1:
+        return airw[0]
     return airw
 
-def air2vac_morton(airw):
+def air2vac_Morton(airw):
     """ Convert air wavelengths in Angstroms to vacuum wavelengths.
     
     Uses linear interpolation of the inverse transformation for
-    vac2air_morton. The fractional error (wa - watrue) / watrue
-    introduced by interpolation is < 5e-8.
+    vac2air_Morton. The fractional error (wa - watrue) / watrue
+    introduced by interpolation is < 1e-9.
 
     Only valid for wa > 2000 Angstroms.
     """
-    nstep = int((airw[-1] - airw[0]) // 50.) + 1
-    testvac = np.linspace(airw[0], airw[-1]+10, nstep)
-    testair = vac2air_morton(testvac)
+    airw = np.atleast_1d(airw)
+    if (np.diff(airw) < 0).any():
+        raise ValueError('Wavelengths must be sorted lowest to highest')
+    if airw[0] < 2000:
+        raise ValueError('Only valid for wavelengths > 2000 Angstroms')
+    dwmax = abs(vac2air_Morton(airw[-1]) - airw[-1]) + 10
+    dwmin = abs(vac2air_Morton(airw[0]) - airw[0]) + 10
+    testvac = np.arange(airw[0] - dwmin, airw[-1] + dwmax, 2)
+    testair = vac2air_Morton(testvac)
     vacw = np.interp(airw, testair, testvac)
     
+    if len(vacw) == 1:
+        return vacw[0]
     return vacw
 
-def air2vac_ciddor(airw):
+def air2vac_Ciddor(airw):
     """ Convert air wavelengths in Angstroms to vacuum wavelengths.
     
     Uses linear interpolation of the inverse transformation for
-    vac2air_ciddor. The fractional error (wa - watrue) / watrue
-    introduced by interpolation is < 5e-8.
+    vac2air_Ciddor. The fractional error (wa - watrue) / watrue
+    introduced by interpolation is < 1e-9.
 
     Only valid for wa > 2000 Angstroms.
     """
-    nstep = int((airw[-1] - airw[0]) // 50.) + 1
-    testvac = np.linspace(airw[0], airw[-1]+10, nstep)
-    testair = vac2air_ciddor(testvac)
+    airw = np.atleast_1d(airw)
+    if (np.diff(airw) < 0).any():
+        raise ValueError('Wavelengths must be sorted lowest to highest')
+    if airw[0] < 2000:
+        raise ValueError('Only valid for wavelengths > 2000 Angstroms')
+
+    dwmax = abs(vac2air_Ciddor(airw[-1]) - airw[-1]) + 10
+    dwmin = abs(vac2air_Ciddor(airw[0]) - airw[0]) + 10
+    testvac = np.arange(airw[0] - dwmin, airw[-1] + dwmax, 2)
+    testair = vac2air_Ciddor(testvac)
     vacw = np.interp(airw, testair, testvac)
 
+    if len(vacw) == 1:
+        return vacw[0]
     return vacw
 
 def qso_template(wa, z):
