@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+""" read a set of valid FITS key=value pairs from a text file and copy
+them to the the given fits file, with suffix _newhd added.
+"""
+import pyfits
+from StringIO import StringIO
+import sys
+
+
+if 1:
+    assert len(sys.argv[1:]) == 2
+    txtname, fitsname = sys.argv[1:]
+
+    print 'Reading %s' % txtname
+    fh = open(txtname, 'r')
+    s = fh.read()
+    fh.close()
+    if s.endswith('\nEND     \n'):
+        s = s[:-9]
+    elif s.endswith('\nEND     '):
+        s = s[:-8]
+
+    newhd = pyfits.Header(txtfile=StringIO(s))
+
+    fh = pyfits.open(fitsname)
+    hd = fh[0].header
+
+    for c in newhd.ascard:
+        print 'updating %s' % c
+        hd.update(c.key, c.value, comment=c.comment)
+
+    fh[0].header = hd
+    newfitsname = fitsname.replace('.fits', '_newhd.fits')
+    print 'Writing to %s' % newfitsname
+    fh.writeto(newfitsname, clobber=True)
+    fh.close()

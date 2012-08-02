@@ -1,0 +1,52 @@
+#! /usr/bin/env python
+""" Print the world coordinate system (wcs) information from a fits
+image header to a text file.
+
+This makes a suitable input file for Swarp:
+http://www.astromatic.net/software/swarp
+"""
+
+import pyfits
+import sys
+
+usage = """\
+extract_wcs fitsfiles
+
+Copies each header keyword relating to a 2-d WCS solution into a text
+file, suitable for input to Swarp.
+"""
+
+if len(sys.argv[1:]) == 0:
+    print usage
+    sys.exit()
+
+# only for 2d images
+wcskeys = """
+SIMPLE                   
+BITPIX                   
+NAXIS                    
+NAXIS1                   
+NAXIS2                   
+CTYPE1                   
+CTYPE2                   
+CRVAL1                   
+CRVAL2                   
+CD1_1                    
+CD2_2                    
+CD1_2                    
+CD2_1                   
+CDELT1                   
+CDELT2                   
+CRPIX1                   
+CRPIX2
+""".split()
+
+for n in sys.argv[1:]:
+    print n
+    hd = pyfits.getheader(n)
+    i = n.index('.fits')
+    fh = open((n[:i] + '_wcs.hdr'), 'w')
+    for key in wcskeys:
+        if key in hd:
+            fh.write('%s\n' % hd.ascard[key])
+    fh.close()

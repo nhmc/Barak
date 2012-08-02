@@ -99,7 +99,6 @@ def main(args):
             except IOError:
                 print 'Problem reading:', filename
                 sys.exit()
-            print '   Header for %s:' % filename
             if allext:
                 for hdu in fh:
                     print hdu.header
