@@ -195,6 +195,8 @@ def find_tau(wa, lines, atom, per_trans=False):
     log10(column density) and b parameter, return the tau at each
     wavelength from all these transitions.
 
+    lines can also be the name of a fort.26 format file
+
     Note this assumes the wavelength array has small enough pixel
     separations so that the profiles are properly sampled.
     """
@@ -203,6 +205,12 @@ def find_tau(wa, lines, atom, per_trans=False):
     ticks = []
     ions = []
     taus = []
+    if isinstance(lines, basestring):
+        from pyvpfit import readf26
+        vp = readf26(lines)
+        lines = [(l['name'].strip(), l['z'], l['b'], l['logN'])
+                 for l in vp.lines]
+        
     for ion,z,b,logN in lines:
         #print 'z, logN, b', z, logN, b
         maxdv = 20000 if logN > 18 else 1000
@@ -524,7 +532,7 @@ def split_trans_name(name):
         i += 1
     return name[:i], name[i:]
 
-def tau_LL(logN, wa):
+def tau_LL(logN, wa, wstart=912.):
     """ Find the optical depth at the neutral hydrogen Lyman limit.
 
     Parameters
@@ -533,6 +541,8 @@ def tau_LL(logN, wa):
       log10 of neutral hydrogen column density in cm^-2.
     wa : array_like
       Wavelength in Angstroms.
+    wstart : float (912.)
+      Tau values at wavelengths above this are zero.
 
     Returns
     -------
@@ -578,5 +588,7 @@ def tau_LL(logN, wa):
     >>> plt.legend()
     """
     sigma0 = 6.304e-18           # cm^2
-
-    return 10**logN * sigma0 * (wa / 912)**3
+    i = wa.searchsorted(start)
+    tau = np.zeros_like(wa)
+    tau[:i] = 10**logN * sigma0 * (wa[:i] / 912)**3 
+    return tau
