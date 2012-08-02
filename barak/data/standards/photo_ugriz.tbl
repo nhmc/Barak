@@ -1,5 +1,8 @@
 \ Table 8 from http://adsabs.harvard.edu/abs/2002AJ....123.2121S
 \
+\ These are standard fields (mostly Landolt) with calibrated ugriz
+\ photometry.
+\
 \  r     The r' band magnitude
 \  umg   The (u'-g') color 
 \  gmr   The (g'-r') color 
