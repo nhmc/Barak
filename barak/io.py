@@ -348,8 +348,8 @@ def parse_config(filename, defaults={}):
 
     Parameters
     ----------
-    filename : str
-      The configuration filename.
+    filename : str or file object
+      The configuration filename or a file object.
     defaults : dict
       A dictionary with default values for options.
 
@@ -376,7 +376,11 @@ def parse_config(filename, defaults={}):
 
     cfg.update(defaults)
 
-    fh = open(filename)
+    if isinstance(filename, basestring):
+        fh = open(filename)
+    else:
+        fh = filename
+
     for row in fh:
         if not row.strip() or row.lstrip().startswith('#'):
             continue
