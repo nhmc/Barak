@@ -3,7 +3,6 @@ from textwrap import wrap
 import sys, os
 import numpy as np
 from math import sqrt
-from constants import h,c,k
 
 class Bunch(object):
     """Bunch class from the python cookbook with __str__ and __repr__
@@ -381,20 +380,6 @@ def Gaussian(x, x0, sigma, height):
     """ Gaussian."""
     return height * np.exp(-0.5 * ((x-x0)/sigma)**2)
 
-def blackbody_nu(nu, T):
-    """ Blackbody as a function of frequency (Hz) and temperature (K).
-
-    returns units of erg/s/cm^2/Hz/Steradian
-    """
-    return 2*h*nu**3 / (c**2 * (np.exp(h*nu / (k*T)) - 1))
-
-def blackbody_lam(lam, T):
-    """ Blackbody as a function of wavelength (cm) and temperature (K).
-
-    returns units of erg/s/cm^2/cm/Steradian
-    """
-    return 2*h*c**2 / (lam**5 * (np.exp(h*c / (lam*k*T)) - 1))
-
 def meshgrid_nd(*arrs):
     """ Like numpy's meshgrid, but works on more than two dimensions.
     """
@@ -471,3 +456,20 @@ def indices_from_grid(c, ref):
     ind = (c - ref[0]) / dref0
 
     return ind
+
+from constants import hplanck, c, kboltz
+
+def blackbody_nu(nu, T):
+    """ Blackbody as a function of frequency (Hz) and temperature (K).
+
+    returns units of erg/s/cm^2/Hz/Steradian
+    """
+    return 2*h*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
+
+def blackbody_lam(lam, T):
+    """ Blackbody as a function of wavelength (cm) and temperature (K).
+
+    returns units of erg/s/cm^2/cm/Steradian
+    """
+    return 2*h*c**2 / (lam**5 * (np.exp(hplanck*c / (lam*kboltz*T)) - 1))
+
