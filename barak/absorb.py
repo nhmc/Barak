@@ -8,7 +8,7 @@ import numpy as np
 import voigt
 from convolve import convolve_psf
 from utilities import between, adict, get_data_path, indexnear
-from constants import Ar, me, mp, k, c, e, sqrt_ln2, c_kms
+from constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
 from spec import find_wa_edges
 
 DATAPATH = get_data_path()
@@ -62,7 +62,7 @@ def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
     wav0 = wav0 * 1e-8                    # cm
     N = 10**logN                          # absorbers/cm^2
     if T is not None:
-        btemp = sqrt(2*k*T / mp) * 1e-5     # km/s
+        btemp = sqrt(2*kboltz*T / mp) * 1e-5     # km/s
     b = math.hypot(btemp, bturb) * 1e5    # cm/s
     nu0 = c / wav0                        # rest frequency, s^-1
     # Now use doppler relation between v and nu assuming gam << nu0
@@ -363,7 +363,7 @@ def b_to_T(atom, bvals):
     b = np.atleast_1d(bvals) * 1e5
 
     # convert everything to cgs
-    T = 0.5 * b**2 * amu * mp / k
+    T = 0.5 * b**2 * amu * mp / kboltz
     
     # b \propto sqrt(2kT/m)
     if len(T) == 1:
@@ -393,7 +393,7 @@ def T_to_b(atom, T):
         amu = float(atom)
 
     T = np.atleast_1d(T)
-    b_cms = np.sqrt(2 * k * T / (mp *amu))
+    b_cms = np.sqrt(2 * kboltz * T / (mp *amu))
     
     b_kms = b_cms / 1e5
 
@@ -590,5 +590,5 @@ def tau_LL(logN, wa, wstart=912.):
     sigma0 = 6.304e-18           # cm^2
     i = wa.searchsorted(start)
     tau = np.zeros_like(wa)
-    tau[:i] = 10**logN * sigma0 * (wa[:i] / 912)**3 
+    tau[:i] = 10**logN * sigma0 * (wa[:i] / 912.)**3 
     return tau
