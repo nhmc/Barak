@@ -318,7 +318,7 @@ def read(filename, comment='#', debug=False):
       String that marks beginning of comment line, only used when
       reading in ascii files
     """
-    if filename.endswith('gz'):
+    if filename.endswith('.gz'):
         import gzip
         fh = gzip.open(filename)
     else:
