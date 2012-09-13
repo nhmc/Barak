@@ -14,9 +14,9 @@ Constants defined:
  ======== ===================== =============== ===============================
  c         2.99792458e10        cm/s            speed of light
  G         6.67384e-8           cm^3/g/s^2      gravitational constant
- h         6.6260775e-27        erg s           Planck's constant
+ hplanck   6.6260775e-27        erg s           Planck's constant
  hbar      1.054571726e-27      erg s           1/(4*pi) * Planck's constant
- k         1.3806488e-16        erg/K           Boltzmann constant
+ kboltz    1.3806488e-16        erg/K           Boltzmann constant
  mp        1.67261777e-24       g               proton mass
  me        9.10938291e-28       g               electron mass
  eV        1.602176565e-12      ergs            electron volt
@@ -59,9 +59,9 @@ Constants defined:
 """
 c       = 2.99792458e10       # cm/s            speed of light
 G       = 6.67384e-8          # cm^3/g/s^2      gravitational constant
-h       = 6.6260775e-27       # erg s           Planck's constant
+hplanck = 6.6260775e-27       # erg s           Planck's constant
 hbar    = 1.054571726e-27     # erg s           1/(4*pi) * Planck's constant
-k       = 1.3806488e-16       # erg/K           Boltzmann constant
+kboltz  = 1.3806488e-16       # erg/K           Boltzmann constant
 mp      = 1.67261777e-24      # g               proton mass
 me      = 9.10938291e-28      # g               electron mass
 eV      = 1.602176565e-12     # ergs            electron volt
@@ -91,7 +91,7 @@ mu      = 0.62                # unitless        mean molecular weight of
 mile    = 160934.             # cm              mile
 a0      = hbar**2 / me / e**2 # cm              Bohr radius
 alpha   = e**2 / (hbar*c)     # unitless        Fine structure constant
-Ryd_Ang = h * c * 1.0e8 / Ryd # Angstroms       Rydberg in Angstroms
+Ryd_Ang = hplanck * c * 1.0e8 / Ryd # Angstroms       Rydberg in Angstroms
 c_kms   = 2.99792458e5        # km/s            speed of light
 
 sqrt_ln2 = 0.832554611158     # sqrt(ln(2))
