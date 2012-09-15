@@ -16,6 +16,6 @@ def test_dec2s():
 
 def test_s2dec():
     assert s2dec('00:00:00', '90:00:00') == (0.0, 90.0)
-    temp = np.array(s2dec ('10 24 27.015', '-10 07 47.50'))
+    temp = np.array(s2dec('10 24 27.015', '-10 07 47.50'))
     reference = np.array([156.1125625,-10.129861111111111])
     assert np.all(temp - reference < 1.e-10)

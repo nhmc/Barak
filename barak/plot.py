@@ -32,7 +32,7 @@ def axvfill(xvals, ax=None, color='k', alpha=0.1, edgecolor='none', **kwargs):
     ----------
     xvals: list
       Sequence of pairs specifying the left and right extent of each
-      region. e.g. (3,4) or [(0,1),(3,4)]
+      region. e.g. (3,4) or [(0,1), (3,4)]
     ax : matplotlib axes instance (default is the current axes)
       The axes to plot regions on.
     color : mpl colour (default 'g')
@@ -357,7 +357,8 @@ def histo(a, fmt='b', bins=10, ax=None, lw=2, log=False, **kwargs):
         pl.show()
     return vals,bins
 
-def arrplot(x, y, a, ax=None, **kwargs):
+def arrplot(a, x=None, y=None, ax=None, perc=(0, 100), colorbar=True,
+            **kwargs):
     """ Plot a 2D array with coordinates.
 
     Label coordinates such that each coloured patch representing a
@@ -371,7 +372,16 @@ def arrplot(x, y, a, ax=None, **kwargs):
       Coordinates, must be equally spaced.
     y : shape (M,)
       Coordinates, must be equally spaced.
+    ax : axes
+      Axes in which to plot.
+    colorbar : bool (True)
+      Whether to also plot a colorbar.
     """
+    if x is None:
+        x = np.arange(a.shape[0])
+    if y is None:
+        y = np.arange(a.shape[1])
+
     assert len(x) == a.shape[0]
     assert len(y) == a.shape[1]
 
@@ -393,8 +403,10 @@ def arrplot(x, y, a, ax=None, **kwargs):
     y0, y1 = y[0] - 0.5*dy, y[-1] + 0.5*dy
 
     col = ax.imshow(a.T, aspect='auto', extent=(x0, x1, y0, y1),
-                    interpolation='nearest', origin='lower', **kwargs)
-
+                    interpolation='nearest', origin='lower',
+                    **kwargs)
+    if colorbar:
+        pl.colorbar(col)
     if pl.isinteractive():
         pl.show()
 
@@ -453,6 +465,60 @@ def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0,
     return im
 
 
+def shade_to_line_vert(yvals, xvals, blend=1, ax=None, x0=0,
+                  color='b'):
+    """ Shade a region between two curves including a color gradient.
+    
+    Parameters
+    ----------
+    yvals, xvals : array_like
+      horizontally shade to the line given by xvals, yvals
+    x0 : array_like
+      Start shading from these x values (default 0).
+    blend : float (default 1)
+      Start the cmap blending to white at this distance from `yvals`.
+    color : mpl color
+      Color used to generate the color gradient.
+
+    Returns
+    -------
+    im : mpl image object
+      object represeting the shaded region.
+    """
+    if ax is None:
+        ax = pl.gca()
+
+    import matplotlib as mpl
+
+    yvals = np.asarray(yvals)
+    xvals = np.asarray(xvals)
+    x0 = np.atleast_1d(x0)
+    if len(x0) == 1:
+        x0 = np.ones_like(xvals) * x0[0]
+    else:
+        assert len(x0) == len(xvals)
+        
+    c = [color, '1']
+    cm = mpl.colors.LinearSegmentedColormap.from_list('mycm', c)
+
+    xmax = xvals.max()
+    xmin = x0.min()
+    Y, X = np.meshgrid(yvals, np.linspace(xmin, xmax, 1000))
+    im = np.zeros_like(X)
+    for i in xrange(len(yvals)):
+        cond = (X[:, i] > xvals[i] - blend) & (X[:, i] > x0[i])
+        im[cond, i] = (X[cond, i] - (xvals[i] - blend)) / blend
+        cond = X[:, i] > xvals[i]
+        im[cond, i] = 1
+        cond = X[:, i] < x0[i]
+        im[cond, i] = 0
+
+    art = ax.imshow(im.T, extent=(xmin, xmax, yvals[0], yvals[-1]),
+                   origin='lower', cmap=cm, aspect='auto')
+    return art, im, X, Y
+
+
+
 def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
                 c='k', **kwargs):
     """ Draw arrows that can be used to show limits.
@@ -495,3 +561,4 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
     c = ax.scatter(x, y, s=(1000/6.)*ms, marker=None, verts=arrow_verts,
                    edgecolors=c, **kwargs)
     return c
+

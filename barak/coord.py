@@ -123,26 +123,31 @@ def ang_sep(ra1, dec1, ra2, dec2):
     d2 = distsq(ra1, dec1, ra2, dec2)
     return DEG_PER_RAD * distsq_to_radians(d2)
 
-def _dec2s(ra, dec,
-           raformat='%02.0f %02.0f %06.3f', decformat='%02.0f %02.0f %05.2f'):
+def ra_dec2s(ra, raformat='%02.0f %02.0f %06.3f'):
+    ra = float(ra)
+    if not (0.0 <= ra < 360.):
+        raise ValueError("RA outside sensible limits: %s" % ra)
+
+    rah, temp = divmod(ra, DEG_PER_HR)
+    ram, temp = divmod(temp, DEG_PER_MIN)
+    ras = temp / DEG_PER_S
+    s_ra = raformat % (rah, ram, ras)
+
+    return s_ra
+
+def dec_dec2s(dec, decformat='%02.0f %02.0f %05.2f'):
     """ Converts decimal RA and Dec to sexigesimal.
 
     Returns two strings, RA and Dec.
     """
-    ra = float(ra)
     dec = float(dec)
     if dec < 0.:
         dec *= -1.
         negdec = True
     else:  negdec = False
     # error checking
-    if not (0.0 <= ra < 360.) or dec > 90.:
-        raise ValueError("Decimal RA or Dec outside sensible limits.")
-
-    rah, temp = divmod(ra, DEG_PER_HR)
-    ram, temp = divmod(temp, DEG_PER_MIN)
-    ras = temp / DEG_PER_S
-    s_ra = raformat % (rah, ram, ras)
+    if dec > 90.:
+        raise ValueError("Dec outside sensible limits: %s" % dec)
 
     decd, temp = divmod(dec, 1)
     decm, temp = divmod(temp, DEG_PER_AMIN)
@@ -151,7 +156,7 @@ def _dec2s(ra, dec,
         s_dec = '-' + decformat % (decd, decm, decs)
     else:  s_dec = '+' + decformat % (decd, decm, decs)
 
-    return s_ra,s_dec
+    return s_dec
 
 def dec2s(ra, dec):
     """ Convert an RA and Dec from degrees to sexigesimal.
@@ -167,38 +172,57 @@ def dec2s(ra, dec):
       The RA and Dec in 'hour:min:s' 'deg:min:s' format.
     """
     try:
-        return _dec2s(ra, dec)
+        return ra_dec2s(ra), dec_dec2s(dec)
     except TypeError:
         pass
-    radec = [_dec2s(r,d) for r, d in zip(ra, dec)]
+    radec = [(ra_dec2s(r), dec_dec2s(d)) for r, d in zip(ra, dec)]
     return tuple(zip(*radec))
 
-def _s2dec(ra,dec):
-    """ Converts two strings of sexigesimal RA and Dec to decimal.
+def ra_s2dec(ra):
+    """ Converts a sexigesimal RA string to decimal.
 
-    The separators between h/m/s and deg/arcmin/arcsec can be
-    whitespace or colons.
+    ra : string or sequence of three strings
+      The input hour, minute and second. If a string, separators
+      between hours minutes and seconds can be whitespace, colons or
+      h, m. s.
+    """
+    if isinstance(ra, basestring):
+        ra = re.sub('[:hms]', ' ', ra)
+        ra = ra.split()
+
+    rah,ram,ras = [float(item) for item in ra]
+    if not 0. <= rah < 24. or not 0. <= ram <= 60. or not 0. <= ras <= 60.:
+        raise ValueError('RA is outside sensible limits. RA = %s' % ra)
+
+    d_ra = DEG_PER_HR * rah + DEG_PER_MIN * ram + DEG_PER_S * ras
+    return d_ra
+
+def dec_s2dec(dec):
+    """ Converts a sexigesimal Dec string to decimal.
+
+    The separators between deg/arcmin/arcsec can be whitespace or
+    colons or d m s.
     """
     # Convert to floats, noting sign of dec
-    ra = re.sub('[:hms]', ' ', ra)
-    dec = re.sub('[:dms]', ' ', dec)
-    rah,ram,ras = [float(item) for item in ra.split()]
-    if dec.lstrip()[0] == '-':
+    if isinstance(dec, basestring):
+        dec = re.sub('[:dms]', ' ', dec)
+        dec = dec.split()
+    if dec[0].lstrip()[0] == '-':
         negdec = True
-    else:  negdec = False
-    decd,decm,decs = [float(item) for item in dec.split()]
-    if negdec:  decd *= -1.
+    else:
+        negdec = False
+    decd,decm,decs = [float(item) for item in dec]
+    if negdec:
+        decd *= -1.
     # Error checking
-    if (not 0. <= rah < 24. or not 0. <= ram <= 60. or not 0. <= ras <= 60.
-        or decd > 90. or decm >= 60. or decs > 60):
-        raise ValueError('Either RA or Dec is outside sensible '
-                         'limits.\nRA = %s, Dec = %s' % (ra,dec))
-    # Conversion
-    d_ra = DEG_PER_HR * rah + DEG_PER_MIN * ram + DEG_PER_S * ras
-    d_dec = decd + DEG_PER_AMIN * decm + DEG_PER_ASEC * decs
-    if negdec:  d_dec *= -1.
+    if decd > 90. or decm >= 60. or decs > 60:
+        raise ValueError('Dec is outside sensible limits: Dec = %s' % dec)
 
-    return d_ra, d_dec
+    d_dec = decd + DEG_PER_AMIN * decm + DEG_PER_ASEC * decs
+    if negdec:
+        d_dec *= -1.
+
+    return d_dec
 
 def s2dec(ra, dec):
     """ Convert a sexigesimal ra and dec (or list of ras and decs) to
@@ -227,11 +251,11 @@ def s2dec(ra, dec):
     [(153.00520833333334, 1.0293472222222222),
     (153.52554166666667, 1.229727777777778)]
     """
-    try:
-        return _s2dec(ra, dec)
-    except TypeError:
-        pass
-    radec = [_s2dec(r,d) for r, d in zip(ra, dec)]
+
+    if isinstance(ra, basestring):
+        return ra_s2dec(ra), dec_s2dec(dec)
+
+    radec = [(ra_s2dec(r), dec_s2dec(d)) for r, d in zip(ra, dec)]
     return tuple(map(np.array, zip(*radec)))
 
 def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
