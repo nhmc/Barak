@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.stats &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.stats</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.stats</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Statistics-related functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">_bisect</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">xlo</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">xhi</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find x value such that func(x) = target.</span>
+
+<span class="sd">    Assumes the value is positive and does log bisection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">([</span><span class="n">target</span><span class="p">,</span> <span class="n">xlo</span><span class="p">,</span> <span class="n">xhi</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">target</span><span class="p">,</span> <span class="n">xlo</span><span class="p">,</span> <span class="n">xhi</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">xlo</span><span class="p">,</span> <span class="n">xhi</span><span class="p">))</span>
+
+    <span class="n">fmin</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">target</span>
+
+    <span class="n">dlo</span> <span class="o">=</span> <span class="n">fmin</span><span class="p">(</span><span class="n">xlo</span><span class="p">)</span>
+    <span class="n">dhi</span> <span class="o">=</span> <span class="n">fmin</span><span class="p">(</span><span class="n">xhi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">dlo</span> <span class="o">*</span> <span class="n">dhi</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Min and max x values do not bracket the target&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dhi</span> <span class="o">&lt;</span> <span class="n">dlo</span><span class="p">:</span>
+        <span class="n">fmin</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span> <span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">xlo</span> <span class="o">+</span> <span class="n">xhi</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">fmin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1000</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;Max evaluations reached (1000)&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">xhi</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xlo</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">x</span>
+
+<div class="viewcode-block" id="poisson_min_max_limits"><a class="viewcode-back" href="../../generated/barak.stats.poisson_min_max_limits.html#barak.stats.poisson_min_max_limits">[docs]</a><span class="k">def</span> <span class="nf">poisson_min_max_limits</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">nevents</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate the minimum and maximum mean Poisson value mu</span>
+<span class="sd">    consistent with seeing nevents at a given confidence level.</span>
+
+<span class="sd">    conf: float</span>
+<span class="sd">      95%, 90%, 68.3% or similar.</span>
+<span class="sd">    nevents: int</span>
+<span class="sd">      The number of events observed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mulo, mhi : floats</span>
+<span class="sd">      Mean number of events such that &gt;= observed number of events</span>
+<span class="sd">      nevents occurs in fewer than conf% of cases (mulo), and mean</span>
+<span class="sd">      number of events such that &lt;= nevents occurs in fewer than conf%</span>
+<span class="sd">      of cases (muhi)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">poisson</span>
+    <span class="n">nevents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nevents</span><span class="p">)</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">nevents</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">conf</span><span class="o">/</span><span class="mf">100.</span>
+    <span class="k">if</span> <span class="n">nevents</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">mulo</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mulo</span> <span class="o">=</span> <span class="n">_bisect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mu</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">poisson</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">nevents</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mu</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="n">muhi</span>  <span class="o">=</span> <span class="n">_bisect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mu</span><span class="p">:</span> <span class="n">poisson</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">nevents</span><span class="p">,</span> <span class="n">mu</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mulo</span><span class="p">,</span> <span class="n">muhi</span>
+</div>
+<div class="viewcode-block" id="poisson_confidence_interval"><a class="viewcode-back" href="../../generated/barak.stats.poisson_confidence_interval.html#barak.stats.poisson_confidence_interval">[docs]</a><span class="k">def</span> <span class="nf">poisson_confidence_interval</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">nevents</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the Poisson confidence interval.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf: float</span>
+<span class="sd">      Confidence level in percent (95, 90, 68.3% or similar).</span>
+<span class="sd">    nevents: int</span>
+<span class="sd">      The number of events observed. If 0, then return the</span>
+<span class="sd">      1-sided upper limit.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mulo, mhi : floats</span>
+<span class="sd">      The two-sided confidence interval such that for mulo, &gt;=</span>
+<span class="sd">      observed number of events occurs in fewer than conf% of cases,</span>
+<span class="sd">      and for muhi, &lt;= nevents occurs in fewer than conf% of cases.</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="k">if</span> <span class="n">nevents</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">poisson_min_max_limits</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">nevents</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">poisson_min_max_limits</span><span class="p">(</span><span class="n">conf</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">100</span><span class="o">-</span><span class="n">conf</span><span class="p">),</span> <span class="n">nevents</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="binomial_min_max_limits"><a class="viewcode-back" href="../../generated/barak.stats.binomial_min_max_limits.html#barak.stats.binomial_min_max_limits">[docs]</a><span class="k">def</span> <span class="nf">binomial_min_max_limits</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">ntrial</span><span class="p">,</span> <span class="n">nsuccess</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate the minimum and maximum binomial probability</span>
+<span class="sd">    consistent with seeing nsuccess from ntrial at a given confidence level.</span>
+
+<span class="sd">    conf: float</span>
+<span class="sd">      95%, 90%, 68.3% or similar.</span>
+<span class="sd">    ntrial, nsuccess: int</span>
+<span class="sd">      The number of trials and successes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plo, phi : floats</span>
+<span class="sd">      Mean number of events such that &gt;= observed number of events</span>
+<span class="sd">      nevents occurs in fewer than conf% of cases (mulo), and mean</span>
+<span class="sd">      number of events such that &lt;= nevents occurs in fewer than conf%</span>
+<span class="sd">      of cases (muhi)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">binom</span>
+    <span class="n">nsuccess</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nsuccess</span><span class="p">)</span>
+    <span class="n">ntrial</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ntrial</span><span class="p">)</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">conf</span><span class="o">/</span><span class="mf">100.</span>
+    <span class="k">if</span> <span class="n">nsuccess</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">plo</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plo</span> <span class="o">=</span> <span class="n">_bisect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">binom</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">nsuccess</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ntrial</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">target</span><span class="p">,</span>
+                     <span class="n">xhi</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nsuccess</span> <span class="o">==</span> <span class="n">ntrial</span><span class="p">:</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">_bisect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">binom</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">nsuccess</span><span class="p">,</span> <span class="n">ntrial</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">target</span><span class="p">,</span>
+                     <span class="n">xhi</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">plo</span><span class="p">,</span> <span class="n">phi</span>
+</div>
+<div class="viewcode-block" id="binomial_confidence_interval"><a class="viewcode-back" href="../../generated/barak.stats.binomial_confidence_interval.html#barak.stats.binomial_confidence_interval">[docs]</a><span class="k">def</span> <span class="nf">binomial_confidence_interval</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">ntrial</span><span class="p">,</span> <span class="n">nsuccess</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the binomial confidence level.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf: float</span>
+<span class="sd">      Confidence level in percent (95, 90, 68.3% or similar).</span>
+<span class="sd">    ntrial: int</span>
+<span class="sd">      The number of trials.</span>
+<span class="sd">    nsuccess: int</span>
+<span class="sd">      The number of successes from the trials. If 0, then return the</span>
+<span class="sd">      1-sided upper limit.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plo, phi : floats</span>
+<span class="sd">      The two-sided confidence interval: probabilities such that &gt;=</span>
+<span class="sd">      observed number of successes occurs in fewer than conf% of cases</span>
+<span class="sd">      (plo), and prob such that &lt;= number of success occurs in fewer</span>
+<span class="sd">      than conf% of cases (phi).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nsuccess</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">binomial_min_max_limits</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">ntrial</span><span class="p">,</span> <span class="n">nsuccess</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">binomial_min_max_limits</span><span class="p">(</span><span class="n">conf</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="n">conf</span><span class="p">),</span> <span class="n">ntrial</span><span class="p">,</span> <span class="n">nsuccess</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="blackbody_nu"><a class="viewcode-back" href="../../generated/barak.stats.blackbody_nu.html#barak.stats.blackbody_nu">[docs]</a><span class="k">def</span> <span class="nf">blackbody_nu</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Blackbody as a function of frequency (Hz) and temperature (K).</span>
+
+<span class="sd">    returns units of erg/s/cm^2/Hz/steradian</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">hplanck</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">kboltz</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hplanck</span><span class="o">*</span><span class="n">nu</span> <span class="o">/</span> <span class="p">(</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="blackbody_lam"><a class="viewcode-back" href="../../generated/barak.stats.blackbody_lam.html#barak.stats.blackbody_lam">[docs]</a><span class="k">def</span> <span class="nf">blackbody_lam</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Blackbody as a function of wavelength (cm) and temperature (K).</span>
+
+<span class="sd">    returns units of erg/s/cm^2/cm/steradian</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">hplanck</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">kboltz</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">**</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hplanck</span><span class="o">*</span><span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

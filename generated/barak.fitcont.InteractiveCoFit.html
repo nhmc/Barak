@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.fitcont.InteractiveCoFit.modifypoints" href="barak.fitcont.InteractiveCoFit.modifypoints.html" />
+    <link rel="next" title="barak.fitcont.InteractiveCoFit.calc_tau" href="barak.fitcont.InteractiveCoFit.calc_tau.html" />
     <link rel="prev" title="barak.extinction.starburst_Calzetti00" href="barak.extinction.starburst_Calzetti00.html" /> 
   </head>
   <body>
@@ -43,7 +43,7 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.fitcont.InteractiveCoFit.modifypoints.html">barak.fitcont.InteractiveCoFit.modifypoints</a>&#160;&#160;»
+        <a href="barak.fitcont.InteractiveCoFit.calc_tau.html">barak.fitcont.InteractiveCoFit.calc_tau</a>&#160;&#160;»
         </p>
 
       </div>
@@ -108,19 +108,22 @@ self.fig :  The plotting figure instance.</div></blockquote>
 <tr class="row-odd"><td><a class="reference internal" href="#barak.fitcont.InteractiveCoFit.__init__" title="barak.fitcont.InteractiveCoFit.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;contpoints[,&nbsp;co,&nbsp;nbin,&nbsp;...])</td>
 <td>Initialise figure, plots and variables.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.modifypoints.html#barak.fitcont.InteractiveCoFit.modifypoints" title="barak.fitcont.InteractiveCoFit.modifypoints"><tt class="xref py py-obj docutils literal"><span class="pre">modifypoints</span></tt></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.calc_tau.html#barak.fitcont.InteractiveCoFit.calc_tau" title="barak.fitcont.InteractiveCoFit.calc_tau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_tau</span></tt></a>()</td>
+<td>Include absorption from a transition (DLA).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.modifypoints.html#barak.fitcont.InteractiveCoFit.modifypoints" title="barak.fitcont.InteractiveCoFit.modifypoints"><tt class="xref py py-obj docutils literal"><span class="pre">modifypoints</span></tt></a>()</td>
 <td>Add/remove continuum points.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.on_button_release.html#barak.fitcont.InteractiveCoFit.on_button_release" title="barak.fitcont.InteractiveCoFit.on_button_release"><tt class="xref py py-obj docutils literal"><span class="pre">on_button_release</span></tt></a>(event)</td>
+<tr class="row-even"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.on_button_release.html#barak.fitcont.InteractiveCoFit.on_button_release" title="barak.fitcont.InteractiveCoFit.on_button_release"><tt class="xref py py-obj docutils literal"><span class="pre">on_button_release</span></tt></a>(event)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.on_keypress.html#barak.fitcont.InteractiveCoFit.on_keypress" title="barak.fitcont.InteractiveCoFit.on_keypress"><tt class="xref py py-obj docutils literal"><span class="pre">on_keypress</span></tt></a>(event)</td>
+<tr class="row-odd"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.on_keypress.html#barak.fitcont.InteractiveCoFit.on_keypress" title="barak.fitcont.InteractiveCoFit.on_keypress"><tt class="xref py py-obj docutils literal"><span class="pre">on_keypress</span></tt></a>(event)</td>
 <td>Add or remove a continuum point.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.plotinit.html#barak.fitcont.InteractiveCoFit.plotinit" title="barak.fitcont.InteractiveCoFit.plotinit"><tt class="xref py py-obj docutils literal"><span class="pre">plotinit</span></tt></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.plotinit.html#barak.fitcont.InteractiveCoFit.plotinit" title="barak.fitcont.InteractiveCoFit.plotinit"><tt class="xref py py-obj docutils literal"><span class="pre">plotinit</span></tt></a>()</td>
 <td>Set up the figure and do initial plots.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.update.html#barak.fitcont.InteractiveCoFit.update" title="barak.fitcont.InteractiveCoFit.update"><tt class="xref py py-obj docutils literal"><span class="pre">update</span></tt></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="barak.fitcont.InteractiveCoFit.update.html#barak.fitcont.InteractiveCoFit.update" title="barak.fitcont.InteractiveCoFit.update"><tt class="xref py py-obj docutils literal"><span class="pre">update</span></tt></a>()</td>
 <td>Calculates the new continuum, residuals and updates the plots.</td>
 </tr>
 </tbody>
@@ -150,7 +153,7 @@ self.fig :  The plotting figure instance.</div></blockquote>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.fitcont.InteractiveCoFit.modifypoints.html">barak.fitcont.InteractiveCoFit.modifypoints</a>&#160;&#160;»
+        <a href="barak.fitcont.InteractiveCoFit.calc_tau.html">barak.fitcont.InteractiveCoFit.calc_tau</a>&#160;&#160;»
         </p>
 
       </div>

@@ -80,7 +80,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    xvals: list</span>
 <span class="sd">      Sequence of pairs specifying the left and right extent of each</span>
-<span class="sd">      region. e.g. (3,4) or [(0,1),(3,4)]</span>
+<span class="sd">      region. e.g. (3,4) or [(0,1), (3,4)]</span>
 <span class="sd">    ax : matplotlib axes instance (default is the current axes)</span>
 <span class="sd">      The axes to plot regions on.</span>
 <span class="sd">    color : mpl colour (default &#39;g&#39;)</span>
@@ -405,7 +405,8 @@
         <span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">vals</span><span class="p">,</span><span class="n">bins</span>
 </div>
-<div class="viewcode-block" id="arrplot"><a class="viewcode-back" href="../../generated/barak.plot.arrplot.html#barak.plot.arrplot">[docs]</a><span class="k">def</span> <span class="nf">arrplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="arrplot"><a class="viewcode-back" href="../../generated/barak.plot.arrplot.html#barak.plot.arrplot">[docs]</a><span class="k">def</span> <span class="nf">arrplot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">perc</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">colorbar</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Plot a 2D array with coordinates.</span>
 
 <span class="sd">    Label coordinates such that each coloured patch representing a</span>
@@ -419,7 +420,16 @@
 <span class="sd">      Coordinates, must be equally spaced.</span>
 <span class="sd">    y : shape (M,)</span>
 <span class="sd">      Coordinates, must be equally spaced.</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">      Axes in which to plot.</span>
+<span class="sd">    colorbar : bool (True)</span>
+<span class="sd">      Whether to also plot a colorbar.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -441,8 +451,10 @@
     <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dy</span>
 
     <span class="n">col</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span>
-                    <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
+                    <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
+        <span class="n">pl</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pl</span><span class="o">.</span><span class="n">isinteractive</span><span class="p">():</span>
         <span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
@@ -501,6 +513,60 @@
     <span class="k">return</span> <span class="n">im</span>
 
 </div>
+<div class="viewcode-block" id="shade_to_line_vert"><a class="viewcode-back" href="../../generated/barak.plot.shade_to_line_vert.html#barak.plot.shade_to_line_vert">[docs]</a><span class="k">def</span> <span class="nf">shade_to_line_vert</span><span class="p">(</span><span class="n">yvals</span><span class="p">,</span> <span class="n">xvals</span><span class="p">,</span> <span class="n">blend</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Shade a region between two curves including a color gradient.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    yvals, xvals : array_like</span>
+<span class="sd">      horizontally shade to the line given by xvals, yvals</span>
+<span class="sd">    x0 : array_like</span>
+<span class="sd">      Start shading from these x values (default 0).</span>
+<span class="sd">    blend : float (default 1)</span>
+<span class="sd">      Start the cmap blending to white at this distance from `yvals`.</span>
+<span class="sd">    color : mpl color</span>
+<span class="sd">      Color used to generate the color gradient.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    im : mpl image object</span>
+<span class="sd">      object represeting the shaded region.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="kn">as</span> <span class="nn">mpl</span>
+
+    <span class="n">yvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">yvals</span><span class="p">)</span>
+    <span class="n">xvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span> <span class="o">*</span> <span class="n">x0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+        
+    <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">color</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">]</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="s">&#39;mycm&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">xvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">x0</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">yvals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yvals</span><span class="p">)):</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">blend</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x0</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">im</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">blend</span><span class="p">))</span> <span class="o">/</span> <span class="n">blend</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">im</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">im</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">art</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">yvals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yvals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                   <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">art</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
+
+
+</div>
 <div class="viewcode-block" id="draw_arrows"><a class="viewcode-back" href="../../generated/barak.plot.draw_arrows.html#barak.plot.draw_arrows">[docs]</a><span class="k">def</span> <span class="nf">draw_arrows</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="n">ms</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s">&#39;up&#39;</span><span class="p">,</span>
                 <span class="n">c</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Draw arrows that can be used to show limits.</span>
@@ -542,8 +608,8 @@
     
     <span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="mf">6.</span><span class="p">)</span><span class="o">*</span><span class="n">ms</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verts</span><span class="o">=</span><span class="n">arrow_verts</span><span class="p">,</span>
                    <span class="n">edgecolors</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">c</span></div>
-</pre></div>
+    <span class="k">return</span> <span class="n">c</span>
+</pre></div></div>
 
       </div>
       <div class="bottomnav">

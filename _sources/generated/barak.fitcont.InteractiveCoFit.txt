@@ -14,6 +14,7 @@ barak.fitcont.InteractiveCoFit
    .. autosummary::
    
       ~InteractiveCoFit.__init__
+      ~InteractiveCoFit.calc_tau
       ~InteractiveCoFit.modifypoints
       ~InteractiveCoFit.on_button_release
       ~InteractiveCoFit.on_keypress

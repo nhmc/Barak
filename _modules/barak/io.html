@@ -396,8 +396,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filename : str</span>
-<span class="sd">      The configuration filename.</span>
+<span class="sd">    filename : str or file object</span>
+<span class="sd">      The configuration filename or a file object.</span>
 <span class="sd">    defaults : dict</span>
 <span class="sd">      A dictionary with default values for options.</span>
 
@@ -424,7 +424,11 @@
 
     <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
 
-    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="n">filename</span>
+
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="n">row</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">):</span>
             <span class="k">continue</span>

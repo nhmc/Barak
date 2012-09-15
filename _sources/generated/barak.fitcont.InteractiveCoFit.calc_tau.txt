@@ -1,0 +1,6 @@
+barak.fitcont.InteractiveCoFit.calc_tau
+=======================================
+
+.. currentmodule:: barak.fitcont
+
+.. automethod:: InteractiveCoFit.calc_tau

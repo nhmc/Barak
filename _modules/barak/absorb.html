@@ -56,7 +56,7 @@
 <span class="kn">import</span> <span class="nn">voigt</span>
 <span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span><span class="p">,</span> <span class="n">adict</span><span class="p">,</span> <span class="n">get_data_path</span><span class="p">,</span> <span class="n">indexnear</span>
-<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">Ar</span><span class="p">,</span> <span class="n">me</span><span class="p">,</span> <span class="n">mp</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">sqrt_ln2</span><span class="p">,</span> <span class="n">c_kms</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">Ar</span><span class="p">,</span> <span class="n">me</span><span class="p">,</span> <span class="n">mp</span><span class="p">,</span> <span class="n">kboltz</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">sqrt_ln2</span><span class="p">,</span> <span class="n">c_kms</span>
 <span class="kn">from</span> <span class="nn">spec</span> <span class="kn">import</span> <span class="n">find_wa_edges</span>
 
 <span class="n">DATAPATH</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
@@ -110,7 +110,7 @@
     <span class="n">wav0</span> <span class="o">=</span> <span class="n">wav0</span> <span class="o">*</span> <span class="mf">1e-8</span>                    <span class="c"># cm</span>
     <span class="n">N</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span>                          <span class="c"># absorbers/cm^2</span>
     <span class="k">if</span> <span class="n">T</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">btemp</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">T</span> <span class="o">/</span> <span class="n">mp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-5</span>     <span class="c"># km/s</span>
+        <span class="n">btemp</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span> <span class="o">/</span> <span class="n">mp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-5</span>     <span class="c"># km/s</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">btemp</span><span class="p">,</span> <span class="n">bturb</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e5</span>    <span class="c"># cm/s</span>
     <span class="n">nu0</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="n">wav0</span>                        <span class="c"># rest frequency, s^-1</span>
     <span class="c"># Now use doppler relation between v and nu assuming gam &lt;&lt; nu0</span>
@@ -243,6 +243,8 @@
 <span class="sd">    log10(column density) and b parameter, return the tau at each</span>
 <span class="sd">    wavelength from all these transitions.</span>
 
+<span class="sd">    lines can also be the name of a fort.26 format file</span>
+
 <span class="sd">    Note this assumes the wavelength array has small enough pixel</span>
 <span class="sd">    separations so that the profiles are properly sampled.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -251,6 +253,12 @@
     <span class="n">ticks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ions</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">taus</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">pyvpfit</span> <span class="kn">import</span> <span class="n">readf26</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">readf26</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">l</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;logN&#39;</span><span class="p">])</span>
+                 <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">vp</span><span class="o">.</span><span class="n">lines</span><span class="p">]</span>
+        
     <span class="k">for</span> <span class="n">ion</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">logN</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
         <span class="c">#print &#39;z, logN, b&#39;, z, logN, b</span>
         <span class="n">maxdv</span> <span class="o">=</span> <span class="mi">20000</span> <span class="k">if</span> <span class="n">logN</span> <span class="o">&gt;</span> <span class="mi">18</span> <span class="k">else</span> <span class="mi">1000</span>
@@ -403,7 +411,7 @@
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">bvals</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e5</span>
 
     <span class="c"># convert everything to cgs</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">amu</span> <span class="o">*</span> <span class="n">mp</span> <span class="o">/</span> <span class="n">k</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">amu</span> <span class="o">*</span> <span class="n">mp</span> <span class="o">/</span> <span class="n">kboltz</span>
     
     <span class="c"># b \propto sqrt(2kT/m)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -433,7 +441,7 @@
         <span class="n">amu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
 
     <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
-    <span class="n">b_cms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="n">mp</span> <span class="o">*</span><span class="n">amu</span><span class="p">))</span>
+    <span class="n">b_cms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">kboltz</span> <span class="o">*</span> <span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="n">mp</span> <span class="o">*</span><span class="n">amu</span><span class="p">))</span>
     
     <span class="n">b_kms</span> <span class="o">=</span> <span class="n">b_cms</span> <span class="o">/</span> <span class="mf">1e5</span>
 
@@ -572,7 +580,7 @@
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
 </div>
-<div class="viewcode-block" id="tau_LL"><a class="viewcode-back" href="../../generated/barak.absorb.tau_LL.html#barak.absorb.tau_LL">[docs]</a><span class="k">def</span> <span class="nf">tau_LL</span><span class="p">(</span><span class="n">logN</span><span class="p">,</span> <span class="n">wa</span><span class="p">):</span>
+<div class="viewcode-block" id="tau_LL"><a class="viewcode-back" href="../../generated/barak.absorb.tau_LL.html#barak.absorb.tau_LL">[docs]</a><span class="k">def</span> <span class="nf">tau_LL</span><span class="p">(</span><span class="n">logN</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">wstart</span><span class="o">=</span><span class="mf">912.</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find the optical depth at the neutral hydrogen Lyman limit.</span>
 
 <span class="sd">    Parameters</span>
@@ -581,6 +589,8 @@
 <span class="sd">      log10 of neutral hydrogen column density in cm^-2.</span>
 <span class="sd">    wa : array_like</span>
 <span class="sd">      Wavelength in Angstroms.</span>
+<span class="sd">    wstart : float (912.)</span>
+<span class="sd">      Tau values at wavelengths above this are zero.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -591,7 +601,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    At the Lyman limit, the optical depth tau is given by::</span>
 
-<span class="sd">      tau = N(HI) * sigma_0 </span>
+<span class="sd">      tau = N(HI) * sigma_0</span>
 
 <span class="sd">    where sigma_0 = 6.304 e-18 cm^2 and N(HI) is the HI column density</span>
 <span class="sd">    in cm^-2. The energy dependence of the cross section is::</span>
@@ -605,7 +615,7 @@
 <span class="sd">    So the normalised continuum bluewards of the Lyman limit is::</span>
 
 <span class="sd">      F/F_cont = exp(-tau) = exp(-N(HI) * sigma_lam)</span>
-<span class="sd">      = exp(-N(HI) * sigma_0 * (lam/912)^3)</span>
+<span class="sd">               = exp(-N(HI) * sigma_0 * (lam/912)^3)</span>
 
 <span class="sd">    Where F is the absorbed flux and F_cont is the unabsorbed</span>
 <span class="sd">    continuum.</span>
@@ -626,8 +636,10 @@
 <span class="sd">    &gt;&gt;&gt; plt.legend()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sigma0</span> <span class="o">=</span> <span class="mf">6.304e-18</span>           <span class="c"># cm^2</span>
-
-    <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span> <span class="o">*</span> <span class="n">sigma0</span> <span class="o">*</span> <span class="p">(</span><span class="n">wa</span> <span class="o">/</span> <span class="mi">912</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span></div>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">wa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">wstart</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
+    <span class="n">tau</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span> <span class="o">*</span> <span class="n">sigma0</span> <span class="o">*</span> <span class="p">(</span><span class="n">wa</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mf">912.</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span> 
+    <span class="k">return</span> <span class="n">tau</span></div>
 </pre></div>
 
       </div>

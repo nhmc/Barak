@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.cont &mdash; Barak 0.1dev documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.1dev documentation</span></a></h1>
+        <h2 class="heading"><span>barak.cont</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.cont</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.transforms</span> <span class="kn">as</span> <span class="nn">mtran</span>
+
+<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span><span class="p">,</span> <span class="n">Gaussian</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">indexnear</span>
+<span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">loadobj</span><span class="p">,</span> <span class="n">saveobj</span>
+<span class="kn">from</span> <span class="nn">interp</span> <span class="kn">import</span> <span class="n">AkimaSpline</span>
+
+<span class="kn">from</span> <span class="nn">absorb</span> <span class="kn">import</span> <span class="n">readatom</span><span class="p">,</span> <span class="n">find_tau</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="InteractiveCoFit"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.html#barak.cont.InteractiveCoFit">[docs]</a><span class="k">class</span> <span class="nc">InteractiveCoFit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">help_message</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">&#39;a&#39;        : add a new continuum point</span>
+<span class="s">&#39;d&#39;        : delete the nearest point</span>
+<span class="s">&#39;s&#39;        : smooth the spectrum</span>
+<span class="s">&#39;k&#39;        : keep continuum</span>
+<span class="s">&#39;q&#39;        : quit without keeping continuum</span>
+<span class="s">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="InteractiveCoFit.__init__"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.html#barak.cont.InteractiveCoFit.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">,</span> <span class="n">er</span><span class="p">,</span> <span class="n">contpoints</span><span class="p">,</span> <span class="n">nbin</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialise figure, plots and variables.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        wa :   Wavelengths</span>
+<span class="sd">        fl :   Fluxes</span>
+<span class="sd">        er :   One sigma errors</span>
+<span class="sd">        nbin : int (8)</span>
+<span class="sd">            Number of pixels to bin arrays in wavelength. Default 8.</span>
+<span class="sd">        contpoints : list of x,y tuple pairs (None)</span>
+<span class="sd">            The points through which a cubic spline is passed,</span>
+<span class="sd">            defining the continuum.</span>
+<span class="sd">        redshift : float (None)</span>
+<span class="sd">            Redshift used to plot reference emission lines.</span>
+<span class="sd">        atmos : list of wavelength pairs (None)</span>
+<span class="sd">            Regions of atmospheric absorption to plot.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Updates the following attributes:</span>
+<span class="sd">        </span>
+<span class="sd">         self.spec :  Dictionary of wa, fl, er.</span>
+<span class="sd">         self.contpoints :  Points used to define the continuum.</span>
+<span class="sd">         self.nbin :  The input nbin value.</span>
+<span class="sd">         self.markers :  Dictionary of matplotlib plotting artists.</span>
+<span class="sd">         self.connections :  Callback connections.</span>
+<span class="sd">         self.fig :  The plotting figure instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#setup</span>
+        <span class="c">#print co</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">WMIN_LYA</span> <span class="o">=</span> <span class="mi">1040</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">WMAX_LYA</span> <span class="o">=</span> <span class="mi">1190</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">wa</span><span class="o">=</span><span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="o">=</span><span class="n">fl</span><span class="p">,</span> <span class="n">er</span><span class="o">=</span><span class="n">er</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="n">co</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span> <span class="o">=</span> <span class="n">nbin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">[</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="c"># wavelengths of breaks in the continuum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">contpoints</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">lexists</span><span class="p">(</span><span class="s">&#39;./_knots.sav&#39;</span><span class="p">):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&#39;temporary knots file exists, use these knots? (y) &#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;n&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span> <span class="o">=</span> <span class="n">loadobj</span><span class="p">(</span><span class="s">&#39;./_knots.sav&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art_fl</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">fig</span>
+        <span class="c"># disable any existing key press callbacks</span>
+        <span class="n">cids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="s">&#39;key_press_event&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="n">cids</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuum</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smoothby</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotinit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modifypoints</span><span class="p">()</span>
+        <span class="n">pl</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="InteractiveCoFit.calc_tau"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.calc_tau.html#barak.cont.InteractiveCoFit.calc_tau">[docs]</a>    <span class="k">def</span> <span class="nf">calc_tau</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Include absorption from a transition (DLA). &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">zabs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logN</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">find_tau</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InteractiveCoFit.plotinit"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.plotinit.html#barak.cont.InteractiveCoFit.plotinit">[docs]</a>    <span class="k">def</span> <span class="nf">plotinit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set up the figure and do initial plots.</span>
+
+<span class="sd">        Updates the following attributes:</span>
+
+<span class="sd">          self.markers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wa</span><span class="p">,</span><span class="n">fl</span><span class="p">,</span><span class="n">er</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">spec</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="s">&#39;wa fl er&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+        <span class="c"># axis for spectrum &amp; continuum</span>
+        <span class="n">a0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.6</span><span class="p">))</span>
+        <span class="n">a0</span><span class="o">.</span><span class="n">set_autoscale_on</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c"># axis for residuals</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.2</span><span class="p">),</span><span class="n">sharex</span><span class="o">=</span><span class="n">a0</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">set_autoscale_on</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;dashed&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;dashed&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
+        <span class="n">m0</span><span class="p">,</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">],</span><span class="s">&#39;.r&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">a0</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;0.7&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art_fl</span><span class="p">,</span> <span class="o">=</span> <span class="n">a0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;steps-mid&#39;</span><span class="p">)</span>
+        <span class="n">a0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">er</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;orange&#39;</span><span class="p">)</span>
+        <span class="n">m1</span><span class="p">,</span> <span class="o">=</span> <span class="n">a0</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+        <span class="n">m2</span><span class="p">,</span> <span class="o">=</span> <span class="n">a0</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s">&#39;None&#39;</span><span class="p">,</span><span class="n">mew</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                      <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+        <span class="n">a0</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">wa</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">wa</span><span class="p">))</span>
+        <span class="n">good</span> <span class="o">=</span> <span class="p">(</span><span class="n">er</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fl</span><span class="p">)</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">er</span><span class="p">[</span><span class="n">good</span><span class="p">])</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">fl</span><span class="p">[</span><span class="n">good</span><span class="p">])[</span><span class="nb">int</span><span class="p">(</span><span class="n">good</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">*</span><span class="mf">0.95</span><span class="p">)]</span>
+        <span class="n">a0</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+        <span class="n">a0</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span> <span class="s">&#39;z=</span><span class="si">%.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">redshift</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">a0</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+
+        <span class="c"># for histogram</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">mtran</span><span class="o">.</span><span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">a1</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">a1</span><span class="o">.</span><span class="n">transData</span><span class="p">)</span>
+        <span class="n">hist</span><span class="p">,</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">a1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.05</span><span class="p">),</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">contpoints</span><span class="o">=</span><span class="n">m2</span><span class="p">,</span> <span class="n">cont</span><span class="o">=</span><span class="n">m1</span><span class="p">,</span> <span class="n">resid</span><span class="o">=</span><span class="n">m0</span><span class="p">,</span> <span class="n">hist_left</span><span class="o">=</span><span class="n">hist</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InteractiveCoFit.update"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.update.html#barak.cont.InteractiveCoFit.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calculates the new continuum, residuals and updates the plots.</span>
+
+
+<span class="sd">        Updates the following attributes:</span>
+
+<span class="sd">          self.markers</span>
+<span class="sd">          self.continuum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wa</span><span class="p">,</span><span class="n">fl</span><span class="p">,</span><span class="n">er</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spec</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s">&#39;wa fl er&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+        <span class="n">co</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wa</span><span class="p">))</span>
+        <span class="n">co</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">b0</span><span class="p">,</span><span class="n">b1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">breaks</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="n">cpts</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span> <span class="k">if</span> <span class="n">b0</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">b1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cpts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span> 
+            <span class="n">spline</span> <span class="o">=</span> <span class="n">AkimaSpline</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">cpts</span><span class="p">))</span>
+            <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">wa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">([</span><span class="n">b0</span><span class="p">,</span><span class="n">b1</span><span class="p">])</span>
+            <span class="n">co</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">])</span>
+        
+        <span class="n">resid</span> <span class="o">=</span> <span class="p">(</span><span class="n">fl</span> <span class="o">-</span> <span class="n">co</span><span class="p">)</span> <span class="o">/</span> <span class="n">er</span>
+        <span class="c"># histogram</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="o">+</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">w0</span><span class="p">,</span><span class="n">w1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">resid</span><span class="p">[</span><span class="n">between</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)],</span>
+                           <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">Xmax</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>    
+        <span class="n">X</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">X</span> <span class="o">/</span> <span class="n">Xmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s">&#39;hist_left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s">&#39;contpoints&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="p">))</span>
+        <span class="n">nbin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s">&#39;cont&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">wa</span><span class="p">[::</span><span class="n">nbin</span><span class="p">],</span> <span class="n">co</span><span class="p">[::</span><span class="n">nbin</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="s">&#39;resid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">wa</span><span class="p">[::</span><span class="n">nbin</span><span class="p">],</span> <span class="n">resid</span><span class="p">[::</span><span class="n">nbin</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">sfl</span> <span class="o">=</span> <span class="n">convolve_psf</span><span class="p">(</span><span class="n">fl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothby</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art_fl</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">sfl</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art_fl</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuum</span> <span class="o">=</span> <span class="n">co</span>
+        <span class="n">saveobj</span><span class="p">(</span><span class="s">&#39;_knots.sav&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="InteractiveCoFit.on_keypress"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.on_keypress.html#barak.cont.InteractiveCoFit.on_keypress">[docs]</a>    <span class="k">def</span> <span class="nf">on_keypress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add or remove a continuum point.</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">        </span>
+<span class="sd">         self.contpoints</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">&#39;q&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuum</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">&#39;k&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>  <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">&#39;a&#39;</span><span class="p">:</span>
+            <span class="c"># add a point to contpoints</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span><span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">&#39;d&#39;</span><span class="p">:</span>
+            <span class="c"># remove a point from contpoints</span>
+            <span class="n">contx</span><span class="p">,</span><span class="n">conty</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="p">)</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">contx</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">-</span> <span class="n">conty</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contpoints</span><span class="p">[</span><span class="n">sep</span><span class="o">.</span><span class="n">argmin</span><span class="p">()])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">&#39;s&#39;</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&#39;New FWHM in pixels of Gaussian to convolve with? &#39;</span>
+                          <span class="s">&#39;(blank for no smoothing) &#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                <span class="c"># restore spectrum</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smoothby</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">fwhm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="k">print</span> <span class="s">&#39;FWHM must be a floating point number &gt;= 1&#39;</span>
+                <span class="k">if</span> <span class="n">fwhm</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">smoothby</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">smoothby</span> <span class="o">=</span> <span class="n">fwhm</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">&#39;?&#39;</span><span class="p">:</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_message</span>
+</div>
+<div class="viewcode-block" id="InteractiveCoFit.on_button_release"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.on_button_release.html#barak.cont.InteractiveCoFit.on_button_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_button_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="InteractiveCoFit.modifypoints"><a class="viewcode-back" href="../../generated/barak.cont.InteractiveCoFit.modifypoints.html#barak.cont.InteractiveCoFit.modifypoints">[docs]</a>    <span class="k">def</span> <span class="nf">modifypoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add/remove continuum points.&quot;&quot;&quot;</span>
+        <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_message</span>
+        <span class="n">id1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s">&#39;key_press_event&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">on_keypress</span><span class="p">)</span>
+        <span class="n">id2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s">&#39;button_release_event&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">on_button_release</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">id1</span><span class="p">,</span> <span class="n">id2</span><span class="p">])</span></div></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

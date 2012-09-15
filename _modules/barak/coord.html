@@ -171,26 +171,31 @@
     <span class="n">d2</span> <span class="o">=</span> <span class="n">distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">DEG_PER_RAD</span> <span class="o">*</span> <span class="n">distsq_to_radians</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
 </div>
-<span class="k">def</span> <span class="nf">_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span>
-           <span class="n">raformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%06.3f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">decformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%05.2f</span><span class="s">&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ra_dec2s"><a class="viewcode-back" href="../../generated/barak.coord.ra_dec2s.html#barak.coord.ra_dec2s">[docs]</a><span class="k">def</span> <span class="nf">ra_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">raformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%06.3f</span><span class="s">&#39;</span><span class="p">):</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">ra</span> <span class="o">&lt;</span> <span class="mf">360.</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;RA outside sensible limits: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ra</span><span class="p">)</span>
+
+    <span class="n">rah</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">DEG_PER_HR</span><span class="p">)</span>
+    <span class="n">ram</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">DEG_PER_MIN</span><span class="p">)</span>
+    <span class="n">ras</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">/</span> <span class="n">DEG_PER_S</span>
+    <span class="n">s_ra</span> <span class="o">=</span> <span class="n">raformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">rah</span><span class="p">,</span> <span class="n">ram</span><span class="p">,</span> <span class="n">ras</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s_ra</span>
+</div>
+<div class="viewcode-block" id="dec_dec2s"><a class="viewcode-back" href="../../generated/barak.coord.dec_dec2s.html#barak.coord.dec_dec2s">[docs]</a><span class="k">def</span> <span class="nf">dec_dec2s</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="n">decformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%05.2f</span><span class="s">&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Converts decimal RA and Dec to sexigesimal.</span>
 
 <span class="sd">    Returns two strings, RA and Dec.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ra</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
     <span class="n">dec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dec</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span>
         <span class="n">dec</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
         <span class="n">negdec</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="k">else</span><span class="p">:</span>  <span class="n">negdec</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="c"># error checking</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">ra</span> <span class="o">&lt;</span> <span class="mf">360.</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dec</span> <span class="o">&gt;</span> <span class="mf">90.</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Decimal RA or Dec outside sensible limits.&quot;</span><span class="p">)</span>
-
-    <span class="n">rah</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">DEG_PER_HR</span><span class="p">)</span>
-    <span class="n">ram</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">DEG_PER_MIN</span><span class="p">)</span>
-    <span class="n">ras</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">/</span> <span class="n">DEG_PER_S</span>
-    <span class="n">s_ra</span> <span class="o">=</span> <span class="n">raformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">rah</span><span class="p">,</span> <span class="n">ram</span><span class="p">,</span> <span class="n">ras</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dec</span> <span class="o">&gt;</span> <span class="mf">90.</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Dec outside sensible limits: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">dec</span><span class="p">)</span>
 
     <span class="n">decd</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">decm</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">DEG_PER_AMIN</span><span class="p">)</span>
@@ -199,8 +204,8 @@
         <span class="n">s_dec</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="n">decformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">decd</span><span class="p">,</span> <span class="n">decm</span><span class="p">,</span> <span class="n">decs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="n">s_dec</span> <span class="o">=</span> <span class="s">&#39;+&#39;</span> <span class="o">+</span> <span class="n">decformat</span> <span class="o">%</span> <span class="p">(</span><span class="n">decd</span><span class="p">,</span> <span class="n">decm</span><span class="p">,</span> <span class="n">decs</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">s_ra</span><span class="p">,</span><span class="n">s_dec</span>
-
+    <span class="k">return</span> <span class="n">s_dec</span>
+</div>
 <div class="viewcode-block" id="dec2s"><a class="viewcode-back" href="../../generated/barak.coord.dec2s.html#barak.coord.dec2s">[docs]</a><span class="k">def</span> <span class="nf">dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert an RA and Dec from degrees to sexigesimal.</span>
 
@@ -215,39 +220,58 @@
 <span class="sd">      The RA and Dec in &#39;hour:min:s&#39; &#39;deg:min:s&#39; format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ra_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">),</span> <span class="n">dec_dec2s</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">pass</span>
-    <span class="n">radec</span> <span class="o">=</span> <span class="p">[</span><span class="n">_dec2s</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
+    <span class="n">radec</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ra_dec2s</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">dec_dec2s</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">))</span>
 </div>
-<span class="k">def</span> <span class="nf">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Converts two strings of sexigesimal RA and Dec to decimal.</span>
+<div class="viewcode-block" id="ra_s2dec"><a class="viewcode-back" href="../../generated/barak.coord.ra_s2dec.html#barak.coord.ra_s2dec">[docs]</a><span class="k">def</span> <span class="nf">ra_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Converts a sexigesimal RA string to decimal.</span>
 
-<span class="sd">    The separators between h/m/s and deg/arcmin/arcsec can be</span>
-<span class="sd">    whitespace or colons.</span>
+<span class="sd">    ra : string or sequence of three strings</span>
+<span class="sd">      The input hour, minute and second. If a string, separators</span>
+<span class="sd">      between hours minutes and seconds can be whitespace, colons or</span>
+<span class="sd">      h, m. s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[:hms]&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">ra</span><span class="p">)</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="n">ra</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="n">rah</span><span class="p">,</span><span class="n">ram</span><span class="p">,</span><span class="n">ras</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ra</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">rah</span> <span class="o">&lt;</span> <span class="mf">24.</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">ram</span> <span class="o">&lt;=</span> <span class="mf">60.</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">ras</span> <span class="o">&lt;=</span> <span class="mf">60.</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;RA is outside sensible limits. RA = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ra</span><span class="p">)</span>
+
+    <span class="n">d_ra</span> <span class="o">=</span> <span class="n">DEG_PER_HR</span> <span class="o">*</span> <span class="n">rah</span> <span class="o">+</span> <span class="n">DEG_PER_MIN</span> <span class="o">*</span> <span class="n">ram</span> <span class="o">+</span> <span class="n">DEG_PER_S</span> <span class="o">*</span> <span class="n">ras</span>
+    <span class="k">return</span> <span class="n">d_ra</span>
+</div>
+<div class="viewcode-block" id="dec_s2dec"><a class="viewcode-back" href="../../generated/barak.coord.dec_s2dec.html#barak.coord.dec_s2dec">[docs]</a><span class="k">def</span> <span class="nf">dec_s2dec</span><span class="p">(</span><span class="n">dec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Converts a sexigesimal Dec string to decimal.</span>
+
+<span class="sd">    The separators between deg/arcmin/arcsec can be whitespace or</span>
+<span class="sd">    colons or d m s.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># Convert to floats, noting sign of dec</span>
-    <span class="n">ra</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[:hms]&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">ra</span><span class="p">)</span>
-    <span class="n">dec</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[:dms]&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
-    <span class="n">rah</span><span class="p">,</span><span class="n">ram</span><span class="p">,</span><span class="n">ras</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ra</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
-    <span class="k">if</span> <span class="n">dec</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[:dms]&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-&#39;</span><span class="p">:</span>
         <span class="n">negdec</span> <span class="o">=</span> <span class="bp">True</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="n">negdec</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="n">decd</span><span class="p">,</span><span class="n">decm</span><span class="p">,</span><span class="n">decs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dec</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
-    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>  <span class="n">decd</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">negdec</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">decd</span><span class="p">,</span><span class="n">decm</span><span class="p">,</span><span class="n">decs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dec</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>
+        <span class="n">decd</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
     <span class="c"># Error checking</span>
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">rah</span> <span class="o">&lt;</span> <span class="mf">24.</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">ram</span> <span class="o">&lt;=</span> <span class="mf">60.</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mf">0.</span> <span class="o">&lt;=</span> <span class="n">ras</span> <span class="o">&lt;=</span> <span class="mf">60.</span>
-        <span class="ow">or</span> <span class="n">decd</span> <span class="o">&gt;</span> <span class="mf">90.</span> <span class="ow">or</span> <span class="n">decm</span> <span class="o">&gt;=</span> <span class="mf">60.</span> <span class="ow">or</span> <span class="n">decs</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Either RA or Dec is outside sensible &#39;</span>
-                         <span class="s">&#39;limits.</span><span class="se">\n</span><span class="s">RA = </span><span class="si">%s</span><span class="s">, Dec = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="n">dec</span><span class="p">))</span>
-    <span class="c"># Conversion</span>
-    <span class="n">d_ra</span> <span class="o">=</span> <span class="n">DEG_PER_HR</span> <span class="o">*</span> <span class="n">rah</span> <span class="o">+</span> <span class="n">DEG_PER_MIN</span> <span class="o">*</span> <span class="n">ram</span> <span class="o">+</span> <span class="n">DEG_PER_S</span> <span class="o">*</span> <span class="n">ras</span>
+    <span class="k">if</span> <span class="n">decd</span> <span class="o">&gt;</span> <span class="mf">90.</span> <span class="ow">or</span> <span class="n">decm</span> <span class="o">&gt;=</span> <span class="mf">60.</span> <span class="ow">or</span> <span class="n">decs</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Dec is outside sensible limits: Dec = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">dec</span><span class="p">)</span>
+
     <span class="n">d_dec</span> <span class="o">=</span> <span class="n">decd</span> <span class="o">+</span> <span class="n">DEG_PER_AMIN</span> <span class="o">*</span> <span class="n">decm</span> <span class="o">+</span> <span class="n">DEG_PER_ASEC</span> <span class="o">*</span> <span class="n">decs</span>
-    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>  <span class="n">d_dec</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
+    <span class="k">if</span> <span class="n">negdec</span><span class="p">:</span>
+        <span class="n">d_dec</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.</span>
 
-    <span class="k">return</span> <span class="n">d_ra</span><span class="p">,</span> <span class="n">d_dec</span>
-
+    <span class="k">return</span> <span class="n">d_dec</span>
+</div>
 <div class="viewcode-block" id="s2dec"><a class="viewcode-back" href="../../generated/barak.coord.s2dec.html#barak.coord.s2dec">[docs]</a><span class="k">def</span> <span class="nf">s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert a sexigesimal ra and dec (or list of ras and decs) to</span>
 <span class="sd">    decimal degrees.</span>
@@ -275,11 +299,11 @@
 <span class="sd">    [(153.00520833333334, 1.0293472222222222),</span>
 <span class="sd">    (153.52554166666667, 1.229727777777778)]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="n">radec</span> <span class="o">=</span> <span class="p">[</span><span class="n">_s2dec</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ra_s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">),</span> <span class="n">dec_s2dec</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+
+    <span class="n">radec</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ra_s2dec</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">dec_s2dec</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)]</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">radec</span><span class="p">)))</span>
 </div>
 <div class="viewcode-block" id="match"><a class="viewcode-back" href="../../generated/barak.coord.match.html#barak.coord.match">[docs]</a><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">allmatches</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>

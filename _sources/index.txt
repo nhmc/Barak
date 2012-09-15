@@ -119,9 +119,9 @@ Constants defined:
  ======== ===================== =============== ===============================
  c         2.99792458e10        cm/s            speed of light
  G         6.67384e-8           cm^3/g/s^2      gravitational constant
- h         6.6260775e-27        erg s           Planck's constant
+ hplanck   6.6260775e-27        erg s           Planck's constant
  hbar      1.054571726e-27      erg s           1/(4*pi) * Planck's constant
- k         1.3806488e-16        erg/K           Boltzmann constant
+ kboltz    1.3806488e-16        erg/K           Boltzmann constant
  mp        1.67261777e-24       g               proton mass
  me        9.10938291e-28       g               electron mass
  eV        1.602176565e-12      ergs            electron volt
@@ -168,6 +168,24 @@ Constants defined:
    :toctree: generated/
 
 
+cont
+----
+
+
+
+.. currentmodule:: barak.cont
+
+.. autosummary::
+   :toctree: generated/
+
+   InteractiveCoFit
+   InteractiveCoFit.calc_tau
+   InteractiveCoFit.modifypoints
+   InteractiveCoFit.on_button_release
+   InteractiveCoFit.on_keypress
+   InteractiveCoFit.plotinit
+   InteractiveCoFit.update
+
 convolve
 --------
 
@@ -194,10 +212,14 @@ Astronomical coordinate functions.
    ang_sep
    check_ra_dec
    dec2s
+   dec_dec2s
+   dec_s2dec
    distsq
    distsq_to_radians
    indmatch
    match
+   ra_dec2s
+   ra_s2dec
    radec_to_xyz
    radians_to_distsq
    s2dec
@@ -280,6 +302,7 @@ continuum to a QSO spectrum.
    :toctree: generated/
 
    InteractiveCoFit
+   InteractiveCoFit.calc_tau
    InteractiveCoFit.modifypoints
    InteractiveCoFit.on_button_release
    InteractiveCoFit.on_keypress
@@ -329,6 +352,18 @@ Functions to read and write text, fits and pickle files.
    writetable
    writetxt
 
+phot
+----
+
+
+
+.. currentmodule:: barak.phot
+
+.. autosummary::
+   :toctree: generated/
+
+   UBVRI_to_ugriz
+
 plot
 ----
 
@@ -350,6 +385,7 @@ Plotting routines.
    histo
    puttext
    shade_to_line
+   shade_to_line_vert
 
 pyvpfit
 -------
@@ -459,6 +495,23 @@ spectrum-related functions.
    vac2air_Morton
    writesp
 
+stats
+-----
+
+Statistics-related functions.
+
+.. currentmodule:: barak.stats
+
+.. autosummary::
+   :toctree: generated/
+
+   binomial_confidence_interval
+   binomial_min_max_limits
+   blackbody_lam
+   blackbody_nu
+   poisson_confidence_interval
+   poisson_min_max_limits
+
 utilities
 ---------
 
@@ -476,8 +529,6 @@ Various general-use functions.
    addnoise
    autocorr
    between
-   blackbody_lam
-   blackbody_nu
    calc_Mstar_b
    combinations
    find_edges_true_regions
@@ -508,13 +559,16 @@ A fast implementation of the Voigt function.
 
 Command line scripts
 --------------------
-===================== =======================================================================================================
-      ../scripts/fhdr Print the whole header or selected cards for a list of FITS files.                                     
-     ../scripts/finfo Print a short summary for one or more FITS files.                                                      
-   ../scripts/qso_jhk Plot the spectrum of a QSO in the IR overlayed with atmospheric absorption and sky background emission.
- ../scripts/run_nproc Run a shell command on a list of files using multiple processors.                                      
-../scripts/sex2DS9reg Make a ds9 region file from a SExtractor catalogue.                                                    
-===================== =======================================================================================================
+====================== ==============================================================================================================================================
+       ../scripts/cphd read a set of valid FITS key=value pairs from a text file and copy them to the the given fits file, with suffix _newhd added.                 
+../scripts/extract_wcs Print the world coordinate system (wcs) information from a fits image header to a text file.                                                  
+       ../scripts/fhdr Print the whole header or selected cards for a list of FITS files.                                                                            
+      ../scripts/finfo Print a short summary for one or more FITS files.                                                                                             
+../scripts/overwritehd read a set of valid FITS key=value pairs from a text file and use them to make a new header for the given fits file, with suffix _newhd added.
+    ../scripts/qso_jhk Plot the spectrum of a QSO in the IR overlayed with atmospheric absorption and sky background emission.                                       
+  ../scripts/run_nproc Run a shell command on a list of files using multiple processors.                                                                             
+ ../scripts/sex2DS9reg Make a ds9 region file from a SExtractor catalogue.                                                                                           
+====================== ==============================================================================================================================================
 
 
 .. Indices and tables

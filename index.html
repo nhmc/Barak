@@ -82,16 +82,19 @@ installed.  Then run:</p>
 <li class="toctree-l2"><a class="reference internal" href="#absorb">absorb</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#abundances">abundances</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cont">cont</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convolve">convolve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#coord">coord</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extinction">extinction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fitcont">fitcont</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#interp">interp</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#io">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phot">phot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot">plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pyvpfit">pyvpfit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sed">sed</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#spec">spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stats">stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#utilities">utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#voigt">voigt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-scripts">Command line scripts</a></li>
@@ -142,7 +145,7 @@ from ions and molecules.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.split_trans_name.html#barak.absorb.split_trans_name" title="barak.absorb.split_trans_name"><tt class="xref py py-obj docutils literal"><span class="pre">split_trans_name</span></tt></a>(name)</td>
 <td>Given a transition string (say MgII), return the name of the</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.tau_LL.html#barak.absorb.tau_LL" title="barak.absorb.tau_LL"><tt class="xref py py-obj docutils literal"><span class="pre">tau_LL</span></tt></a>(logN,&nbsp;wa)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.tau_LL.html#barak.absorb.tau_LL" title="barak.absorb.tau_LL"><tt class="xref py py-obj docutils literal"><span class="pre">tau_LL</span></tt></a>(logN,&nbsp;wa[,&nbsp;wstart])</td>
 <td>Find the optical depth at the neutral hydrogen Lyman limit.</td>
 </tr>
 </tbody>
@@ -217,7 +220,7 @@ recommended values where available (see
 <td>cm^3/g/s^2</td>
 <td>gravitational constant</td>
 </tr>
-<tr class="row-odd"><td>h</td>
+<tr class="row-odd"><td>hplanck</td>
 <td>6.6260775e-27</td>
 <td>erg s</td>
 <td>Planck&#8217;s constant</td>
@@ -227,7 +230,7 @@ recommended values where available (see
 <td>erg s</td>
 <td>1/(4*pi) * Planck&#8217;s constant</td>
 </tr>
-<tr class="row-odd"><td>k</td>
+<tr class="row-odd"><td>kboltz</td>
 <td>1.3806488e-16</td>
 <td>erg/K</td>
 <td>Boltzmann constant</td>
@@ -414,6 +417,38 @@ ground state</td>
 </tbody>
 </table>
 </div>
+<div class="section" id="cont">
+<h2>cont<a class="headerlink" href="#cont" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.html#barak.cont.InteractiveCoFit" title="barak.cont.InteractiveCoFit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;contpoints[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.calc_tau.html#barak.cont.InteractiveCoFit.calc_tau" title="barak.cont.InteractiveCoFit.calc_tau"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.calc_tau</span></tt></a>()</td>
+<td>Include absorption from a transition (DLA).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.modifypoints.html#barak.cont.InteractiveCoFit.modifypoints" title="barak.cont.InteractiveCoFit.modifypoints"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.modifypoints</span></tt></a>()</td>
+<td>Add/remove continuum points.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.on_button_release.html#barak.cont.InteractiveCoFit.on_button_release" title="barak.cont.InteractiveCoFit.on_button_release"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_button_release</span></tt></a>(event)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.on_keypress.html#barak.cont.InteractiveCoFit.on_keypress" title="barak.cont.InteractiveCoFit.on_keypress"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_keypress</span></tt></a>(event)</td>
+<td>Add or remove a continuum point.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.plotinit.html#barak.cont.InteractiveCoFit.plotinit" title="barak.cont.InteractiveCoFit.plotinit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.plotinit</span></tt></a>()</td>
+<td>Set up the figure and do initial plots.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.update.html#barak.cont.InteractiveCoFit.update" title="barak.cont.InteractiveCoFit.update"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.update</span></tt></a>()</td>
+<td>Calculates the new continuum, residuals and updates the plots.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="convolve">
 <h2>convolve<a class="headerlink" href="#convolve" title="Permalink to this headline">¶</a></h2>
 <p>Functions related to convolution.</p>
@@ -450,6 +485,12 @@ ground state</td>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.dec2s.html#barak.coord.dec2s" title="barak.coord.dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec2s</span></tt></a>(ra,&nbsp;dec)</td>
 <td>Convert an RA and Dec from degrees to sexigesimal.</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.dec_dec2s.html#barak.coord.dec_dec2s" title="barak.coord.dec_dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec_dec2s</span></tt></a>(dec[,&nbsp;decformat])</td>
+<td>Converts decimal RA and Dec to sexigesimal.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.dec_s2dec.html#barak.coord.dec_s2dec" title="barak.coord.dec_s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">dec_s2dec</span></tt></a>(dec)</td>
+<td>Converts a sexigesimal Dec string to decimal.</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.distsq.html#barak.coord.distsq" title="barak.coord.distsq"><tt class="xref py py-obj docutils literal"><span class="pre">distsq</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2)</td>
 <td>Find the distance squared in xyz space between two RAs and</td>
 </tr>
@@ -461,6 +502,12 @@ ground state</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.match.html#barak.coord.match" title="barak.coord.match"><tt class="xref py py-obj docutils literal"><span class="pre">match</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2,&nbsp;tol[,&nbsp;allmatches])</td>
 <td>Given two sets of numpy arrays of ra,dec and a tolerance tol, returns an array of indices and separations with the same length as the first input array.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.ra_dec2s.html#barak.coord.ra_dec2s" title="barak.coord.ra_dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">ra_dec2s</span></tt></a>(ra[,&nbsp;raformat])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.ra_s2dec.html#barak.coord.ra_s2dec" title="barak.coord.ra_s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">ra_s2dec</span></tt></a>(ra)</td>
+<td>Converts a sexigesimal RA string to decimal.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.radec_to_xyz.html#barak.coord.radec_to_xyz" title="barak.coord.radec_to_xyz"><tt class="xref py py-obj docutils literal"><span class="pre">radec_to_xyz</span></tt></a>(ra_deg,&nbsp;dec_deg)</td>
 <td>Convert RA and Dec to xyz positions on a unit sphere.</td>
@@ -550,25 +597,28 @@ continuum to a QSO spectrum.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.html#barak.fitcont.InteractiveCoFit" title="barak.fitcont.InteractiveCoFit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;contpoints[,&nbsp;...])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.modifypoints.html#barak.fitcont.InteractiveCoFit.modifypoints" title="barak.fitcont.InteractiveCoFit.modifypoints"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.modifypoints</span></tt></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.calc_tau.html#barak.fitcont.InteractiveCoFit.calc_tau" title="barak.fitcont.InteractiveCoFit.calc_tau"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.calc_tau</span></tt></a>()</td>
+<td>Include absorption from a transition (DLA).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.modifypoints.html#barak.fitcont.InteractiveCoFit.modifypoints" title="barak.fitcont.InteractiveCoFit.modifypoints"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.modifypoints</span></tt></a>()</td>
 <td>Add/remove continuum points.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.on_button_release.html#barak.fitcont.InteractiveCoFit.on_button_release" title="barak.fitcont.InteractiveCoFit.on_button_release"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_button_release</span></tt></a>(event)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.on_button_release.html#barak.fitcont.InteractiveCoFit.on_button_release" title="barak.fitcont.InteractiveCoFit.on_button_release"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_button_release</span></tt></a>(event)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.on_keypress.html#barak.fitcont.InteractiveCoFit.on_keypress" title="barak.fitcont.InteractiveCoFit.on_keypress"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_keypress</span></tt></a>(event)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.on_keypress.html#barak.fitcont.InteractiveCoFit.on_keypress" title="barak.fitcont.InteractiveCoFit.on_keypress"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_keypress</span></tt></a>(event)</td>
 <td>Add or remove a continuum point.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.plotinit.html#barak.fitcont.InteractiveCoFit.plotinit" title="barak.fitcont.InteractiveCoFit.plotinit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.plotinit</span></tt></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.plotinit.html#barak.fitcont.InteractiveCoFit.plotinit" title="barak.fitcont.InteractiveCoFit.plotinit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.plotinit</span></tt></a>()</td>
 <td>Set up the figure and do initial plots.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.update.html#barak.fitcont.InteractiveCoFit.update" title="barak.fitcont.InteractiveCoFit.update"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.update</span></tt></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.InteractiveCoFit.update.html#barak.fitcont.InteractiveCoFit.update" title="barak.fitcont.InteractiveCoFit.update"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.update</span></tt></a>()</td>
 <td>Calculates the new continuum, residuals and updates the plots.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.fitqsocont.html#barak.fitcont.fitqsocont" title="barak.fitcont.fitqsocont"><tt class="xref py py-obj docutils literal"><span class="pre">fitqsocont</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;redshift[,&nbsp;oldco,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.fitqsocont.html#barak.fitcont.fitqsocont" title="barak.fitcont.fitqsocont"><tt class="xref py py-obj docutils literal"><span class="pre">fitqsocont</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;redshift[,&nbsp;oldco,&nbsp;...])</td>
 <td>Find an estimate of a QSO continuum.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.fitcont.spline_continuum.html#barak.fitcont.spline_continuum" title="barak.fitcont.spline_continuum"><tt class="xref py py-obj docutils literal"><span class="pre">spline_continuum</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;edges[,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.fitcont.spline_continuum.html#barak.fitcont.spline_continuum" title="barak.fitcont.spline_continuum"><tt class="xref py py-obj docutils literal"><span class="pre">spline_continuum</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;edges[,&nbsp;...])</td>
 <td>Given a section of spectrum, fit a continuum to it very</td>
 </tr>
 </tbody>
@@ -599,7 +649,7 @@ continuum to a QSO spectrum.</p>
 <td>Return interpolated data using Akima&#8217;s method.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.interp.interp_spline.html#barak.interp.interp_spline" title="barak.interp.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
-<td>Like <tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt>, but using spline instead of linear interpolation.</td>
+<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.8.dev-9ff9c0a)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.interp.splice.html#barak.interp.splice" title="barak.interp.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
 <td>Join two overlapping curves smoothly using a cubic spline.</td>
@@ -655,6 +705,20 @@ continuum to a QSO spectrum.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="phot">
+<h2>phot<a class="headerlink" href="#phot" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.phot.UBVRI_to_ugriz.html#barak.phot.UBVRI_to_ugriz" title="barak.phot.UBVRI_to_ugriz"><tt class="xref py py-obj docutils literal"><span class="pre">UBVRI_to_ugriz</span></tt></a>(U,&nbsp;BmV,&nbsp;UmB,&nbsp;RmI)</td>
+<td>Covnersion from Fukugita et al. 1996</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="plot">
 <h2>plot<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h2>
 <p>Plotting routines.</p>
@@ -664,7 +728,7 @@ continuum to a QSO spectrum.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.arrplot.html#barak.plot.arrplot" title="barak.plot.arrplot"><tt class="xref py py-obj docutils literal"><span class="pre">arrplot</span></tt></a>(x,&nbsp;y,&nbsp;a[,&nbsp;ax])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.arrplot.html#barak.plot.arrplot" title="barak.plot.arrplot"><tt class="xref py py-obj docutils literal"><span class="pre">arrplot</span></tt></a>(a[,&nbsp;x,&nbsp;y,&nbsp;ax,&nbsp;perc,&nbsp;colorbar])</td>
 <td>Plot a 2D array with coordinates.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.axvfill.html#barak.plot.axvfill" title="barak.plot.axvfill"><tt class="xref py py-obj docutils literal"><span class="pre">axvfill</span></tt></a>(xvals[,&nbsp;ax,&nbsp;color,&nbsp;alpha,&nbsp;edgecolor])</td>
@@ -695,6 +759,9 @@ continuum to a QSO spectrum.</p>
 <td>Print text on an axis using axes coordinates.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.shade_to_line.html#barak.plot.shade_to_line" title="barak.plot.shade_to_line"><tt class="xref py py-obj docutils literal"><span class="pre">shade_to_line</span></tt></a>(xvals,&nbsp;yvals[,&nbsp;blend,&nbsp;ax,&nbsp;y0,&nbsp;...])</td>
+<td>Shade a region between two curves including a color gradient.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.shade_to_line_vert.html#barak.plot.shade_to_line_vert" title="barak.plot.shade_to_line_vert"><tt class="xref py py-obj docutils literal"><span class="pre">shade_to_line_vert</span></tt></a>(yvals,&nbsp;xvals[,&nbsp;blend,&nbsp;...])</td>
 <td>Shade a region between two curves including a color gradient.</td>
 </tr>
 </tbody>
@@ -943,6 +1010,36 @@ spectrum-related functions.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="stats">
+<h2>stats<a class="headerlink" href="#stats" title="Permalink to this headline">¶</a></h2>
+<p>Statistics-related functions.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.stats.binomial_confidence_interval.html#barak.stats.binomial_confidence_interval" title="barak.stats.binomial_confidence_interval"><tt class="xref py py-obj docutils literal"><span class="pre">binomial_confidence_interval</span></tt></a>(conf,&nbsp;ntrial,&nbsp;...)</td>
+<td>Find the binomial confidence level.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.stats.binomial_min_max_limits.html#barak.stats.binomial_min_max_limits" title="barak.stats.binomial_min_max_limits"><tt class="xref py py-obj docutils literal"><span class="pre">binomial_min_max_limits</span></tt></a>(conf,&nbsp;ntrial,&nbsp;nsuccess)</td>
+<td>Calculate the minimum and maximum binomial probability consistent with seeing nsuccess from ntrial at a given confidence level.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.stats.blackbody_lam.html#barak.stats.blackbody_lam" title="barak.stats.blackbody_lam"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_lam</span></tt></a>(lam,&nbsp;T)</td>
+<td>Blackbody as a function of wavelength (cm) and temperature (K).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.stats.blackbody_nu.html#barak.stats.blackbody_nu" title="barak.stats.blackbody_nu"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_nu</span></tt></a>(nu,&nbsp;T)</td>
+<td>Blackbody as a function of frequency (Hz) and temperature (K).</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.stats.poisson_confidence_interval.html#barak.stats.poisson_confidence_interval" title="barak.stats.poisson_confidence_interval"><tt class="xref py py-obj docutils literal"><span class="pre">poisson_confidence_interval</span></tt></a>(conf,&nbsp;nevents)</td>
+<td>Find the Poisson confidence interval.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.stats.poisson_min_max_limits.html#barak.stats.poisson_min_max_limits" title="barak.stats.poisson_min_max_limits"><tt class="xref py py-obj docutils literal"><span class="pre">poisson_min_max_limits</span></tt></a>(conf,&nbsp;nevents)</td>
+<td>Calculate the minimum and maximum mean Poisson value mu</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="utilities">
 <h2>utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
 <p>Various general-use functions.</p>
@@ -972,12 +1069,6 @@ spectrum-related functions.</p>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.between.html#barak.utilities.between" title="barak.utilities.between"><tt class="xref py py-obj docutils literal"><span class="pre">between</span></tt></a>(a,&nbsp;vmin,&nbsp;vmax)</td>
 <td>Return a boolean array True where vmin &lt;= a &lt; vmax.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.blackbody_lam.html#barak.utilities.blackbody_lam" title="barak.utilities.blackbody_lam"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_lam</span></tt></a>(lam,&nbsp;T)</td>
-<td>Blackbody as a function of wavelength (cm) and temperature (K).</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.utilities.blackbody_nu.html#barak.utilities.blackbody_nu" title="barak.utilities.blackbody_nu"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_nu</span></tt></a>(nu,&nbsp;T)</td>
-<td>Blackbody as a function of frequency (Hz) and temperature (K).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.calc_Mstar_b.html#barak.utilities.calc_Mstar_b" title="barak.utilities.calc_Mstar_b"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Mstar_b</span></tt></a>(z)</td>
 <td>Find M* at a given redshift.</td>
@@ -1046,23 +1137,32 @@ spectrum-related functions.</p>
 <h2>Command line scripts<a class="headerlink" href="#command-line-scripts" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="83%" />
+<col width="13%" />
+<col width="87%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td>../scripts/cphd</td>
+<td>read a set of valid FITS key=value pairs from a text file and copy them to the the given fits file, with suffix _newhd added.</td>
+</tr>
+<tr class="row-even"><td>../scripts/extract_wcs</td>
+<td>Print the world coordinate system (wcs) information from a fits image header to a text file.</td>
+</tr>
 <tr class="row-odd"><td>../scripts/fhdr</td>
 <td>Print the whole header or selected cards for a list of FITS files.</td>
 </tr>
 <tr class="row-even"><td>../scripts/finfo</td>
 <td>Print a short summary for one or more FITS files.</td>
 </tr>
-<tr class="row-odd"><td>../scripts/qso_jhk</td>
+<tr class="row-odd"><td>../scripts/overwritehd</td>
+<td>read a set of valid FITS key=value pairs from a text file and use them to make a new header for the given fits file, with suffix _newhd added.</td>
+</tr>
+<tr class="row-even"><td>../scripts/qso_jhk</td>
 <td>Plot the spectrum of a QSO in the IR overlayed with atmospheric absorption and sky background emission.</td>
 </tr>
-<tr class="row-even"><td>../scripts/run_nproc</td>
+<tr class="row-odd"><td>../scripts/run_nproc</td>
 <td>Run a shell command on a list of files using multiple processors.</td>
 </tr>
-<tr class="row-odd"><td>../scripts/sex2DS9reg</td>
+<tr class="row-even"><td>../scripts/sex2DS9reg</td>
 <td>Make a ds9 region file from a SExtractor catalogue.</td>
 </tr>
 </tbody>

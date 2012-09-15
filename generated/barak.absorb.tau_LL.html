@@ -54,7 +54,7 @@
 <h1>barak.absorb.tau_LL<a class="headerlink" href="#barak-absorb-tau-ll" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.absorb.tau_LL">
-<tt class="descclassname">barak.absorb.</tt><tt class="descname">tau_LL</tt><big>(</big><em>logN</em>, <em>wa</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#tau_LL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.tau_LL" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">tau_LL</tt><big>(</big><em>logN</em>, <em>wa</em>, <em>wstart=912.0</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#tau_LL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.tau_LL" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the optical depth at the neutral hydrogen Lyman limit.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -68,6 +68,10 @@
 <blockquote>
 <div><p>Wavelength in Angstroms.</p>
 </div></blockquote>
+<p><strong>wstart</strong> : float (912.)</p>
+<blockquote>
+<div><p>Tau values at wavelengths above this are zero.</p>
+</div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>tau</strong> : ndarray or float if <em class="xref py py-obj">wa</em> is scalar</p>
@@ -80,7 +84,7 @@
 </table>
 <p class="rubric">Notes</p>
 <p>At the Lyman limit, the optical depth tau is given by:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">tau</span> <span class="o">=</span> <span class="n">N</span><span class="p">(</span><span class="n">HI</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma_0</span> 
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tau</span> <span class="o">=</span> <span class="n">N</span><span class="p">(</span><span class="n">HI</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma_0</span>
 </pre></div>
 </div>
 <p>where sigma_0 = 6.304 e-18 cm^2 and N(HI) is the HI column density
@@ -92,7 +96,7 @@ eV), nu is frequency and lam is the wavelength in Angstroms. This
 expression is valid for I_H &lt; I &lt; 100* I_H.</p>
 <p>So the normalised continuum bluewards of the Lyman limit is:</p>
 <div class="highlight-python"><pre>F/F_cont = exp(-tau) = exp(-N(HI) * sigma_lam)
-= exp(-N(HI) * sigma_0 * (lam/912)^3)</pre>
+         = exp(-N(HI) * sigma_0 * (lam/912)^3)</pre>
 </div>
 <p>Where F is the absorbed flux and F_cont is the unabsorbed
 continuum.</p>

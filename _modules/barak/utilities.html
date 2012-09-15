@@ -51,7 +51,6 @@
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
-<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">h</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span>
 
 <div class="viewcode-block" id="Bunch"><a class="viewcode-back" href="../../generated/barak.utilities.Bunch.html#barak.utilities.Bunch">[docs]</a><span class="k">class</span> <span class="nc">Bunch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Bunch class from the python cookbook with __str__ and __repr__</span>
@@ -428,20 +427,6 @@
 <div class="viewcode-block" id="Gaussian"><a class="viewcode-back" href="../../generated/barak.utilities.Gaussian.html#barak.utilities.Gaussian">[docs]</a><span class="k">def</span> <span class="nf">Gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Gaussian.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">height</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="blackbody_nu"><a class="viewcode-back" href="../../generated/barak.utilities.blackbody_nu.html#barak.utilities.blackbody_nu">[docs]</a><span class="k">def</span> <span class="nf">blackbody_nu</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Blackbody as a function of frequency (Hz) and temperature (K).</span>
-
-<span class="sd">    returns units of erg/s/cm^2/Hz/Steradian</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">nu</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</div>
-<div class="viewcode-block" id="blackbody_lam"><a class="viewcode-back" href="../../generated/barak.utilities.blackbody_lam.html#barak.utilities.blackbody_lam">[docs]</a><span class="k">def</span> <span class="nf">blackbody_lam</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Blackbody as a function of wavelength (cm) and temperature (K).</span>
-
-<span class="sd">    returns units of erg/s/cm^2/cm/Steradian</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">**</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">h</span><span class="o">*</span><span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="meshgrid_nd"><a class="viewcode-back" href="../../generated/barak.utilities.meshgrid_nd.html#barak.utilities.meshgrid_nd">[docs]</a><span class="k">def</span> <span class="nf">meshgrid_nd</span><span class="p">(</span><span class="o">*</span><span class="n">arrs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Like numpy&#39;s meshgrid, but works on more than two dimensions.</span>
