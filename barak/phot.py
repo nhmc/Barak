@@ -1,8 +1,8 @@
-
+""" Photometry-based tools.
+"""
 
 def UBVRI_to_ugriz(U, BmV, UmB, RmI):
-    """ Covnersion from Fukugita et al. 1996
-    """
+    """ Conversion from Fukugita et al. 1996."""
     g = V + 0.56 * BmV - 0.12
     r = V - 0.49 * BmV + 0.11
     umg = 1.38*UmB + 1.14
