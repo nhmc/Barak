@@ -456,20 +456,3 @@ def indices_from_grid(c, ref):
     ind = (c - ref[0]) / dref0
 
     return ind
-
-from constants import hplanck, c, kboltz
-
-def blackbody_nu(nu, T):
-    """ Blackbody as a function of frequency (Hz) and temperature (K).
-
-    returns units of erg/s/cm^2/Hz/Steradian
-    """
-    return 2*h*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
-
-def blackbody_lam(lam, T):
-    """ Blackbody as a function of wavelength (cm) and temperature (K).
-
-    returns units of erg/s/cm^2/cm/Steradian
-    """
-    return 2*h*c**2 / (lam**5 * (np.exp(hplanck*c / (lam*kboltz*T)) - 1))
-
