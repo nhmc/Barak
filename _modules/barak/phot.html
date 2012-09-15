@@ -46,9 +46,11 @@
         
         
   <h1>Source code for barak.phot</h1><div class="highlight"><pre>
-<span class="k">def</span> <span class="nf">UBVRI_to_ugriz</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">BmV</span><span class="p">,</span> <span class="n">UmB</span><span class="p">,</span> <span class="n">RmI</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Covnersion from Fukugita et al. 1996</span>
-<div class="viewcode-block" id="UBVRI_to_ugriz"><a class="viewcode-back" href="../../generated/barak.phot.UBVRI_to_ugriz.html#barak.phot.UBVRI_to_ugriz">[docs]</a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot; Photometry-based tools.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UBVRI_to_ugriz"><a class="viewcode-back" href="../../generated/barak.phot.UBVRI_to_ugriz.html#barak.phot.UBVRI_to_ugriz">[docs]</a><span class="k">def</span> <span class="nf">UBVRI_to_ugriz</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">BmV</span><span class="p">,</span> <span class="n">UmB</span><span class="p">,</span> <span class="n">RmI</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Conversion from Fukugita et al. 1996.&quot;&quot;&quot;</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">V</span> <span class="o">+</span> <span class="mf">0.56</span> <span class="o">*</span> <span class="n">BmV</span> <span class="o">-</span> <span class="mf">0.12</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">V</span> <span class="o">-</span> <span class="mf">0.49</span> <span class="o">*</span> <span class="n">BmV</span> <span class="o">+</span> <span class="mf">0.11</span>
     <span class="n">umg</span> <span class="o">=</span> <span class="mf">1.38</span><span class="o">*</span><span class="n">UmB</span> <span class="o">+</span> <span class="mf">1.14</span>
@@ -69,8 +71,8 @@
 
     <span class="n">z</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="n">rmz</span>
      
-    <span class="k">return</span> <span class="n">u</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">z</span>
-</pre></div></div>
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">z</span></div>
+</pre></div>
 
       </div>
       <div class="bottomnav">
