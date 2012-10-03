@@ -17,7 +17,8 @@ http://nhmc.github.com/Barak
 To install, just copy the the barak/ to directory to a location
 pointed to by your PYTHONPATH variable.
 
-To run the tests you need py.test installed.  Then run
+To run the tests you need py.test
+(http://pytest.org/latest/getting-started.html) installed.  Then run
 
    py.test barak 
 
