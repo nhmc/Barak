@@ -1,15 +1,20 @@
 """ This module has routines for analysing the absorption profiles
 from ions and molecules.
 """
-import math
-from math import pi, sqrt
-
-import numpy as np
 import voigt
 from convolve import convolve_psf
 from utilities import between, adict, get_data_path, indexnear
 from constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
-from spec import find_wa_edges
+from spec import find_wa_edges, make_constant_dv_wa_scale
+from abundances import Asolar
+from pyvpfit import readf26
+
+import numpy as np
+
+from cStringIO import StringIO
+import math
+from math import pi, sqrt
+
 
 DATAPATH = get_data_path()
 
@@ -200,17 +205,19 @@ def find_tau(wa, lines, atom, per_trans=False):
     Note this assumes the wavelength array has small enough pixel
     separations so that the profiles are properly sampled.
     """
+    try:
+        vp = readf26(lines)
+    except AttributeError:
+        pass
+    else:
+        lines = [(l['name'].strip(), l['z'], l['b'], l['logN'])
+                 for l in vp.lines]
+
     tau = np.zeros_like(wa)
     #print 'finding tau...'
     ticks = []
     ions = []
     taus = []
-    if isinstance(lines, basestring):
-        from pyvpfit import readf26
-        vp = readf26(lines)
-        lines = [(l['name'].strip(), l['z'], l['b'], l['logN'])
-                 for l in vp.lines]
-        
     for ion,z,b,logN in lines:
         #print 'z, logN, b', z, logN, b
         maxdv = 20000 if logN > 18 else 1000
@@ -592,3 +599,83 @@ def tau_LL(logN, wa, wstart=912.):
     tau = np.zeros_like(wa)
     tau[:i] = 10**logN * sigma0 * (wa[:i] / 912.)**3 
     return tau
+
+def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, dv=5., atom=None):
+    """ Create the optical due to absorption from a DLA.
+
+    The DLA is at z=0. The column density and metallicity can be
+    varied. Solar Abundance ratios are assumed, with most of the atoms
+    in the singly ionised state
+
+    Parameters
+    ----------
+    wmin, wmax : float
+       Start an end of the wavelength scale (rest wavelengths).
+    logZ : float (0)
+       log10 of the metal abundance relative to solar. For example 0
+       (the default) gives solar abundances, -1 gives 1/10th of solar.
+       
+    Returns
+    -------
+    wa, tau : ndarrays, shape (N,)
+      The wavelength array and tau at each wavelength.
+
+    """
+    wa = make_constant_dv_wa_scale(wmin, wmax, dv)
+    off = -12 + logN + logZ
+    f26 = (
+        'HI    0  0  50 0 %.2f 0' % logN,    
+        'OI    0  0  50 0 %.2f 0' % (Asolar['O']  + off), 
+        'SiII  0  0  50 0 %.2f 0' % (Asolar['Si'] + off - 0.05), 
+        'SiIII 0  0  50 0 %.2f 0' % (Asolar['Si'] + off - 1),    
+        'SiIV  0  0  50 0 %.2f 0' % (Asolar['Si'] + off - 1),    
+        'FeII  0  0  50 0 %.2f 0' % (Asolar['Fe'] + off),    
+        'CII   0  0  50 0 %.2f 0' % (Asolar['C']  + off - 0.05),    
+        'CIII  0  0  50 0 %.2f 0' % (Asolar['C']  + off - 1),    
+        'CIV   0  0  50 0 %.2f 0' % (Asolar['C']  + off - 1),
+        'CaII  0  0  50 0 %.2f 0' % (Asolar['Ca'] + off),
+        'AlII  0  0  50 0 %.2f 0' % (Asolar['Al'] + off - 0.05),
+        'AlIII 0  0  50 0 %.2f 0' % (Asolar['Al'] + off - 1),
+        'TiII  0  0  50 0 %.2f 0' % (Asolar['Ti'] + off),
+        'NII   0  0  50 0 %.2f 0' % (Asolar['N']  + off),
+        'ZnII  0  0  50 0 %.2f 0' % (Asolar['Zn']  + off),
+        'CrII  0  0  50 0 %.2f 0' % (Asolar['Cr']  + off),
+        )
+    f26 = StringIO('\n'.join(f26))
+    if atom is None:
+        atom = readatom()
+
+    #import pdb; pdb.set_trace()
+    tau,ticks = find_tau(wa, f26, atom)
+    tau += tau_LL(logN, wa, wstart=912.)
+    return wa, tau, ticks
+
+def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
+    """ Find the transmission after absrption by a DLA
+
+    Parameters
+    ----------
+    wa : array_like, shape (N,)
+      wavelength array.
+    redshift : float
+      The redshift of the DLA.
+    vfwhm : float
+      The resolution FWHM in km/s.
+    logZ : float (0)
+       log10 of the metal abundance relative to solar. For example 0
+       (the default) gives solar abundances, -1 gives 1/10th of solar.
+
+    Returns
+    -------
+    transmission : ndarray, shape (N,)
+      The transmission at each wavelength
+    ticks : ndarray, shape (M,)
+      Information for making ticks to show absorbing components.
+    """
+    wa1 = wa / (1 + redshift)
+    lwa1, tau, ticks = calc_DLA_tau(wa1[0], wa1[-1], logN=logN, logZ=logZ,
+                                    dv=dv)
+    lwa = lwa1 * (1 + redshift)
+    trans = convolve_psf(np.exp(-tau),  vfwhm / dv)
+    trans1 = np.interp(wa, lwa, trans)
+    return trans1, ticks
