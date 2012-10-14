@@ -1,0 +1,13 @@
+include README
+
+include distribute_setup.py
+include setup.cfg
+recursive-include barak *
+
+recursive-include docs *
+recursive-include scripts *
+recursive-include examples *
+
+exclude *.pyc *.o
+prune docs/_build
+prune build
