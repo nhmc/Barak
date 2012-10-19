@@ -25,10 +25,11 @@ handled are:
 
 The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 
-It requires `NumPy <http://numpy.scipy.org/>`_, `Matplotlib
-<http://matplotlib.sourceforge.net/>`_, `SciPy
-<http://www.scipy.org/>`_, `ATpy <http://atpy.github.com/>`_ and
-`Astropy <http://www.astropy.org>`_.
+It requires `NumPy <http://numpy.scipy.org/>`_, `PyFits
+<http://www.stsci.edu/institute/software_hardware/pyfits/Download>`_
+and 'ATpy <http://atpy.github.com/>`_ to install. `Matplotlib
+<http://matplotlib.sourceforge.net/>`_ and `SciPy
+<http://www.scipy.org/>`_ are also required for full functionality.
 
 To install, either download the tarball from the pypi website and then
 do::
