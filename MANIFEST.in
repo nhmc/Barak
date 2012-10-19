@@ -2,12 +2,14 @@ include README AUTHORS CHANGES LICENCE INSTALL
 
 include distribute_setup.py
 include setup.cfg
-recursive-include barak *
 
-recursive-include docs *
-recursive-include scripts *
-recursive-include examples *
+exclude *.pyc *.o *PYTEST*
 
-exclude *.pyc *.o
+recursive-include barak *.py
+
+recursive-include docs *.py
+recursive-include scripts *.py
+recursive-include examples *.py
+
 prune docs/_build
 prune build
