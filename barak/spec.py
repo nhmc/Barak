@@ -1270,7 +1270,7 @@ def air2vac_Ciddor(airw):
     return vacw
 
 def qso_template(wa, z):
-    """ Return a composite QSO spectrum at redshift z.
+    """ Return a composite visible QSO spectrum at redshift z.
 
     The SDSS composite spectrum as a function of F_lambda is returned
     at each wavelength of wa. wa must be in angstroms.
@@ -1281,7 +1281,7 @@ def qso_template(wa, z):
 def qso_template_uv(wa, z, smooth_fwhmpix=6):
     """ Return a composite UV QSO spectrum at redshift z.
 
-    wavelengths must be in Angstroms.
+    Wavelengths must be in Angstroms.
     """
     w, f, e = np.loadtxt(DATAPATH + 'templates/qso/telfer_composite_qso.txt',
                          unpack=1)
