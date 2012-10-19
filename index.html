@@ -61,14 +61,22 @@ astrophysical environments.</li>
 absorption features.</li>
 <li>Find the expected broad-band magnitudes given a spectral energy
 distribution.</li>
-<li>Calculate cosmological distance measures for various cosmologies.</li>
 </ul>
 </div></blockquote>
 <p>The package can be downloaded <a class="reference external" href="https://github.com/nhmc/Barak">here</a>.</p>
 <p>It requires <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>, <a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a>, <a class="reference external" href="http://www.scipy.org/">SciPy</a>, <a class="reference external" href="http://atpy.github.com/">ATpy</a> and
 <a class="reference external" href="http://www.astropy.org">Astropy</a>.</p>
-<p>To install, just copy the <tt class="docutils literal"><span class="pre">barak/</span></tt> directory to a location pointed
-to by your PYTHONPATH variable.</p>
+<p>To install, either download the tarball from the pypi website and then
+do:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
+<p>You may need to put a <tt class="docutils literal"><span class="pre">sudo</span></tt> in front of this.</p>
+<p>A better way to install (which allows for easy uninstallation) is by
+using <tt class="xref py py-obj docutils literal"><span class="pre">pip</span></tt>:</p>
+<div class="highlight-python"><pre>pip install barak</pre>
+</div>
+<p>but you need to have <tt class="xref py py-obj docutils literal"><span class="pre">pip</span></tt>
+(<a class="reference external" href="http://www.pip-installer.org/en/latest/index.html">http://www.pip-installer.org/en/latest/index.html</a>) installed.</p>
 <p>To run the tests you need <a class="reference external" href="http://pytest.org/latest/">py.test</a>
 installed.  Then run:</p>
 <div class="highlight-python"><pre>py.test barak</pre>
@@ -117,6 +125,12 @@ from ions and molecules.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T" title="barak.absorb.b_to_T"><tt class="xref py py-obj docutils literal"><span class="pre">b_to_T</span></tt></a>(atom,&nbsp;bvals)</td>
 <td>Convert b parameters (km/s) to a temperature in K for an atom</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_DLA_tau.html#barak.absorb.calc_DLA_tau" title="barak.absorb.calc_DLA_tau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_DLA_tau</span></tt></a>(wmin,&nbsp;wmax[,&nbsp;logN,&nbsp;logZ,&nbsp;dv,&nbsp;atom])</td>
+<td>Create the optical due to absorption from a DLA.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_DLA_trans.html#barak.absorb.calc_DLA_trans" title="barak.absorb.calc_DLA_trans"><tt class="xref py py-obj docutils literal"><span class="pre">calc_DLA_trans</span></tt></a>(wa,&nbsp;redshift,&nbsp;vfwhm[,&nbsp;logN,&nbsp;...])</td>
+<td>Find the transmission after absrption by a DLA</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;tr[,&nbsp;ew,&nbsp;ewer,&nbsp;fl,&nbsp;er,&nbsp;...])</td>
 <td>Find the rest equivalent width of a feature, and column density assuming optically thin.</td>
@@ -647,7 +661,7 @@ continuum to a QSO spectrum.</p>
 <td>Return interpolated data using Akima&#8217;s method.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.interp.interp_spline.html#barak.interp.interp_spline" title="barak.interp.interp_spline"><tt class="xref py py-obj docutils literal"><span class="pre">interp_spline</span></tt></a>(x,&nbsp;xvals,&nbsp;yvals[,&nbsp;nochecks])</td>
-<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.8.dev-9ff9c0a)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
+<td>Like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.6)"><tt class="xref py py-obj docutils literal"><span class="pre">numpy.interp</span></tt></a>, but using spline instead of linear interpolation.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.interp.splice.html#barak.interp.splice" title="barak.interp.splice"><tt class="xref py py-obj docutils literal"><span class="pre">splice</span></tt></a>(co0,&nbsp;co1,&nbsp;i,&nbsp;j[,&nbsp;forced])</td>
 <td>Join two overlapping curves smoothly using a cubic spline.</td>
@@ -812,7 +826,7 @@ files, and writing out fort.13 files.</p>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.readf13.html#barak.pyvpfit.readf13" title="barak.pyvpfit.readf13"><tt class="xref py py-obj docutils literal"><span class="pre">readf13</span></tt></a>(filename[,&nbsp;read_regions,&nbsp;res])</td>
 <td>Reads a fort.13 style file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.readf26.html#barak.pyvpfit.readf26" title="barak.pyvpfit.readf26"><tt class="xref py py-obj docutils literal"><span class="pre">readf26</span></tt></a>(filename[,&nbsp;res])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.pyvpfit.readf26.html#barak.pyvpfit.readf26" title="barak.pyvpfit.readf26"><tt class="xref py py-obj docutils literal"><span class="pre">readf26</span></tt></a>(fh[,&nbsp;res])</td>
 <td>Reads a f26 style file and returns a VpfitModel object. If the</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.pyvpfit.sumlines.html#barak.pyvpfit.sumlines" title="barak.pyvpfit.sumlines"><tt class="xref py py-obj docutils literal"><span class="pre">sumlines</span></tt></a>(lines)</td>
@@ -977,7 +991,7 @@ spectrum-related functions.</p>
 <td>Draw vertical dotted lines showing expected positions of absorption and emission lines, given a redshift.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.qso_template.html#barak.spec.qso_template" title="barak.spec.qso_template"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template</span></tt></a>(wa,&nbsp;z)</td>
-<td>Return a composite QSO spectrum at redshift z.</td>
+<td>Return a composite visible QSO spectrum at redshift z.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.qso_template_uv.html#barak.spec.qso_template_uv" title="barak.spec.qso_template_uv"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template_uv</span></tt></a>(wa,&nbsp;z[,&nbsp;smooth_fwhmpix])</td>
 <td>Return a composite UV QSO spectrum at redshift z.</td>

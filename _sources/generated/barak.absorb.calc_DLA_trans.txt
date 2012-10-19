@@ -1,0 +1,6 @@
+barak.absorb.calc_DLA_trans
+===========================
+
+.. currentmodule:: barak.absorb
+
+.. autofunction:: calc_DLA_trans

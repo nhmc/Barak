@@ -49,15 +49,20 @@
 <span class="sd">&quot;&quot;&quot; This module has routines for analysing the absorption profiles</span>
 <span class="sd">from ions and molecules.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">voigt</span>
 <span class="kn">from</span> <span class="nn">convolve</span> <span class="kn">import</span> <span class="n">convolve_psf</span>
 <span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">between</span><span class="p">,</span> <span class="n">adict</span><span class="p">,</span> <span class="n">get_data_path</span><span class="p">,</span> <span class="n">indexnear</span>
 <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">Ar</span><span class="p">,</span> <span class="n">me</span><span class="p">,</span> <span class="n">mp</span><span class="p">,</span> <span class="n">kboltz</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">sqrt_ln2</span><span class="p">,</span> <span class="n">c_kms</span>
-<span class="kn">from</span> <span class="nn">spec</span> <span class="kn">import</span> <span class="n">find_wa_edges</span>
+<span class="kn">from</span> <span class="nn">spec</span> <span class="kn">import</span> <span class="n">find_wa_edges</span><span class="p">,</span> <span class="n">make_constant_dv_wa_scale</span>
+<span class="kn">from</span> <span class="nn">abundances</span> <span class="kn">import</span> <span class="n">Asolar</span>
+<span class="kn">from</span> <span class="nn">pyvpfit</span> <span class="kn">import</span> <span class="n">readf26</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span>
+
 
 <span class="n">DATAPATH</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
 
@@ -248,17 +253,19 @@
 <span class="sd">    Note this assumes the wavelength array has small enough pixel</span>
 <span class="sd">    separations so that the profiles are properly sampled.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">readf26</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">l</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;logN&#39;</span><span class="p">])</span>
+                 <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">vp</span><span class="o">.</span><span class="n">lines</span><span class="p">]</span>
+
     <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
     <span class="c">#print &#39;finding tau...&#39;</span>
     <span class="n">ticks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ions</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">taus</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">pyvpfit</span> <span class="kn">import</span> <span class="n">readf26</span>
-        <span class="n">vp</span> <span class="o">=</span> <span class="n">readf26</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">l</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="s">&#39;logN&#39;</span><span class="p">])</span>
-                 <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">vp</span><span class="o">.</span><span class="n">lines</span><span class="p">]</span>
-        
     <span class="k">for</span> <span class="n">ion</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">logN</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
         <span class="c">#print &#39;z, logN, b&#39;, z, logN, b</span>
         <span class="n">maxdv</span> <span class="o">=</span> <span class="mi">20000</span> <span class="k">if</span> <span class="n">logN</span> <span class="o">&gt;</span> <span class="mi">18</span> <span class="k">else</span> <span class="mi">1000</span>
@@ -639,7 +646,87 @@
     <span class="n">i</span> <span class="o">=</span> <span class="n">wa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">wstart</span><span class="p">)</span>
     <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span>
     <span class="n">tau</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">logN</span> <span class="o">*</span> <span class="n">sigma0</span> <span class="o">*</span> <span class="p">(</span><span class="n">wa</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mf">912.</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span> 
-    <span class="k">return</span> <span class="n">tau</span></div>
+    <span class="k">return</span> <span class="n">tau</span>
+</div>
+<div class="viewcode-block" id="calc_DLA_tau"><a class="viewcode-back" href="../../generated/barak.absorb.calc_DLA_tau.html#barak.absorb.calc_DLA_tau">[docs]</a><span class="k">def</span> <span class="nf">calc_DLA_tau</span><span class="p">(</span><span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span><span class="p">,</span> <span class="n">logN</span><span class="o">=</span><span class="mf">20.3</span><span class="p">,</span> <span class="n">logZ</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span> <span class="n">atom</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Create the optical due to absorption from a DLA.</span>
+
+<span class="sd">    The DLA is at z=0. The column density and metallicity can be</span>
+<span class="sd">    varied. Solar Abundance ratios are assumed, with most of the atoms</span>
+<span class="sd">    in the singly ionised state</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wmin, wmax : float</span>
+<span class="sd">       Start an end of the wavelength scale (rest wavelengths).</span>
+<span class="sd">    logZ : float (0)</span>
+<span class="sd">       log10 of the metal abundance relative to solar. For example 0</span>
+<span class="sd">       (the default) gives solar abundances, -1 gives 1/10th of solar.</span>
+<span class="sd">       </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wa, tau : ndarrays, shape (N,)</span>
+<span class="sd">      The wavelength array and tau at each wavelength.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wa</span> <span class="o">=</span> <span class="n">make_constant_dv_wa_scale</span><span class="p">(</span><span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span><span class="p">,</span> <span class="n">dv</span><span class="p">)</span>
+    <span class="n">off</span> <span class="o">=</span> <span class="o">-</span><span class="mi">12</span> <span class="o">+</span> <span class="n">logN</span> <span class="o">+</span> <span class="n">logZ</span>
+    <span class="n">f26</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;HI    0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="n">logN</span><span class="p">,</span>    
+        <span class="s">&#39;OI    0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;O&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span><span class="p">),</span> 
+        <span class="s">&#39;SiII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Si&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">),</span> 
+        <span class="s">&#39;SiIII 0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Si&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>    
+        <span class="s">&#39;SiIV  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Si&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>    
+        <span class="s">&#39;FeII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Fe&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span><span class="p">),</span>    
+        <span class="s">&#39;CII   0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;C&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">),</span>    
+        <span class="s">&#39;CIII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;C&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>    
+        <span class="s">&#39;CIV   0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;C&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s">&#39;CaII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Ca&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span><span class="p">),</span>
+        <span class="s">&#39;AlII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Al&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">),</span>
+        <span class="s">&#39;AlIII 0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Al&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s">&#39;TiII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Ti&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">off</span><span class="p">),</span>
+        <span class="s">&#39;NII   0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;N&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span><span class="p">),</span>
+        <span class="s">&#39;ZnII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Zn&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span><span class="p">),</span>
+        <span class="s">&#39;CrII  0  0  50 0 </span><span class="si">%.2f</span><span class="s"> 0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="s">&#39;Cr&#39;</span><span class="p">]</span>  <span class="o">+</span> <span class="n">off</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="n">f26</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f26</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">atom</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">atom</span> <span class="o">=</span> <span class="n">readatom</span><span class="p">()</span>
+
+    <span class="c">#import pdb; pdb.set_trace()</span>
+    <span class="n">tau</span><span class="p">,</span><span class="n">ticks</span> <span class="o">=</span> <span class="n">find_tau</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">f26</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">+=</span> <span class="n">tau_LL</span><span class="p">(</span><span class="n">logN</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">wstart</span><span class="o">=</span><span class="mf">912.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wa</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ticks</span>
+</div>
+<div class="viewcode-block" id="calc_DLA_trans"><a class="viewcode-back" href="../../generated/barak.absorb.calc_DLA_trans.html#barak.absorb.calc_DLA_trans">[docs]</a><span class="k">def</span> <span class="nf">calc_DLA_trans</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">vfwhm</span><span class="p">,</span> <span class="n">logN</span><span class="o">=</span><span class="mf">20.3</span><span class="p">,</span> <span class="n">logZ</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="mf">5.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the transmission after absrption by a DLA</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wa : array_like, shape (N,)</span>
+<span class="sd">      wavelength array.</span>
+<span class="sd">    redshift : float</span>
+<span class="sd">      The redshift of the DLA.</span>
+<span class="sd">    vfwhm : float</span>
+<span class="sd">      The resolution FWHM in km/s.</span>
+<span class="sd">    logZ : float (0)</span>
+<span class="sd">       log10 of the metal abundance relative to solar. For example 0</span>
+<span class="sd">       (the default) gives solar abundances, -1 gives 1/10th of solar.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    transmission : ndarray, shape (N,)</span>
+<span class="sd">      The transmission at each wavelength</span>
+<span class="sd">    ticks : ndarray, shape (M,)</span>
+<span class="sd">      Information for making ticks to show absorbing components.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wa1</span> <span class="o">=</span> <span class="n">wa</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">redshift</span><span class="p">)</span>
+    <span class="n">lwa1</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ticks</span> <span class="o">=</span> <span class="n">calc_DLA_tau</span><span class="p">(</span><span class="n">wa1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wa1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">logN</span><span class="o">=</span><span class="n">logN</span><span class="p">,</span> <span class="n">logZ</span><span class="o">=</span><span class="n">logZ</span><span class="p">,</span>
+                                    <span class="n">dv</span><span class="o">=</span><span class="n">dv</span><span class="p">)</span>
+    <span class="n">lwa</span> <span class="o">=</span> <span class="n">lwa1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">redshift</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">convolve_psf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tau</span><span class="p">),</span>  <span class="n">vfwhm</span> <span class="o">/</span> <span class="n">dv</span><span class="p">)</span>
+    <span class="n">trans1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">lwa</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trans1</span><span class="p">,</span> <span class="n">ticks</span></div>
 </pre></div>
 
       </div>

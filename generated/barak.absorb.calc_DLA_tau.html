@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.absorb.b_to_T &mdash; Barak 0.1dev documentation</title>
+    <title>barak.absorb.calc_DLA_tau &mdash; Barak 0.1dev documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,53 +28,55 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
     <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.absorb.calc_DLA_tau" href="barak.absorb.calc_DLA_tau.html" />
-    <link rel="prev" title="barak.absorb.T_to_b" href="barak.absorb.T_to_b.html" /> 
+    <link rel="next" title="barak.absorb.calc_DLA_trans" href="barak.absorb.calc_DLA_trans.html" />
+    <link rel="prev" title="barak.absorb.b_to_T" href="barak.absorb.b_to_T.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
           <span>Barak 0.1dev documentation</span></a></h1>
-        <h2 class="heading"><span>barak.absorb.b_to_T</span></h2>
+        <h2 class="heading"><span>barak.absorb.calc_DLA_tau</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.absorb.T_to_b.html">barak.absorb.T_to_b</a>
+        «&#160;&#160;<a href="barak.absorb.b_to_T.html">barak.absorb.b_to_T</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.absorb.calc_DLA_tau.html">barak.absorb.calc_DLA_tau</a>&#160;&#160;»
+        <a href="barak.absorb.calc_DLA_trans.html">barak.absorb.calc_DLA_trans</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="barak-absorb-b-to-t">
-<h1>barak.absorb.b_to_T<a class="headerlink" href="#barak-absorb-b-to-t" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="barak-absorb-calc-dla-tau">
+<h1>barak.absorb.calc_DLA_tau<a class="headerlink" href="#barak-absorb-calc-dla-tau" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="barak.absorb.b_to_T">
-<tt class="descclassname">barak.absorb.</tt><tt class="descname">b_to_T</tt><big>(</big><em>atom</em>, <em>bvals</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#b_to_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.b_to_T" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert b parameters (km/s) to a temperature in K for an atom
-with mass amu.</p>
+<dt id="barak.absorb.calc_DLA_tau">
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_DLA_tau</tt><big>(</big><em>wmin</em>, <em>wmax</em>, <em>logN=20.3</em>, <em>logZ=0</em>, <em>dv=5.0</em>, <em>atom=None</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_DLA_tau"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_DLA_tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the optical due to absorption from a DLA.</p>
+<p>The DLA is at z=0. The column density and metallicity can be
+varied. Solar Abundance ratios are assumed, with most of the atoms
+in the singly ionised state</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>atom</strong> : str or float</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>wmin, wmax</strong> : float</p>
 <blockquote>
-<div><p>Either an abbreviation for an element name (for example &#8216;Mg&#8217;),
-or a mass in amu.</p>
+<div><p>Start an end of the wavelength scale (rest wavelengths).</p>
 </div></blockquote>
-<p><strong>bvals</strong> : array_like</p>
+<p><strong>logZ</strong> : float (0)</p>
 <blockquote>
-<div><p>One or more b values in km/s</p>
+<div><p>log10 of the metal abundance relative to solar. For example 0
+(the default) gives solar abundances, -1 gives 1/10th of solar.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>T</strong> : ndarray or float</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>wa, tau</strong> : ndarrays, shape (N,)</p>
 <blockquote class="last">
-<div><p>The temperature corresponding to each value in <a href="#id1"><span class="problematic" id="id2">`</span></a>bvals&#8217;.</p>
+<div><p>The wavelength array and tau at each wavelength.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -89,11 +91,11 @@ or a mass in amu.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.absorb.T_to_b.html">barak.absorb.T_to_b</a>
+        «&#160;&#160;<a href="barak.absorb.b_to_T.html">barak.absorb.b_to_T</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.absorb.calc_DLA_tau.html">barak.absorb.calc_DLA_tau</a>&#160;&#160;»
+        <a href="barak.absorb.calc_DLA_trans.html">barak.absorb.calc_DLA_trans</a>&#160;&#160;»
         </p>
 
       </div>
