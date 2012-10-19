@@ -4,7 +4,17 @@ from glob import glob
 import os, sys
 import warnings
 
-# To create a distribution, use python setup.py sdist
+# To create a distribution, use
+#
+#     python setup.py sdist
+#
+# Register on PyPI
+#
+#     python setup.py register
+#
+# Upload the distribution to PyPI
+#
+#     python setup.py register sdist upload
 
 def get_data_names(root):
     """ Return list of all filenames (not directories) under root.
