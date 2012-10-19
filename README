@@ -20,7 +20,7 @@ do:
 
 You may need to put a 'sudo' in front of this. 
 
-A better way to install (which allow for easy uninstallation) is by
+A better way to install (which allows for easy uninstallation) is by
 using pip:
 
   pip install barak

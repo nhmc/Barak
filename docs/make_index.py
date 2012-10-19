@@ -22,7 +22,6 @@ handled are:
     absorption features.
   * Find the expected broad-band magnitudes given a spectral energy
     distribution.
-  * Calculate cosmological distance measures for various cosmologies.
 
 The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 
@@ -31,8 +30,20 @@ It requires `NumPy <http://numpy.scipy.org/>`_, `Matplotlib
 <http://www.scipy.org/>`_, `ATpy <http://atpy.github.com/>`_ and
 `Astropy <http://www.astropy.org>`_.
 
-To install, just copy the ``barak/`` directory to a location pointed
-to by your PYTHONPATH variable.
+To install, either download the tarball from the pypi website and then
+do::
+
+  python setup.py install
+
+You may need to put a ``sudo`` in front of this. 
+
+A better way to install (which allows for easy uninstallation) is by
+using `pip`::
+
+  pip install barak
+
+but you need to have `pip`
+(http://www.pip-installer.org/en/latest/index.html) installed.
 
 To run the tests you need `py.test <http://pytest.org/latest/>`_
 installed.  Then run::
