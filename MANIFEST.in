@@ -1,4 +1,4 @@
-include README
+include README AUTHORS CHANGES LICENCE
 
 include distribute_setup.py
 include setup.cfg

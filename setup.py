@@ -1,9 +1,13 @@
+
 from distutils.core import setup
 from glob import glob
 import os
 
-def get_data_names(root):
+# To create a distribution, use python setup.py sdist
 
+def get_data_names(root):
+    """ Return list of all filenames (not directories) under root.
+    """
     temp = []
     for dirpath, dirnames, filenames in os.walk(root):
         temp.extend((os.path.join(dirpath, d, '*') for d in dirnames))
@@ -11,7 +15,7 @@ def get_data_names(root):
     names = []
     for path in temp:
         if any(os.path.isfile(f) for f in glob(path)):
-            names.append(n[6:])
+            names.append(path[6:])
 
     return names
 
@@ -38,5 +42,6 @@ setup(
     url = 'http://pypi.python.org/pypi/Barak/',
     description = description,
     long_description = readme,
-    requires = ["numpy", "pyfits"]
+    requires = ["numpy", "pyfits", "atpy", "matplotlib"]
+    install_requires = ["numpy", "pyfits", "atpy", "matplotlib"]
     )
