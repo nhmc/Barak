@@ -1,7 +1,8 @@
 
 from distutils.core import setup
 from glob import glob
-import os
+import os, sys
+import warnings
 
 # To create a distribution, use python setup.py sdist
 
@@ -20,6 +21,19 @@ def get_data_names(root):
     return names
 
 
+if len(sys.argv[1:]) > 0 and sys.argv[1] in ('build', 'install'):
+    try:
+        import matplotlib
+    except ImportError:
+        warnings.warn("""
+matplotlib doesn't look like it's been installed.  I'm continuing to
+install barak, but be warned that some modules and scripts will not
+work. To install matplotlib, follow the instructions at
+http://matplotlib.org/users/installing.html.
+
+""")
+    
+
 with open('README') as fh:
     readme = fh.read()
 
@@ -33,6 +47,7 @@ setup(
     name = 'Barak',
     version = '0.2.0',
     author = 'Neil Crighton',
+    author_email = 'neilcrighton .at. gmail .dot. com',
     packages = ['barak'],
     package_dir = {'barak': 'barak'},
     package_data = package_data,
@@ -42,6 +57,6 @@ setup(
     url = 'http://pypi.python.org/pypi/Barak/',
     description = description,
     long_description = readme,
-    requires = ["numpy", "pyfits", "atpy", "matplotlib"]
-    install_requires = ["numpy", "pyfits", "atpy", "matplotlib"]
+    requires = ["numpy", "pyfits", "atpy"],
+    install_requires = ["numpy", "pyfits", "atpy"]
     )
