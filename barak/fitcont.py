@@ -342,7 +342,7 @@ class InteractiveCoFit(object):
         a1.axhline(-1,color='k',alpha=0.7, zorder=99)
         a1.axhline(2,color='k',linestyle='dashed',zorder=99)
         a1.axhline(-2,color='k',linestyle='dashed',zorder=99)
-        m0, = a1.plot([0],[0],'.r', ms=6, alpha=0.5)
+        m0, = a1.plot([0],[0],'.r',marker='.', mec='none', lw=0, mew=0, ms=6, alpha=0.5)
         a1.set_ylim(-4, 4)
         a0.axhline(0, color='0.7')
         if self.spec['co'] is not None:
