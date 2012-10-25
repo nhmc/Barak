@@ -248,11 +248,17 @@ class AkimaSpline(object):
         return out
 
 
-def fit_spline(x, y, bins=4, estimator=np.median):
+def fit_spline(x, y, bins=4, addknots=None, estimator=np.median):
     """ Find a smooth function that approximates `x`, `y`.
 
     `bins` is the number of bins into which the sample is split. Returns
     a function f(x) that approximates y from min(x) to max(x).
+
+    Parameters
+    ----------
+    addknots : sequence of float pairs
+       A sequence of (x,y) pairs values that the spline is forced to
+       pass through. Default is None.
 
     Notes
     -----
@@ -277,6 +283,14 @@ def fit_spline(x, y, bins=4, estimator=np.median):
             continue
         cbins.append(estimator(x[cond]))
         medvals.append(estimator(y[cond]))
+
+    if addknots is not None:
+        for x,y in addknots:
+            cbins.append(x)
+            medvals.append(y)
+        isort = np.argsort(cbins)
+        cbins = np.array(cbins)[isort]
+        medvals = np.array(medvals)[isort]
 
     if len(cbins) < 3:
         raise RuntimeError('Too few bins')
