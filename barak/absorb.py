@@ -1,7 +1,7 @@
 """ This module has routines for analysing the absorption profiles
 from ions and molecules.
 """
-import voigt
+from voigt import voigt
 from convolve import convolve_psf
 from utilities import between, adict, get_data_path, indexnear
 from constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
@@ -13,16 +13,18 @@ import numpy as np
 
 from cStringIO import StringIO
 import math
-from math import pi, sqrt
+from math import pi, sqrt, exp
 
 
 DATAPATH = get_data_path()
 
-def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
-            debug=False, verbose=True):
+# this constant gets used in several functions (units of cm^2/s)
+e2_me_c = e**2 / (me*c)
+
+def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=False):
     """ Returns the optical depth (Voigt profile) for a transition.
 
-    Given an transition with rest wavelength wav0, osc strength,
+    Given an transition with rest wavelength wa0, osc strength,
     natural linewidth gam; b parameter (doppler and turbulent); and
     log10 (column density), returns the optical depth in velocity
     space. v is an array of velocity values in km/s. The absorption
@@ -30,104 +32,141 @@ def calctau(v, wav0, osc, gam, logN, T=None, btemp=20, bturb=0,
 
     Parameters
     ----------
-    v : array of floats, shape (N,)
+    vel : array of floats, shape (N,)
       Velocities in km/s.
-    wav0 : float
-      Rest wavelength op transition in Angstroms.
+    wa0 : float
+      Rest wavelength of transition in Angstroms.
     osc : float
       Oscillator strength of transition (dimensionless).
     gam : float
       Gamma parameter for the transition (dimensionless).
     logN : float:
       log10 of the column density in absorbers per cm^2.
-    btemp : float (20)
-      *b* parameter from doppler temperature broadening (km/s)
-    bturb : float (0)
-      *b* parameter from doppler turbulent broadening (km/s)
-    T : float (None)
-      Temperature of cloud in Kelvin (overrides btemp).
+    b : float
+      *b* parameter (km/s).
 
     Returns
     -------
     tau : array of floats, shape (N,)
-      The optical depth as a function of `v`.
+      The optical depth as a function of `vel`.
 
     Notes
     -----
-    The step size for `v` must be small enough to properly
+    The step size for `vel` must be small enough to properly
     sample the profile.
 
     To map the velocity array to some wavelength for a transitions
-    with rest wavelength wav0 at redshift z:
+    with rest wavelength wa0 at redshift z:
 
     >>> z = 3.0
-    >>> wa = wav0 * (1 + z) * (1 + v/c_kms)
+    >>> wa = wa0 * (1 + z) * (1 + v/c_kms)
     """
     # note units are cgs
-    wav0 = wav0 * 1e-8                    # cm
+    wa0 = wa0 * 1e-8                    # cm
     N = 10**logN                          # absorbers/cm^2
-    if T is not None:
-        btemp = sqrt(2*kboltz*T / mp) * 1e-5     # km/s
-    b = math.hypot(btemp, bturb) * 1e5    # cm/s
-    nu0 = c / wav0                        # rest frequency, s^-1
+    b = b * 1e5                           # cm/s
+    nu0 = c / wa0                        # rest frequency, s^-1
     # Now use doppler relation between v and nu assuming gam << nu0
     gam_v = gam / nu0 * c             # cm/s
     if debug:
         print ('Widths in km/s (Lorentzian Gamma, Gaussian b):',
                gam_v/1.e5, b/1.e5)
 
-    fwhml = gam_v / (2.*pi)                # cm/s
-    fwhmg = 2. * sqrt_ln2 * b                # cm/s
+    if verbose:
+        fwhml = gam_v / (2.*pi)                # cm/s
+        fwhmg = 2. * sqrt_ln2 * b                # cm/s
 
-    ##### sampling check, first get velocity width ######
-    ic = np.searchsorted(v, 0)
-    try:
-        # it's ok if the transition is outside the fitting region.
-        if ic == len(v):
-            ic -= 1
-        if ic == 0:
-            ic += 1
-        vstep = v[ic] - v[ic-1]
-    except IndexError:
-        raise IndexError(4*'%s ' % (len(v), ic, ic-1, v))
+        ##### sampling check, first get velocity width ######
+        ic = np.searchsorted(vel, 0)
+        try:
+            # it's ok if the transition is outside the fitting region.
+            if ic == len(vel):
+                ic -= 1
+            if ic == 0:
+                ic += 1
+            vstep = vel[ic] - vel[ic-1]
+        except IndexError:
+            raise IndexError(4*'%s ' % (len(vel), ic, ic-1, vel))
 
-    fwhm = max(gam_v/1.e5, fwhmg/1.e5)
+        fwhm = max(gam_v/1.e5, fwhmg/1.e5)
+        
+        if vstep > fwhm:
+            print 'Warning: tau profile undersampled!'
+            print '  Pixel width: %f km/s, transition fwhm: %f km/s' % (vstep,fwhm)
+            # best not to correct for this here, because even if we do,
+            # we'll get nonsense if we convolve the resulting flux with an
+            # instrumental profile.  Need to use smaller dv size
+            # throughout tau, exp(-tau) and convolution of exp(-tau)
+            # calculations, only re-binning back to original dv size after
+            # all these steps.
 
-    if verbose and vstep > fwhm:
-        print 'Warning: tau profile undersampled!'
-        print '  Pixel width: %f km/s, transition fwhm: %f km/s' % (vstep,fwhm)
-        # best not to correct for this here, because even if we do,
-        # we'll get nonsense if we convolve the resulting flux with an
-        # instrumental profile.  Need to use smaller dv size
-        # throughout tau, exp(-tau) and convolution of exp(-tau)
-        # calculations, only re-binning back to original dv size after
-        # all these steps.
-
-    u = 1.e5 / b * v                           # dimensionless
+    u = 1.e5 / b * vel                         # dimensionless
     a = gam_v / (4*pi*b)                       # dimensionless
-    vp = voigt.voigt(a, u)                     # dimensionless
-    const = pi * e**2 / (me*c)                 # m^2/s
-    tau = const*N*osc*wav0 / (sqrt(pi)*b) * vp # dimensionless
+    vp = voigt(a, u)                           # dimensionless
+    tau = pi * e2_me_c * N * osc * wa0 / (sqrt(pi) * b) * vp # dimensionless
 
     return tau
 
-def calc_tau_peak(logN, b, trans):
+def calc_tau_peak(logN, b, wa0, osc):
     """
-    Estimate of  the peak optical depth of a transition assuming we are on the
+    Find the peak optical depth of a transition assuming we are on the
     linear part of the curve of growth.
 
-    logN is log10 of column density in cm^-2
-    b is b parameter in km/s
-    trans is  a transisition, e.e.g 'HI 1215'
+    Parameters
+    ----------
+    logN : array_like
+      log10 of column density in cm^-2
+    b : float
+      b parameter in km/s.
+    wa0 : float
+      Rest wavelength of the transition in Angstroms.
+    osc : float
+      Transition oscillator strength.
+
+    Returns
+    -------
+    tau0 : ndarray or scalar if logN is scalar
+      optical depth at the centre of the line
+
+    Notes
+    -----
+    See Draine "Physics of the Interstellar and Intergalactic medium"
+    for a description of how to calculate this quantity.
     """
     b_cm_s = b * 1e5
-    if isinstance(trans, basestring):
-        tname, trans = findtrans(trans, readatom())
-    wav0 = trans[0] * 1e-8 # cm
-    osc = trans[1]
-    const = pi * e**2 / (me*c)
-    #gauss_norm = 1 / (sigma * sqrt(2*pi))
-    return 10**logN * osc * wav0 * const / (b_cm_s * sqrt(pi))
+
+    wa0 = wa0 * 1e-8 # cm
+    return sqrt(pi) * e2_me_c * 10**logN * osc * wa0 / b_cm_s
+
+def logN_from_tau_peak(tau, b, wa0, osc):
+    """ Calculate the column density for a transition given its peak
+    optical depth and width.
+    
+    Parameters
+    ----------
+    tau : array_like
+      optical depth at line centre.
+    b : float
+      b parameter in km/s.
+    wa0 : float
+      Rest wavelength of the transition in Angstroms.
+    osc : float
+      Transition oscillator strength.
+
+    Returns
+    -------
+    logN : ndarray or scalar if logN is scalar
+      log10 of column density in cm^-2
+
+    See Also
+    --------
+    calc_tau_peak
+    """
+    b_cm_s = b * 1e5
+
+    wa0 = wa0 * 1e-8 # cm
+
+    return np.log10(tau * b_cm_s / (sqrt(pi) * e2_me_c * osc * wa0))
 
 
 def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
@@ -178,15 +217,18 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     tickmarks = []
     sumtau = np.zeros_like(wa)
     i0 = i1 = None 
-    for i,(wav0,osc,gam) in enumerate(trans):
-        refwav = wav0 * zp1
+    for i,(wa0,osc,gam) in enumerate(trans):
+        tau0 = calc_tau_peak(logN, b, wa0, osc)
+        if 1 - exp(-tau0) < 1e-3:
+            continue
+        refwav = wa0 * zp1
         dv = (wa - refwav) / refwav * c_kms
         if maxdv is not None:
             i0,i1 = dv.searchsorted([-maxdv, maxdv])
-        tau = calctau(dv[i0:i1], wav0, osc, gam, logN, btemp=b,
+        tau = calctau(dv[i0:i1], wa0, osc, gam, logN, b,
                       debug=debug, verbose=verbose)
-        if ticks and tau.max() > label_tau_threshold:
-            tickmarks.append((refwav, z, wav0, i))
+        if ticks and tau0 > label_tau_threshold:
+            tickmarks.append((refwav, z, wa0, i))
         sumtau[i0:i1] += tau
 
     if ticks:
@@ -221,7 +263,8 @@ def find_tau(wa, lines, atom, per_trans=False):
     for ion,z,b,logN in lines:
         #print 'z, logN, b', z, logN, b
         maxdv = 20000 if logN > 18 else 1000
-        t,tick = calc_iontau(wa, atom[ion], z+1, logN, b, ticks=True,maxdv=maxdv)
+        t,tick = calc_iontau(wa, atom[ion], z+1, logN, b,
+                             ticks=True, maxdv=maxdv)
         tau += t
         if per_trans:
             taus.append(t)
@@ -328,7 +371,9 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
         Wrelo = Welo / zp1
     
     # Assume we are on the linear part of curve of growth (will be an
-    # underestimate if saturated)
+    # underestimate if saturated). See Draine, "Physics of the
+    # Interstellar and Intergalactic medium", ISBN 978-0-691-12214-4,
+    # chapter 9.
     Nmult = 1.13e20 / (tr['osc'] * tr['wa']**2)
 
     # 5 sigma detection limit
@@ -679,3 +724,25 @@ def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
     trans = convolve_psf(np.exp(-tau),  vfwhm / dv)
     trans1 = np.interp(wa, lwa, trans)
     return trans1, ticks
+
+
+def guess_logN_b(ion, wa0, osc, tau0):
+    """ Estimate logN and b a transition given the peak optical depth
+    and atom.
+
+    Examples
+    --------
+    >>> logN, b = guess_b_logN('HI', 1215.6701, nfl, ner)
+    """
+
+    T = 10000
+    if ion == 'HI':
+        T = 30000
+    elif ion in ('CIV', 'SiIV'):
+        T = 20000
+    elif ion == 'OVI':
+        T = 40000
+        
+    b = T_to_b(split_trans_name(ion)[0], T)
+
+    return logN_from_tau_peak(tau0, b, wa0, osc), b

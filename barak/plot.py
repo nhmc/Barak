@@ -1,6 +1,7 @@
 """ Plotting routines. """
 from __future__ import division
 
+from math import log10
 import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib.collections import PolyCollection, LineCollection
@@ -562,3 +563,15 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
                    edgecolors=c, **kwargs)
     return c
 
+def calc_log_minor_ticks(majticks):
+    """ Get minor tick positions for a log scale.
+
+    Given major tick positions, return the minor tick positions in
+    log10 space.
+    """
+    tickpos = np.log10(np.arange(2, 10))
+    minticks = []
+    for t in np.log10(majticks):
+        minticks.extend(t + tickpos)
+
+    return minticks
