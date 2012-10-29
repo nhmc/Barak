@@ -11,16 +11,16 @@ def test_readatom():
 
 def test_calctau():    
     wav0,osc,gam = 1215.6701,0.4164,6.265E8   # Ang, unitless, s^-1
-    btemp,bturb = 20., 0.                     # km/s
+    b = 20.                                   # km/s
     v = np.linspace(-100, 100, 500)           # km/s
     logN = 13.0                               # cm^-2
-    tau = calctau(v, wav0, osc, gam, logN, btemp=btemp, bturb=bturb)
+    tau = calctau(v, wav0, osc, gam, logN, b)
     tau13 = np.loadtxt(DATAPATH + 'tests/tau_n13.txt.gz')
     assert np.allclose(tau, tau13)
     
     v = np.linspace(-1000, 1000, 1000)        # km/s
     logN = 21.                                # cm^-2
-    tau = calctau(v, wav0, osc, gam, logN, btemp=btemp, bturb=bturb)
+    tau = calctau(v, wav0, osc, gam, logN, b)
     tau21 = np.loadtxt(DATAPATH + 'tests/tau_n21.txt.gz')
     assert np.allclose(tau, tau21)
     
