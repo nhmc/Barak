@@ -566,12 +566,19 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
 def calc_log_minor_ticks(majticks):
     """ Get minor tick positions for a log scale.
 
-    Given major tick positions, return the minor tick positions in
-    log10 space.
+    Parameters
+    ----------
+    majticks : array_like
+        log10 of the major tick positions.
+        
+    Returns
+    -------
+    minticks : ndarray
+        log10 of the minor tick positions.        
     """
     tickpos = np.log10(np.arange(2, 10))
     minticks = []
-    for t in np.log10(majticks):
+    for t in np.atleast_1d(majticks):
         minticks.extend(t + tickpos)
 
     return minticks
