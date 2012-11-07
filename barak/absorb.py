@@ -108,9 +108,8 @@ def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=False):
     return tau
 
 def calc_tau_peak(logN, b, wa0, osc):
-    """
-    Find the peak optical depth of a transition assuming we are on the
-    linear part of the curve of growth.
+    """ Find the optical depth of a transition at line centre assuming
+    we are on the linear part of the curve of growth.
 
     Parameters
     ----------
@@ -139,13 +138,13 @@ def calc_tau_peak(logN, b, wa0, osc):
     return sqrt(pi) * e2_me_c * 10**logN * osc * wa0 / b_cm_s
 
 def logN_from_tau_peak(tau, b, wa0, osc):
-    """ Calculate the column density for a transition given its peak
-    optical depth and width.
+    """ Calculate the column density for a transition given its
+    width and its optical depth at line centre.
     
     Parameters
     ----------
     tau : array_like
-      optical depth at line centre.
+      Optical depth at line centre.
     b : float
       b parameter in km/s.
     wa0 : float
@@ -155,7 +154,7 @@ def logN_from_tau_peak(tau, b, wa0, osc):
 
     Returns
     -------
-    logN : ndarray or scalar if logN is scalar
+    logN : ndarray, or scalar if tau is scalar
       log10 of column density in cm^-2
 
     See Also
@@ -242,7 +241,7 @@ def find_tau(wa, lines, atom, per_trans=False):
     log10(column density) and b parameter, return the tau at each
     wavelength from all these transitions.
 
-    lines can also be the name of a fort.26 format file
+    lines can also be the name of a VPFIT fort.26 format file.
 
     Note this assumes the wavelength array has small enough pixel
     separations so that the profiles are properly sampled.
@@ -263,8 +262,8 @@ def find_tau(wa, lines, atom, per_trans=False):
     for ion,z,b,logN in lines:
         #print 'z, logN, b', z, logN, b
         maxdv = 20000 if logN > 18 else 1000
-        t,tick = calc_iontau(wa, atom[ion], z+1, logN, b,
-                             ticks=True, maxdv=maxdv)
+        t,tick = calc_iontau(wa, atom[ion], z+1, logN, b, ticks=True,
+                             maxdv=maxdv)
         tau += t
         if per_trans:
             taus.append(t)
@@ -423,7 +422,7 @@ def b_to_T(atom, bvals):
     return  T
 
 def T_to_b(atom, T):
-    """ Convert temperatues in K to b parameters (km/s) for an atom
+    """ Convert temperatures in K to b parameters (km/s) for an atom
     with mass amu.
 
     Parameters
@@ -465,8 +464,8 @@ def read_HITRAN(thelot=False):
 
     The returned wavelengths are in Angstroms.
 
-    The strongest absorption features in the optical range is
-    typically O2.
+    The strongest absorption features in the optical range are
+    typically due to O2.
     """
     filename = DATAPATH + '/linelists/HITRAN2004_wa_lt_25000.fits.gz'
     lines = readtabfits(filename)
@@ -696,7 +695,7 @@ def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, dv=5., atom=None):
     return wa, tau, ticks
 
 def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
-    """ Find the transmission after absrption by a DLA
+    """ Find the transmission after absorption by a DLA
 
     Parameters
     ----------
@@ -727,8 +726,8 @@ def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
 
 
 def guess_logN_b(ion, wa0, osc, tau0):
-    """ Estimate logN and b a transition given the peak optical depth
-    and atom.
+    """ Estimate logN and b for a transition given the peak optical
+    depth and atom.
 
     Examples
     --------
@@ -740,9 +739,10 @@ def guess_logN_b(ion, wa0, osc, tau0):
         T = 30000
     elif ion in ('CIV', 'SiIV'):
         T = 20000
-    elif ion == 'OVI':
-        T = 40000
         
     b = T_to_b(split_trans_name(ion)[0], T)
+
+    if ion == 'OVI':
+        b = 30.
 
     return logN_from_tau_peak(tau0, b, wa0, osc), b
