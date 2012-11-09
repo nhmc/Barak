@@ -21,7 +21,8 @@ if 1:
     sky = readtxt(datadir + '/sky/ir_sky.dat', names='wa,em')
     sky.wa /= 1000.
     
-    atm = readtxt(datadir + '/extinction/atm_trans_am1.0.dat', names='wa,tr')
+    atm = readtxt(datadir + '/atmos_extinction/atm_trans_am1.0.dat',
+                  names='wa,tr')
 
     fig = pl.figure(figsize=(14, 6))
     fig.subplots_adjust(left=0.05, right=0.95)

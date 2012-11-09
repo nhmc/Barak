@@ -21,7 +21,7 @@ DATAPATH = get_data_path()
 # this constant gets used in several functions (units of cm^2/s)
 e2_me_c = e**2 / (me*c)
 
-def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=False):
+def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
     """ Returns the optical depth (Voigt profile) for a transition.
 
     Given an transition with rest wavelength wa0, osc strength,
@@ -520,10 +520,11 @@ def readatom(filename=None, debug=False,
 
     atom = dict()
     atomflat = []
-
+    specials = set(['??', '__', '>>', '<<', '<>'])
     for line in fh:
         if debug:  print line
-        if not line[0].isupper():  continue
+        if not line[0].isupper() and line[:2] not in specials:
+            continue
         ion = line[:6].replace(' ','')
         if not molecules:
             if ion[:2] in set(['HD','CO','H2']):
