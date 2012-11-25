@@ -1,5 +1,6 @@
 """ Contains an object to describe a spectrum, and various
 spectrum-related functions."""
+from __future__ import division
 
 from itertools import izip
 import copy

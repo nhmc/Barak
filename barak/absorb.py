@@ -645,7 +645,8 @@ def tau_LL(logN, wa, wstart=912.):
     tau[:i] = 10**logN * sigma0 * (wa[:i] / 912.)**3 
     return tau
 
-def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, dv=5., atom=None):
+def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, bHI=50, dv=5., atom=None,
+                 verbose=1, highions=1):
     """ Create the optical due to absorption from a DLA.
 
     The DLA is at z=0. The column density and metallicity can be
@@ -659,7 +660,8 @@ def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, dv=5., atom=None):
     logZ : float (0)
        log10 of the metal abundance relative to solar. For example 0
        (the default) gives solar abundances, -1 gives 1/10th of solar.
-       
+    verbose : bool (False)
+       Print helpfl information
     Returns
     -------
     wa, tau : ndarrays, shape (N,)
@@ -668,24 +670,41 @@ def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, dv=5., atom=None):
     """
     wa = make_constant_dv_wa_scale(wmin, wmax, dv)
     off = -12 + logN + logZ
-    f26 = (
-        'HI    0  0  50 0 %.2f 0' % logN,    
-        'OI    0  0  50 0 %.2f 0' % (Asolar['O']  + off), 
-        'SiII  0  0  50 0 %.2f 0' % (Asolar['Si'] + off - 0.05), 
-        'SiIII 0  0  50 0 %.2f 0' % (Asolar['Si'] + off - 1),    
-        'SiIV  0  0  50 0 %.2f 0' % (Asolar['Si'] + off - 1),    
-        'FeII  0  0  50 0 %.2f 0' % (Asolar['Fe'] + off),    
-        'CII   0  0  50 0 %.2f 0' % (Asolar['C']  + off - 0.05),    
-        'CIII  0  0  50 0 %.2f 0' % (Asolar['C']  + off - 1),    
-        'CIV   0  0  50 0 %.2f 0' % (Asolar['C']  + off - 1),
-        'CaII  0  0  50 0 %.2f 0' % (Asolar['Ca'] + off),
-        'AlII  0  0  50 0 %.2f 0' % (Asolar['Al'] + off - 0.05),
-        'AlIII 0  0  50 0 %.2f 0' % (Asolar['Al'] + off - 1),
-        'TiII  0  0  50 0 %.2f 0' % (Asolar['Ti'] + off),
-        'NII   0  0  50 0 %.2f 0' % (Asolar['N']  + off),
-        'ZnII  0  0  50 0 %.2f 0' % (Asolar['Zn']  + off),
-        'CrII  0  0  50 0 %.2f 0' % (Asolar['Cr']  + off),
-        )
+    temp = b_to_T('H', bHI)
+    print 'b %.2f km/s gives a temperature of %.1f K' % (bHI, temp)
+    
+    elements = 'O Si Fe C Ca Al Ti N Zn Cr'.split()
+    b = dict((el, T_to_b(el, temp)) for el in elements)
+    print 'using low ion b values:'
+    print ', '.join('%s %.1f' % (el, b[el]) for el in elements)
+    
+    f26 = [
+        'HI    0  0  %.2f 0 %.2f 0' % (bHI, logN),    
+        'OI    0  0  %.2f 0 %.2f 0' % (b['O'], (Asolar['O']  + off)), 
+        'SiII  0  0  %.2f 0 %.2f 0' % (b['Si'], (Asolar['Si'] + off - 0.05)), 
+        'SiIII 0  0  %.2f 0 %.2f 0' % (b['Si'], (Asolar['Si'] + off - 1)),    
+        'FeII  0  0  %.2f 0 %.2f 0' % (b['Fe'], (Asolar['Fe'] + off)),    
+        'CII   0  0  %.2f 0 %.2f 0' % (b['C'], (Asolar['C']  + off - 0.05)),    
+        'CIII  0  0  %.2f 0 %.2f 0' % (b['C'], (Asolar['C']  + off - 1)),    
+        'CaII  0  0  %.2f 0 %.2f 0' % (b['Ca'], (Asolar['Ca'] + off)),
+        'AlII  0  0  %.2f 0 %.2f 0' % (b['Al'], (Asolar['Al'] + off - 0.05)),
+        'AlIII 0  0  %.2f 0 %.2f 0' % (b['Al'], (Asolar['Al'] + off - 1)),
+        'TiII  0  0  %.2f 0 %.2f 0' % (b['Ti'], (Asolar['Ti'] + off)),
+        'NII   0  0  %.2f 0 %.2f 0' % (b['N'], (Asolar['N']  + off)),
+        'ZnII  0  0  %.2f 0 %.2f 0' % (b['Zn'], (Asolar['Zn']  + off)),
+        'CrII  0  0  %.2f 0 %.2f 0' % (b['Cr'], (Asolar['Cr']  + off)),
+        ]
+    if highions:
+        print 'Including O VI, Si IV, C IV and N V'
+        logNCIV = 15.
+        logNSiIV = logNCIV - (Asolar['C'] - Asolar['Si'] )
+        f26 = f26 + [
+            'OVI   0  0  30.0 0 15.0 0',
+            'SiIV  0  0  %.2f  0 %.2f 0' % (b['Si'], logNSiIV),
+            'CIV   0  0  %.2f 0 %.2f 0' % (b['C'], logNCIV),
+            'NV    0  0  30.0 0 15.0 0',
+            ]
+
     f26 = StringIO('\n'.join(f26))
     if atom is None:
         atom = readatom()
@@ -695,7 +714,7 @@ def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, dv=5., atom=None):
     tau += tau_LL(logN, wa, wstart=912.)
     return wa, tau, ticks
 
-def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
+def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5., bHI=50):
     """ Find the transmission after absorption by a DLA
 
     Parameters
@@ -709,6 +728,9 @@ def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
     logZ : float (0)
        log10 of the metal abundance relative to solar. For example 0
        (the default) gives solar abundances, -1 gives 1/10th of solar.
+    bHI : float (40)
+       b parameter for the HI. Other species are assumed to be
+       thermally broadened.
 
     Returns
     -------
@@ -719,7 +741,7 @@ def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5.):
     """
     wa1 = wa / (1 + redshift)
     lwa1, tau, ticks = calc_DLA_tau(wa1[0], wa1[-1], logN=logN, logZ=logZ,
-                                    dv=dv)
+                                    dv=dv, bHI=bHI)
     lwa = lwa1 * (1 + redshift)
     trans = convolve_psf(np.exp(-tau),  vfwhm / dv)
     trans1 = np.interp(wa, lwa, trans)
