@@ -37,7 +37,7 @@ def deltavir(redshift, cosmo=None):
         return 18*pi**2 + 82*x - 39*x**2
 
 
-def calc_virial_values(M, z, cosmo=None, mu=0.59):
+def calc_rvT(M, z, cosmo=None, mu=0.59):
     """ Find the virial radius, circular velocity and temperature for
     a dark matter halo at a given mass and redshift.
 
@@ -68,10 +68,10 @@ def calc_virial_values(M, z, cosmo=None, mu=0.59):
 
     Examples
     --------
-    >>> vir = calc_virial_values(1e12, 0)
+    >>> vir = calc_rvT(1e12, 0)
     >>> print vir.r, vir.v, vir.T
     261.195728743 128.338776885 588643.476006
-    >>> r,v,T = calc_virial_values(1e12, [0.5, 1, 1.5, 2])
+    >>> r,v,T = calc_rvT(1e12, [0.5, 1, 1.5, 2])
     >>> r
     array([ 198.57846074,  156.44358398,  127.91018732,  107.74327378])
     >>> v
@@ -101,6 +101,6 @@ def calc_virial_values(M, z, cosmo=None, mu=0.59):
     vcirc = (G * M_g / rvir)**0.5
     Tvir = mu * m_p * vcirc**2 / (2 * k_B)
 
-    VirialValues = namedtuple('virial_values', 'r v T')
+    output = namedtuple('virial_rvT', 'r v T')
 
-    return VirialValues(r=rvir/kpc, v=vcirc/km, T=Tvir)
+    return output(r=rvir/kpc, v=vcirc/km, T=Tvir)

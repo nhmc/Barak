@@ -594,7 +594,7 @@ def tau_LL(logN, wa, wstart=912.):
     wa : array_like
       Wavelength in Angstroms.
     wstart : float (912.)
-      Tau values at wavelengths above this are zero.
+      Tau values at wavelengths above this are set to zero.
 
     Returns
     -------

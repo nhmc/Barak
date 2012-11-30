@@ -70,5 +70,5 @@ def calc_abund(X, Y, logNX, logNY):
 
     If Y is hydrogen, then this estimates the metallicity.
     """
-    Z = np.log10(10**logNX / 10**logNY) - (Asolar[X] - Asolar[Y])
-    return  Z
+    return logNX - logNY - (Asolar[X] - Asolar[Y])
+
