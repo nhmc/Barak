@@ -90,7 +90,7 @@ def calc_rvT(M, z, cosmo=None, mu=0.59):
     # convert to cgs
     M_g = M * M_sun
 
-    rho_virial = deltavir(z) * cosmo.critical_density(z)
+    rho_virial = deltavir(z, cosmo=cosmo) * cosmo.critical_density(z)
 
     # deal with cases where we have two input arrays
     if isiterable(M) and isiterable(rho_virial):
