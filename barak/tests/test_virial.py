@@ -4,13 +4,13 @@ from astropy import cosmology
 
 cosmo = cosmology.WMAP7
 
-def test_calc_rvT():
-    vir = calc_rvT(1e12, 0, cosmo=cosmo)
+def test_find_rvT():
+    vir = find_rvT(1e12, 0, cosmo=cosmo)
     assert np.allclose([vir.r, vir.v, vir.T],
                        [261.31830192516918, 128.30867425264995,
                         588367.36865584785])
 
-    r,v,T = calc_rvT(1e12, [0.5, 1, 1.5, 2], cosmo=cosmo)
+    r,v,T = find_rvT(1e12, [0.5, 1, 1.5, 2], cosmo=cosmo)
     assert np.allclose(
         r, [ 199.03298324,  156.93226803,  128.36495081,  108.1516528 ])
     assert np.allclose(

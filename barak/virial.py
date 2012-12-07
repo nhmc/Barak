@@ -6,10 +6,13 @@ from astropy import cosmology
 from astropy.utils import isiterable
 from astropy.constants.cgs import G, M_sun, kpc, k_B, m_p
 from math import pi
+import numpy as np
 
 from collections import namedtuple
 
 km = 1e5
+
+find_rvT_output = namedtuple('virial_rvT', 'r v T')
 
 def deltavir(redshift, cosmo=None):
     """ The Virial overdensity as a function redshift. 
@@ -36,8 +39,35 @@ def deltavir(redshift, cosmo=None):
         x = cosmo.Om(redshift) - 1
         return 18*pi**2 + 82*x - 39*x**2
 
+def _calc_rvT(M_g, rho_virial, mu=0.59):
+    """Find the virial radius, circular velocity and temperature for
+    a given dark matter halo mass and virial overdensity.
 
-def calc_rvT(M, z, cosmo=None, mu=0.59):
+    Consider using find_rvT() instead - it is a higher level function
+    that uses more convenient units and handles broadcasting.
+
+    Parameters
+    ----------
+    M_g : float
+      Halo mass in grams.
+    rho_virial : float
+      Virial overdensity.
+    mu : float (default 0.59)
+      Mean molecular weight.
+
+    Returns
+    -------
+    r,v,T : floats
+      The virial radius (proper cm), circular velocity (m/s) and
+      temperature (K).
+    """
+    rvir = ((3 * M_g) / (4 * pi * rho_virial))**(1./3)
+    vcirc = np.sqrt(G * M_g / rvir)
+    Tvir = mu * m_p * vcirc**2 / (2 * k_B)
+
+    return rvir, vcirc, Tvir
+
+def find_rvT(M, z, cosmo=None, mu=0.59):
     """ Find the virial radius, circular velocity and temperature for
     a dark matter halo at a given mass and redshift.
 
@@ -68,10 +98,10 @@ def calc_rvT(M, z, cosmo=None, mu=0.59):
 
     Examples
     --------
-    >>> vir = calc_rvT(1e12, 0)
+    >>> vir = find_rvT(1e12, 0)
     >>> print vir.r, vir.v, vir.T
     261.195728743 128.338776885 588643.476006
-    >>> r,v,T = calc_rvT(1e12, [0.5, 1, 1.5, 2])
+    >>> r,v,T = find_rvT(1e12, [0.5, 1, 1.5, 2])
     >>> r
     array([ 198.57846074,  156.44358398,  127.91018732,  107.74327378])
     >>> v
@@ -97,10 +127,6 @@ def calc_rvT(M, z, cosmo=None, mu=0.59):
         M_g = np.atleast_2d(M_g).T
         rho_virial = np.atleast_2d(rho_virial)
 
-    rvir = ((3 * M_g) / (4 * pi * rho_virial))**(1./3)
-    vcirc = (G * M_g / rvir)**0.5
-    Tvir = mu * m_p * vcirc**2 / (2 * k_B)
+    rvir, vcirc, Tvir = _calc_rvT(M_g, rho_virial, mu=mu)
 
-    output = namedtuple('virial_rvT', 'r v T')
-
-    return output(r=rvir/kpc, v=vcirc/km, T=Tvir)
+    return find_rvT_output(r=rvir/kpc, v=vcirc/km, T=Tvir)
