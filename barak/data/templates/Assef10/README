@@ -1,0 +1,9 @@
+These templates are from Assef et al 2010: http://adsabs.harvard.edu/abs/2010ApJ...713..970A
+
+They are mean templates derived by fitting empirical SEDs in the NOAO Deep-Wide Field Survey Bootes field.
+
+ * AGN and AGN2 two different AGN templates. AGN is recommended (read the reference above for details)
+ * E is an ellipical template
+ * Sbc is a spiral template
+ * Im is an Irregular template.
+
