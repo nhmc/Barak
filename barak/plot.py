@@ -348,7 +348,9 @@ def histo(a, fmt='b', bins=10, ax=None, lw=2, log=False, **kwargs):
         pl.figure()
         ax = pl.gca()
 
-    vals,bins = np.histogram(np.asarray(a).ravel(), bins=bins)
+    a = np.asarray(a).ravel()
+    a = a[~np.isnan(a)]
+    vals,bins = np.histogram(a, bins=bins)
     if log:
         vals = np.where(vals > 0, np.log10(vals), vals)
     b = np.repeat(bins, 2)
