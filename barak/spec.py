@@ -1231,8 +1231,7 @@ def air2vac_Morton(airw):
     Only valid for wa > 2000 Angstroms.
     """
     airw = np.atleast_1d(airw)
-    if (np.diff(airw) < 0).any():
-        raise ValueError('Wavelengths must be sorted lowest to highest')
+    if (np.diff(airw) < 0).any():        raise ValueError('Wavelengths must be sorted lowest to highest')
     if airw[0] < 2000:
         raise ValueError('Only valid for wavelengths > 2000 Angstroms')
     dwmax = abs(vac2air_Morton(airw[-1]) - airw[-1]) + 10
@@ -1275,19 +1274,25 @@ def qso_template(wa, z):
 
     The SDSS composite spectrum as a function of F_lambda is returned
     at each wavelength of wa. wa must be in angstroms.
+
+    Only good between 700 and 8000 (rest frame).
     """
     r = readtabfits(DATAPATH + '/templates/qso/dr1QSOspec.fits')
-    return np.interp(wa, r.wa*(1 + z), r.fl)
+    return np.interp(wa, waobs, r.fl)
 
-def qso_template_uv(wa, z, smooth_fwhmpix=6):
+def qso_template_uv(wa, z):
     """ Return a composite UV QSO spectrum at redshift z.
 
     Wavelengths must be in Angstroms.
+
+    This is a smoothed version of the HST/COS EUV+FUV AGN composite
+    spectrum shown in Figure 5 from Shull, Stevans, and Danforth 2012.
+
+    Only goo between 550 and 1730 Angstroms (rest frame)
     """
-    w, f, e = np.loadtxt(DATAPATH + 'templates/qso/telfer_composite_qso.txt',
-                         unpack=1)
-    fl = np.interp(wa, w*(1 + z), f)
-    fl = convolve_psf(fl, smooth_fwhmpix)
+
+    T = readtabfits(DATAPATH + 'templates/qso/Shull_composite.fits')                     
+    fl = np.interp(wa, T.wa*(1 + z), T.fl)
     return fl
 
 def make_constant_dv_wa_scale(wmin, wmax, dv):
