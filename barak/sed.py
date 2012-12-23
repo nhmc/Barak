@@ -383,7 +383,8 @@ class SED(object):
         dw_sed = np.median(np.diff(wa))
         if dw_sed > dw_band and dw_band > 20:
             print ('WARNING: SED wavelength sampling interval ~%.2f Ang, '
-                   'but bandpass sampling interval ~%.2f Ang' % (dw1, dw0)) 
+                   'but bandpass sampling interval ~%.2f Ang' %
+                   (dw_sed, dw_band)) 
             
         # interpolate the band normalised transmission to the SED
         # wavelength values.
