@@ -161,7 +161,7 @@ def blackbody_nu(nu, T):
     returns units of erg/s/cm^2/Hz/steradian
     """
     from constants import hplanck, c, kboltz
-    return 2*h*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
+    return 2*hplanck*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
 
 def blackbody_lam(lam, T):
     """ Blackbody as a function of wavelength (cm) and temperature (K).
@@ -169,5 +169,5 @@ def blackbody_lam(lam, T):
     returns units of erg/s/cm^2/cm/steradian
     """
     from constants import hplanck, c, kboltz
-    return 2*h*c**2 / (lam**5 * (np.exp(hplanck*c / (lam*kboltz*T)) - 1))
+    return 2*hplanck*c**2 / (lam**5 * (np.exp(hplanck*c / (lam*kboltz*T)) - 1))
 
