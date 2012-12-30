@@ -1,5 +1,7 @@
 http://www.astro.ucla.edu/~wright/WISE/passbands.html
 
+Originally from http://adsabs.harvard.edu/abs/2011ApJ...735..112J
+
 The WISE response per photon. It should be the quantum efficiency times the transmission of the optics, beamsplitters and filters. Data files containing the wavelength in microns, the response, and the uncertainty in the response in parts per thousand are available for W1, W2, W3 and W4. These Relative Spectral Response curves were constructed from measurements of the whole system supplemented by component measurements and the expected value from the design. The latter two are assumed to have a relative error of 1000 parts per thousand, while the end-to-end measurements can have higher weight if there was adequate SNR in the calibration setup.
 
 The original text files have been converted to fits for fast IO, and the wavelengths converted to Angstroms.
