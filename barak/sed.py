@@ -8,20 +8,18 @@ copied from there (LGPL): http://astlib.sourceforge.net
 - SUN: The SED of the Sun.
 
 """
-import os, math
-import warnings
-
-import numpy as np
-from convolve import convolve_psf
 from io import readtabfits
 from constants import c, c_kms, Jy
 from utilities import get_data_path
 import extinction
 
-try:
-    import matplotlib.pyplot as pl
-except:
-    print "WARNING: failed to import matplotlib - some functions will not work."
+import numpy as np
+from numpy.random import randn
+
+import matplotlib.pyplot as pl
+
+import os, math
+import warnings
 
 datapath = get_data_path()
 PATH_PASSBAND = datapath + '/passbands/'
@@ -152,7 +150,7 @@ class Passband(object):
         self.wa = self.wa[isort]
         self.tr = self.tr[isort]
 
-        # get the name of th filter/passband file and the name of the
+        # get the name of the filter/passband file and the name of the
         # directory in which it lives (the instrument).
         prefix, filtername = os.path.split(filename)
         _, instr = os.path.split(prefix)
@@ -252,7 +250,6 @@ class Passband(object):
         if pl.isinteractive():
             pl.show()
 
-
 class SED(object):
     """A Spectral Energy Distribution (SED).
 
@@ -265,8 +262,8 @@ class SED(object):
      nu = c / lambda
      f_lambda = c / lambda^2 * f_nu 
 
-    Available SED templates filenames are in TEMPLATES.
-    """    
+    Available SED template filenames are in TEMPLATES.
+    """   
     def __init__(self, filename=None, wa=[], fl=[], z=0., label=None):
 
         # filename overrides wave and flux keywords
@@ -280,9 +277,8 @@ class SED(object):
                 wa, fl = np.loadtxt(filepath, usecols=(0,1), unpack=1)  
             if label is None:
                 label = filename
-        # We keep a copy of the wavelength, flux at z = 0 as it's
-        # more robust to copy that to self.wa, flux and
-        # redshift it, rather than repeatedly redshifting
+
+        # We keep a copy of the wavelength, flux at z = 0
         self.z0wa = np.array(wa)
         self.z0fl = np.array(fl)
         self.wa = np.array(wa)
@@ -357,17 +353,21 @@ class SED(object):
         """Normalises the SED to match the flux equivalent to the
         given AB magnitude in the given passband.
         """
-        magflux, err = mag2flux(ABmag, 0., band)
+        magflux = mag2flux(ABmag, band)
         sedflux = self.calc_flux(band)
         norm = magflux / sedflux
         self.fl *= norm
         self.z0fl *= norm
         
     def calc_flux(self, band):
-        """Calculates flux in the given passband. """
+        """Calculate the mean flux for a passband, weighted by the
+        response and wavelength in the given passband.
+
+        Returns the mean flux (erg/s/cm^2/Ang) inside the band.
+        """
         if self.wa[0] > band.wa[0] or self.wa[-1] < band.wa[-1]:
-            msg = "SED does not cover the whole bandpass, we're extrapolating"
-            print 'WARNING:', msg
+            msg = "SED does not cover the whole bandpass, extrapolating"
+            warnings.warn(msg)
             dw = np.median(np.diff(self.wa))
             sedwa = np.arange(band.wa[0], band.wa[-1]+dw, dw)
             sedfl = np.interp(sedwa, self.wa, self.fl)
@@ -382,15 +382,22 @@ class SED(object):
         dw_band = np.median(np.diff(band.wa))
         dw_sed = np.median(np.diff(wa))
         if dw_sed > dw_band and dw_band > 20:
-            print ('WARNING: SED wavelength sampling interval ~%.2f Ang, '
-                   'but bandpass sampling interval ~%.2f Ang' %
-                   (dw_sed, dw_band)) 
-            
-        # interpolate the band normalised transmission to the SED
-        # wavelength values.
-        band_ntr = np.interp(wa, band.wa, band.ntr)
-        sed_in_band =  band_ntr * fl
-        flux = np.trapz(sed_in_band * wa, wa) / np.trapz(band_ntr * wa, wa) 
+            warnings.warn(
+                'WARNING: SED wavelength sampling interval ~%.2f Ang, '
+                'but bandpass sampling interval ~%.2f Ang' %
+                (dw_sed, dw_band))
+            # interpolate the SED to the passband wavelengths
+            fl = np.interp(band.wa, wa, fl)
+            band_tr = band.tr
+            wa = band.wa
+        else:
+            # interpolate the band transmission to the SED
+            # wavelength values.
+            band_tr = np.interp(wa, band.wa, band.tr)
+
+        # weight by response and wavelength, appropriate when we're
+        # counting the number of photons within the band.
+        flux = np.trapz(band_tr * fl * wa, wa) / np.trapz(band_tr * wa, wa)
         return flux
 
     def calc_mag(self, band, system="Vega"):
@@ -398,6 +405,10 @@ class SED(object):
 
         Note that the distance modulus is not added.
 
+        mag_sigma : float
+          Add a gaussian random deviate to the magnitude, with sigma
+          given by this value.
+          
         `system` is either 'Vega' or 'AB'
         """
         f1 = self.calc_flux(band)
@@ -416,16 +427,19 @@ class SED(object):
         """Calculates the colour band1 - band2.
 
         system is either 'Vega' or 'AB'.
+
+        mag_sigma : float
+          Add a gaussian random deviate to each magnitude, with sigma
+          given by this value.
         """
         mag1 = self.calc_mag(band1, system=system)
         mag2 = self.calc_mag(band2, system=system)
     
         return mag1 - mag2
 
-    def apply_extinction(self, EBmV):
-        """Applies the Calzetti et al. 2000 (ApJ, 533, 682) extinction
-        law to the SED with the given E(B-V) amount of extinction.
-        R_v' = 4.05 is assumed (see equation (5) of Calzetti et al.).
+    def apply_extinction(self, taufunc, EBmV=None, Rv=None):
+        """Applies an extinction function to the SED with the given
+        E(B-V) and  R_v').
 
         Call with EBmV = 0 to remove any previously-applied extinction.
         """
@@ -435,8 +449,11 @@ class SED(object):
 
         # Allow us to set EBmV == 0 to turn extinction off
         if EBmV > 1e-10:
-            reddening = extinction.starburst_Calzetti00(self.z0wa, EBmV)
-            self.z0fl /= reddening
+            if Rv is not None:
+                tau = taufunc(self.z0wa, EBmV=EBmV, Rv=Rv)
+            else:
+                tau = taufunc(self.z0wa, EBmV=EBmV)
+            self.z0fl *= np.exp(-tau)
             self.EBmV = EBmV
         else:
             self.EBmV = 0
@@ -444,61 +461,86 @@ class SED(object):
         self.redshift_to(self.z)
 
 
-def mag2flux(ABmag, ABmagerr, band):
-    """Converts given AB magnitude and uncertainty into flux in the
-    given band, in erg/s/cm^2/Angstrom.
+def mag2flux(ABmag, band):
+    """ Converts given AB magnitude into flux in the given band, in
+    erg/s/cm^2/Angstrom.
 
-    Returns the flux and error in the given band.
+    Returns the flux in the given band.
     """
     # AB mag (See Oke, J.B. 1974, ApJS, 27, 21)
-    flux_nu = 10**(-(ABmag + 48.6)/2.5)          # erg/s/cm^2/Hz
-    # for conversion to erg s-1 cm-2 angstrom-1 with lambda in microns
-    lam_eff = band.effective_wa * 1e-8           # cm
-    flux_lam = 1e-8 * c * flux_nu / lam_eff**2   # erg/s/cm^2/Ang
+    # fnu in erg/s/cm^2/Hz
+    fnu = 10**(-(ABmag + 48.6)/2.5)          
+    # convert to erg/s/cm^2/Ang
+    flambda = fnu_to_flambda(band.effective_wa, fnu)
 
-    flux_nu_err =  10**(-(ABmag - ABmagerr + 48.6)/2.5)
-    flux_lam_err = 1e-8 * c * flux_nu_err / lam_eff**2  # erg/s/cm^2/Ang
-    flux_lam_err = flux_lam_err - flux_lam
+    return flambda
 
-    return flux_lam, flux_lam_err
+def flux2mag(flambda, band):
+    """Converts flux in erg/s/cm^2/Angstrom into AB magnitudes.
 
-def flux2mag(flux, fluxerr, band):
-    """Converts given flux and uncertainty in erg/s/cm^2/Angstrom into
-    AB magnitudes.
-
-    Returns the magnitude and error in the given band.
+    Returns the magnitude in the given band.
     """
-    lam_eff = band.effective_wa * 1e-8          # cm
-    flux_wa = 1e8 * flux                        # erg/s/cm^2/cm
-    flux_nu = flux_wa * lam_eff**2 / c          # erg/s/cm^2/Hz
-    mag = -2.5*math.log10(flux_nu) - 48.6
-
-    flux_nuerr = 1e8 * fluxerr * lam_eff**2 / c
-    magerr = mag - (-2.5*math.log10(flux_nu + flux_nuerr) - 48.6)
-    
-    return mag, magerr
+    # convert to erg/s/cm^2/Hz
+    fnu = flambda_to_fnu(band.effective_wa, flambda)
+    mag = -2.5*math.log10(fnu) - 48.6    
+    return mag
 
 def mag2Jy(ABmag):
-    """Converts an AB magnitude into flux density in Jy.
+    """Converts an AB magnitude into flux density in Jy (fnu).
     """
     flux_nu = 10**(-(ABmag + 48.6)/2.5) / Jy
     return flux_nu
 
 def Jy2Mag(fluxJy):
-    """Converts flux density in Jy into AB magnitude.
+    """Converts flux density in Jy into AB magnitude (fnu).
     """
     ABmag = -2.5 * (np.log10(fluxJy * Jy)) - 48.6
     return ABmag
 
+def fnu_to_flambda(wa, f_nu):
+    """ Convert flux per unit frequency to a flux per unit wavelength.
+
+    Parameters
+    ----------
+    wa : array_like
+      Wavelength in Angstroms
+    f_nu : array_like
+      Flux at each wavelength in erg/s/cm^2/Hz
+
+    Returns
+    -------
+    f_lambda : ndarray
+      Flux at each wavelength in erg/s/cm^2/Ang
+    """
+    return c / (wa * 1e-8)**2 * f_nu * 1e-8
+
+def flambda_to_fnu(wa, f_lambda):
+    """ Convert flux per unit wavelength to a flux per unit frequency.
+    
+    Parameters
+    ----------
+    wa : array_like
+      Wavelength in Angstroms
+    f_lambda : array_like
+      Flux at each wavelength in erg/s/cm^2/Ang
+
+    Returns
+    -------
+    f_nu : ndarray
+      Flux at each wavelength in erg/s/cm^2/Hz
+    """
+    return (wa *1e-8)**2 * f_lambda * 1e8 / c
 
 # Data
 VEGA = SED('reference/Vega_bohlin2006')
 SUN = SED('reference/sun_stis')
 
+# AB SED has constant flux density (f_nu) 3631 Jy, see
+# http://www.sdss.org/dr5/algorithms/fluxcal.html
 
-wa = np.logspace(1, 10, 1e5)
-# AB SED has constant flux density 3631 Jy
-fl = 1e-8 * 3631 * Jy * c / (wa * 1e-8)**2  # erg/s/cm^2/Ang
-AB = SED(wa=wa, fl=fl)
+fnu = 3631 * Jy   # erg/s/cm^2/Hz
+wa = np.logspace(1, 10, 1e5)   # Ang
+AB = SED(wa=wa, fl=fnu_to_flambda(wa, fnu))
+
 # don't clutter the namespace
-del wa, fl
+del wa, fnu

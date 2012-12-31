@@ -456,3 +456,4 @@ def indices_from_grid(c, ref):
     ind = (c - ref[0]) / dref0
 
     return ind
+
