@@ -63,7 +63,7 @@ def _calc_rvT(M_g, rho_virial, mu=0.59):
     """
     rvir = ((3 * M_g) / (4 * pi * rho_virial))**(1./3)
     vcirc = np.sqrt(G * M_g / rvir)
-    Tvir = mu * m_p * vcirc**2 / (2 * k_B)
+    Tvir = mu * m_p * vcirc * vcirc / (2 * k_B)
 
     return rvir, vcirc, Tvir
 
