@@ -125,11 +125,18 @@ def parse_module(modname, prefix='barak.'):
     s = section_head % (almostfullmodname, underline, moddoc, fullmodname)
     functions = sorted(list_functions(mod))
     classes = sorted(list_classes(mod))
+    print '  functions', functions
+    print '  classes', classes
     c = []
     for cla in classes:
+        print '  class', cla
+        try:
+            c0 = getattr(mod, cla)
+        except AttributeError:
+            continue
         c.append(cla)
-        temp = [cla + '.' + n for n in sorted(
-            set(list_methods(getattr(mod, cla))))]
+        methods = list_methods(c0)
+        temp = [cla + '.' + n for n in sorted(set(methods))]
         c.extend(temp)
 
     for obj in c + functions:
@@ -143,6 +150,7 @@ def process_scripts(pkgdir, filenames):
     descriptions = []
     nwidth = dwidth = 0
     for n in filenames:
+        print n
         fh = open(pkgdir + '/' + n)
         s = fh.read()
         fh.close()
@@ -204,6 +212,7 @@ if 1:
             modname = n.replace('./', '')[:-3]
             s += parse_module(modname, prefix=prefix)
 
+    print 'scripts'
     filenames = sorted(glob('../scripts/*'))
     s += process_scripts('../scripts/', filenames)
     
