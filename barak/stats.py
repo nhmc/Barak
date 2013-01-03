@@ -158,16 +158,46 @@ def binomial_confidence_interval(conf, ntrial, nsuccess):
 def blackbody_nu(nu, T):
     """ Blackbody as a function of frequency (Hz) and temperature (K).
 
-    returns units of erg/s/cm^2/Hz/steradian
+    Parameters
+    ----------
+    nu : array_like
+      Frequency in Hz.
+
+    Returns
+    -------
+    Jnu : ndarray
+      Intensity with units of erg/s/cm^2/Hz/steradian
+
+    See Also
+    --------
+    blackbody_lam
     """
     from constants import hplanck, c, kboltz
     return 2*hplanck*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
 
 def blackbody_lam(lam, T):
-    """ Blackbody as a function of wavelength (cm) and temperature (K).
+    """ Blackbody as a function of wavelength (Angstroms) and temperature (K).
 
-    returns units of erg/s/cm^2/cm/steradian
+    Parameters
+    ----------
+    lam : array_like
+      Wavelength in Angstroms.
+
+    Returns
+    -------
+    Jlam : ndarray
+       Intensity with units erg/s/cm^2/Ang/steradian
+
+    See Also
+    --------
+    blackbody_nu
     """
     from constants import hplanck, c, kboltz
-    return 2*hplanck*c**2 / (lam**5 * (np.exp(hplanck*c / (lam*kboltz*T)) - 1))
+    # to cm
+    lam = lam * 1e-8
+    # erg/s/cm^2/cm/sr
+    Jlam = 2*hplanck*c**2 / (lam**5 * (np.exp(hplanck*c / (lam*kboltz*T)) - 1))
+
+    # erg/s/cm^2/Ang/sr
+    return Jlam * 1e8
 
