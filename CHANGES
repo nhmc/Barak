@@ -1,12 +1,13 @@
-v0.3.0 6th Jan 2013:
+v0.3.0 6th Jan 2013 -- WARNING - there are several API changes compared
+   to version 0.2.x. 
 
  - The extinction module has been overhauled (with API changes),
    curves are now given as A(lambda)/A(V) instead of
    E(lambda-V)/E(B-V) and use an ExtinctionCurve class.  
 
- - Added a new uv QSO template.
-
  - Added a new module for calculating virial quantities, barak.virial.
+
+ - Added a new uv QSO template.
  
  - make_constant_dv_wa_scale moved from barak.spec to barak.sed,
    convolve_constant_dv moved from barak.spec to barak.convolve.
