@@ -1,6 +1,7 @@
 """ Functions related to convolution.""" 
 import numpy as np
 from utilities import nan2num
+from sed import make_constant_dv_wa_scale
 
 def convolve_psf(a, fwhm, edge='invert', replace_nan=True, debug=False):
     """ Convolve an array with a gaussian window.
@@ -98,3 +99,43 @@ def convolve_window(a, window, edge='invert'):
     temp2 = np.convolve(np.concatenate(temp1), window, mode='same')
 
     return temp2[n:-n]
+
+def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None):
+    """ Convolve a wavelength array with a gaussian of constant
+    velocity width.
+
+    If `vfwhm` is specified an intermediate wavelength array with
+    constant velocity pixel width is calculated. Otherwise, both
+    `wa_dv` and `npix` must be given -- this is faster because no
+    intermediate array needs to be calculated.
+
+    Parameters
+    ----------
+    fl, wa : arrays of floats, length N
+      The array to be convolved and its wavelengths.
+    vfwhm : float, optional
+      Full width at half maximum in velocity space (km/s) of the
+      gaussian kernel with which to convolve `fl`.
+    npix : float, default 4
+      Number of pixels corresponding to `vfwhm` in `wa_dv` if given,
+      otherwise `wa` is interpolated to an array with velocity pixel
+      width = vfwhm / npix.
+    wa_dv : array of floats, default `None`
+      Wavelength array with a constant velocity width (this can be
+      generated with make_constant_dv_wa_scale()).
+
+    Returns
+    -------
+    fl_out : array of length N
+      fl convolved with the gaussian kernel with the specified FWHM.
+     
+    """
+    # interpolate to the log-linear scale, convolve, then
+    # interpolate back again.
+    # convolve with the gaussian
+    if vfwhm is not None:
+        wa_dv = make_constant_dv_wa_scale(wa[0], wa[-1], float(vfwhm)/npix)
+    fl_dv = np.interp(wa_dv, wa, fl)
+    fl_dv_smoothed = convolve_psf(fl_dv, npix)
+    fl_out = np.interp(wa, wa_dv, fl_dv_smoothed)
+    return fl_out

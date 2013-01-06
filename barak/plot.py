@@ -584,3 +584,54 @@ def calc_log_minor_ticks(majticks):
         minticks.extend(t + tickpos)
 
     return minticks
+
+def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
+    """ plot a ticks on a wavelength scale.
+
+    This plots ticks (such as those returned by `find_tau()`) on a
+    spectrum.
+
+    Parameters
+    ----------
+    ax : matplotlib axes
+      The axes on which to plot the ticks.
+    wa, fl : array_like
+      wavelength and flux of spectrum. `wa` must be sorted.
+    height : float
+      tick height in flux units.
+    ticks : record array
+      A record array of the sort returned by `find_tau`. The fields
+      wa, wa0, and name are required.
+    keeponly : str
+      If this is not None (the default), then only plot ticks that
+      contain this string in their name.
+    labels : bool (True)
+      Whether to plot labels next to the tickmarks.
+
+    Returns
+    -------
+    Ticks, Tlabels : Matplotlib collection of tickmarks and tick labels.
+      The artists corresponding to the ticks and their labels.
+    """
+    ind = wa.searchsorted(ticks.wa)
+    c0 = (ind == 0) | (ind == len(wa))
+    ticks = ticks[~c0]
+    ymin = fl[ind[~c0]]*1.1
+    Tlabels = []
+    c1 = np.ones(len(ticks), bool)
+    for i,t in enumerate(ticks):
+        if keeponly is not None:
+            if keeponly not in t.name:
+                c1[i] = False
+                continue
+        if not labels:
+            continue
+        label = '%s %.0f' % (t.name, t.wa0)
+        label = label.replace('NeVII', 'NeVIII')
+        Tlabels.append(ax.text(t.wa, ymin[i] + 1.1*height, label, rotation=60,
+                               fontsize=8, va='bottom', alpha=0.7))
+
+    Ticks = ax.vlines(ticks.wa[c1], ymin[c1], ymin[c1] + height, color='c',
+                      lw=1) 
+
+    return Ticks, Tlabels

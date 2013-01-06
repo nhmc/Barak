@@ -1,17 +1,17 @@
 """ Perform calculations on Spectral Energy Distributions (SEDs).
 
-Based on the SED module in astLib by Matt Hilton, with some routines
-copied from there (LGPL): http://astlib.sourceforge.net
+Inspired by the SED module in astLib by Matt Hilton
+(http://astlib.sourceforge.net)
 
 - VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.
 - AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.
 - SUN: The SED of the Sun.
 
 """
+from __future__ import division
 from io import readtabfits
 from constants import c, c_kms, Jy
 from utilities import get_data_path
-import extinction
 
 import numpy as np
 from numpy.random import randn
@@ -21,10 +21,10 @@ import matplotlib.pyplot as pl
 import os, math
 import warnings
 
-datapath = get_data_path()
-PATH_PASSBAND = datapath + '/passbands/'
-PATH_EXTINCT = datapath + '/atmos_extinction/'
-PATH_TEMPLATE = datapath + '/templates/'
+DATAPATH = get_data_path()
+PATH_PASSBAND = DATAPATH + '/passbands/'
+PATH_EXTINCT = DATAPATH + '/atmos_extinction/'
+PATH_TEMPLATE = DATAPATH + '/templates/'
 
 def _listfiles(topdir):
     names = [n for n in os.listdir(topdir) if os.path.isdir(topdir + n)]
@@ -437,30 +437,6 @@ class SED(object):
     
         return mag1 - mag2
 
-    def apply_extinction(self, taufunc, EBmV=None, Rv=None):
-        """Applies an extinction function to the SED with the given
-        E(B-V) and  R_v').
-
-        Call with EBmV = 0 to remove any previously-applied extinction.
-        """
-
-        # All done in rest frame
-        self.z0fl[:] = self.z0fl_no_extinct
-
-        # Allow us to set EBmV == 0 to turn extinction off
-        if EBmV > 1e-10:
-            if Rv is not None:
-                tau = taufunc(self.z0wa, EBmV=EBmV, Rv=Rv)
-            else:
-                tau = taufunc(self.z0wa, EBmV=EBmV)
-            self.z0fl *= np.exp(-tau)
-            self.EBmV = EBmV
-        else:
-            self.EBmV = 0
-
-        self.redshift_to(self.z)
-
-
 def mag2flux(ABmag, band):
     """ Converts given AB magnitude into flux in the given band, in
     erg/s/cm^2/Angstrom.
@@ -530,6 +506,69 @@ def flambda_to_fnu(wa, f_lambda):
       Flux at each wavelength in erg/s/cm^2/Hz
     """
     return (wa *1e-8)**2 * f_lambda * 1e8 / c
+
+
+def qso_template(wa, z):
+    """ Return a composite QSO spectrum at redshift z.
+
+    This uses the SDSS composite at wa > 1680 and a smoothed version
+    of the HST/COS EUV+FUV AGN composite spectrum shown in Figure 5
+    from Shull, Stevans, and Danforth 2012 for wa < 1680.
+    
+    The spectrum is in arbitrary units of F_lambda. wa must be in
+    angstroms.
+    """
+    wa = np.array(wa, copy=False)
+    wrest = wa / (1+z)
+    i = wrest.searchsorted(1680)
+    if i == len(wrest):
+        return qso_template_uv(wa, z)
+    elif i == 0:
+        return qso_template_sdss(wa, z)
+    else:
+        fl = np.ones(len(wa), float)
+        f = qso_template_uv(wa, z)
+        fl[:i] = f[:i] / f[i]
+        f = qso_template_sdss(wa, z)
+        fl[i:] = f[i:] / f[i]
+
+    return fl
+
+def qso_template_sdss(wa, z):
+    """ Return a composite visible QSO spectrum at redshift z.
+
+    The SDSS composite spectrum as a function of F_lambda is returned
+    at each wavelength of wa. wa must be in angstroms.
+
+    Only good between 700 and 8000 (rest frame).
+    """
+    T = readtabfits(DATAPATH + '/templates/qso/dr1QSOspec.fits')
+    return np.interp(wa, T.wa*(1+z), T.fl)
+
+def qso_template_uv(wa, z):
+    """ Return a composite UV QSO spectrum at redshift z.
+
+    Wavelengths must be in Angstroms.
+
+    This is a smoothed version of the HST/COS EUV+FUV AGN composite
+    spectrum shown in Figure 5 from Shull, Stevans, and Danforth 2012.
+
+    Only good between 550 and 1730 Angstroms (rest frame)
+    """
+    T = readtabfits(DATAPATH + 'templates/qso/Shull_composite.fits')                     
+    return np.interp(wa, T.wa*(1 + z), T.fl)
+
+
+def make_constant_dv_wa_scale(wmin, wmax, dv):
+    """ Make a constant velocity width scale given a start and end
+    wavelength, and velocity pixel width.
+    """
+    dlogw = np.log10(1 + dv/c_kms)
+    # find the number of points needed.
+    npts = int(np.log10(wmax / wmin) / dlogw)
+    wa = wmin * 10**(np.arange(npts)*dlogw)
+    return wa
+
 
 # Data
 VEGA = SED('reference/Vega_bohlin2006')

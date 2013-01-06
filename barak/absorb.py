@@ -1,11 +1,13 @@
 """ This module has routines for analysing the absorption profiles
 from ions and molecules.
 """
+from __future__ import division
 from voigt import voigt
 from convolve import convolve_psf
 from utilities import between, adict, get_data_path, indexnear
 from constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
-from spec import find_wa_edges, make_constant_dv_wa_scale
+from spec import find_wa_edges
+from sed import  make_constant_dv_wa_scale
 from abundances import Asolar
 from pyvpfit import readf26
 
@@ -584,7 +586,7 @@ def split_trans_name(name):
         i += 1
     return name[:i], name[i:]
 
-def tau_LL(logN, wa, wstart=912.):
+def tau_LL(logN, wa, wstart=912):
     """ Find the optical depth at the neutral hydrogen Lyman limit.
 
     Parameters
@@ -645,9 +647,9 @@ def tau_LL(logN, wa, wstart=912.):
     tau[:i] = 10**logN * sigma0 * (wa[:i] / 912.)**3 
     return tau
 
-def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, bHI=50, dv=5., atom=None,
-                 verbose=1, highions=1):
-    """ Create the optical due to absorption from a DLA.
+def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
+                 verbose=1, highions=1, molecules=False):
+    """ Create the optical depth due to absorption from a DLA.
 
     The DLA is at z=0. The column density and metallicity can be
     varied. Solar Abundance ratios are assumed, with most of the atoms
@@ -655,20 +657,19 @@ def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, bHI=50, dv=5., atom=None,
 
     Parameters
     ----------
-    wmin, wmax : float
-       Start an end of the wavelength scale (rest wavelengths).
+    wa : array_like
+       Wavelength scale.
     logZ : float (0)
        log10 of the metal abundance relative to solar. For example 0
        (the default) gives solar abundances, -1 gives 1/10th of solar.
     verbose : bool (False)
-       Print helpfl information
+       Print helpful information
+
     Returns
     -------
-    wa, tau : ndarrays, shape (N,)
-      The wavelength array and tau at each wavelength.
-
+    tau, ticks : ndarrays, structured array
+      tau at each wavelength and tick positions and names.
     """
-    wa = make_constant_dv_wa_scale(wmin, wmax, dv)
     off = -12 + logN + logZ
     temp = b_to_T('H', bHI)
     print 'b %.2f km/s gives a temperature of %.1f K' % (bHI, temp)
@@ -679,42 +680,49 @@ def calc_DLA_tau(wmin, wmax, logN=20.3, logZ=0, bHI=50, dv=5., atom=None,
     print ', '.join('%s %.1f' % (el, b[el]) for el in elements)
     
     f26 = [
-        'HI    0  0  %.2f 0 %.2f 0' % (bHI, logN),    
-        'OI    0  0  %.2f 0 %.2f 0' % (b['O'], (Asolar['O']  + off)), 
-        'SiII  0  0  %.2f 0 %.2f 0' % (b['Si'], (Asolar['Si'] + off - 0.05)), 
-        'SiIII 0  0  %.2f 0 %.2f 0' % (b['Si'], (Asolar['Si'] + off - 1)),    
-        'FeII  0  0  %.2f 0 %.2f 0' % (b['Fe'], (Asolar['Fe'] + off)),    
-        'CII   0  0  %.2f 0 %.2f 0' % (b['C'], (Asolar['C']  + off - 0.05)),    
-        'CIII  0  0  %.2f 0 %.2f 0' % (b['C'], (Asolar['C']  + off - 1)),    
-        'CaII  0  0  %.2f 0 %.2f 0' % (b['Ca'], (Asolar['Ca'] + off)),
-        'AlII  0  0  %.2f 0 %.2f 0' % (b['Al'], (Asolar['Al'] + off - 0.05)),
-        'AlIII 0  0  %.2f 0 %.2f 0' % (b['Al'], (Asolar['Al'] + off - 1)),
-        'TiII  0  0  %.2f 0 %.2f 0' % (b['Ti'], (Asolar['Ti'] + off)),
-        'NII   0  0  %.2f 0 %.2f 0' % (b['N'], (Asolar['N']  + off)),
-        'ZnII  0  0  %.2f 0 %.2f 0' % (b['Zn'], (Asolar['Zn']  + off)),
-        'CrII  0  0  %.2f 0 %.2f 0' % (b['Cr'], (Asolar['Cr']  + off)),
+        'HI    %.6f  0  %.2f 0 %.2f 0' % (z, bHI, logN),    
+        'OI    %.6f  0  %.2f 0 %.2f 0' % (z, b['O'], (Asolar['O']  + off)), 
+        'SiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 0.05)), 
+        'SiIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 1)),    
+        'FeII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Fe'], (Asolar['Fe'] + off)),    
+        'CII   %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], (Asolar['C']  + off - 0.05)),    
+        'CIII  %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], (Asolar['C']  + off - 1)),    
+        'CaII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Ca'], (Asolar['Ca'] + off)),
+        'AlII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Al'], (Asolar['Al'] + off - 0.05)),
+        'AlIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Al'], (Asolar['Al'] + off - 1)),
+        'TiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Ti'], (Asolar['Ti'] + off)),
+        'NII   %.6f  0  %.2f 0 %.2f 0' % (z, b['N'], (Asolar['N']  + off)),
+        'ZnII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Zn'], (Asolar['Zn']  + off)),
+        'CrII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Cr'], (Asolar['Cr']  + off)),
         ]
     if highions:
         print 'Including O VI, Si IV, C IV and N V'
         logNCIV = 15.
         logNSiIV = logNCIV - (Asolar['C'] - Asolar['Si'] )
         f26 = f26 + [
-            'OVI   0  0  30.0 0 15.0 0',
-            'SiIV  0  0  %.2f  0 %.2f 0' % (b['Si'], logNSiIV),
-            'CIV   0  0  %.2f 0 %.2f 0' % (b['C'], logNCIV),
-            'NV    0  0  30.0 0 15.0 0',
+            'OVI   %.6f  0  30.0 0 15.0 0' % z,
+            'SiIV  %.6f  0  %.2f  0 %.2f 0' % (z, b['Si'], logNSiIV),
+            'CIV   %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], logNCIV),
+            'NV    %.6f  0  30.0 0 15.0 0' % z,
+            ]
+    if molecules:
+        print 'Including H_2 and CO'
+        f26 = f26 + [
+            'H2J0  %.6f  0  5.0  0 18.0 0' % z,
+            'H2J1  %.6f  0  5.0  0 19.0 0' % z,
+            'COJ0  %.6f  0  5.0  0 14.0 0' % z,
             ]
 
     f26 = StringIO('\n'.join(f26))
     if atom is None:
-        atom = readatom()
+        atom = readatom(molecules=molecules)
 
-    #import pdb; pdb.set_trace()
     tau,ticks = find_tau(wa, f26, atom)
-    tau += tau_LL(logN, wa, wstart=912.)
-    return wa, tau, ticks
+    tau += tau_LL(logN, wa/(1+z), wstart=912.5)
+    return tau, ticks
 
-def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5., bHI=50):
+def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, bHI=50,
+                   highions=True, molecules=False):
     """ Find the transmission after absorption by a DLA
 
     Parameters
@@ -739,12 +747,12 @@ def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, dv=5., bHI=50):
     ticks : ndarray, shape (M,)
       Information for making ticks to show absorbing components.
     """
-    wa1 = wa / (1 + redshift)
-    lwa1, tau, ticks = calc_DLA_tau(wa1[0], wa1[-1], logN=logN, logZ=logZ,
-                                    dv=dv, bHI=bHI)
-    lwa = lwa1 * (1 + redshift)
-    trans = convolve_psf(np.exp(-tau),  vfwhm / dv)
-    trans1 = np.interp(wa, lwa, trans)
+    wa1 = make_constant_dv_wa_scale(wa[0], wa[-1], vfwhm/3.)  
+    tau, ticks = calc_DLA_tau(
+        wa1, z=redshift, logN=logN, logZ=logZ, bHI=bHI,
+        highions=highions, molecules=molecules)
+    trans = convolve_psf(np.exp(-tau),  3.)
+    trans1 = np.interp(wa, wa1, trans)
     return trans1, ticks
 
 
