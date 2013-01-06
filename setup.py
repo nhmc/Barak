@@ -62,7 +62,7 @@ package_data = {'barak' : get_data_names('barak/data')}
 
 setup(
     name = 'Barak',
-    version = '0.3.1',
+    version = '0.3.2',
     author = 'Neil Crighton',
     author_email = 'neilcrighton .at. gmail .dot. com',
     packages = ['barak', 'barak.tests', 'barak.sphinx', 'barak.sphinx.ext'],

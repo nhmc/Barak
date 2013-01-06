@@ -9,7 +9,7 @@ from utilities import between, Gaussian, stats, indexnear
 from convolve import convolve_psf
 from io import loadobj, saveobj
 from interp import AkimaSpline
-from sed import qso_template_uv
+from sed import qso_template
 
 import os
 
@@ -308,7 +308,7 @@ class InteractiveCoFit(object):
 
         self.template = None
         if redshift is not None:
-            self.template = qso_template_uv(wa, redshift)
+            self.template = qso_template(wa, redshift)
 
         self.connections = []
         self.continuum = None

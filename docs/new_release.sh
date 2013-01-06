@@ -8,7 +8,7 @@
 
 # make a new tag
 
-git tag -a v0.3.0 -m'version 0.3.0'
+git tag -a v0.3.2 -m'version 0.3.2'
 
 # build tarball
 python setup.py sdist
