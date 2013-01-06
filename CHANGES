@@ -16,6 +16,9 @@ v0.3.0 6th Jan 2013 -- WARNING - there are several API changes compared
 
  - Many other minor enhancements and bug fixes.
 
+ - The astropy package is now a requirement (needed for the cosmology
+   package and some utilities).
+
 v0.2.1, 19th Oct 2012 -- Fixed problems with the PyPI upload.
 
 v0.2.0, Oct 2012 -- Initial release.

@@ -47,9 +47,15 @@ http://matplotlib.org/users/installing.html.
 with open('README') as fh:
     readme = fh.read()
 
+readme += 'Change Log\n'
+readme += '----------\n'
+
+with open('CHANGES') as fh:
+    readme += fh.read()
+
 description = ("A set of astronomy-related routines for generating Voigt "
                "profiles from atomic data, reading and writing data, "
-               "working with SEDs and passbands.")
+               "working with SEDs, passbands and dust extinction laws."
 
 package_data = {'barak' : get_data_names('barak/data')}
 
@@ -67,6 +73,6 @@ setup(
     url = 'http://nhmc.github.com/Barak/',
     description = description,
     long_description = readme,
-    requires = ["numpy", "pyfits", "atpy"],
-    install_requires = ["numpy", "pyfits", "atpy"]
+    requires = ["numpy", "pyfits", "atpy", "astropy"],
+    install_requires = ["numpy", "pyfits", "atpy", "astropy"]
     )

@@ -4,17 +4,16 @@ by Tom Theuns.
 Acknowledgements
 ----------------
 
-The voigt profile routine is loosely based on a version written by
-Jochen Liske in VPGUESS, which can be downloaded from:
+The voigt profile routine is inspired by a version written by Jochen
+Liske in VPGUESS, which can be downloaded from:
 http://www.eso.org/~jliske/vpguess/
 
-The atom.dat file is taken from vpfit, with several additions from
-Verner et al. 
+The atom.dat file is taken from vpfit
+(http://www.ast.cam.ac.uk/~rfc/vpfit.html), with several additions
+from Verner et al.
 
-The sed module is heavily influenced by the astLib sed module by Matt
-Hilton: http://astlib.sourceforge.net/
+The sed module was originally inspired by the astLib sed module by
+Matt Hilton: http://astlib.sourceforge.net/.
 
 The dust extinction law functions were inspired by those in Erik
 Tollerud's Astropysics: http://packages.python.org/Astropysics/
-
-Last updated on 25th April 2012.
