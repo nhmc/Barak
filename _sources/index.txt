@@ -14,10 +14,11 @@ handled are:
 
 The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 
-It requires `NumPy <http://numpy.scipy.org/>`_, `Matplotlib
-<http://matplotlib.sourceforge.net/>`_, `SciPy
-<http://www.scipy.org/>`_, `ATpy <http://atpy.github.com/>`_ and
-`Astropy <http://www.astropy.org>`_.
+It requires `NumPy <http://numpy.scipy.org/>`_, `PyFits
+<http://www.stsci.edu/institute/software_hardware/pyfits/Download>`_
+and `ATpy <http://atpy.github.com/>`_ to install. `Matplotlib
+<http://matplotlib.sourceforge.net/>`_ and `SciPy
+<http://www.scipy.org/>`_ are also required for full functionality.
 
 To install, either download the tarball from the pypi website and then
 do::
@@ -31,8 +32,8 @@ using `pip`::
 
   pip install barak
 
-but you need to have `pip`
-(http://www.pip-installer.org/en/latest/index.html) installed.
+but you need to have `pip
+<http://www.pip-installer.org/en/latest/index.html>`_ installed.
 
 To run the tests you need `py.test <http://pytest.org/latest/>`_
 installed.  Then run::
@@ -74,6 +75,8 @@ from ions and molecules.
    calctau
    find_tau
    findtrans
+   guess_logN_b
+   logN_from_tau_peak
    read_HITRAN
    readatom
    split_trans_name
@@ -182,24 +185,6 @@ Constants defined:
    :toctree: generated/
 
 
-cont
-----
-
-
-
-.. currentmodule:: barak.cont
-
-.. autosummary::
-   :toctree: generated/
-
-   InteractiveCoFit
-   InteractiveCoFit.calc_tau
-   InteractiveCoFit.modifypoints
-   InteractiveCoFit.on_button_release
-   InteractiveCoFit.on_keypress
-   InteractiveCoFit.plotinit
-   InteractiveCoFit.update
-
 convolve
 --------
 
@@ -210,6 +195,7 @@ Functions related to convolution.
 .. autosummary::
    :toctree: generated/
 
+   convolve_constant_dv
    convolve_psf
    convolve_window
 
@@ -255,8 +241,8 @@ particles, then:
 
   I_\lambda = I_{\lambda,0}\ e^{-\tau_\lambda}
 
-Generally the attenuation is given in magnitude in a band or at a
-wavelegnth. For example, A(V) refers to the extinction in magnitudes
+Generally the attenuation is given in magnitudes in a band or at a
+wavelength. For example, A(V) refers to the extinction in magnitudes
 in the V band, and
 
 .. math::
@@ -264,9 +250,9 @@ in the V band, and
   E(B - V) \equiv A(B) - A(V)
 
 is the difference in extinction between the B and V
-bands. Empirically, dust attenuation is found to have a similar
-functional form in different parts of the Milky Way's ISM that can be
-parametrised with a normalisation A(V) and slope E(B - V). Another
+bands. Empirically, dust attenuation in different parts of the Milky
+Way's ISM can be described by single function of wavelength
+parametrised by a normalisation A(V) and slope E(B - V). Another
 commonly used quantity is
 
 .. math::
@@ -274,10 +260,14 @@ commonly used quantity is
   R(V) \equiv A(V) / E(B - V)
 
 Analytic approximations for dust attenuation curves are often
-calculated as a function of R(V), and then normalised by A(V) or, more
-commonly, E(B - V). The attenuation for all the public functions in
-this module is returned as :math:`\tau(\lambda)`. This is related to
-:math:`A(\lambda)` in the following way:
+calculated as a function of R(V), and then normalised by A(V) or
+E(B - V).
+
+The functions in his module give the attenuation for the Milky Way,
+SMC and LMC, as a function of wavelength, and require that R(V) and
+E(B-V) are given. The attenuation is given as the optical depth,
+:math:`\tau(\lambda)`. This is related to :math:`A(\lambda)` in the
+following way:
 
 .. math::
 
@@ -290,19 +280,25 @@ this module is returned as :math:`\tau(\lambda)`. This is related to
 - 'Interstellar Dust Grains' by B.T. Draine:
   http://arxiv.org/abs/astro-ph/0304489
 
-Note that much of the code in this module is adapted from Erik
-Tollerud's `Astropysics <https://github.com/eteq/astropysics>`_, which
-has an Apache licence.
+Note that much of the code in this module is inspired by Erik
+Tollerud's `Astropysics <https://github.com/eteq/astropysics>`_.
 
 .. currentmodule:: barak.extinction
 
 .. autosummary::
    :toctree: generated/
 
+   ExtinctionCurve
+   ExtinctionCurve.set_EBmV
+   AlamAv_from_ElamV
+   ElamV_FM
+   ElamV_from_AlamAv
+   LMC2_Gordon03
    LMC_Gordon03
    MW_Cardelli89
    SMC_Gordon03
    starburst_Calzetti00
+   tau_from_AlamAv
 
 fitcont
 -------
@@ -390,12 +386,14 @@ Plotting routines.
    arrplot
    axvfill
    axvlines
+   calc_log_minor_ticks
    default_marker_size
    dhist
    distplot
    draw_arrows
    errplot
    histo
+   plot_ticks_wa
    puttext
    shade_to_line
    shade_to_line_vert
@@ -431,8 +429,8 @@ sed
 
 Perform calculations on Spectral Energy Distributions (SEDs).
 
-Based on the SED module in astLib by Matt Hilton, with some routines
-copied from there (LGPL): http://astlib.sourceforge.net
+Inspired by the SED module in astLib by Matt Hilton
+(http://astlib.sourceforge.net)
 
 - VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.
 - AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.
@@ -446,7 +444,6 @@ copied from there (LGPL): http://astlib.sourceforge.net
    Passband
    Passband.plot
    SED
-   SED.apply_extinction
    SED.calc_colour
    SED.calc_flux
    SED.calc_mag
@@ -456,12 +453,18 @@ copied from there (LGPL): http://astlib.sourceforge.net
    SED.plot
    SED.redshift_to
    Jy2Mag
+   flambda_to_fnu
    flux2mag
+   fnu_to_flambda
    get_SEDs
    get_bands
    get_extinction
    mag2Jy
    mag2flux
+   make_constant_dv_wa_scale
+   qso_template
+   qso_template_sdss
+   qso_template_uv
 
 spec
 ----
@@ -484,21 +487,17 @@ spectrum-related functions.
    air2vac_Ciddor
    air2vac_Morton
    combine
-   convolve_constant_dv
    cr_reject
    cr_reject2
    find_cont
    find_err
    find_wa_edges
    getwave
-   make_constant_dv_wa_scale
    make_wa_scale
    pca_qso_cont
    plot
    plotatmos
    plotlines
-   qso_template
-   qso_template_uv
    read
    rebin
    rebin_simple
@@ -555,6 +554,20 @@ Various general-use functions.
    poisson_noise
    stats
    wmean
+
+virial
+------
+
+Calculate virial quantities for a dark matter halo given a
+cosmology.
+
+.. currentmodule:: barak.virial
+
+.. autosummary::
+   :toctree: generated/
+
+   deltavir
+   find_rvT
 
 voigt
 -----

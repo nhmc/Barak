@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.abundances &mdash; Barak 0.1dev documentation</title>
+    <title>barak.abundances &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.abundances</span></h2>
       </div>
       <div class="topnav">
@@ -118,9 +118,8 @@
 
 <span class="sd">    If Y is hydrogen, then this estimates the metallicity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">logNX</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">logNY</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="n">X</span><span class="p">]</span> <span class="o">-</span> <span class="n">Asolar</span><span class="p">[</span><span class="n">Y</span><span class="p">])</span>
-    <span class="k">return</span>  <span class="n">Z</span></div>
-</pre></div>
+    <span class="k">return</span> <span class="n">logNX</span> <span class="o">-</span> <span class="n">logNY</span> <span class="o">-</span> <span class="p">(</span><span class="n">Asolar</span><span class="p">[</span><span class="n">X</span><span class="p">]</span> <span class="o">-</span> <span class="n">Asolar</span><span class="p">[</span><span class="n">Y</span><span class="p">])</span>
+</pre></div></div>
 
       </div>
       <div class="bottomnav">

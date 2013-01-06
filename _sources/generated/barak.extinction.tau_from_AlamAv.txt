@@ -1,0 +1,6 @@
+barak.extinction.tau_from_AlamAv
+================================
+
+.. currentmodule:: barak.extinction
+
+.. autofunction:: tau_from_AlamAv

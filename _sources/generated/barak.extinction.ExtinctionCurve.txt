@@ -1,0 +1,36 @@
+barak.extinction.ExtinctionCurve
+================================
+
+.. currentmodule:: barak.extinction
+
+.. autoclass:: ExtinctionCurve
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ExtinctionCurve.__init__
+      ~ExtinctionCurve.set_EBmV
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ExtinctionCurve.AlamAv
+      ~ExtinctionCurve.Av
+      ~ExtinctionCurve.EBmV
+      ~ExtinctionCurve.ElamV
+      ~ExtinctionCurve.Rv
+      ~ExtinctionCurve.name
+      ~ExtinctionCurve.tau
+      ~ExtinctionCurve.wa
+   
+   

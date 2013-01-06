@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.extinction.starburst_Calzetti00 &mdash; Barak 0.1dev documentation</title>
+    <title>barak.extinction.starburst_Calzetti00 &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,13 +27,13 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.fitcont.InteractiveCoFit" href="barak.fitcont.InteractiveCoFit.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
+    <link rel="next" title="barak.extinction.tau_from_AlamAv" href="barak.extinction.tau_from_AlamAv.html" />
     <link rel="prev" title="barak.extinction.SMC_Gordon03" href="barak.extinction.SMC_Gordon03.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.extinction.starburst_Calzetti00</span></h2>
       </div>
       <div class="topnav">
@@ -43,7 +43,7 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.fitcont.InteractiveCoFit.html">barak.fitcont.InteractiveCoFit</a>&#160;&#160;»
+        <a href="barak.extinction.tau_from_AlamAv.html">barak.extinction.tau_from_AlamAv</a>&#160;&#160;»
         </p>
 
       </div>
@@ -54,12 +54,12 @@
 <h1>barak.extinction.starburst_Calzetti00<a class="headerlink" href="#barak-extinction-starburst-calzetti00" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.extinction.starburst_Calzetti00">
-<tt class="descclassname">barak.extinction.</tt><tt class="descname">starburst_Calzetti00</tt><big>(</big><em>wa</em>, <em>EBmV</em>, <em>Rv=4.05</em><big>)</big><a class="reference internal" href="../_modules/barak/extinction.html#starburst_Calzetti00"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.extinction.starburst_Calzetti00" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">barak.extinction.</tt><tt class="descname">starburst_Calzetti00</tt><big>(</big><em>wa</em>, <em>Rv=4.05</em><big>)</big><a class="reference internal" href="../_modules/barak/extinction.html#starburst_Calzetti00"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.extinction.starburst_Calzetti00" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dust extinction in starburst galaxies using the Calzetti
 relation.</p>
 <p>Find the extinction as a function of wavelength for the given
 E(B-V) using the relation from Calzetti et al.  R_v&#8217; = 4.05 is
-assumed (see equation (5) of Calzetti et al. 2000 ApJ, 533, 682)
+assumed (see equation [5] of Calzetti et al. 2000 ApJ, 533, 682)
 E(B-V) is the extinction in the stellar continuum.</p>
 <p>The wavelength array wa must be in Angstroms and sorted from
 low to high values.</p>
@@ -72,21 +72,24 @@ low to high values.</p>
 <div><p>Array of wavelengths in Angstroms at which to calculate the
 extinction.</p>
 </div></blockquote>
-<p><strong>EBmV</strong> : float</p>
+<p><strong>Rv</strong> : float (default 4.05)</p>
 <blockquote>
-<div><p>The E(B-V) value, a measure of the normalisation of the
-dust extinction curve.</p>
+<div><p>Constant determining the slope of the extinction law.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>tau</strong> : ndarray of floats, shape (N,)</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>AlamAv</strong> : ndarray of floats, shape (N,)</p>
 <blockquote class="last">
-<div><p>tau at each input wavelength.</p>
+<div><p>A(lambda)/A(V) at each input wavelength.</p>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
+<p class="rubric">References</p>
+<p>Calzetti et al. 2000 ApJ, 533, 682:</p>
+<blockquote>
+<div><a class="reference external" href="http://adsabs.harvard.edu/abs/2000ApJ...533..682C">http://adsabs.harvard.edu/abs/2000ApJ...533..682C</a></div></blockquote>
 <p class="rubric">Examples</p>
 <p>wa = np.arange(1500, 3300, 0.1)
 tau = starburst_Calzetti00(wa, 0.08)</p>
@@ -106,7 +109,7 @@ extincted_flux = flux * np.exp(-tau)</p>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.fitcont.InteractiveCoFit.html">barak.fitcont.InteractiveCoFit</a>&#160;&#160;»
+        <a href="barak.extinction.tau_from_AlamAv.html">barak.extinction.tau_from_AlamAv</a>&#160;&#160;»
         </p>
 
       </div>

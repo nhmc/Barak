@@ -1,0 +1,6 @@
+barak.extinction.ExtinctionCurve.set_EBmV
+=========================================
+
+.. currentmodule:: barak.extinction
+
+.. automethod:: ExtinctionCurve.set_EBmV

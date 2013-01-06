@@ -1,0 +1,6 @@
+barak.extinction.AlamAv_from_ElamV
+==================================
+
+.. currentmodule:: barak.extinction
+
+.. autofunction:: AlamAv_from_ElamV

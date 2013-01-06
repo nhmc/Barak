@@ -1,0 +1,6 @@
+barak.virial.find_rvT
+=====================
+
+.. currentmodule:: barak.virial
+
+.. autofunction:: find_rvT

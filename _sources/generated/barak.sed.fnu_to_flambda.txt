@@ -1,0 +1,6 @@
+barak.sed.fnu_to_flambda
+========================
+
+.. currentmodule:: barak.sed
+
+.. autofunction:: fnu_to_flambda

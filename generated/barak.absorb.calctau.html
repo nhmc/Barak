@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.absorb.calctau &mdash; Barak 0.1dev documentation</title>
+    <title>barak.absorb.calctau &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,13 +27,13 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
     <link rel="next" title="barak.absorb.find_tau" href="barak.absorb.find_tau.html" />
     <link rel="prev" title="barak.absorb.calc_tau_peak" href="barak.absorb.calc_tau_peak.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.absorb.calctau</span></h2>
       </div>
       <div class="topnav">
@@ -54,9 +54,9 @@
 <h1>barak.absorb.calctau<a class="headerlink" href="#barak-absorb-calctau" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.absorb.calctau">
-<tt class="descclassname">barak.absorb.</tt><tt class="descname">calctau</tt><big>(</big><em>v</em>, <em>wav0</em>, <em>osc</em>, <em>gam</em>, <em>logN</em>, <em>T=None</em>, <em>btemp=20</em>, <em>bturb=0</em>, <em>debug=False</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calctau"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calctau" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">calctau</tt><big>(</big><em>vel</em>, <em>wa0</em>, <em>osc</em>, <em>gam</em>, <em>logN</em>, <em>b</em>, <em>debug=False</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calctau"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calctau" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the optical depth (Voigt profile) for a transition.</p>
-<p>Given an transition with rest wavelength wav0, osc strength,
+<p>Given an transition with rest wavelength wa0, osc strength,
 natural linewidth gam; b parameter (doppler and turbulent); and
 log10 (column density), returns the optical depth in velocity
 space. v is an array of velocity values in km/s. The absorption
@@ -65,13 +65,13 @@ line must be centred at v=0.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>v</strong> : array of floats, shape (N,)</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>vel</strong> : array of floats, shape (N,)</p>
 <blockquote>
 <div><p>Velocities in km/s.</p>
 </div></blockquote>
-<p><strong>wav0</strong> : float</p>
+<p><strong>wa0</strong> : float</p>
 <blockquote>
-<div><p>Rest wavelength op transition in Angstroms.</p>
+<div><p>Rest wavelength of transition in Angstroms.</p>
 </div></blockquote>
 <p><strong>osc</strong> : float</p>
 <blockquote>
@@ -85,35 +85,27 @@ line must be centred at v=0.</p>
 <blockquote>
 <div><p>log10 of the column density in absorbers per cm^2.</p>
 </div></blockquote>
-<p><strong>btemp</strong> : float (20)</p>
+<p><strong>b</strong> : float</p>
 <blockquote>
-<div><p><em>b</em> parameter from doppler temperature broadening (km/s)</p>
-</div></blockquote>
-<p><strong>bturb</strong> : float (0)</p>
-<blockquote>
-<div><p><em>b</em> parameter from doppler turbulent broadening (km/s)</p>
-</div></blockquote>
-<p><strong>T</strong> : float (None)</p>
-<blockquote>
-<div><p>Temperature of cloud in Kelvin (overrides btemp).</p>
+<div><p><em>b</em> parameter (km/s).</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>tau</strong> : array of floats, shape (N,)</p>
 <blockquote class="last">
-<div><p>The optical depth as a function of <em class="xref py py-obj">v</em>.</p>
+<div><p>The optical depth as a function of <em class="xref py py-obj">vel</em>.</p>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The step size for <em class="xref py py-obj">v</em> must be small enough to properly
+<p>The step size for <em class="xref py py-obj">vel</em> must be small enough to properly
 sample the profile.</p>
 <p>To map the velocity array to some wavelength for a transitions
-with rest wavelength wav0 at redshift z:</p>
+with rest wavelength wa0 at redshift z:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="mf">3.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">wa</span> <span class="o">=</span> <span class="n">wav0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">v</span><span class="o">/</span><span class="n">c_kms</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wa</span> <span class="o">=</span> <span class="n">wa0</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">v</span><span class="o">/</span><span class="n">c_kms</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

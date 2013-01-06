@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.spec &mdash; Barak 0.1dev documentation</title>
+    <title>barak.spec &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.spec</span></h2>
       </div>
       <div class="topnav">
@@ -48,6 +48,7 @@
   <h1>Source code for barak.spec</h1><div class="highlight"><pre>
 <span class="sd">&quot;&quot;&quot; Contains an object to describe a spectrum, and various</span>
 <span class="sd">spectrum-related functions.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">izip</span>
 <span class="kn">import</span> <span class="nn">copy</span>
@@ -1278,8 +1279,7 @@
 <span class="sd">    Only valid for wa &gt; 2000 Angstroms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">airw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Wavelengths must be sorted lowest to highest&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">airw</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Wavelengths must be sorted lowest to highest&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">airw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2000</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Only valid for wavelengths &gt; 2000 Angstroms&#39;</span><span class="p">)</span>
     <span class="n">dwmax</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vac2air_Morton</span><span class="p">(</span><span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">airw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">10</span>
@@ -1315,77 +1315,7 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">vacw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">vacw</span>
-</div>
-<div class="viewcode-block" id="qso_template"><a class="viewcode-back" href="../../generated/barak.spec.qso_template.html#barak.spec.qso_template">[docs]</a><span class="k">def</span> <span class="nf">qso_template</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return a composite visible QSO spectrum at redshift z.</span>
-
-<span class="sd">    The SDSS composite spectrum as a function of F_lambda is returned</span>
-<span class="sd">    at each wavelength of wa. wa must be in angstroms.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">readtabfits</span><span class="p">(</span><span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;/templates/qso/dr1QSOspec.fits&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">wa</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">fl</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="qso_template_uv"><a class="viewcode-back" href="../../generated/barak.spec.qso_template_uv.html#barak.spec.qso_template_uv">[docs]</a><span class="k">def</span> <span class="nf">qso_template_uv</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">smooth_fwhmpix</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Return a composite UV QSO spectrum at redshift z.</span>
-
-<span class="sd">    Wavelengths must be in Angstroms.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">w</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">DATAPATH</span> <span class="o">+</span> <span class="s">&#39;templates/qso/telfer_composite_qso.txt&#39;</span><span class="p">,</span>
-                         <span class="n">unpack</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">fl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">w</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
-    <span class="n">fl</span> <span class="o">=</span> <span class="n">convolve_psf</span><span class="p">(</span><span class="n">fl</span><span class="p">,</span> <span class="n">smooth_fwhmpix</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fl</span>
-</div>
-<div class="viewcode-block" id="make_constant_dv_wa_scale"><a class="viewcode-back" href="../../generated/barak.spec.make_constant_dv_wa_scale.html#barak.spec.make_constant_dv_wa_scale">[docs]</a><span class="k">def</span> <span class="nf">make_constant_dv_wa_scale</span><span class="p">(</span><span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span><span class="p">,</span> <span class="n">dv</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Make a constant velocity width scale given a start and end</span>
-<span class="sd">    wavelength, and velocity pixel width.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dlogw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">dv</span><span class="o">/</span><span class="n">c_kms</span><span class="p">)</span>
-    <span class="c"># find the number of points needed.</span>
-    <span class="n">npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">wmax</span> <span class="o">/</span> <span class="n">wmin</span><span class="p">)</span> <span class="o">/</span> <span class="n">dlogw</span><span class="p">)</span>
-    <span class="n">wa</span> <span class="o">=</span> <span class="n">wmin</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span><span class="o">*</span><span class="n">dlogw</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">wa</span>
-</div>
-<div class="viewcode-block" id="convolve_constant_dv"><a class="viewcode-back" href="../../generated/barak.spec.convolve_constant_dv.html#barak.spec.convolve_constant_dv">[docs]</a><span class="k">def</span> <span class="nf">convolve_constant_dv</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">,</span> <span class="n">wa_dv</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">npix</span><span class="o">=</span><span class="mf">4.</span><span class="p">,</span> <span class="n">vfwhm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Convolve a wavelength array with a gaussian of constant</span>
-<span class="sd">    velocity width.</span>
-
-<span class="sd">    If `vfwhm` is specified an intermediate wavelength array with</span>
-<span class="sd">    constant velocity pixel width is calculated. Otherwise, both</span>
-<span class="sd">    `wa_dv` and `npix` must be given -- this is faster because no</span>
-<span class="sd">    intermediate array needs to be calculated.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    fl, wa : arrays of floats, length N</span>
-<span class="sd">      The array to be convolved and its wavelengths.</span>
-<span class="sd">    vfwhm : float, optional</span>
-<span class="sd">      Full width at half maximum in velocity space (km/s) of the</span>
-<span class="sd">      gaussian kernel with which to convolve `fl`.</span>
-<span class="sd">    npix : float, default 4</span>
-<span class="sd">      Number of pixels corresponding to `vfwhm` in `wa_dv` if given,</span>
-<span class="sd">      otherwise `wa` is interpolated to an array with velocity pixel</span>
-<span class="sd">      width = vfwhm / npix.</span>
-<span class="sd">    wa_dv : array of floats, default `None`</span>
-<span class="sd">      Wavelength array with a constant velocity width (this can be</span>
-<span class="sd">      generated with make_constant_dv_wa_scale()).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    fl_out : array of length N</span>
-<span class="sd">      fl convolved with the gaussian kernel with the specified FWHM.</span>
-<span class="sd">     </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># interpolate to the log-linear scale, convolve, then</span>
-    <span class="c"># interpolate back again.</span>
-    <span class="c"># convolve with the gaussian</span>
-    <span class="k">if</span> <span class="n">vfwhm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">wa_dv</span> <span class="o">=</span> <span class="n">make_constant_dv_wa_scale</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">vfwhm</span><span class="p">)</span><span class="o">/</span><span class="n">npix</span><span class="p">)</span>
-    <span class="n">fl_dv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa_dv</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">)</span>
-    <span class="n">fl_dv_smoothed</span> <span class="o">=</span> <span class="n">convolve_psf</span><span class="p">(</span><span class="n">fl_dv</span><span class="p">,</span> <span class="n">npix</span><span class="p">)</span>
-    <span class="n">fl_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">wa_dv</span><span class="p">,</span> <span class="n">fl_dv_smoothed</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fl_out</span></div>
+    <span class="k">return</span> <span class="n">vacw</span></div>
 </pre></div>
 
       </div>

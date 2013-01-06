@@ -1,0 +1,117 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.absorb.logN_from_tau_peak &mdash; Barak 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
+    <link rel="next" title="barak.absorb.read_HITRAN" href="barak.absorb.read_HITRAN.html" />
+    <link rel="prev" title="barak.absorb.guess_logN_b" href="barak.absorb.guess_logN_b.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.3.0 documentation</span></a></h1>
+        <h2 class="heading"><span>barak.absorb.logN_from_tau_peak</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.guess_logN_b.html">barak.absorb.guess_logN_b</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.absorb.read_HITRAN.html">barak.absorb.read_HITRAN</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-absorb-logn-from-tau-peak">
+<h1>barak.absorb.logN_from_tau_peak<a class="headerlink" href="#barak-absorb-logn-from-tau-peak" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.absorb.logN_from_tau_peak">
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">logN_from_tau_peak</tt><big>(</big><em>tau</em>, <em>b</em>, <em>wa0</em>, <em>osc</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#logN_from_tau_peak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.logN_from_tau_peak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the column density for a transition given its
+width and its optical depth at line centre.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>tau</strong> : array_like</p>
+<blockquote>
+<div><p>Optical depth at line centre.</p>
+</div></blockquote>
+<p><strong>b</strong> : float</p>
+<blockquote>
+<div><p>b parameter in km/s.</p>
+</div></blockquote>
+<p><strong>wa0</strong> : float</p>
+<blockquote>
+<div><p>Rest wavelength of the transition in Angstroms.</p>
+</div></blockquote>
+<p><strong>osc</strong> : float</p>
+<blockquote>
+<div><p>Transition oscillator strength.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>logN</strong> : ndarray, or scalar if tau is scalar</p>
+<blockquote class="last">
+<div><p>log10 of column density in cm^-2</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="barak.absorb.calc_tau_peak.html#barak.absorb.calc_tau_peak" title="barak.absorb.calc_tau_peak"><tt class="xref py py-obj docutils literal"><span class="pre">calc_tau_peak</span></tt></a></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.absorb.guess_logN_b.html">barak.absorb.guess_logN_b</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.absorb.read_HITRAN.html">barak.absorb.read_HITRAN</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

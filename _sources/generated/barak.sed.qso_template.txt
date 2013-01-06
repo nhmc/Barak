@@ -1,0 +1,6 @@
+barak.sed.qso_template
+======================
+
+.. currentmodule:: barak.sed
+
+.. autofunction:: qso_template

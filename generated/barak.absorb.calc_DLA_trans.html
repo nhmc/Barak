@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.absorb.calc_DLA_trans &mdash; Barak 0.1dev documentation</title>
+    <title>barak.absorb.calc_DLA_trans &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,13 +27,13 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
     <link rel="next" title="barak.absorb.calc_Wr" href="barak.absorb.calc_Wr.html" />
     <link rel="prev" title="barak.absorb.calc_DLA_tau" href="barak.absorb.calc_DLA_tau.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.absorb.calc_DLA_trans</span></h2>
       </div>
       <div class="topnav">
@@ -54,8 +54,8 @@
 <h1>barak.absorb.calc_DLA_trans<a class="headerlink" href="#barak-absorb-calc-dla-trans" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.absorb.calc_DLA_trans">
-<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_DLA_trans</tt><big>(</big><em>wa</em>, <em>redshift</em>, <em>vfwhm</em>, <em>logN=20.3</em>, <em>logZ=0</em>, <em>dv=5.0</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_DLA_trans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_DLA_trans" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the transmission after absrption by a DLA</p>
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_DLA_trans</tt><big>(</big><em>wa</em>, <em>redshift</em>, <em>vfwhm</em>, <em>logN=20.3</em>, <em>logZ=0</em>, <em>bHI=50</em>, <em>highions=True</em>, <em>molecules=False</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_DLA_trans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_DLA_trans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the transmission after absorption by a DLA</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -76,6 +76,11 @@
 <blockquote>
 <div><p>log10 of the metal abundance relative to solar. For example 0
 (the default) gives solar abundances, -1 gives 1/10th of solar.</p>
+</div></blockquote>
+<p><strong>bHI</strong> : float (40)</p>
+<blockquote>
+<div><p>b parameter for the HI. Other species are assumed to be
+thermally broadened.</p>
 </div></blockquote>
 </td>
 </tr>

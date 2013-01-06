@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.extinction &mdash; Barak 0.1dev documentation</title>
+    <title>barak.extinction &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.extinction</span></h2>
       </div>
       <div class="topnav">
@@ -59,8 +59,8 @@
 
 <span class="sd">  I_\lambda = I_{\lambda,0}\ e^{-\tau_\lambda}</span>
 
-<span class="sd">Generally the attenuation is given in magnitude in a band or at a</span>
-<span class="sd">wavelegnth. For example, A(V) refers to the extinction in magnitudes</span>
+<span class="sd">Generally the attenuation is given in magnitudes in a band or at a</span>
+<span class="sd">wavelength. For example, A(V) refers to the extinction in magnitudes</span>
 <span class="sd">in the V band, and</span>
 
 <span class="sd">.. math::</span>
@@ -68,9 +68,9 @@
 <span class="sd">  E(B - V) \equiv A(B) - A(V)</span>
 
 <span class="sd">is the difference in extinction between the B and V</span>
-<span class="sd">bands. Empirically, dust attenuation is found to have a similar</span>
-<span class="sd">functional form in different parts of the Milky Way&#39;s ISM that can be</span>
-<span class="sd">parametrised with a normalisation A(V) and slope E(B - V). Another</span>
+<span class="sd">bands. Empirically, dust attenuation in different parts of the Milky</span>
+<span class="sd">Way&#39;s ISM can be described by single function of wavelength</span>
+<span class="sd">parametrised by a normalisation A(V) and slope E(B - V). Another</span>
 <span class="sd">commonly used quantity is</span>
 
 <span class="sd">.. math::</span>
@@ -78,10 +78,14 @@
 <span class="sd">  R(V) \equiv A(V) / E(B - V)</span>
 
 <span class="sd">Analytic approximations for dust attenuation curves are often</span>
-<span class="sd">calculated as a function of R(V), and then normalised by A(V) or, more</span>
-<span class="sd">commonly, E(B - V). The attenuation for all the public functions in</span>
-<span class="sd">this module is returned as :math:`\tau(\lambda)`. This is related to</span>
-<span class="sd">:math:`A(\lambda)` in the following way:</span>
+<span class="sd">calculated as a function of R(V), and then normalised by A(V) or</span>
+<span class="sd">E(B - V).</span>
+
+<span class="sd">The functions in his module give the attenuation for the Milky Way,</span>
+<span class="sd">SMC and LMC, as a function of wavelength, and require that R(V) and</span>
+<span class="sd">E(B-V) are given. The attenuation is given as the optical depth,</span>
+<span class="sd">:math:`\tau(\lambda)`. This is related to :math:`A(\lambda)` in the</span>
+<span class="sd">following way:</span>
 
 <span class="sd">.. math::</span>
 
@@ -94,24 +98,89 @@
 <span class="sd">- &#39;Interstellar Dust Grains&#39; by B.T. Draine:</span>
 <span class="sd">  http://arxiv.org/abs/astro-ph/0304489</span>
 
-<span class="sd">Note that much of the code in this module is adapted from Erik</span>
-<span class="sd">Tollerud&#39;s `Astropysics &lt;https://github.com/eteq/astropysics&gt;`_, which</span>
-<span class="sd">has an Apache licence.</span>
+<span class="sd">Note that much of the code in this module is inspired by Erik</span>
+<span class="sd">Tollerud&#39;s `Astropysics &lt;https://github.com/eteq/astropysics&gt;`_.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">get_data_path</span>
+<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">get_data_path</span><span class="p">,</span> <span class="n">between</span>
+<span class="kn">from</span> <span class="nn">interp</span> <span class="kn">import</span> <span class="n">interp_Akima</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="n">datapath</span> <span class="o">=</span> <span class="n">get_data_path</span><span class="p">()</span>
 <span class="n">PATH_EXTINCT</span> <span class="o">=</span> <span class="n">datapath</span> <span class="o">+</span> <span class="s">&#39;/dust_extinction/&#39;</span>
 
-<div class="viewcode-block" id="starburst_Calzetti00"><a class="viewcode-back" href="../../generated/barak.extinction.starburst_Calzetti00.html#barak.extinction.starburst_Calzetti00">[docs]</a><span class="k">def</span> <span class="nf">starburst_Calzetti00</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="p">,</span> <span class="n">Rv</span><span class="o">=</span><span class="mf">4.05</span><span class="p">):</span>
+<span class="c"># interpolation limits</span>
+<span class="n">W0</span><span class="p">,</span> <span class="n">W1</span> <span class="o">=</span> <span class="mi">2850</span><span class="p">,</span> <span class="mi">3700</span>
+
+<div class="viewcode-block" id="ExtinctionCurve"><a class="viewcode-back" href="../../generated/barak.extinction.ExtinctionCurve.html#barak.extinction.ExtinctionCurve">[docs]</a><span class="k">class</span> <span class="nc">ExtinctionCurve</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtinctionCurve.__init__"><a class="viewcode-back" href="../../generated/barak.extinction.ExtinctionCurve.html#barak.extinction.ExtinctionCurve.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">Rv</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s">&#39;ExtinctionCurve&#39;</span><span class="p">,</span> <span class="n">EBmV</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wa</span> <span class="o">=</span> <span class="n">wa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Rv</span> <span class="o">=</span> <span class="n">Rv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_AlamAv</span> <span class="o">=</span> <span class="n">AlamAv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ElamV</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">EBmV</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_EBmV</span><span class="p">(</span><span class="n">EBmV</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_EBmV</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Av</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tau</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt; </span><span class="si">%s</span><span class="s">: R(V)=</span><span class="si">%s</span><span class="s">, E(B-V)=</span><span class="si">%s</span><span class="s">, A(V)=</span><span class="si">%s</span><span class="s"> &gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Rv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EBmV</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Av</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">EBmV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EBmV</span>
+
+<div class="viewcode-block" id="ExtinctionCurve.set_EBmV"><a class="viewcode-back" href="../../generated/barak.extinction.ExtinctionCurve.set_EBmV.html#barak.extinction.ExtinctionCurve.set_EBmV">[docs]</a>    <span class="k">def</span> <span class="nf">set_EBmV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">EBmV</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets Av, tau and Alam in addition to EBmV</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_EBmV</span> <span class="o">=</span> <span class="n">EBmV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Av</span> <span class="o">=</span> <span class="n">EBmV</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Rv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tau</span> <span class="o">=</span> <span class="n">tau_from_AlamAv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_AlamAv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Av</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ElamV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ElamV</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ElamV</span> <span class="o">=</span> <span class="n">ElamV_from_AlamAv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_AlamAv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Rv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ElamV</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wa</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Rv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Rv</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">AlamAv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_AlamAv</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Av</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Av</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tau</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tau</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+</div>
+<div class="viewcode-block" id="starburst_Calzetti00"><a class="viewcode-back" href="../../generated/barak.extinction.starburst_Calzetti00.html#barak.extinction.starburst_Calzetti00">[docs]</a><span class="k">def</span> <span class="nf">starburst_Calzetti00</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">Rv</span><span class="o">=</span><span class="mf">4.05</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Dust extinction in starburst galaxies using the Calzetti</span>
 <span class="sd">    relation.</span>
 
 <span class="sd">    Find the extinction as a function of wavelength for the given</span>
 <span class="sd">    E(B-V) using the relation from Calzetti et al.  R_v&#39; = 4.05 is</span>
-<span class="sd">    assumed (see equation (5) of Calzetti et al. 2000 ApJ, 533, 682)</span>
+<span class="sd">    assumed (see equation [5] of Calzetti et al. 2000 ApJ, 533, 682)</span>
 <span class="sd">    E(B-V) is the extinction in the stellar continuum.</span>
 
 <span class="sd">    The wavelength array wa must be in Angstroms and sorted from</span>
@@ -122,14 +191,19 @@
 <span class="sd">    wa : array_like</span>
 <span class="sd">      Array of wavelengths in Angstroms at which to calculate the</span>
 <span class="sd">      extinction.</span>
-<span class="sd">    EBmV : float</span>
-<span class="sd">      The E(B-V) value, a measure of the normalisation of the</span>
-<span class="sd">      dust extinction curve.</span>
+<span class="sd">    Rv : float (default 4.05)</span>
+<span class="sd">      Constant determining the slope of the extinction law.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tau : ndarray of floats, shape (N,)</span>
-<span class="sd">      tau at each input wavelength.</span>
+<span class="sd">    AlamAv : ndarray of floats, shape (N,)</span>
+<span class="sd">      A(lambda)/A(V) at each input wavelength.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Calzetti et al. 2000 ApJ, 533, 682:</span>
+
+<span class="sd">      http://adsabs.harvard.edu/abs/2000ApJ...533..682C</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -146,7 +220,8 @@
     <span class="k">assert</span> <span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">22000</span> <span class="ow">and</span> <span class="n">wa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1200</span>
 
     <span class="c"># Note that EBmV is assumed to be Es as in equations (2) - (5)</span>
-    
+
+    <span class="c"># k is A(lambda) / E(B - V)</span>
     <span class="c"># Constants below assume wavelength is in microns.</span>
     
     <span class="n">uwa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span> <span class="o">/</span> <span class="mf">10000.</span><span class="p">)</span>
@@ -171,94 +246,128 @@
     <span class="k">if</span> <span class="n">uwa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">2.2</span> <span class="ow">and</span> <span class="n">uwa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.63</span><span class="p">:</span>
         <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">uwa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">([</span><span class="mf">0.63</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">])</span>
         <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">klong</span><span class="p">(</span><span class="n">uwa</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">uwa</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">2.2</span><span class="p">:</span>
-        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">klong</span><span class="p">(</span><span class="mf">2.19</span><span class="p">)</span> <span class="o">-</span> <span class="n">klong</span><span class="p">(</span><span class="mf">2.2</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.19</span> <span class="o">-</span> <span class="mf">2.2</span><span class="p">)</span>
-        <span class="n">intercept</span> <span class="o">=</span> <span class="n">klong</span><span class="p">(</span><span class="mf">2.19</span><span class="p">)</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="mf">2.19</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="n">uwa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="mf">2.2</span><span class="p">)</span>
-        <span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">uwa</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">+</span> <span class="n">intercept</span>
 
     <span class="c"># Note there is a typo in Calzetti et al. 2000 equation (2), there</span>
     <span class="c"># should be a minus sign in the exponent.</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">EBmV</span> <span class="o">*</span> <span class="n">k</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ElamV</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="n">Rv</span>
+    <span class="n">AlamAv</span> <span class="o">=</span> <span class="n">AlamAv_from_ElamV</span><span class="p">(</span><span class="n">ElamV</span><span class="p">,</span> <span class="n">Rv</span><span class="p">)</span>
+
+    <span class="c"># assume MW extinction law above these wavelengths. Note we can&#39;t</span>
+    <span class="c"># interpolate in E(lambda - V) / E(B - V) because this gives</span>
+    <span class="c"># unphysical values on converting to A(lambda).</span>
+    <span class="n">c0</span> <span class="o">=</span> <span class="n">wa</span> <span class="o">&gt;</span> <span class="n">W0</span>
+    <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">between</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">W0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c1</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MW_Cardelli89</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c0</span><span class="p">],</span> <span class="mf">3.1</span><span class="p">)</span><span class="o">.</span><span class="n">AlamAv</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_Akima</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">wa</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">],</span> <span class="n">AlamAv</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wa</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Rv</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;starburst_Calzetti00&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">Rv</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;starburst_Calzetti00&#39;</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="MW_Cardelli89"><a class="viewcode-back" href="../../generated/barak.extinction.MW_Cardelli89.html#barak.extinction.MW_Cardelli89">[docs]</a><span class="k">def</span> <span class="nf">MW_Cardelli89</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="o">=</span><span class="mf">0.323</span><span class="p">,</span> <span class="n">Rv</span><span class="o">=</span><span class="mf">3.1</span><span class="p">):</span>
+<div class="viewcode-block" id="MW_Cardelli89"><a class="viewcode-back" href="../../generated/barak.extinction.MW_Cardelli89.html#barak.extinction.MW_Cardelli89">[docs]</a><span class="k">def</span> <span class="nf">MW_Cardelli89</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">Rv</span><span class="o">=</span><span class="mf">3.1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Milky Way Extinction law from Cardelli et al. 1989.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    wa : array_like</span>
 <span class="sd">      One or more wavelengths in Angstroms</span>
-<span class="sd">    EBmV : float (default 0.323)</span>
-<span class="sd">      E(B-V) value. This and R(V) set the slope and normalisation of</span>
-<span class="sd">      the extinction.</span>
 <span class="sd">    Rv : float (default 3.1)</span>
-<span class="sd">      R(V). The default is for the diffues ISM, `Rv` of 5 is generally</span>
-<span class="sd">      used for dense molecular clouds.  The default values of `Rv` and</span>
-<span class="sd">      `EBmV` roughly correspond to A(V) = 1.</span>
+<span class="sd">      R(V). The default is for the diffuse ISM, `Rv` of 5 is generally</span>
+<span class="sd">      used for dense molecular clouds.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tau : ndarray or float if `wa` scalar</span>
-<span class="sd">      The optical depth at each wavelength</span>
+<span class="sd">    AlamAv, Rv : ndarray, float</span>
+<span class="sd">      A(lambda) / A(V) at each wavelength and Rv.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    A power law extrapolation is used if there are any wavelengths</span>
+<span class="sd">    past the IR or far UV limits of the Cardelli Law.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://adsabs.harvard.edu/abs/1989ApJ...345..245C</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">Av</span> <span class="o">=</span> <span class="n">Rv</span> <span class="o">*</span> <span class="n">EBmV</span>
+    <span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="c"># these correspond to x &lt; 0.3, x &gt; 10</span>
+    <span class="c">#if (wa &gt; 33333).any() or (1000 &lt; wa).any():</span>
+    <span class="c">#    warnings.warn(</span>
+    <span class="c">#        &#39;Some wavelengths outside CCM 89 extinction curve range, &#39;</span>
+    <span class="c">#        &#39;extrapolating&#39;)</span>
 
     <span class="c"># CCM x is 1/microns</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="mf">1e4</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">1e4</span> <span class="o">/</span> <span class="n">wa</span> 
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mf">0.3</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">10</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s">&#39;Some wavelengths outside CCM 89 extinction curve range.&#39;</span><span class="p">)</span>
-
-    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="n">ir</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.3</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">1.1</span><span class="p">)</span>
     <span class="n">vis</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">3.3</span><span class="p">)</span>
     <span class="n">nuv1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.3</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">5.9</span><span class="p">)</span>
     <span class="n">nuv2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.9</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">)</span>
     <span class="n">fuv</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">)</span>
-    
+
     <span class="c"># Infrared</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span><span class="o">**</span><span class="mf">1.61</span>
-    <span class="n">a</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.574</span> <span class="o">*</span> <span class="n">temp</span>
-    <span class="n">b</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.527</span> <span class="o">*</span> <span class="n">temp</span>
+    <span class="k">if</span> <span class="n">ir</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span><span class="o">**</span><span class="mf">1.61</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.574</span> <span class="o">*</span> <span class="n">temp</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.527</span> <span class="o">*</span> <span class="n">temp</span>
     
     <span class="c"># NIR/optical</span>
-    <span class="n">co1</span> <span class="o">=</span> <span class="mf">0.32999</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7753</span><span class="p">,</span> <span class="mf">0.01979</span><span class="p">,</span> <span class="mf">0.72085</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.02427</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.50447</span><span class="p">,</span> <span class="mf">0.17699</span><span class="p">,</span> <span class="mf">1.</span>
-    <span class="n">a</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">co1</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.82</span><span class="p">)</span>
-    <span class="n">co2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.09002</span><span class="p">,</span> <span class="mf">5.3026</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.62251</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.38434</span><span class="p">,</span> <span class="mf">1.07233</span><span class="p">,</span> <span class="mf">2.28305</span><span class="p">,</span> <span class="mf">1.41338</span><span class="p">,</span> <span class="mf">0.</span>
-    <span class="n">b</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">co2</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.82</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">vis</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">co1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.32999</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7753</span><span class="p">,</span> <span class="mf">0.01979</span><span class="p">,</span> <span class="mf">0.72085</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.02427</span><span class="p">,</span>
+               <span class="o">-</span><span class="mf">0.50447</span><span class="p">,</span> <span class="mf">0.17699</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">co1</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.82</span><span class="p">)</span>
+        <span class="n">co2</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.09002</span><span class="p">,</span> <span class="mf">5.3026</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.62251</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.38434</span><span class="p">,</span> <span class="mf">1.07233</span><span class="p">,</span>
+               <span class="mf">2.28305</span><span class="p">,</span> <span class="mf">1.41338</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">co2</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.82</span><span class="p">)</span>
     
     <span class="c"># NUV</span>
-    <span class="n">a</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.752</span> <span class="o">-</span> <span class="mf">0.316</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.104</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.67</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.341</span><span class="p">)</span>
-    <span class="n">b</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.09</span> <span class="o">+</span> <span class="mf">1.825</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.206</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.62</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.263</span><span class="p">)</span>
-    
-    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">5.9</span>
-    <span class="n">Fa</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.04473</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">0.009779</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span>
-    <span class="n">Fb</span> <span class="o">=</span>  <span class="mf">0.2130</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.1207</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span>
-    <span class="n">a</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.752</span> <span class="o">-</span> <span class="mf">0.316</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.104</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.67</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.341</span><span class="p">)</span> <span class="o">+</span> <span class="n">Fa</span>
-    <span class="n">b</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.09</span> <span class="o">+</span> <span class="mf">1.825</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.206</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.62</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.263</span><span class="p">)</span> <span class="o">+</span> <span class="n">Fb</span>
+    <span class="k">if</span> <span class="n">nuv1</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.752</span> <span class="o">-</span> <span class="mf">0.316</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.104</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.67</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.341</span><span class="p">)</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.09</span> <span class="o">+</span> <span class="mf">1.825</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.206</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.62</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.263</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nuv2</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">5.9</span>
+        <span class="n">Fa</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.04473</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">0.009779</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">Fb</span> <span class="o">=</span>  <span class="mf">0.2130</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.1207</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.752</span> <span class="o">-</span> <span class="mf">0.316</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> \
+                  <span class="o">-</span> <span class="mf">0.104</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.67</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.341</span><span class="p">)</span> <span class="o">+</span> <span class="n">Fa</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.09</span> <span class="o">+</span> <span class="mf">1.825</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> \
+                  <span class="o">+</span> <span class="mf">1.206</span><span class="o">/</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">nuv2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">4.62</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.263</span><span class="p">)</span> <span class="o">+</span> <span class="n">Fb</span>
     
     <span class="c"># FUV</span>
-    <span class="n">a</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">((</span><span class="o">-</span><span class="mf">0.070</span><span class="p">,</span>  <span class="mf">0.137</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.628</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.073</span><span class="p">),</span> <span class="n">x</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span>
-    <span class="n">b</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">((</span> <span class="mf">0.374</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.42</span><span class="p">,</span>   <span class="mf">4.257</span><span class="p">,</span>  <span class="mf">13.67</span><span class="p">),</span> <span class="n">x</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fuv</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">((</span><span class="o">-</span><span class="mf">0.070</span><span class="p">,</span>  <span class="mf">0.137</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.628</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.073</span><span class="p">),</span> <span class="n">x</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">((</span> <span class="mf">0.374</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.42</span><span class="p">,</span>   <span class="mf">4.257</span><span class="p">,</span>  <span class="mf">13.67</span><span class="p">),</span> <span class="n">x</span><span class="p">[</span><span class="n">fuv</span><span class="p">]</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span>
 
-    <span class="n">Awa_on_Av</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">Rv</span><span class="p">)</span>
-
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">Av</span> <span class="o">*</span> <span class="n">Awa_on_Av</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span>
+    <span class="n">AlamAv</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">Rv</span><span class="p">)</span>
     
+    <span class="c"># extrapolate in log space (i.e. a power law) if there are any</span>
+    <span class="c"># wavelengths outside the Cardelli range.</span>
+    <span class="n">ir_extrap</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mf">0.3</span>   
+    <span class="k">if</span> <span class="n">ir_extrap</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">ir</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">[</span><span class="n">ir</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:]),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">AlamAv</span><span class="p">[</span><span class="n">ir_extrap</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">ir_extrap</span><span class="p">])))</span>
+
+    <span class="n">uv_extrap</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">10</span>    
+    <span class="k">if</span> <span class="n">uv_extrap</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">fuv</span><span class="p">][:</span><span class="mi">2</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">[</span><span class="n">fuv</span><span class="p">][:</span><span class="mi">2</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">AlamAv</span><span class="p">[</span><span class="n">uv_extrap</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">uv_extrap</span><span class="p">])))</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Rv</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;MW_Cardelli89&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">Rv</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;MW_Cardelli89&#39;</span><span class="p">)</span>
+
 </div>
-<span class="k">def</span> <span class="nf">_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">Rv</span><span class="p">):</span>
+<div class="viewcode-block" id="ElamV_FM"><a class="viewcode-back" href="../../generated/barak.extinction.ElamV_FM.html#barak.extinction.ElamV_FM">[docs]</a><span class="k">def</span> <span class="nf">ElamV_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Base function for Extinction curves that use the form from</span>
 <span class="sd">    Fitzpatrick &amp; Massa 90.</span>
 
@@ -266,90 +375,170 @@
 <span class="sd">    ----------</span>
 <span class="sd">    wa : array_like</span>
 <span class="sd">      One or more wavelengths in Angstroms.</span>
-<span class="sd">    c1, c2, c3, c4, gamma, x0, Rv : float</span>
+<span class="sd">    c1, c2, c3, c4, gamma, x0 : float</span>
 <span class="sd">      Constants that define the extinction law.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    extinction : ndarray or float if `wa` is scalar</span>
+<span class="sd">    ElamV : ndarray or float if `wa` is scalar</span>
 <span class="sd">       extinction in the form E(lambda - V) / E(B - V)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x</span> <span class="o">=</span> <span class="mf">1e4</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">xsq</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
-    <span class="n">D</span> <span class="o">=</span> <span class="n">xsq</span> <span class="o">*</span> <span class="p">((</span><span class="n">xsq</span> <span class="o">-</span> <span class="n">x0</span><span class="o">*</span><span class="n">x0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">xsq</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span><span class="o">**-</span><span class="mi">2</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">xsq</span> <span class="o">/</span> <span class="p">((</span><span class="n">xsq</span> <span class="o">-</span> <span class="n">x0</span><span class="o">*</span><span class="n">x0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">xsq</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span>
     <span class="n">FMf</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">+</span> <span class="n">c2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">c3</span><span class="o">*</span><span class="n">D</span>
-    
-    <span class="c"># Note EBmV is the normalization and is multiplied in at the end</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mf">5.9</span><span class="p">:</span>
-            <span class="n">FMf</span> <span class="o">+=</span> <span class="n">c4</span><span class="o">*</span><span class="p">(</span><span class="mf">0.5392</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mf">5.9</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.05644</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mf">5.9</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">extinction</span> <span class="o">=</span> <span class="n">FMf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">Rv</span>
+            <span class="n">FMf</span> <span class="o">+=</span> <span class="n">c4</span><span class="o">*</span><span class="p">(</span><span class="mf">0.5392</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mf">5.9</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.05644</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mf">5.9</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">ElamV</span> <span class="o">=</span> <span class="n">FMf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">c4m</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mf">5.9</span>
         <span class="n">FMf</span><span class="p">[</span><span class="n">c4m</span><span class="p">]</span> <span class="o">+=</span> <span class="n">c4</span><span class="o">*</span><span class="p">(</span><span class="mf">0.5392</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">c4m</span><span class="p">]</span> <span class="o">-</span> <span class="mf">5.9</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.05644</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">c4m</span><span class="p">]</span> <span class="o">-</span> <span class="mf">5.9</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">extinction</span> <span class="o">=</span> <span class="n">FMf</span> <span class="o">+</span> <span class="n">Rv</span>
+        <span class="n">ElamV</span> <span class="o">=</span> <span class="n">FMf</span>
 
-    <span class="k">return</span> <span class="n">extinction</span>
-
-<div class="viewcode-block" id="LMC_Gordon03"><a class="viewcode-back" href="../../generated/barak.extinction.LMC_Gordon03.html#barak.extinction.LMC_Gordon03">[docs]</a><span class="k">def</span> <span class="nf">LMC_Gordon03</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">Rv</span><span class="o">=</span><span class="mf">3.41</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ElamV</span>
+</div>
+<div class="viewcode-block" id="LMC_Gordon03"><a class="viewcode-back" href="../../generated/barak.extinction.LMC_Gordon03.html#barak.extinction.LMC_Gordon03">[docs]</a><span class="k">def</span> <span class="nf">LMC_Gordon03</span><span class="p">(</span><span class="n">wa</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; LMC Extinction law from Gordon et al. 2003 LMC Average Sample.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    wa : array_like</span>
-<span class="sd">      One or more wavelengths in Angstroms</span>
-<span class="sd">    EBmV : float (default 0.3)</span>
-<span class="sd">      E(B-V) value. This and R(V) set the slope and normalisation of</span>
-<span class="sd">      the extinction.</span>
-<span class="sd">    Rv : float (default 3.1)</span>
-<span class="sd">      R(V).</span>
+<span class="sd">      One or more wavelengths in Angstroms.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tau : ndarray or float if `wa` scalar</span>
-<span class="sd">      The optical depth at each wavelength</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    Ext : ExtinctionCurve instance</span>
+<span class="sd">      A(lambda)/A(V) at each wavelength and Rv for the</span>
+<span class="sd">      LMC Average sample.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://adsabs.harvard.edu/abs/2003ApJ...594..279G</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At far IR wavelengths, a MW extinction curve is assumed. </span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    
+    <span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">,</span><span class="n">c3</span><span class="p">,</span><span class="n">c4</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.890</span><span class="p">,</span> <span class="mf">0.998</span><span class="p">,</span> <span class="mf">2.719</span><span class="p">,</span> <span class="mf">0.400</span>
     <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="mf">4.579</span><span class="p">,</span> <span class="mf">0.934</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">Rv</span><span class="p">)</span>
-    <span class="n">Av</span> <span class="o">=</span> <span class="n">Rv</span> <span class="o">*</span> <span class="n">EBmV</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp</span> <span class="o">*</span> <span class="n">EBmV</span> <span class="o">+</span> <span class="n">Av</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span>
-    
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ElamV</span> <span class="o">=</span> <span class="n">ElamV_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+    <span class="n">AlamAv</span> <span class="o">=</span> <span class="n">AlamAv_from_ElamV</span><span class="p">(</span><span class="n">ElamV</span><span class="p">,</span> <span class="mf">3.41</span><span class="p">)</span>
+    <span class="c"># assume MW extinction law above these wavelengths</span>
+    <span class="n">c0</span> <span class="o">=</span> <span class="n">wa</span> <span class="o">&gt;</span> <span class="n">W0</span>
+    <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">between</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">W0</span><span class="p">,</span> <span class="n">W1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c1</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MW_Cardelli89</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c0</span><span class="p">],</span> <span class="mf">3.1</span><span class="p">)</span><span class="o">.</span><span class="n">AlamAv</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_Akima</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">wa</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">],</span> <span class="n">AlamAv</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">])</span>
+        
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">3.41</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;LMC_Gordon03&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="mf">3.41</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;LMC_Gordon03&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LMC2_Gordon03"><a class="viewcode-back" href="../../generated/barak.extinction.LMC2_Gordon03.html#barak.extinction.LMC2_Gordon03">[docs]</a><span class="k">def</span> <span class="nf">LMC2_Gordon03</span><span class="p">(</span><span class="n">wa</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; LMC Extinction law from Gordon et al. 2003 LMC supershell</span>
+<span class="sd">    sample.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wa : array_like</span>
+<span class="sd">      One or more wavelengths in Angstroms.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ext : ExtinctionCurve instance</span>
+<span class="sd">      A(lambda)/A(V) at each wavelength and Rv for the</span>
+<span class="sd">      LMC supershell sample.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://adsabs.harvard.edu/abs/2003ApJ...594..279G    </span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At far IR wavelengths, a MW extinction curve is assumed. </span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">,</span><span class="n">c3</span><span class="p">,</span><span class="n">c4</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.475</span><span class="p">,</span> <span class="mf">1.132</span><span class="p">,</span> <span class="mf">1.463</span><span class="p">,</span> <span class="mf">0.294</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="mf">4.558</span><span class="p">,</span> <span class="mf">0.945</span>
+    <span class="n">ElamV</span> <span class="o">=</span> <span class="n">ElamV_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+    <span class="c"># assume MW extinction law above these wavelengths</span>
+    <span class="n">AlamAv</span> <span class="o">=</span> <span class="n">AlamAv_from_ElamV</span><span class="p">(</span><span class="n">ElamV</span><span class="p">,</span> <span class="mf">2.76</span><span class="p">)</span>
+    <span class="n">c0</span> <span class="o">=</span> <span class="n">wa</span> <span class="o">&gt;</span> <span class="n">W0</span>
+    <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">between</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">W0</span><span class="p">,</span> <span class="n">W1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c1</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MW_Cardelli89</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c0</span><span class="p">],</span> <span class="mf">3.1</span><span class="p">)</span><span class="o">.</span><span class="n">AlamAv</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_Akima</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">wa</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">],</span> <span class="n">AlamAv</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">2.76</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;LMC2_Gordon03&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="mf">2.76</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;LMC2_Gordon03&#39;</span><span class="p">)</span>
+
+
     </div>
-<div class="viewcode-block" id="SMC_Gordon03"><a class="viewcode-back" href="../../generated/barak.extinction.SMC_Gordon03.html#barak.extinction.SMC_Gordon03">[docs]</a><span class="k">def</span> <span class="nf">SMC_Gordon03</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">EBmV</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">Rv</span><span class="o">=</span><span class="mf">2.74</span><span class="p">):</span>
+<div class="viewcode-block" id="SMC_Gordon03"><a class="viewcode-back" href="../../generated/barak.extinction.SMC_Gordon03.html#barak.extinction.SMC_Gordon03">[docs]</a><span class="k">def</span> <span class="nf">SMC_Gordon03</span><span class="p">(</span><span class="n">wa</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; SMC Extinction law from Gordon et al. 2003 SMC Bar Sample.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    wa : array_like</span>
-<span class="sd">      One or more wavelengths in Angstroms</span>
-<span class="sd">    EBmV : float (default 0.2)</span>
-<span class="sd">      E(B-V) value. This and R(V) set the slope and normalisation of</span>
-<span class="sd">      the extinction.</span>
-<span class="sd">    Rv : float (default 2.74)</span>
-<span class="sd">      R(V).</span>
-
+<span class="sd">      One or more wavelengths in Angstroms.</span>
+<span class="sd">      </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tau : ndarray or float if `wa` scalar</span>
-<span class="sd">      The optical depth at each wavelength</span>
+<span class="sd">    Ext : ExtinctionCurve instance</span>
+<span class="sd">      A(lambda)/A(V) at each wavelength and Rv for the</span>
+<span class="sd">      SMC bar sample.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://adsabs.harvard.edu/abs/2003ApJ...594..279G</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At far IR wavelengths, a MW extinction curve is assumed. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">,</span><span class="n">c3</span><span class="p">,</span><span class="n">c4</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.959</span><span class="p">,</span> <span class="mf">2.264</span><span class="p">,</span> <span class="mf">0.389</span><span class="p">,</span> <span class="mf">0.461</span>
     <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="mf">4.6</span><span class="p">,</span> <span class="mf">1.0</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">Rv</span><span class="p">)</span>
-    <span class="n">Av</span> <span class="o">=</span> <span class="n">Rv</span> <span class="o">*</span> <span class="n">EBmV</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp</span> <span class="o">*</span> <span class="n">EBmV</span> <span class="o">+</span> <span class="n">Av</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span>    
+    <span class="n">ElamV</span> <span class="o">=</span> <span class="n">ElamV_FM</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+    <span class="n">AlamAv</span> <span class="o">=</span> <span class="n">AlamAv_from_ElamV</span><span class="p">(</span><span class="n">ElamV</span><span class="p">,</span> <span class="mf">2.74</span><span class="p">)</span>
+    <span class="c"># assume MW extinction law above these wavelengths</span>
+    <span class="n">c0</span> <span class="o">=</span> <span class="n">wa</span> <span class="o">&gt;</span> <span class="n">W0</span>
+    <span class="k">if</span> <span class="n">c0</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">between</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="n">W0</span><span class="p">,</span> <span class="n">W1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c1</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MW_Cardelli89</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c0</span><span class="p">],</span> <span class="mf">3.1</span><span class="p">)</span><span class="o">.</span><span class="n">AlamAv</span>
+            <span class="n">AlamAv</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_Akima</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">wa</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">],</span> <span class="n">AlamAv</span><span class="p">[</span><span class="o">~</span><span class="n">c1</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">2.74</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;SMC_Gordon03&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tau</span></div>
+        <span class="k">return</span> <span class="n">ExtinctionCurve</span><span class="p">(</span><span class="n">wa</span><span class="p">,</span> <span class="mf">2.74</span><span class="p">,</span> <span class="n">AlamAv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;SMC_Gordon03&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="tau_from_AlamAv"><a class="viewcode-back" href="../../generated/barak.extinction.tau_from_AlamAv.html#barak.extinction.tau_from_AlamAv">[docs]</a><span class="k">def</span> <span class="nf">tau_from_AlamAv</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">,</span> <span class="n">Av</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find tau(lambda) from A(lambda)/A(V)</span>
+
+<span class="sd">    Note that A(V) = E(B - V) * R(V)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AlamAv</span> <span class="o">*</span> <span class="n">Av</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="AlamAv_from_ElamV"><a class="viewcode-back" href="../../generated/barak.extinction.AlamAv_from_ElamV.html#barak.extinction.AlamAv_from_ElamV">[docs]</a><span class="k">def</span> <span class="nf">AlamAv_from_ElamV</span><span class="p">(</span><span class="n">ElamV</span><span class="p">,</span> <span class="n">Rv</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find A(lambda)/A(V) from E(lambda - V) / E(B - V).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ElamV</span> <span class="o">+</span> <span class="n">Rv</span><span class="p">)</span> <span class="o">/</span> <span class="n">Rv</span>
+</div>
+<div class="viewcode-block" id="ElamV_from_AlamAv"><a class="viewcode-back" href="../../generated/barak.extinction.ElamV_from_AlamAv.html#barak.extinction.ElamV_from_AlamAv">[docs]</a><span class="k">def</span> <span class="nf">ElamV_from_AlamAv</span><span class="p">(</span><span class="n">AlamAv</span><span class="p">,</span> <span class="n">Rv</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find E(lambda - V) / E(B - V) from A(lambda)/A(V).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AlamAv</span><span class="o">*</span><span class="n">Rv</span> <span class="o">-</span> <span class="n">Rv</span></div>
 </pre></div>
 
       </div>

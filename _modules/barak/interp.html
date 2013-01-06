@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.interp &mdash; Barak 0.1dev documentation</title>
+    <title>barak.interp &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.interp</span></h2>
       </div>
       <div class="topnav">
@@ -296,11 +296,17 @@
         <span class="k">return</span> <span class="n">out</span>
 
 </div>
-<div class="viewcode-block" id="fit_spline"><a class="viewcode-back" href="../../generated/barak.interp.fit_spline.html#barak.interp.fit_spline">[docs]</a><span class="k">def</span> <span class="nf">fit_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">):</span>
+<div class="viewcode-block" id="fit_spline"><a class="viewcode-back" href="../../generated/barak.interp.fit_spline.html#barak.interp.fit_spline">[docs]</a><span class="k">def</span> <span class="nf">fit_spline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">addknots</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find a smooth function that approximates `x`, `y`.</span>
 
 <span class="sd">    `bins` is the number of bins into which the sample is split. Returns</span>
 <span class="sd">    a function f(x) that approximates y from min(x) to max(x).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    addknots : sequence of float pairs</span>
+<span class="sd">       A sequence of (x,y) pairs values that the spline is forced to</span>
+<span class="sd">       pass through. Default is None.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -325,6 +331,14 @@
             <span class="k">continue</span>
         <span class="n">cbins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">estimator</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">cond</span><span class="p">]))</span>
         <span class="n">medvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">estimator</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">cond</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="n">addknots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">addknots</span><span class="p">:</span>
+            <span class="n">cbins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">medvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">isort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">cbins</span><span class="p">)</span>
+        <span class="n">cbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cbins</span><span class="p">)[</span><span class="n">isort</span><span class="p">]</span>
+        <span class="n">medvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">medvals</span><span class="p">)[</span><span class="n">isort</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cbins</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;Too few bins&#39;</span><span class="p">)</span>

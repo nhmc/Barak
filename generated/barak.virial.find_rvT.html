@@ -1,0 +1,134 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.virial.find_rvT &mdash; Barak 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
+    <link rel="next" title="barak.voigt.voigt" href="barak.voigt.voigt.html" />
+    <link rel="prev" title="barak.virial.deltavir" href="barak.virial.deltavir.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.3.0 documentation</span></a></h1>
+        <h2 class="heading"><span>barak.virial.find_rvT</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.virial.deltavir.html">barak.virial.deltavir</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.voigt.voigt.html">barak.voigt.voigt</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-virial-find-rvt">
+<h1>barak.virial.find_rvT<a class="headerlink" href="#barak-virial-find-rvt" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.virial.find_rvT">
+<tt class="descclassname">barak.virial.</tt><tt class="descname">find_rvT</tt><big>(</big><em>M</em>, <em>z</em>, <em>cosmo=None</em>, <em>mu=0.59</em><big>)</big><a class="reference internal" href="../_modules/barak/virial.html#find_rvT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.virial.find_rvT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the virial radius, circular velocity and temperature for
+a dark matter halo at a given mass and redshift.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>mass</strong> : array_like, shape N</p>
+<blockquote>
+<div><p>Total halo mass (including dark matter) in solar masses.</p>
+</div></blockquote>
+<p><strong>z</strong> : array_like, shape M</p>
+<blockquote>
+<div><p>Redshift.</p>
+</div></blockquote>
+<p><strong>cosmo</strong> : cosmology (optional)</p>
+<blockquote>
+<div><p>The cosmology to use.</p>
+</div></blockquote>
+<p><strong>mu</strong> : float (optional)</p>
+<blockquote>
+<div><p>The mean molecular weight. The virial temperature is
+proportional to mu.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>vir</strong> : named tuple of ndarrays with shape (N, M)</p>
+<blockquote class="last">
+<div><p>The virial radius (proper kpc), circular velocity (km/s) and
+temperature (K). If N or M is 1, that dimension is suppressed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The value of mu depends on the ionization fraction of the gas; mu
+= 0.59 for a fully ionized primordial gas (the default), mu = 0.61
+for a gas with ionized hydrogen but only singly ionized helium,
+and mu = 1.22 for neutral primordial gas.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">vir</span> <span class="o">=</span> <span class="n">find_rvT</span><span class="p">(</span><span class="mf">1e12</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">vir</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">vir</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="n">vir</span><span class="o">.</span><span class="n">T</span>
+<span class="go">261.195728743 128.338776885 588643.476006</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">T</span> <span class="o">=</span> <span class="n">find_rvT</span><span class="p">(</span><span class="mf">1e12</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span>
+<span class="go">array([ 198.57846074,  156.44358398,  127.91018732,  107.74327378])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span>
+<span class="go">array([ 147.1888328 ,  165.82959995,  183.39536858,  199.82317152])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">array([  774259.0063081 ,   982789.81965216,  1202024.36495813,</span>
+<span class="go">       1427014.0148491 ])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.virial.deltavir.html">barak.virial.deltavir</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.voigt.voigt.html">barak.voigt.voigt</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

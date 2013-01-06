@@ -1,0 +1,6 @@
+barak.plot.calc_log_minor_ticks
+===============================
+
+.. currentmodule:: barak.plot
+
+.. autofunction:: calc_log_minor_ticks

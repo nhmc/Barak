@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.stats.blackbody_lam &mdash; Barak 0.1dev documentation</title>
+    <title>barak.stats.blackbody_lam &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,13 +27,13 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
     <link rel="next" title="barak.stats.blackbody_nu" href="barak.stats.blackbody_nu.html" />
     <link rel="prev" title="barak.stats.binomial_min_max_limits" href="barak.stats.binomial_min_max_limits.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.stats.blackbody_lam</span></h2>
       </div>
       <div class="topnav">
@@ -55,8 +55,29 @@
 <dl class="function">
 <dt id="barak.stats.blackbody_lam">
 <tt class="descclassname">barak.stats.</tt><tt class="descname">blackbody_lam</tt><big>(</big><em>lam</em>, <em>T</em><big>)</big><a class="reference internal" href="../_modules/barak/stats.html#blackbody_lam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.stats.blackbody_lam" title="Permalink to this definition">¶</a></dt>
-<dd><p>Blackbody as a function of wavelength (cm) and temperature (K).</p>
-<p>returns units of erg/s/cm^2/cm/steradian</p>
+<dd><p>Blackbody as a function of wavelength (Angstroms) and temperature (K).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>lam</strong> : array_like</p>
+<blockquote>
+<div><p>Wavelength in Angstroms.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Jlam</strong> : ndarray</p>
+<blockquote class="last">
+<div><p>Intensity with units erg/s/cm^2/Ang/steradian</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="barak.stats.blackbody_nu.html#barak.stats.blackbody_nu" title="barak.stats.blackbody_nu"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_nu</span></tt></a></p>
+</div>
 </dd></dl>
 
 </div>

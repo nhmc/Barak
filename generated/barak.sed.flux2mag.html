@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.sed.flux2mag &mdash; Barak 0.1dev documentation</title>
+    <title>barak.sed.flux2mag &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,23 +27,23 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
-    <link rel="next" title="barak.sed.get_SEDs" href="barak.sed.get_SEDs.html" />
-    <link rel="prev" title="barak.sed.Jy2Mag" href="barak.sed.Jy2Mag.html" /> 
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
+    <link rel="next" title="barak.sed.fnu_to_flambda" href="barak.sed.fnu_to_flambda.html" />
+    <link rel="prev" title="barak.sed.flambda_to_fnu" href="barak.sed.flambda_to_fnu.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.sed.flux2mag</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="barak.sed.Jy2Mag.html">barak.sed.Jy2Mag</a>
+        «&#160;&#160;<a href="barak.sed.flambda_to_fnu.html">barak.sed.flambda_to_fnu</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.sed.get_SEDs.html">barak.sed.get_SEDs</a>&#160;&#160;»
+        <a href="barak.sed.fnu_to_flambda.html">barak.sed.fnu_to_flambda</a>&#160;&#160;»
         </p>
 
       </div>
@@ -54,10 +54,9 @@
 <h1>barak.sed.flux2mag<a class="headerlink" href="#barak-sed-flux2mag" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.sed.flux2mag">
-<tt class="descclassname">barak.sed.</tt><tt class="descname">flux2mag</tt><big>(</big><em>flux</em>, <em>fluxerr</em>, <em>band</em><big>)</big><a class="reference internal" href="../_modules/barak/sed.html#flux2mag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.sed.flux2mag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts given flux and uncertainty in erg/s/cm^2/Angstrom into
-AB magnitudes.</p>
-<p>Returns the magnitude and error in the given band.</p>
+<tt class="descclassname">barak.sed.</tt><tt class="descname">flux2mag</tt><big>(</big><em>flambda</em>, <em>band</em><big>)</big><a class="reference internal" href="../_modules/barak/sed.html#flux2mag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.sed.flux2mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts flux in erg/s/cm^2/Angstrom into AB magnitudes.</p>
+<p>Returns the magnitude in the given band.</p>
 </dd></dl>
 
 </div>
@@ -67,11 +66,11 @@ AB magnitudes.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="barak.sed.Jy2Mag.html">barak.sed.Jy2Mag</a>
+        «&#160;&#160;<a href="barak.sed.flambda_to_fnu.html">barak.sed.flambda_to_fnu</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="barak.sed.get_SEDs.html">barak.sed.get_SEDs</a>&#160;&#160;»
+        <a href="barak.sed.fnu_to_flambda.html">barak.sed.fnu_to_flambda</a>&#160;&#160;»
         </p>
 
       </div>

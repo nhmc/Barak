@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.absorb.calc_tau_peak &mdash; Barak 0.1dev documentation</title>
+    <title>barak.absorb.calc_tau_peak &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,13 +27,13 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
     <link rel="next" title="barak.absorb.calctau" href="barak.absorb.calctau.html" />
     <link rel="prev" title="barak.absorb.calc_iontau" href="barak.absorb.calc_iontau.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.absorb.calc_tau_peak</span></h2>
       </div>
       <div class="topnav">
@@ -54,12 +54,42 @@
 <h1>barak.absorb.calc_tau_peak<a class="headerlink" href="#barak-absorb-calc-tau-peak" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="barak.absorb.calc_tau_peak">
-<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_tau_peak</tt><big>(</big><em>logN</em>, <em>b</em>, <em>trans</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_tau_peak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_tau_peak" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimate of  the peak optical depth of a transition assuming we are on the
-linear part of the curve of growth.</p>
-<p>logN is log10 of column density in cm^-2
-b is b parameter in km/s
-trans is  a transisition, e.e.g &#8216;HI 1215&#8217;</p>
+<tt class="descclassname">barak.absorb.</tt><tt class="descname">calc_tau_peak</tt><big>(</big><em>logN</em>, <em>b</em>, <em>wa0</em>, <em>osc</em><big>)</big><a class="reference internal" href="../_modules/barak/absorb.html#calc_tau_peak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.absorb.calc_tau_peak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the optical depth of a transition at line centre assuming
+we are on the linear part of the curve of growth.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>logN</strong> : array_like</p>
+<blockquote>
+<div><p>log10 of column density in cm^-2</p>
+</div></blockquote>
+<p><strong>b</strong> : float</p>
+<blockquote>
+<div><p>b parameter in km/s.</p>
+</div></blockquote>
+<p><strong>wa0</strong> : float</p>
+<blockquote>
+<div><p>Rest wavelength of the transition in Angstroms.</p>
+</div></blockquote>
+<p><strong>osc</strong> : float</p>
+<blockquote>
+<div><p>Transition oscillator strength.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>tau0</strong> : ndarray or scalar if logN is scalar</p>
+<blockquote class="last">
+<div><p>optical depth at the centre of the line</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>See Draine &#8220;Physics of the Interstellar and Intergalactic medium&#8221;
+for a description of how to calculate this quantity.</p>
 </dd></dl>
 
 </div>

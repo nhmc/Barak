@@ -1,0 +1,6 @@
+barak.extinction.ElamV_FM
+=========================
+
+.. currentmodule:: barak.extinction
+
+.. autofunction:: ElamV_FM

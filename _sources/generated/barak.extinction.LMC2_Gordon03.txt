@@ -1,0 +1,6 @@
+barak.extinction.LMC2_Gordon03
+==============================
+
+.. currentmodule:: barak.extinction
+
+.. autofunction:: LMC2_Gordon03

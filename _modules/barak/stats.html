@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.stats &mdash; Barak 0.1dev documentation</title>
+    <title>barak.stats &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.stats</span></h2>
       </div>
       <div class="topnav">
@@ -206,18 +206,48 @@
 <div class="viewcode-block" id="blackbody_nu"><a class="viewcode-back" href="../../generated/barak.stats.blackbody_nu.html#barak.stats.blackbody_nu">[docs]</a><span class="k">def</span> <span class="nf">blackbody_nu</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Blackbody as a function of frequency (Hz) and temperature (K).</span>
 
-<span class="sd">    returns units of erg/s/cm^2/Hz/steradian</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nu : array_like</span>
+<span class="sd">      Frequency in Hz.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Jnu : ndarray</span>
+<span class="sd">      Intensity with units of erg/s/cm^2/Hz/steradian</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    blackbody_lam</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">hplanck</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">kboltz</span>
-    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hplanck</span><span class="o">*</span><span class="n">nu</span> <span class="o">/</span> <span class="p">(</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">hplanck</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hplanck</span><span class="o">*</span><span class="n">nu</span> <span class="o">/</span> <span class="p">(</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="blackbody_lam"><a class="viewcode-back" href="../../generated/barak.stats.blackbody_lam.html#barak.stats.blackbody_lam">[docs]</a><span class="k">def</span> <span class="nf">blackbody_lam</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Blackbody as a function of wavelength (cm) and temperature (K).</span>
+    <span class="sd">&quot;&quot;&quot; Blackbody as a function of wavelength (Angstroms) and temperature (K).</span>
 
-<span class="sd">    returns units of erg/s/cm^2/cm/steradian</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lam : array_like</span>
+<span class="sd">      Wavelength in Angstroms.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Jlam : ndarray</span>
+<span class="sd">       Intensity with units erg/s/cm^2/Ang/steradian</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    blackbody_nu</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">hplanck</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">kboltz</span>
-    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">**</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hplanck</span><span class="o">*</span><span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c"># to cm</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">lam</span> <span class="o">*</span> <span class="mf">1e-8</span>
+    <span class="c"># erg/s/cm^2/cm/sr</span>
+    <span class="n">Jlam</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">hplanck</span><span class="o">*</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">**</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hplanck</span><span class="o">*</span><span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">lam</span><span class="o">*</span><span class="n">kboltz</span><span class="o">*</span><span class="n">T</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c"># erg/s/cm^2/Ang/sr</span>
+    <span class="k">return</span> <span class="n">Jlam</span> <span class="o">*</span> <span class="mf">1e8</span>
 </pre></div></div>
 
       </div>

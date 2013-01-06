@@ -1,0 +1,6 @@
+barak.absorb.logN_from_tau_peak
+===============================
+
+.. currentmodule:: barak.absorb
+
+.. autofunction:: logN_from_tau_peak

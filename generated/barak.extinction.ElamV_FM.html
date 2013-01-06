@@ -1,0 +1,105 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.extinction.ElamV_FM &mdash; Barak 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
+    <link rel="next" title="barak.extinction.ElamV_from_AlamAv" href="barak.extinction.ElamV_from_AlamAv.html" />
+    <link rel="prev" title="barak.extinction.AlamAv_from_ElamV" href="barak.extinction.AlamAv_from_ElamV.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.3.0 documentation</span></a></h1>
+        <h2 class="heading"><span>barak.extinction.ElamV_FM</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.extinction.AlamAv_from_ElamV.html">barak.extinction.AlamAv_from_ElamV</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.extinction.ElamV_from_AlamAv.html">barak.extinction.ElamV_from_AlamAv</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-extinction-elamv-fm">
+<h1>barak.extinction.ElamV_FM<a class="headerlink" href="#barak-extinction-elamv-fm" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.extinction.ElamV_FM">
+<tt class="descclassname">barak.extinction.</tt><tt class="descname">ElamV_FM</tt><big>(</big><em>wa</em>, <em>c1</em>, <em>c2</em>, <em>c3</em>, <em>c4</em>, <em>x0</em>, <em>gamma</em><big>)</big><a class="reference internal" href="../_modules/barak/extinction.html#ElamV_FM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.extinction.ElamV_FM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base function for Extinction curves that use the form from
+Fitzpatrick &amp; Massa 90.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>wa</strong> : array_like</p>
+<blockquote>
+<div><p>One or more wavelengths in Angstroms.</p>
+</div></blockquote>
+<p><strong>c1, c2, c3, c4, gamma, x0</strong> : float</p>
+<blockquote>
+<div><p>Constants that define the extinction law.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>ElamV</strong> : ndarray or float if <em class="xref py py-obj">wa</em> is scalar</p>
+<blockquote class="last">
+<div><p>extinction in the form E(lambda - V) / E(B - V)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.extinction.AlamAv_from_ElamV.html">barak.extinction.AlamAv_from_ElamV</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.extinction.ElamV_from_AlamAv.html">barak.extinction.ElamV_from_AlamAv</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

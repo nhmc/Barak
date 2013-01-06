@@ -1,0 +1,124 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.plot.plot_ticks_wa &mdash; Barak 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.3.0 documentation" href="../index.html" />
+    <link rel="next" title="barak.plot.puttext" href="barak.plot.puttext.html" />
+    <link rel="prev" title="barak.plot.histo" href="barak.plot.histo.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Barak 0.3.0 documentation</span></a></h1>
+        <h2 class="heading"><span>barak.plot.plot_ticks_wa</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.plot.histo.html">barak.plot.histo</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.plot.puttext.html">barak.plot.puttext</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="barak-plot-plot-ticks-wa">
+<h1>barak.plot.plot_ticks_wa<a class="headerlink" href="#barak-plot-plot-ticks-wa" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="barak.plot.plot_ticks_wa">
+<tt class="descclassname">barak.plot.</tt><tt class="descname">plot_ticks_wa</tt><big>(</big><em>ax</em>, <em>wa</em>, <em>fl</em>, <em>height</em>, <em>ticks</em>, <em>keeponly=None</em>, <em>labels=True</em><big>)</big><a class="reference internal" href="../_modules/barak/plot.html#plot_ticks_wa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#barak.plot.plot_ticks_wa" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot a ticks on a wavelength scale.</p>
+<p>This plots ticks (such as those returned by <em class="xref py py-obj">find_tau()</em>) on a
+spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ax</strong> : matplotlib axes</p>
+<blockquote>
+<div><p>The axes on which to plot the ticks.</p>
+</div></blockquote>
+<p><strong>wa, fl</strong> : array_like</p>
+<blockquote>
+<div><p>wavelength and flux of spectrum. <em class="xref py py-obj">wa</em> must be sorted.</p>
+</div></blockquote>
+<p><strong>height</strong> : float</p>
+<blockquote>
+<div><p>tick height in flux units.</p>
+</div></blockquote>
+<p><strong>ticks</strong> : record array</p>
+<blockquote>
+<div><p>A record array of the sort returned by <em class="xref py py-obj">find_tau</em>. The fields
+wa, wa0, and name are required.</p>
+</div></blockquote>
+<p><strong>keeponly</strong> : str</p>
+<blockquote>
+<div><p>If this is not None (the default), then only plot ticks that
+contain this string in their name.</p>
+</div></blockquote>
+<p><strong>labels</strong> : bool (True)</p>
+<blockquote>
+<div><p>Whether to plot labels next to the tickmarks.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Ticks, Tlabels</strong> : Matplotlib collection of tickmarks and tick labels.</p>
+<blockquote class="last">
+<div><p>The artists corresponding to the ticks and their labels.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="barak.plot.histo.html">barak.plot.histo</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="barak.plot.puttext.html">barak.plot.puttext</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+barak.absorb.guess_logN_b
+=========================
+
+.. currentmodule:: barak.absorb
+
+.. autofunction:: guess_logN_b

@@ -1,0 +1,6 @@
+barak.plot.plot_ticks_wa
+========================
+
+.. currentmodule:: barak.plot
+
+.. autofunction:: plot_ticks_wa

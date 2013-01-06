@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>barak.virial &mdash; Barak 0.3.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Barak 0.3.0 documentation</span></a></h1>
+        <h2 class="heading"><span>barak.virial</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for barak.virial</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Calculate virial quantities for a dark matter halo given a</span>
+<span class="sd">cosmology.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">astropy</span> <span class="kn">import</span> <span class="n">cosmology</span>
+<span class="kn">from</span> <span class="nn">astropy.utils</span> <span class="kn">import</span> <span class="n">isiterable</span>
+<span class="kn">from</span> <span class="nn">astropy.constants.cgs</span> <span class="kn">import</span> <span class="n">G</span><span class="p">,</span> <span class="n">M_sun</span><span class="p">,</span> <span class="n">kpc</span><span class="p">,</span> <span class="n">k_B</span><span class="p">,</span> <span class="n">m_p</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="n">km</span> <span class="o">=</span> <span class="mf">1e5</span>
+
+<span class="n">find_rvT_output</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;virial_rvT&#39;</span><span class="p">,</span> <span class="s">&#39;r v T&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="deltavir"><a class="viewcode-back" href="../../generated/barak.virial.deltavir.html#barak.virial.deltavir">[docs]</a><span class="k">def</span> <span class="nf">deltavir</span><span class="p">(</span><span class="n">redshift</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The Virial overdensity as a function redshift. </span>
+
+<span class="sd">    This is an approximation parameterized by Bryan &amp; Norman 98, ApJ,</span>
+<span class="sd">    495, 80.  Good to 1% for omega(z) = 0.1-1, requires either omega =</span>
+<span class="sd">    1 (flat universe) or omega_lambda = 0.</span>
+
+<span class="sd">    This is given by dissipationless spherical top-hat models of</span>
+<span class="sd">    gravitational collapse (Peebles 1990 &#39;The Large Scale structure of</span>
+<span class="sd">    the Universe&#39;, Eke et al. 1996 MNRAS, 282, 263).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">cosmology</span><span class="o">.</span><span class="n">get_current</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">Ok0</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">Ode0</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">Om</span><span class="p">(</span><span class="n">redshift</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="mi">18</span><span class="o">*</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">60</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">32</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Can&#39;t compute deltavir for a non-flat cosmology &quot;</span>
+                             <span class="s">&quot;with a cosmological constant&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">Om</span><span class="p">(</span><span class="n">redshift</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">18</span><span class="o">*</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">82</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">39</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+</div>
+<span class="k">def</span> <span class="nf">_calc_rvT</span><span class="p">(</span><span class="n">M_g</span><span class="p">,</span> <span class="n">rho_virial</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">0.59</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the virial radius, circular velocity and temperature for</span>
+<span class="sd">    a given dark matter halo mass and virial overdensity.</span>
+
+<span class="sd">    Consider using find_rvT() instead - it is a higher level function</span>
+<span class="sd">    that uses more convenient units and handles broadcasting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M_g : float</span>
+<span class="sd">      Halo mass in grams.</span>
+<span class="sd">    rho_virial : float</span>
+<span class="sd">      Virial overdensity.</span>
+<span class="sd">    mu : float (default 0.59)</span>
+<span class="sd">      Mean molecular weight.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    r,v,T : floats</span>
+<span class="sd">      The virial radius (proper cm), circular velocity (m/s) and</span>
+<span class="sd">      temperature (K).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rvir</span> <span class="o">=</span> <span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">M_g</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">rho_virial</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">vcirc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span> <span class="n">M_g</span> <span class="o">/</span> <span class="n">rvir</span><span class="p">)</span>
+    <span class="n">Tvir</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">m_p</span> <span class="o">*</span> <span class="n">vcirc</span> <span class="o">*</span> <span class="n">vcirc</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_B</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rvir</span><span class="p">,</span> <span class="n">vcirc</span><span class="p">,</span> <span class="n">Tvir</span>
+
+<div class="viewcode-block" id="find_rvT"><a class="viewcode-back" href="../../generated/barak.virial.find_rvT.html#barak.virial.find_rvT">[docs]</a><span class="k">def</span> <span class="nf">find_rvT</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">0.59</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Find the virial radius, circular velocity and temperature for</span>
+<span class="sd">    a dark matter halo at a given mass and redshift.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mass : array_like, shape N</span>
+<span class="sd">      Total halo mass (including dark matter) in solar masses.</span>
+<span class="sd">    z : array_like, shape M</span>
+<span class="sd">      Redshift.</span>
+<span class="sd">    cosmo : cosmology (optional)</span>
+<span class="sd">      The cosmology to use.</span>
+<span class="sd">    mu : float (optional)</span>
+<span class="sd">      The mean molecular weight. The virial temperature is</span>
+<span class="sd">      proportional to mu.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vir : named tuple of ndarrays with shape (N, M)</span>
+<span class="sd">      The virial radius (proper kpc), circular velocity (km/s) and</span>
+<span class="sd">      temperature (K). If N or M is 1, that dimension is suppressed.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The value of mu depends on the ionization fraction of the gas; mu</span>
+<span class="sd">    = 0.59 for a fully ionized primordial gas (the default), mu = 0.61</span>
+<span class="sd">    for a gas with ionized hydrogen but only singly ionized helium,</span>
+<span class="sd">    and mu = 1.22 for neutral primordial gas.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; vir = find_rvT(1e12, 0)</span>
+<span class="sd">    &gt;&gt;&gt; print vir.r, vir.v, vir.T</span>
+<span class="sd">    261.195728743 128.338776885 588643.476006</span>
+<span class="sd">    &gt;&gt;&gt; r,v,T = find_rvT(1e12, [0.5, 1, 1.5, 2])</span>
+<span class="sd">    &gt;&gt;&gt; r</span>
+<span class="sd">    array([ 198.57846074,  156.44358398,  127.91018732,  107.74327378])</span>
+<span class="sd">    &gt;&gt;&gt; v</span>
+<span class="sd">    array([ 147.1888328 ,  165.82959995,  183.39536858,  199.82317152])</span>
+<span class="sd">    &gt;&gt;&gt; T</span>
+<span class="sd">    array([  774259.0063081 ,   982789.81965216,  1202024.36495813,</span>
+<span class="sd">           1427014.0148491 ])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">isiterable</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cosmo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">cosmology</span><span class="o">.</span><span class="n">get_current</span><span class="p">()</span>
+
+    <span class="c"># convert to cgs</span>
+    <span class="n">M_g</span> <span class="o">=</span> <span class="n">M</span> <span class="o">*</span> <span class="n">M_sun</span>
+
+    <span class="n">rho_virial</span> <span class="o">=</span> <span class="n">deltavir</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="n">cosmo</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">critical_density</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+    <span class="c"># deal with cases where we have two input arrays</span>
+    <span class="k">if</span> <span class="n">isiterable</span><span class="p">(</span><span class="n">M</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isiterable</span><span class="p">(</span><span class="n">rho_virial</span><span class="p">):</span>
+        <span class="n">M_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">M_g</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">rho_virial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">rho_virial</span><span class="p">)</span>
+
+    <span class="n">rvir</span><span class="p">,</span> <span class="n">vcirc</span><span class="p">,</span> <span class="n">Tvir</span> <span class="o">=</span> <span class="n">_calc_rvT</span><span class="p">(</span><span class="n">M_g</span><span class="p">,</span> <span class="n">rho_virial</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">find_rvT_output</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">rvir</span><span class="o">/</span><span class="n">kpc</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">vcirc</span><span class="o">/</span><span class="n">km</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">Tvir</span><span class="p">)</span></div>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Neil Crighton.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

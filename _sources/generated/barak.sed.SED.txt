@@ -14,7 +14,6 @@ barak.sed.SED
    .. autosummary::
    
       ~SED.__init__
-      ~SED.apply_extinction
       ~SED.calc_colour
       ~SED.calc_flux
       ~SED.calc_mag

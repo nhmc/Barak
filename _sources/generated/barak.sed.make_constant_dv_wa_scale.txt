@@ -1,0 +1,6 @@
+barak.sed.make_constant_dv_wa_scale
+===================================
+
+.. currentmodule:: barak.sed
+
+.. autofunction:: make_constant_dv_wa_scale

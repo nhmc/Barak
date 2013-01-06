@@ -1,0 +1,6 @@
+barak.convolve.convolve_constant_dv
+===================================
+
+.. currentmodule:: barak.convolve
+
+.. autofunction:: convolve_constant_dv

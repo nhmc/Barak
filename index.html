@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Barak’s Documentation &mdash; Barak 0.1dev documentation</title>
+    <title>Barak’s Documentation &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="#" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="#" />
     <link rel="next" title="Barak’s Documentation" href="" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="#">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>Barak’s Documentation</span></h2>
       </div>
       <div class="topnav">
@@ -64,8 +64,8 @@ distribution.</li>
 </ul>
 </div></blockquote>
 <p>The package can be downloaded <a class="reference external" href="https://github.com/nhmc/Barak">here</a>.</p>
-<p>It requires <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>, <a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a>, <a class="reference external" href="http://www.scipy.org/">SciPy</a>, <a class="reference external" href="http://atpy.github.com/">ATpy</a> and
-<a class="reference external" href="http://www.astropy.org">Astropy</a>.</p>
+<p>It requires <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>, <a class="reference external" href="http://www.stsci.edu/institute/software_hardware/pyfits/Download">PyFits</a>
+and <a class="reference external" href="http://atpy.github.com/">ATpy</a> to install. <a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a> and <a class="reference external" href="http://www.scipy.org/">SciPy</a> are also required for full functionality.</p>
 <p>To install, either download the tarball from the pypi website and then
 do:</p>
 <div class="highlight-python"><pre>python setup.py install</pre>
@@ -75,8 +75,7 @@ do:</p>
 using <tt class="xref py py-obj docutils literal"><span class="pre">pip</span></tt>:</p>
 <div class="highlight-python"><pre>pip install barak</pre>
 </div>
-<p>but you need to have <tt class="xref py py-obj docutils literal"><span class="pre">pip</span></tt>
-(<a class="reference external" href="http://www.pip-installer.org/en/latest/index.html">http://www.pip-installer.org/en/latest/index.html</a>) installed.</p>
+<p>but you need to have <a class="reference external" href="http://www.pip-installer.org/en/latest/index.html">pip</a> installed.</p>
 <p>To run the tests you need <a class="reference external" href="http://pytest.org/latest/">py.test</a>
 installed.  Then run:</p>
 <div class="highlight-python"><pre>py.test barak</pre>
@@ -90,7 +89,6 @@ installed.  Then run:</p>
 <li class="toctree-l2"><a class="reference internal" href="#absorb">absorb</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#abundances">abundances</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants">constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cont">cont</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convolve">convolve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#coord">coord</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extinction">extinction</a></li>
@@ -104,6 +102,7 @@ installed.  Then run:</p>
 <li class="toctree-l2"><a class="reference internal" href="#spec">spec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stats">stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#utilities">utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#virial">virial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#voigt">voigt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-scripts">Command line scripts</a></li>
 </ul>
@@ -121,16 +120,16 @@ from ions and molecules.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.T_to_b.html#barak.absorb.T_to_b" title="barak.absorb.T_to_b"><tt class="xref py py-obj docutils literal"><span class="pre">T_to_b</span></tt></a>(atom,&nbsp;T)</td>
-<td>Convert temperatues in K to b parameters (km/s) for an atom</td>
+<td>Convert temperatures in K to b parameters (km/s) for an atom</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.b_to_T.html#barak.absorb.b_to_T" title="barak.absorb.b_to_T"><tt class="xref py py-obj docutils literal"><span class="pre">b_to_T</span></tt></a>(atom,&nbsp;bvals)</td>
 <td>Convert b parameters (km/s) to a temperature in K for an atom</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_DLA_tau.html#barak.absorb.calc_DLA_tau" title="barak.absorb.calc_DLA_tau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_DLA_tau</span></tt></a>(wmin,&nbsp;wmax[,&nbsp;logN,&nbsp;logZ,&nbsp;dv,&nbsp;atom])</td>
-<td>Create the optical due to absorption from a DLA.</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_DLA_tau.html#barak.absorb.calc_DLA_tau" title="barak.absorb.calc_DLA_tau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_DLA_tau</span></tt></a>(wa[,&nbsp;z,&nbsp;logN,&nbsp;logZ,&nbsp;bHI,&nbsp;atom,&nbsp;...])</td>
+<td>Create the optical depth due to absorption from a DLA.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_DLA_trans.html#barak.absorb.calc_DLA_trans" title="barak.absorb.calc_DLA_trans"><tt class="xref py py-obj docutils literal"><span class="pre">calc_DLA_trans</span></tt></a>(wa,&nbsp;redshift,&nbsp;vfwhm[,&nbsp;logN,&nbsp;...])</td>
-<td>Find the transmission after absrption by a DLA</td>
+<td>Find the transmission after absorption by a DLA</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_Wr.html#barak.absorb.calc_Wr" title="barak.absorb.calc_Wr"><tt class="xref py py-obj docutils literal"><span class="pre">calc_Wr</span></tt></a>(i0,&nbsp;i1,&nbsp;wa,&nbsp;tr[,&nbsp;ew,&nbsp;ewer,&nbsp;fl,&nbsp;er,&nbsp;...])</td>
 <td>Find the rest equivalent width of a feature, and column density assuming optically thin.</td>
@@ -138,10 +137,10 @@ from ions and molecules.</p>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calc_iontau.html#barak.absorb.calc_iontau" title="barak.absorb.calc_iontau"><tt class="xref py py-obj docutils literal"><span class="pre">calc_iontau</span></tt></a>(wa,&nbsp;ion,&nbsp;zp1,&nbsp;logN,&nbsp;b[,&nbsp;debug,&nbsp;...])</td>
 <td>Returns tau values at each wavelength for transitions in ion.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_tau_peak.html#barak.absorb.calc_tau_peak" title="barak.absorb.calc_tau_peak"><tt class="xref py py-obj docutils literal"><span class="pre">calc_tau_peak</span></tt></a>(logN,&nbsp;b,&nbsp;trans)</td>
-<td>Estimate of  the peak optical depth of a transition assuming we are on the linear part of the curve of growth.</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.calc_tau_peak.html#barak.absorb.calc_tau_peak" title="barak.absorb.calc_tau_peak"><tt class="xref py py-obj docutils literal"><span class="pre">calc_tau_peak</span></tt></a>(logN,&nbsp;b,&nbsp;wa0,&nbsp;osc)</td>
+<td>Find the optical depth of a transition at line centre assuming we are on the linear part of the curve of growth.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calctau.html#barak.absorb.calctau" title="barak.absorb.calctau"><tt class="xref py py-obj docutils literal"><span class="pre">calctau</span></tt></a>(v,&nbsp;wav0,&nbsp;osc,&nbsp;gam,&nbsp;logN[,&nbsp;T,&nbsp;btemp,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.calctau.html#barak.absorb.calctau" title="barak.absorb.calctau"><tt class="xref py py-obj docutils literal"><span class="pre">calctau</span></tt></a>(vel,&nbsp;wa0,&nbsp;osc,&nbsp;gam,&nbsp;logN,&nbsp;b[,&nbsp;...])</td>
 <td>Returns the optical depth (Voigt profile) for a transition.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.find_tau.html#barak.absorb.find_tau" title="barak.absorb.find_tau"><tt class="xref py py-obj docutils literal"><span class="pre">find_tau</span></tt></a>(wa,&nbsp;lines,&nbsp;atom[,&nbsp;per_trans])</td>
@@ -149,6 +148,12 @@ from ions and molecules.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.findtrans.html#barak.absorb.findtrans" title="barak.absorb.findtrans"><tt class="xref py py-obj docutils literal"><span class="pre">findtrans</span></tt></a>(name,&nbsp;atomdat)</td>
 <td>Given an ion and wavelength and list of transitions read with readatom(), return the best matching entry in atom.dat.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.guess_logN_b.html#barak.absorb.guess_logN_b" title="barak.absorb.guess_logN_b"><tt class="xref py py-obj docutils literal"><span class="pre">guess_logN_b</span></tt></a>(ion,&nbsp;wa0,&nbsp;osc,&nbsp;tau0)</td>
+<td>Estimate logN and b for a transition given the peak optical</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.absorb.logN_from_tau_peak.html#barak.absorb.logN_from_tau_peak" title="barak.absorb.logN_from_tau_peak"><tt class="xref py py-obj docutils literal"><span class="pre">logN_from_tau_peak</span></tt></a>(tau,&nbsp;b,&nbsp;wa0,&nbsp;osc)</td>
+<td>Calculate the column density for a transition given its width and its optical depth at line centre.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.absorb.read_HITRAN.html#barak.absorb.read_HITRAN" title="barak.absorb.read_HITRAN"><tt class="xref py py-obj docutils literal"><span class="pre">read_HITRAN</span></tt></a>([thelot])</td>
 <td>Return a list of molecular absorption features in the HITRAN</td>
@@ -432,38 +437,6 @@ astrophysical gas</td>
 </tbody>
 </table>
 </div>
-<div class="section" id="cont">
-<h2>cont<a class="headerlink" href="#cont" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.html#barak.cont.InteractiveCoFit" title="barak.cont.InteractiveCoFit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit</span></tt></a>(wa,&nbsp;fl,&nbsp;er,&nbsp;contpoints[,&nbsp;...])</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.calc_tau.html#barak.cont.InteractiveCoFit.calc_tau" title="barak.cont.InteractiveCoFit.calc_tau"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.calc_tau</span></tt></a>()</td>
-<td>Include absorption from a transition (DLA).</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.modifypoints.html#barak.cont.InteractiveCoFit.modifypoints" title="barak.cont.InteractiveCoFit.modifypoints"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.modifypoints</span></tt></a>()</td>
-<td>Add/remove continuum points.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.on_button_release.html#barak.cont.InteractiveCoFit.on_button_release" title="barak.cont.InteractiveCoFit.on_button_release"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_button_release</span></tt></a>(event)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.on_keypress.html#barak.cont.InteractiveCoFit.on_keypress" title="barak.cont.InteractiveCoFit.on_keypress"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.on_keypress</span></tt></a>(event)</td>
-<td>Add or remove a continuum point.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.plotinit.html#barak.cont.InteractiveCoFit.plotinit" title="barak.cont.InteractiveCoFit.plotinit"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.plotinit</span></tt></a>()</td>
-<td>Set up the figure and do initial plots.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.cont.InteractiveCoFit.update.html#barak.cont.InteractiveCoFit.update" title="barak.cont.InteractiveCoFit.update"><tt class="xref py py-obj docutils literal"><span class="pre">InteractiveCoFit.update</span></tt></a>()</td>
-<td>Calculates the new continuum, residuals and updates the plots.</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="convolve">
 <h2>convolve<a class="headerlink" href="#convolve" title="Permalink to this headline">¶</a></h2>
 <p>Functions related to convolution.</p>
@@ -473,10 +446,13 @@ astrophysical gas</td>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.convolve.convolve_psf.html#barak.convolve.convolve_psf" title="barak.convolve.convolve_psf"><tt class="xref py py-obj docutils literal"><span class="pre">convolve_psf</span></tt></a>(a,&nbsp;fwhm[,&nbsp;edge,&nbsp;replace_nan,&nbsp;debug])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.convolve.convolve_constant_dv.html#barak.convolve.convolve_constant_dv" title="barak.convolve.convolve_constant_dv"><tt class="xref py py-obj docutils literal"><span class="pre">convolve_constant_dv</span></tt></a>(wa,&nbsp;fl[,&nbsp;wa_dv,&nbsp;npix,&nbsp;...])</td>
+<td>Convolve a wavelength array with a gaussian of constant velocity width.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.convolve.convolve_psf.html#barak.convolve.convolve_psf" title="barak.convolve.convolve_psf"><tt class="xref py py-obj docutils literal"><span class="pre">convolve_psf</span></tt></a>(a,&nbsp;fwhm[,&nbsp;edge,&nbsp;replace_nan,&nbsp;debug])</td>
 <td>Convolve an array with a gaussian window.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.convolve.convolve_window.html#barak.convolve.convolve_window" title="barak.convolve.convolve_window"><tt class="xref py py-obj docutils literal"><span class="pre">convolve_window</span></tt></a>(a,&nbsp;window[,&nbsp;edge])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.convolve.convolve_window.html#barak.convolve.convolve_window" title="barak.convolve.convolve_window"><tt class="xref py py-obj docutils literal"><span class="pre">convolve_window</span></tt></a>(a,&nbsp;window[,&nbsp;edge])</td>
 <td>Convolve an array with an arbitrary window.</td>
 </tr>
 </tbody>
@@ -549,23 +525,26 @@ modulated by an optical depth <img class="math" src="_images/math/9ac7a7811edd43
 particles, then:</p>
 <div class="math">
 <p><img src="_images/math/df62d35cf54715a311ac2b4f94c64f338b9fe756.png" alt="I_\lambda = I_{\lambda,0}\ e^{-\tau_\lambda}"/></p>
-</div><p>Generally the attenuation is given in magnitude in a band or at a
-wavelegnth. For example, A(V) refers to the extinction in magnitudes
+</div><p>Generally the attenuation is given in magnitudes in a band or at a
+wavelength. For example, A(V) refers to the extinction in magnitudes
 in the V band, and</p>
 <div class="math">
 <p><img src="_images/math/0501e5ba22dae505ef4ad6c2682155fd40f5db90.png" alt="E(B - V) \equiv A(B) - A(V)"/></p>
 </div><p>is the difference in extinction between the B and V
-bands. Empirically, dust attenuation is found to have a similar
-functional form in different parts of the Milky Way&#8217;s ISM that can be
-parametrised with a normalisation A(V) and slope E(B - V). Another
+bands. Empirically, dust attenuation in different parts of the Milky
+Way&#8217;s ISM can be described by single function of wavelength
+parametrised by a normalisation A(V) and slope E(B - V). Another
 commonly used quantity is</p>
 <div class="math">
 <p><img src="_images/math/45e8d22869ca6901c1ec6323556f1a13b43cd75a.png" alt="R(V) \equiv A(V) / E(B - V)"/></p>
 </div><p>Analytic approximations for dust attenuation curves are often
-calculated as a function of R(V), and then normalised by A(V) or, more
-commonly, E(B - V). The attenuation for all the public functions in
-this module is returned as <img class="math" src="_images/math/b1fcc3ed0ee0525effb72bacae7de4eab531ea68.png" alt="\tau(\lambda)"/>. This is related to
-<img class="math" src="_images/math/056843848a8143c65e1a4e31ee387f31fd72be3d.png" alt="A(\lambda)"/> in the following way:</p>
+calculated as a function of R(V), and then normalised by A(V) or
+E(B - V).</p>
+<p>The functions in his module give the attenuation for the Milky Way,
+SMC and LMC, as a function of wavelength, and require that R(V) and
+E(B-V) are given. The attenuation is given as the optical depth,
+<img class="math" src="_images/math/b1fcc3ed0ee0525effb72bacae7de4eab531ea68.png" alt="\tau(\lambda)"/>. This is related to <img class="math" src="_images/math/056843848a8143c65e1a4e31ee387f31fd72be3d.png" alt="A(\lambda)"/> in the
+following way:</p>
 <div class="math">
 <p><img src="_images/math/e35d65471ea155726dfdf905052724b2321eb8a3.png" alt="\tau(\lambda) = A(\lambda) / (2.5 \log_{10}(e))"/></p>
 </div><p><strong>References</strong></p>
@@ -575,26 +554,46 @@ this module is returned as <img class="math" src="_images/math/b1fcc3ed0ee0525ef
 <li>&#8216;Interstellar Dust Grains&#8217; by B.T. Draine:
 <a class="reference external" href="http://arxiv.org/abs/astro-ph/0304489">http://arxiv.org/abs/astro-ph/0304489</a></li>
 </ul>
-<p>Note that much of the code in this module is adapted from Erik
-Tollerud&#8217;s <a class="reference external" href="https://github.com/eteq/astropysics">Astropysics</a>, which
-has an Apache licence.</p>
+<p>Note that much of the code in this module is inspired by Erik
+Tollerud&#8217;s <a class="reference external" href="https://github.com/eteq/astropysics">Astropysics</a>.</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.LMC_Gordon03.html#barak.extinction.LMC_Gordon03" title="barak.extinction.LMC_Gordon03"><tt class="xref py py-obj docutils literal"><span class="pre">LMC_Gordon03</span></tt></a>(wa[,&nbsp;EBmV,&nbsp;Rv])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.ExtinctionCurve.html#barak.extinction.ExtinctionCurve" title="barak.extinction.ExtinctionCurve"><tt class="xref py py-obj docutils literal"><span class="pre">ExtinctionCurve</span></tt></a>(wa,&nbsp;Rv,&nbsp;AlamAv[,&nbsp;name,&nbsp;EBmV])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.ExtinctionCurve.set_EBmV.html#barak.extinction.ExtinctionCurve.set_EBmV" title="barak.extinction.ExtinctionCurve.set_EBmV"><tt class="xref py py-obj docutils literal"><span class="pre">ExtinctionCurve.set_EBmV</span></tt></a>(EBmV)</td>
+<td>Sets Av, tau and Alam in addition to EBmV</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.AlamAv_from_ElamV.html#barak.extinction.AlamAv_from_ElamV" title="barak.extinction.AlamAv_from_ElamV"><tt class="xref py py-obj docutils literal"><span class="pre">AlamAv_from_ElamV</span></tt></a>(ElamV,&nbsp;Rv)</td>
+<td>Find A(lambda)/A(V) from E(lambda - V) / E(B - V).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.ElamV_FM.html#barak.extinction.ElamV_FM" title="barak.extinction.ElamV_FM"><tt class="xref py py-obj docutils literal"><span class="pre">ElamV_FM</span></tt></a>(wa,&nbsp;c1,&nbsp;c2,&nbsp;c3,&nbsp;c4,&nbsp;x0,&nbsp;gamma)</td>
+<td>Base function for Extinction curves that use the form from</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.ElamV_from_AlamAv.html#barak.extinction.ElamV_from_AlamAv" title="barak.extinction.ElamV_from_AlamAv"><tt class="xref py py-obj docutils literal"><span class="pre">ElamV_from_AlamAv</span></tt></a>(AlamAv,&nbsp;Rv)</td>
+<td>Find E(lambda - V) / E(B - V) from A(lambda)/A(V).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.LMC2_Gordon03.html#barak.extinction.LMC2_Gordon03" title="barak.extinction.LMC2_Gordon03"><tt class="xref py py-obj docutils literal"><span class="pre">LMC2_Gordon03</span></tt></a>(wa)</td>
+<td>LMC Extinction law from Gordon et al. 2003 LMC supershell</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.LMC_Gordon03.html#barak.extinction.LMC_Gordon03" title="barak.extinction.LMC_Gordon03"><tt class="xref py py-obj docutils literal"><span class="pre">LMC_Gordon03</span></tt></a>(wa)</td>
 <td>LMC Extinction law from Gordon et al. 2003 LMC Average Sample.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.MW_Cardelli89.html#barak.extinction.MW_Cardelli89" title="barak.extinction.MW_Cardelli89"><tt class="xref py py-obj docutils literal"><span class="pre">MW_Cardelli89</span></tt></a>(wa[,&nbsp;EBmV,&nbsp;Rv])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.MW_Cardelli89.html#barak.extinction.MW_Cardelli89" title="barak.extinction.MW_Cardelli89"><tt class="xref py py-obj docutils literal"><span class="pre">MW_Cardelli89</span></tt></a>(wa[,&nbsp;Rv])</td>
 <td>Milky Way Extinction law from Cardelli et al. 1989.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.SMC_Gordon03.html#barak.extinction.SMC_Gordon03" title="barak.extinction.SMC_Gordon03"><tt class="xref py py-obj docutils literal"><span class="pre">SMC_Gordon03</span></tt></a>(wa[,&nbsp;EBmV,&nbsp;Rv])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.SMC_Gordon03.html#barak.extinction.SMC_Gordon03" title="barak.extinction.SMC_Gordon03"><tt class="xref py py-obj docutils literal"><span class="pre">SMC_Gordon03</span></tt></a>(wa)</td>
 <td>SMC Extinction law from Gordon et al. 2003 SMC Bar Sample.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.starburst_Calzetti00.html#barak.extinction.starburst_Calzetti00" title="barak.extinction.starburst_Calzetti00"><tt class="xref py py-obj docutils literal"><span class="pre">starburst_Calzetti00</span></tt></a>(wa,&nbsp;EBmV[,&nbsp;Rv])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.extinction.starburst_Calzetti00.html#barak.extinction.starburst_Calzetti00" title="barak.extinction.starburst_Calzetti00"><tt class="xref py py-obj docutils literal"><span class="pre">starburst_Calzetti00</span></tt></a>(wa[,&nbsp;Rv])</td>
 <td>Dust extinction in starburst galaxies using the Calzetti</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.extinction.tau_from_AlamAv.html#barak.extinction.tau_from_AlamAv" title="barak.extinction.tau_from_AlamAv"><tt class="xref py py-obj docutils literal"><span class="pre">tau_from_AlamAv</span></tt></a>(AlamAv,&nbsp;Av)</td>
+<td>Find tau(lambda) from A(lambda)/A(V)</td>
 </tr>
 </tbody>
 </table>
@@ -654,7 +653,7 @@ continuum to a QSO spectrum.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.interp.CubicSpline.set_d2.html#barak.interp.CubicSpline.set_d2" title="barak.interp.CubicSpline.set_d2"><tt class="xref py py-obj docutils literal"><span class="pre">CubicSpline.set_d2</span></tt></a>([firstderiv,&nbsp;lastderiv,&nbsp;...])</td>
 <td>Calculates the second derivative of a cubic spline function y = f(x) for each value in array x.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.interp.fit_spline.html#barak.interp.fit_spline" title="barak.interp.fit_spline"><tt class="xref py py-obj docutils literal"><span class="pre">fit_spline</span></tt></a>(x,&nbsp;y[,&nbsp;bins,&nbsp;estimator])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.interp.fit_spline.html#barak.interp.fit_spline" title="barak.interp.fit_spline"><tt class="xref py py-obj docutils literal"><span class="pre">fit_spline</span></tt></a>(x,&nbsp;y[,&nbsp;bins,&nbsp;addknots,&nbsp;estimator])</td>
 <td>Find a smooth function that approximates <em class="xref py py-obj">x</em>, <em class="xref py py-obj">y</em>.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.interp.interp_Akima.html#barak.interp.interp_Akima" title="barak.interp.interp_Akima"><tt class="xref py py-obj docutils literal"><span class="pre">interp_Akima</span></tt></a>(x_new,&nbsp;x,&nbsp;y)</td>
@@ -750,23 +749,29 @@ continuum to a QSO spectrum.</p>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.axvlines.html#barak.plot.axvlines" title="barak.plot.axvlines"><tt class="xref py py-obj docutils literal"><span class="pre">axvlines</span></tt></a>(xvals[,&nbsp;ymin,&nbsp;ymax,&nbsp;ax,&nbsp;ls,&nbsp;color])</td>
 <td>Plot a set of vertical lines at the given positions.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.default_marker_size.html#barak.plot.default_marker_size" title="barak.plot.default_marker_size"><tt class="xref py py-obj docutils literal"><span class="pre">default_marker_size</span></tt></a>(fmt)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.calc_log_minor_ticks.html#barak.plot.calc_log_minor_ticks" title="barak.plot.calc_log_minor_ticks"><tt class="xref py py-obj docutils literal"><span class="pre">calc_log_minor_ticks</span></tt></a>(majticks)</td>
+<td>Get minor tick positions for a log scale.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.default_marker_size.html#barak.plot.default_marker_size" title="barak.plot.default_marker_size"><tt class="xref py py-obj docutils literal"><span class="pre">default_marker_size</span></tt></a>(fmt)</td>
 <td>Find a default matplotlib marker size such that different marker types</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.dhist.html#barak.plot.dhist" title="barak.plot.dhist"><tt class="xref py py-obj docutils literal"><span class="pre">dhist</span></tt></a>(xvals,&nbsp;yvals[,&nbsp;xbins,&nbsp;ybins,&nbsp;ax,&nbsp;c,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.dhist.html#barak.plot.dhist" title="barak.plot.dhist"><tt class="xref py py-obj docutils literal"><span class="pre">dhist</span></tt></a>(xvals,&nbsp;yvals[,&nbsp;xbins,&nbsp;ybins,&nbsp;ax,&nbsp;c,&nbsp;...])</td>
 <td>Given two set of values, plot two histograms and the distribution.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.distplot.html#barak.plot.distplot" title="barak.plot.distplot"><tt class="xref py py-obj docutils literal"><span class="pre">distplot</span></tt></a>(vals[,&nbsp;xvals,&nbsp;perc,&nbsp;showmean,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.distplot.html#barak.plot.distplot" title="barak.plot.distplot"><tt class="xref py py-obj docutils literal"><span class="pre">distplot</span></tt></a>(vals[,&nbsp;xvals,&nbsp;perc,&nbsp;showmean,&nbsp;...])</td>
 <td>Make a top-down histogram plot for an array of distributions.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.draw_arrows.html#barak.plot.draw_arrows" title="barak.plot.draw_arrows"><tt class="xref py py-obj docutils literal"><span class="pre">draw_arrows</span></tt></a>(x,&nbsp;y[,&nbsp;ax,&nbsp;capsize,&nbsp;ms,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.draw_arrows.html#barak.plot.draw_arrows" title="barak.plot.draw_arrows"><tt class="xref py py-obj docutils literal"><span class="pre">draw_arrows</span></tt></a>(x,&nbsp;y[,&nbsp;ax,&nbsp;capsize,&nbsp;ms,&nbsp;...])</td>
 <td>Draw arrows that can be used to show limits.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.errplot.html#barak.plot.errplot" title="barak.plot.errplot"><tt class="xref py py-obj docutils literal"><span class="pre">errplot</span></tt></a>(x,&nbsp;y,&nbsp;yerrs[,&nbsp;xerrs,&nbsp;fmt,&nbsp;ax,&nbsp;ms,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.errplot.html#barak.plot.errplot" title="barak.plot.errplot"><tt class="xref py py-obj docutils literal"><span class="pre">errplot</span></tt></a>(x,&nbsp;y,&nbsp;yerrs[,&nbsp;xerrs,&nbsp;fmt,&nbsp;ax,&nbsp;ms,&nbsp;...])</td>
 <td>Plot a graph with errors.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.histo.html#barak.plot.histo" title="barak.plot.histo"><tt class="xref py py-obj docutils literal"><span class="pre">histo</span></tt></a>(a[,&nbsp;fmt,&nbsp;bins,&nbsp;ax,&nbsp;lw,&nbsp;log])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.histo.html#barak.plot.histo" title="barak.plot.histo"><tt class="xref py py-obj docutils literal"><span class="pre">histo</span></tt></a>(a[,&nbsp;fmt,&nbsp;bins,&nbsp;ax,&nbsp;lw,&nbsp;log])</td>
 <td>Plot a histogram, without all the unnecessary stuff</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.plot.plot_ticks_wa.html#barak.plot.plot_ticks_wa" title="barak.plot.plot_ticks_wa"><tt class="xref py py-obj docutils literal"><span class="pre">plot_ticks_wa</span></tt></a>(ax,&nbsp;wa,&nbsp;fl,&nbsp;height,&nbsp;ticks[,&nbsp;...])</td>
+<td>plot a ticks on a wavelength scale.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.plot.puttext.html#barak.plot.puttext" title="barak.plot.puttext"><tt class="xref py py-obj docutils literal"><span class="pre">puttext</span></tt></a>(x,&nbsp;y,&nbsp;text,&nbsp;ax[,&nbsp;xcoord,&nbsp;ycoord])</td>
 <td>Print text on an axis using axes coordinates.</td>
@@ -838,8 +843,8 @@ files, and writing out fort.13 files.</p>
 <div class="section" id="sed">
 <h2>sed<a class="headerlink" href="#sed" title="Permalink to this headline">¶</a></h2>
 <p>Perform calculations on Spectral Energy Distributions (SEDs).</p>
-<p>Based on the SED module in astLib by Matt Hilton, with some routines
-copied from there (LGPL): <a class="reference external" href="http://astlib.sourceforge.net">http://astlib.sourceforge.net</a></p>
+<p>Inspired by the SED module in astLib by Matt Hilton
+(<a class="reference external" href="http://astlib.sourceforge.net">http://astlib.sourceforge.net</a>)</p>
 <ul class="simple">
 <li>VEGA: The SED of Vega, used for calculation of magnitudes on the Vega system.</li>
 <li>AB: Flat spectrum SED, used for calculation of magnitudes on the AB system.</li>
@@ -860,53 +865,68 @@ copied from there (LGPL): <a class="reference external" href="http://astlib.sour
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.html#barak.sed.SED" title="barak.sed.SED"><tt class="xref py py-obj docutils literal"><span class="pre">SED</span></tt></a>([filename,&nbsp;wa,&nbsp;fl,&nbsp;z,&nbsp;label])</td>
 <td>A Spectral Energy Distribution (SED).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.apply_extinction.html#barak.sed.SED.apply_extinction" title="barak.sed.SED.apply_extinction"><tt class="xref py py-obj docutils literal"><span class="pre">SED.apply_extinction</span></tt></a>(EBmV)</td>
-<td>Applies the Calzetti et al. 2000 (ApJ, 533, 682) extinction</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.calc_colour.html#barak.sed.SED.calc_colour" title="barak.sed.SED.calc_colour"><tt class="xref py py-obj docutils literal"><span class="pre">SED.calc_colour</span></tt></a>(band1,&nbsp;band2[,&nbsp;system])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.calc_colour.html#barak.sed.SED.calc_colour" title="barak.sed.SED.calc_colour"><tt class="xref py py-obj docutils literal"><span class="pre">SED.calc_colour</span></tt></a>(band1,&nbsp;band2[,&nbsp;system])</td>
 <td>Calculates the colour band1 - band2.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.calc_flux.html#barak.sed.SED.calc_flux" title="barak.sed.SED.calc_flux"><tt class="xref py py-obj docutils literal"><span class="pre">SED.calc_flux</span></tt></a>(band)</td>
-<td>Calculates flux in the given passband.</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.calc_flux.html#barak.sed.SED.calc_flux" title="barak.sed.SED.calc_flux"><tt class="xref py py-obj docutils literal"><span class="pre">SED.calc_flux</span></tt></a>(band)</td>
+<td>Calculate the mean flux for a passband, weighted by the response and wavelength in the given passband.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.calc_mag.html#barak.sed.SED.calc_mag" title="barak.sed.SED.calc_mag"><tt class="xref py py-obj docutils literal"><span class="pre">SED.calc_mag</span></tt></a>(band[,&nbsp;system])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.calc_mag.html#barak.sed.SED.calc_mag" title="barak.sed.SED.calc_mag"><tt class="xref py py-obj docutils literal"><span class="pre">SED.calc_mag</span></tt></a>(band[,&nbsp;system])</td>
 <td>Calculates magnitude in the given passband.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.copy.html#barak.sed.SED.copy" title="barak.sed.SED.copy"><tt class="xref py py-obj docutils literal"><span class="pre">SED.copy</span></tt></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.copy.html#barak.sed.SED.copy" title="barak.sed.SED.copy"><tt class="xref py py-obj docutils literal"><span class="pre">SED.copy</span></tt></a>()</td>
 <td>Copies the SED, returning a new SED object.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.integrate.html#barak.sed.SED.integrate" title="barak.sed.SED.integrate"><tt class="xref py py-obj docutils literal"><span class="pre">SED.integrate</span></tt></a>([wmin,&nbsp;wmax])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.integrate.html#barak.sed.SED.integrate" title="barak.sed.SED.integrate"><tt class="xref py py-obj docutils literal"><span class="pre">SED.integrate</span></tt></a>([wmin,&nbsp;wmax])</td>
 <td>Calculates flux (erg/s/cm^2) in SED within given wavelength</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.normalise_to_mag.html#barak.sed.SED.normalise_to_mag" title="barak.sed.SED.normalise_to_mag"><tt class="xref py py-obj docutils literal"><span class="pre">SED.normalise_to_mag</span></tt></a>(ABmag,&nbsp;band)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.normalise_to_mag.html#barak.sed.SED.normalise_to_mag" title="barak.sed.SED.normalise_to_mag"><tt class="xref py py-obj docutils literal"><span class="pre">SED.normalise_to_mag</span></tt></a>(ABmag,&nbsp;band)</td>
 <td>Normalises the SED to match the flux equivalent to the</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.plot.html#barak.sed.SED.plot" title="barak.sed.SED.plot"><tt class="xref py py-obj docutils literal"><span class="pre">SED.plot</span></tt></a>([log,&nbsp;ymax])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.plot.html#barak.sed.SED.plot" title="barak.sed.SED.plot"><tt class="xref py py-obj docutils literal"><span class="pre">SED.plot</span></tt></a>([log,&nbsp;ymax])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.SED.redshift_to.html#barak.sed.SED.redshift_to" title="barak.sed.SED.redshift_to"><tt class="xref py py-obj docutils literal"><span class="pre">SED.redshift_to</span></tt></a>(z[,&nbsp;cosmo])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.SED.redshift_to.html#barak.sed.SED.redshift_to" title="barak.sed.SED.redshift_to"><tt class="xref py py-obj docutils literal"><span class="pre">SED.redshift_to</span></tt></a>(z[,&nbsp;cosmo])</td>
 <td>Redshifts the SED to redshift z.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.Jy2Mag.html#barak.sed.Jy2Mag" title="barak.sed.Jy2Mag"><tt class="xref py py-obj docutils literal"><span class="pre">Jy2Mag</span></tt></a>(fluxJy)</td>
-<td>Converts flux density in Jy into AB magnitude.</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.Jy2Mag.html#barak.sed.Jy2Mag" title="barak.sed.Jy2Mag"><tt class="xref py py-obj docutils literal"><span class="pre">Jy2Mag</span></tt></a>(fluxJy)</td>
+<td>Converts flux density in Jy into AB magnitude (fnu).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.flux2mag.html#barak.sed.flux2mag" title="barak.sed.flux2mag"><tt class="xref py py-obj docutils literal"><span class="pre">flux2mag</span></tt></a>(flux,&nbsp;fluxerr,&nbsp;band)</td>
-<td>Converts given flux and uncertainty in erg/s/cm^2/Angstrom into</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.flambda_to_fnu.html#barak.sed.flambda_to_fnu" title="barak.sed.flambda_to_fnu"><tt class="xref py py-obj docutils literal"><span class="pre">flambda_to_fnu</span></tt></a>(wa,&nbsp;f_lambda)</td>
+<td>Convert flux per unit wavelength to a flux per unit frequency.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.get_SEDs.html#barak.sed.get_SEDs" title="barak.sed.get_SEDs"><tt class="xref py py-obj docutils literal"><span class="pre">get_SEDs</span></tt></a>([kind,&nbsp;names])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.flux2mag.html#barak.sed.flux2mag" title="barak.sed.flux2mag"><tt class="xref py py-obj docutils literal"><span class="pre">flux2mag</span></tt></a>(flambda,&nbsp;band)</td>
+<td>Converts flux in erg/s/cm^2/Angstrom into AB magnitudes.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.fnu_to_flambda.html#barak.sed.fnu_to_flambda" title="barak.sed.fnu_to_flambda"><tt class="xref py py-obj docutils literal"><span class="pre">fnu_to_flambda</span></tt></a>(wa,&nbsp;f_nu)</td>
+<td>Convert flux per unit frequency to a flux per unit wavelength.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.get_SEDs.html#barak.sed.get_SEDs" title="barak.sed.get_SEDs"><tt class="xref py py-obj docutils literal"><span class="pre">get_SEDs</span></tt></a>([kind,&nbsp;names])</td>
 <td>Get one or more SEDs based on their type and filename</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.get_bands.html#barak.sed.get_bands" title="barak.sed.get_bands"><tt class="xref py py-obj docutils literal"><span class="pre">get_bands</span></tt></a>([instr,&nbsp;names,&nbsp;ccd])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.get_bands.html#barak.sed.get_bands" title="barak.sed.get_bands"><tt class="xref py py-obj docutils literal"><span class="pre">get_bands</span></tt></a>([instr,&nbsp;names,&nbsp;ccd])</td>
 <td>Get one or more passbands by giving the instrument and filename.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.get_extinction.html#barak.sed.get_extinction" title="barak.sed.get_extinction"><tt class="xref py py-obj docutils literal"><span class="pre">get_extinction</span></tt></a>([filename,&nbsp;airmass])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.get_extinction.html#barak.sed.get_extinction" title="barak.sed.get_extinction"><tt class="xref py py-obj docutils literal"><span class="pre">get_extinction</span></tt></a>([filename,&nbsp;airmass])</td>
 <td>return the atmospheric extinction from the given file.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.mag2Jy.html#barak.sed.mag2Jy" title="barak.sed.mag2Jy"><tt class="xref py py-obj docutils literal"><span class="pre">mag2Jy</span></tt></a>(ABmag)</td>
-<td>Converts an AB magnitude into flux density in Jy.</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.mag2Jy.html#barak.sed.mag2Jy" title="barak.sed.mag2Jy"><tt class="xref py py-obj docutils literal"><span class="pre">mag2Jy</span></tt></a>(ABmag)</td>
+<td>Converts an AB magnitude into flux density in Jy (fnu).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.mag2flux.html#barak.sed.mag2flux" title="barak.sed.mag2flux"><tt class="xref py py-obj docutils literal"><span class="pre">mag2flux</span></tt></a>(ABmag,&nbsp;ABmagerr,&nbsp;band)</td>
-<td>Converts given AB magnitude and uncertainty into flux in the</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.mag2flux.html#barak.sed.mag2flux" title="barak.sed.mag2flux"><tt class="xref py py-obj docutils literal"><span class="pre">mag2flux</span></tt></a>(ABmag,&nbsp;band)</td>
+<td>Converts given AB magnitude into flux in the given band, in</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.make_constant_dv_wa_scale.html#barak.sed.make_constant_dv_wa_scale" title="barak.sed.make_constant_dv_wa_scale"><tt class="xref py py-obj docutils literal"><span class="pre">make_constant_dv_wa_scale</span></tt></a>(wmin,&nbsp;wmax,&nbsp;dv)</td>
+<td>Make a constant velocity width scale given a start and end</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.qso_template.html#barak.sed.qso_template" title="barak.sed.qso_template"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template</span></tt></a>(wa,&nbsp;z)</td>
+<td>Return a composite QSO spectrum at redshift z.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.sed.qso_template_sdss.html#barak.sed.qso_template_sdss" title="barak.sed.qso_template_sdss"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template_sdss</span></tt></a>(wa,&nbsp;z)</td>
+<td>Return a composite visible QSO spectrum at redshift z.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.sed.qso_template_uv.html#barak.sed.qso_template_uv" title="barak.sed.qso_template_uv"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template_uv</span></tt></a>(wa,&nbsp;z)</td>
+<td>Return a composite UV QSO spectrum at redshift z.</td>
 </tr>
 </tbody>
 </table>
@@ -951,29 +971,23 @@ spectrum-related functions.</p>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.combine.html#barak.spec.combine" title="barak.spec.combine"><tt class="xref py py-obj docutils literal"><span class="pre">combine</span></tt></a>(spectra[,&nbsp;cliphi,&nbsp;cliplo,&nbsp;verbose])</td>
 <td>Combine spectra pixel by pixel, weighting by the inverse variance of each pixel.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.convolve_constant_dv.html#barak.spec.convolve_constant_dv" title="barak.spec.convolve_constant_dv"><tt class="xref py py-obj docutils literal"><span class="pre">convolve_constant_dv</span></tt></a>(wa,&nbsp;fl[,&nbsp;wa_dv,&nbsp;npix,&nbsp;...])</td>
-<td>Convolve a wavelength array with a gaussian of constant velocity width.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.cr_reject.html#barak.spec.cr_reject" title="barak.spec.cr_reject"><tt class="xref py py-obj docutils literal"><span class="pre">cr_reject</span></tt></a>(flux,&nbsp;error[,&nbsp;nsigma,&nbsp;npix,&nbsp;verbose])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.cr_reject.html#barak.spec.cr_reject" title="barak.spec.cr_reject"><tt class="xref py py-obj docutils literal"><span class="pre">cr_reject</span></tt></a>(flux,&nbsp;error[,&nbsp;nsigma,&nbsp;npix,&nbsp;verbose])</td>
 <td>Given flux and errors, rejects cosmic-ray type or dead pixels.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.cr_reject2.html#barak.spec.cr_reject2" title="barak.spec.cr_reject2"><tt class="xref py py-obj docutils literal"><span class="pre">cr_reject2</span></tt></a>(fl,&nbsp;er[,&nbsp;nsig,&nbsp;fwhm,&nbsp;grow,&nbsp;debug])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.cr_reject2.html#barak.spec.cr_reject2" title="barak.spec.cr_reject2"><tt class="xref py py-obj docutils literal"><span class="pre">cr_reject2</span></tt></a>(fl,&nbsp;er[,&nbsp;nsig,&nbsp;fwhm,&nbsp;grow,&nbsp;debug])</td>
 <td>interpolate across features that have widths smaller than the</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.find_cont.html#barak.spec.find_cont" title="barak.spec.find_cont"><tt class="xref py py-obj docutils literal"><span class="pre">find_cont</span></tt></a>(fl[,&nbsp;fwhm1,&nbsp;fwhm2,&nbsp;nchunks])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.find_cont.html#barak.spec.find_cont" title="barak.spec.find_cont"><tt class="xref py py-obj docutils literal"><span class="pre">find_cont</span></tt></a>(fl[,&nbsp;fwhm1,&nbsp;fwhm2,&nbsp;nchunks])</td>
 <td>Given the flux, estimate the continuum.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.find_err.html#barak.spec.find_err" title="barak.spec.find_err"><tt class="xref py py-obj docutils literal"><span class="pre">find_err</span></tt></a>(fl,&nbsp;co[,&nbsp;nchunks])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.find_err.html#barak.spec.find_err" title="barak.spec.find_err"><tt class="xref py py-obj docutils literal"><span class="pre">find_err</span></tt></a>(fl,&nbsp;co[,&nbsp;nchunks])</td>
 <td>Given a continuum and flux array, return a very rough estimate</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.find_wa_edges.html#barak.spec.find_wa_edges" title="barak.spec.find_wa_edges"><tt class="xref py py-obj docutils literal"><span class="pre">find_wa_edges</span></tt></a>(wa)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.find_wa_edges.html#barak.spec.find_wa_edges" title="barak.spec.find_wa_edges"><tt class="xref py py-obj docutils literal"><span class="pre">find_wa_edges</span></tt></a>(wa)</td>
 <td>Given wavelength bin centres, find the edges of wavelengh bins.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.getwave.html#barak.spec.getwave" title="barak.spec.getwave"><tt class="xref py py-obj docutils literal"><span class="pre">getwave</span></tt></a>(hd)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.getwave.html#barak.spec.getwave" title="barak.spec.getwave"><tt class="xref py py-obj docutils literal"><span class="pre">getwave</span></tt></a>(hd)</td>
 <td>Given a fits header, get the wavelength solution.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.make_constant_dv_wa_scale.html#barak.spec.make_constant_dv_wa_scale" title="barak.spec.make_constant_dv_wa_scale"><tt class="xref py py-obj docutils literal"><span class="pre">make_constant_dv_wa_scale</span></tt></a>(wmin,&nbsp;wmax,&nbsp;dv)</td>
-<td>Make a constant velocity width scale given a start and end</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.make_wa_scale.html#barak.spec.make_wa_scale" title="barak.spec.make_wa_scale"><tt class="xref py py-obj docutils literal"><span class="pre">make_wa_scale</span></tt></a>(wstart,&nbsp;dw,&nbsp;npts[,&nbsp;...])</td>
 <td>Generates a wavelength scale from the wstart, dw, and npts values.</td>
@@ -989,12 +1003,6 @@ spectrum-related functions.</p>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.plotlines.html#barak.spec.plotlines" title="barak.spec.plotlines"><tt class="xref py py-obj docutils literal"><span class="pre">plotlines</span></tt></a>(z,&nbsp;ax[,&nbsp;atmos,&nbsp;lines,&nbsp;labels,&nbsp;ls,&nbsp;...])</td>
 <td>Draw vertical dotted lines showing expected positions of absorption and emission lines, given a redshift.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.qso_template.html#barak.spec.qso_template" title="barak.spec.qso_template"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template</span></tt></a>(wa,&nbsp;z)</td>
-<td>Return a composite visible QSO spectrum at redshift z.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.spec.qso_template_uv.html#barak.spec.qso_template_uv" title="barak.spec.qso_template_uv"><tt class="xref py py-obj docutils literal"><span class="pre">qso_template_uv</span></tt></a>(wa,&nbsp;z[,&nbsp;smooth_fwhmpix])</td>
-<td>Return a composite UV QSO spectrum at redshift z.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.spec.read.html#barak.spec.read" title="barak.spec.read"><tt class="xref py py-obj docutils literal"><span class="pre">read</span></tt></a>(filename[,&nbsp;comment,&nbsp;debug])</td>
 <td>Reads in QSO spectrum given a filename.  Returns a Spectrum class</td>
@@ -1039,7 +1047,7 @@ spectrum-related functions.</p>
 <td>Calculate the minimum and maximum binomial probability consistent with seeing nsuccess from ntrial at a given confidence level.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.stats.blackbody_lam.html#barak.stats.blackbody_lam" title="barak.stats.blackbody_lam"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_lam</span></tt></a>(lam,&nbsp;T)</td>
-<td>Blackbody as a function of wavelength (cm) and temperature (K).</td>
+<td>Blackbody as a function of wavelength (Angstroms) and temperature (K).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.stats.blackbody_nu.html#barak.stats.blackbody_nu" title="barak.stats.blackbody_nu"><tt class="xref py py-obj docutils literal"><span class="pre">blackbody_nu</span></tt></a>(nu,&nbsp;T)</td>
 <td>Blackbody as a function of frequency (Hz) and temperature (K).</td>
@@ -1121,6 +1129,25 @@ spectrum-related functions.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/barak.utilities.wmean.html#barak.utilities.wmean" title="barak.utilities.wmean"><tt class="xref py py-obj docutils literal"><span class="pre">wmean</span></tt></a>(val,&nbsp;sig)</td>
 <td>Return the weighted mean and error.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="virial">
+<h2>virial<a class="headerlink" href="#virial" title="Permalink to this headline">¶</a></h2>
+<p>Calculate virial quantities for a dark matter halo given a
+cosmology.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.virial.deltavir.html#barak.virial.deltavir" title="barak.virial.deltavir"><tt class="xref py py-obj docutils literal"><span class="pre">deltavir</span></tt></a>(redshift[,&nbsp;cosmo])</td>
+<td>The Virial overdensity as a function redshift.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.virial.find_rvT.html#barak.virial.find_rvT" title="barak.virial.find_rvT"><tt class="xref py py-obj docutils literal"><span class="pre">find_rvT</span></tt></a>(M,&nbsp;z[,&nbsp;cosmo,&nbsp;mu])</td>
+<td>Find the virial radius, circular velocity and temperature for a dark matter halo at a given mass and redshift.</td>
 </tr>
 </tbody>
 </table>

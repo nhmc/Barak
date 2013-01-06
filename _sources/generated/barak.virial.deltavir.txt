@@ -1,0 +1,6 @@
+barak.virial.deltavir
+=====================
+
+.. currentmodule:: barak.virial
+
+.. autofunction:: deltavir

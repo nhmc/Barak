@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.plot &mdash; Barak 0.1dev documentation</title>
+    <title>barak.plot &mdash; Barak 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1dev',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.1dev documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.1dev documentation</span></a></h1>
+          <span>Barak 0.3.0 documentation</span></a></h1>
         <h2 class="heading"><span>barak.plot</span></h2>
       </div>
       <div class="topnav">
@@ -49,6 +49,7 @@
 <span class="sd">&quot;&quot;&quot; Plotting routines. &quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log10</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pl</span>
 <span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PolyCollection</span><span class="p">,</span> <span class="n">LineCollection</span>
@@ -395,7 +396,9 @@
         <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
-    <span class="n">vals</span><span class="p">,</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)]</span>
+    <span class="n">vals</span><span class="p">,</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span> <span class="n">vals</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -609,7 +612,78 @@
     <span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="mf">6.</span><span class="p">)</span><span class="o">*</span><span class="n">ms</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verts</span><span class="o">=</span><span class="n">arrow_verts</span><span class="p">,</span>
                    <span class="n">edgecolors</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">c</span>
-</pre></div></div>
+</div>
+<div class="viewcode-block" id="calc_log_minor_ticks"><a class="viewcode-back" href="../../generated/barak.plot.calc_log_minor_ticks.html#barak.plot.calc_log_minor_ticks">[docs]</a><span class="k">def</span> <span class="nf">calc_log_minor_ticks</span><span class="p">(</span><span class="n">majticks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Get minor tick positions for a log scale.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    majticks : array_like</span>
+<span class="sd">        log10 of the major tick positions.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    minticks : ndarray</span>
+<span class="sd">        log10 of the minor tick positions.        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tickpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">minticks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">majticks</span><span class="p">):</span>
+        <span class="n">minticks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">tickpos</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">minticks</span>
+</div>
+<div class="viewcode-block" id="plot_ticks_wa"><a class="viewcode-back" href="../../generated/barak.plot.plot_ticks_wa.html#barak.plot.plot_ticks_wa">[docs]</a><span class="k">def</span> <span class="nf">plot_ticks_wa</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">wa</span><span class="p">,</span> <span class="n">fl</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">keeponly</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; plot a ticks on a wavelength scale.</span>
+
+<span class="sd">    This plots ticks (such as those returned by `find_tau()`) on a</span>
+<span class="sd">    spectrum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : matplotlib axes</span>
+<span class="sd">      The axes on which to plot the ticks.</span>
+<span class="sd">    wa, fl : array_like</span>
+<span class="sd">      wavelength and flux of spectrum. `wa` must be sorted.</span>
+<span class="sd">    height : float</span>
+<span class="sd">      tick height in flux units.</span>
+<span class="sd">    ticks : record array</span>
+<span class="sd">      A record array of the sort returned by `find_tau`. The fields</span>
+<span class="sd">      wa, wa0, and name are required.</span>
+<span class="sd">    keeponly : str</span>
+<span class="sd">      If this is not None (the default), then only plot ticks that</span>
+<span class="sd">      contain this string in their name.</span>
+<span class="sd">    labels : bool (True)</span>
+<span class="sd">      Whether to plot labels next to the tickmarks.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ticks, Tlabels : Matplotlib collection of tickmarks and tick labels.</span>
+<span class="sd">      The artists corresponding to the ticks and their labels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">wa</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ticks</span><span class="o">.</span><span class="n">wa</span><span class="p">)</span>
+    <span class="n">c0</span> <span class="o">=</span> <span class="p">(</span><span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">ind</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wa</span><span class="p">))</span>
+    <span class="n">ticks</span> <span class="o">=</span> <span class="n">ticks</span><span class="p">[</span><span class="o">~</span><span class="n">c0</span><span class="p">]</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">fl</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="o">~</span><span class="n">c0</span><span class="p">]]</span><span class="o">*</span><span class="mf">1.1</span>
+    <span class="n">Tlabels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ticks</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ticks</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">keeponly</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">keeponly</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">c1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%.0f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">wa0</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;NeVII&#39;</span><span class="p">,</span> <span class="s">&#39;NeVIII&#39;</span><span class="p">)</span>
+        <span class="n">Tlabels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">wa</span><span class="p">,</span> <span class="n">ymin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.1</span><span class="o">*</span><span class="n">height</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                               <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">))</span>
+
+    <span class="n">Ticks</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">ticks</span><span class="o">.</span><span class="n">wa</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">ymin</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">ymin</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">+</span> <span class="n">height</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;c&#39;</span><span class="p">,</span>
+                      <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+
+    <span class="k">return</span> <span class="n">Ticks</span><span class="p">,</span> <span class="n">Tlabels</span></div>
+</pre></div>
 
       </div>
       <div class="bottomnav">
