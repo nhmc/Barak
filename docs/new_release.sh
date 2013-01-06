@@ -18,6 +18,6 @@ python setup.py sdist
 pip install ./Barak_vx.x.tar.gz
 pip uninstall barak
 
-# Then upload to PyPI
+# Then upload to PyPI (password is the usual)
 python setup.py register sdist upload
 

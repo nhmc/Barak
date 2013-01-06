@@ -47,6 +47,7 @@ http://matplotlib.org/users/installing.html.
 with open('README') as fh:
     readme = fh.read()
 
+readme += '\n'
 readme += 'Change Log\n'
 readme += '----------\n'
 

@@ -14,14 +14,14 @@ More details are given in the documentation here:
 http://nhmc.github.com/Barak
 
 To install, either download the tarball from the pypi website and then
-do:
+do::
 
   python setup.py install
 
 You may need to put a 'sudo' in front of this. 
 
 A better way to install (which allows for easy uninstallation) is by
-using pip:
+using pip::
 
   pip install barak
 
@@ -29,7 +29,7 @@ but you need to have pip
 (http://www.pip-installer.org/en/latest/index.html) installed.
  
 To run the tests you need py.test
-(http://pytest.org/latest/getting-started.html) installed.  Then run
+(http://pytest.org/latest/getting-started.html) installed.  Then run::
 
    py.test barak 
 
