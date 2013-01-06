@@ -235,8 +235,8 @@ def MW_Cardelli89(wa, Rv=3.1):
     AlamAv, Rv : ndarray, float
       A(lambda) / A(V) at each wavelength and Rv.
 
-    Note
-    ----
+    Notes
+    -----
     A power law extrapolation is used if there are any wavelengths
     past the IR or far UV limits of the Cardelli Law.
 
