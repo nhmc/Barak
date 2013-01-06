@@ -9,7 +9,6 @@
 # make a new tag
 
 git tag -a v0.3.0 -m'version 0.3.0'
-git push --tags
 
 # build tarball
 python setup.py sdist
@@ -21,3 +20,5 @@ pip uninstall barak
 # Then upload to PyPI (password is the usual)
 python setup.py register sdist upload
 
+# finally, check the PyPI site.  If everything went well, push the new tag.
+git push --tags

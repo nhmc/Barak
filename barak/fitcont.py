@@ -9,7 +9,7 @@ from utilities import between, Gaussian, stats, indexnear
 from convolve import convolve_psf
 from io import loadobj, saveobj
 from interp import AkimaSpline
-from spec import qso_template_uv
+from sed import qso_template_uv
 
 import os
 
