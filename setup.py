@@ -55,7 +55,7 @@ with open('CHANGES') as fh:
 
 description = ("A set of astronomy-related routines for generating Voigt "
                "profiles from atomic data, reading and writing data, "
-               "working with SEDs, passbands and dust extinction laws."
+               "working with SEDs, passbands and dust extinction laws.")
 
 package_data = {'barak' : get_data_names('barak/data')}
 
