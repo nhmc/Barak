@@ -41,6 +41,8 @@ from the ``barak/`` directory created by the install commands above.
 The latest stable package can be downloaded from PyPI: http://pypi.python.org/pypi/Barak.
 The development version can be downloaded from `here <https://github.com/nhmc/Barak>`_.
 
+Documentation is found here: `<https://nhmc.github.com/Barak>`
+
 Feel free to email me if you have any questions: 
 
 neilcrighton .at. gmail .dot. com
