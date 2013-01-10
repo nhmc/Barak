@@ -3,12 +3,12 @@ with a focus on astronomical research. The documentation details
 everything that is available, but some example tasks that can be
 handled are:
 
-  * Calculate absorption profiles for various ions observed in
-    astrophysical environments.
-  * Fit a smooth continuum to a spectrum with many emission or
-    absorption features.
-  * Find the expected broad-band magnitudes given a spectral energy
-    distribution.
+* Calculate absorption profiles for various ions observed in
+  astrophysical environments.
+* Fit a smooth continuum to a spectrum with many emission or
+  absorption features.
+* Find the expected broad-band magnitudes given a spectral energy
+  distribution.
 
 It requires `NumPy <http://numpy.scipy.org/>`_, `PyFits
 <http://www.stsci.edu/institute/software_hardware/pyfits/Download>`_,
