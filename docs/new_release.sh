@@ -14,8 +14,9 @@ git tag -a v0.3.2 -m'version 0.3.2'
 python setup.py sdist
 
 # test it installs correctly with
-pip install ./Barak_vx.x.tar.gz
-pip uninstall barak
+sudo pip install dist/Barak-0.3.2.tar.gz
+py.test
+sudo pip uninstall barak
 
 # Then upload to PyPI (password is the usual)
 python setup.py register sdist upload

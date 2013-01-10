@@ -13,7 +13,7 @@ DEG_PER_ASEC = DEG_PER_AMIN / 60.
 RAD_PER_DEG = pi / 180.
 DEG_PER_RAD = 180. / pi
 
-def radec_to_xyz(ra_deg, dec_deg):
+def _radec_to_xyz(ra_deg, dec_deg):
     """ Convert RA and Dec to xyz positions on a unit sphere.
 
     Parameters
@@ -32,13 +32,13 @@ def radec_to_xyz(ra_deg, dec_deg):
 
     return np.atleast_2d(xyz)
 
-def distsq(ra1, dec1, ra2, dec2):
+def _distsq(ra1, dec1, ra2, dec2):
     """ Find the distance squared in xyz space between two RAs and
     Decs.
 
     Parameters
     ----------
-    
+
     ra1, dec1 :  floats or arrays of floats, shape (N,)
     ra2, dec2 :  floats or arrays of floats, shape (M,) 
 
@@ -47,8 +47,8 @@ def distsq(ra1, dec1, ra2, dec2):
     distance_squared: array of floats shape (N, M)
        If N or M is 1, that dimension is suppressed.
     """
-    xyz1 = radec_to_xyz(ra1, dec1)
-    xyz2 = radec_to_xyz(ra2, dec2)
+    xyz1 = _radec_to_xyz(ra1, dec1)
+    xyz2 = _radec_to_xyz(ra2, dec2)
 
     n = xyz1.shape[0]
     m = xyz2.shape[0]
@@ -61,7 +61,7 @@ def distsq(ra1, dec1, ra2, dec2):
         d2 = float(d2)
     return d2
 
-def radians_to_distsq(radians):
+def _radians_to_distsq(radians):
     """ Convert to a squared xyz separation from an angle.
 
     The input is the angle in radians. The conversion is done on a
@@ -69,7 +69,7 @@ def radians_to_distsq(radians):
     """
     return 2 * (1 - np.cos(radians))
 
-def distsq_to_radians(distsq):
+def _distsq_to_radians(distsq):
     """ Convert to an angle from a squared xyz separation.
 
     The output angle is in radians. The conversion is done on a unit
@@ -77,7 +77,7 @@ def distsq_to_radians(distsq):
     """
     return np.arccos(1 - 0.5 * distsq)
 
-def check_ra_dec(ra, dec):
+def _check_ra_dec(ra, dec):
     """ Check 0 <= RA < 360 and -90 <= Dec <= 90.
 
     Raises a ValueError outside these limits.
@@ -118,10 +118,10 @@ def ang_sep(ra1, dec1, ra2, dec2):
     separation_in_degrees : array of floats, shape (N, M)
        If N or M is 1, that dimension is suppressed.
     """
-    check_ra_dec(ra1, dec1)
-    check_ra_dec(ra2, dec2)
-    d2 = distsq(ra1, dec1, ra2, dec2)
-    return DEG_PER_RAD * distsq_to_radians(d2)
+    _check_ra_dec(ra1, dec1)
+    _check_ra_dec(ra2, dec2)
+    d2 = _distsq(ra1, dec1, ra2, dec2)
+    return DEG_PER_RAD * _distsq_to_radians(d2)
 
 def ra_dec2s(ra, raformat='%02.0f %02.0f %06.3f'):
     ra = float(ra)
@@ -136,7 +136,7 @@ def ra_dec2s(ra, raformat='%02.0f %02.0f %06.3f'):
     return s_ra
 
 def dec_dec2s(dec, decformat='%02.0f %02.0f %05.2f'):
-    """ Converts decimal RA and Dec to sexigesimal.
+    """ Converts a decimal Dec to a sexigesimal string.
 
     Returns two strings, RA and Dec.
     """
@@ -198,7 +198,7 @@ def ra_s2dec(ra):
     return d_ra
 
 def dec_s2dec(dec):
-    """ Converts a sexigesimal Dec string to decimal.
+    """ Converts a sexigesimal Dec string to decimal degrees.
 
     The separators between deg/arcmin/arcsec can be whitespace or
     colons or d m s.
@@ -225,7 +225,7 @@ def dec_s2dec(dec):
     return d_dec
 
 def s2dec(ra, dec):
-    """ Convert a sexigesimal ra and dec (or list of ras and decs) to
+    """ Convert sexigesimal ra and dec strings (or list of ras and decs) to
     decimal degrees.
 
     Parameters

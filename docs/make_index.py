@@ -8,53 +8,20 @@ autosummaries for.
 import sys, os, inspect
 from glob import glob
 
+with open('../README.rst', 'r') as fh:
+    readme = fh.read()
+
 header = """\
 Barak's Documentation
 =====================
-This package contains functions useful for scientific programming,
-with a focus on astronomical research. The documentation details
-everything that is available, but some example tasks that can be
-handled are:
+"""
 
-  * Calculate absorption profiles for various ions observed in
-    astrophysical environments.
-  * Fit a smooth continuum to a spectrum with many emission or
-    absorption features.
-  * Find the expected broad-band magnitudes given a spectral energy
-    distribution.
+header += readme
 
-The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
 
-It requires `NumPy <http://numpy.scipy.org/>`_, `PyFits
-<http://www.stsci.edu/institute/software_hardware/pyfits/Download>`_
-and `ATpy <http://atpy.github.com/>`_ to install. `Matplotlib
-<http://matplotlib.sourceforge.net/>`_ and `SciPy
-<http://www.scipy.org/>`_ are also required for full functionality.
 
-To install, either download the tarball from the pypi website and then
-do::
 
-  python setup.py install
-
-You may need to put a ``sudo`` in front of this. 
-
-A better way to install (which allows for easy uninstallation) is by
-using `pip`::
-
-  pip install barak
-
-but you need to have `pip
-<http://www.pip-installer.org/en/latest/index.html>`_ installed.
-
-To run the tests you need `py.test <http://pytest.org/latest/>`_
-installed.  Then run::
-
-   py.test barak 
-
-from the ``barak/`` directory.
-
-Feel free to email me if you have any questions: neilcrighton
-.at. gmail .dot. com
+header += """\
 
 .. raw:: html
 

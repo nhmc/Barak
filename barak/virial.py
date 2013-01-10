@@ -4,7 +4,7 @@ cosmology.
 from __future__ import division
 from astropy import cosmology
 from astropy.utils import isiterable
-from astropy.constants.cgs import G, M_sun, kpc, k_B, m_p
+from barak.constants import G, Msun, kpc, kboltz, mp
 from math import pi
 import numpy as np
 
@@ -63,7 +63,7 @@ def _calc_rvT(M_g, rho_virial, mu=0.59):
     """
     rvir = ((3 * M_g) / (4 * pi * rho_virial))**(1./3)
     vcirc = np.sqrt(G * M_g / rvir)
-    Tvir = mu * m_p * vcirc * vcirc / (2 * k_B)
+    Tvir = mu * mp * vcirc * vcirc / (2 * kboltz)
 
     return rvir, vcirc, Tvir
 
@@ -118,7 +118,7 @@ def find_rvT(M, z, cosmo=None, mu=0.59):
         cosmo = cosmology.get_current()
 
     # convert to cgs
-    M_g = M * M_sun
+    M_g = M * Msun
 
     rho_virial = deltavir(z, cosmo=cosmo) * cosmo.critical_density(z)
 

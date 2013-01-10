@@ -33,15 +33,14 @@ Analytic approximations for dust attenuation curves are often
 calculated as a function of R(V), and then normalised by A(V) or
 E(B - V).
 
-The functions in his module give the attenuation for the Milky Way,
-SMC and LMC, as a function of wavelength, and require that R(V) and
-E(B-V) are given. The attenuation is given as the optical depth,
-:math:`\tau(\lambda)`. This is related to :math:`A(\lambda)` in the
-following way:
+The functions in his module give the attenuation as a function of
+wavelength for the Milky Way, SMC and LMC, and a starburst galaxy.
+The attenuation is given as :math:`A(\lambda)/A(V)`. This can be
+converted to an optical depth in the following way:
 
 .. math::
 
-  \tau(\lambda) = A(\lambda) / (2.5 \log_{10}(e))
+  \tau(\lambda) = \frac{A(\lambda)}{A(V)}\ R(V)\  E(B-V) / (2.5 \log_{10}(e))
 
 **References**
 
