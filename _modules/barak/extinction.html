@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.extinction &mdash; Barak 0.3.0 documentation</title>
+    <title>barak.extinction &mdash; Barak 0.3.2 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.3.0',
+        VERSION:     '0.3.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.2 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.3.0 documentation</span></a></h1>
+          <span>Barak 0.3.2 documentation</span></a></h1>
         <h2 class="heading"><span>barak.extinction</span></h2>
       </div>
       <div class="topnav">
@@ -81,15 +81,14 @@
 <span class="sd">calculated as a function of R(V), and then normalised by A(V) or</span>
 <span class="sd">E(B - V).</span>
 
-<span class="sd">The functions in his module give the attenuation for the Milky Way,</span>
-<span class="sd">SMC and LMC, as a function of wavelength, and require that R(V) and</span>
-<span class="sd">E(B-V) are given. The attenuation is given as the optical depth,</span>
-<span class="sd">:math:`\tau(\lambda)`. This is related to :math:`A(\lambda)` in the</span>
-<span class="sd">following way:</span>
+<span class="sd">The functions in his module give the attenuation as a function of</span>
+<span class="sd">wavelength for the Milky Way, SMC and LMC, and a starburst galaxy.</span>
+<span class="sd">The attenuation is given as :math:`A(\lambda)/A(V)`. This can be</span>
+<span class="sd">converted to an optical depth in the following way:</span>
 
 <span class="sd">.. math::</span>
 
-<span class="sd">  \tau(\lambda) = A(\lambda) / (2.5 \log_{10}(e))</span>
+<span class="sd">  \tau(\lambda) = \frac{A(\lambda)}{A(V)}\ R(V)\  E(B-V) / (2.5 \log_{10}(e))</span>
 
 <span class="sd">**References**</span>
 
@@ -283,8 +282,8 @@
 <span class="sd">    AlamAv, Rv : ndarray, float</span>
 <span class="sd">      A(lambda) / A(V) at each wavelength and Rv.</span>
 
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
 <span class="sd">    A power law extrapolation is used if there are any wavelengths</span>
 <span class="sd">    past the IR or far UV limits of the Cardelli Law.</span>
 

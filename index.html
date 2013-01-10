@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Barak’s Documentation &mdash; Barak 0.3.0 documentation</title>
+    <title>Barak’s Documentation &mdash; Barak 0.3.2 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3.0',
+        VERSION:     '0.3.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.3.0 documentation" href="#" />
+    <link rel="top" title="Barak 0.3.2 documentation" href="#" />
     <link rel="next" title="Barak’s Documentation" href="" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="#">
-          <span>Barak 0.3.0 documentation</span></a></h1>
+          <span>Barak 0.3.2 documentation</span></a></h1>
         <h2 class="heading"><span>Barak’s Documentation</span></h2>
       </div>
       <div class="topnav">
@@ -53,8 +53,7 @@
 with a focus on astronomical research. The documentation details
 everything that is available, but some example tasks that can be
 handled are:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li>Calculate absorption profiles for various ions observed in
 astrophysical environments.</li>
 <li>Fit a smooth continuum to a spectrum with many emission or
@@ -62,27 +61,31 @@ absorption features.</li>
 <li>Find the expected broad-band magnitudes given a spectral energy
 distribution.</li>
 </ul>
-</div></blockquote>
-<p>The package can be downloaded <a class="reference external" href="https://github.com/nhmc/Barak">here</a>.</p>
-<p>It requires <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>, <a class="reference external" href="http://www.stsci.edu/institute/software_hardware/pyfits/Download">PyFits</a>
-and <a class="reference external" href="http://atpy.github.com/">ATpy</a> to install. <a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a> and <a class="reference external" href="http://www.scipy.org/">SciPy</a> are also required for full functionality.</p>
-<p>To install, either download the tarball from the pypi website and then
-do:</p>
-<div class="highlight-python"><pre>python setup.py install</pre>
-</div>
-<p>You may need to put a <tt class="docutils literal"><span class="pre">sudo</span></tt> in front of this.</p>
-<p>A better way to install (which allows for easy uninstallation) is by
-using <tt class="xref py py-obj docutils literal"><span class="pre">pip</span></tt>:</p>
+<p>It requires <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>, <a class="reference external" href="http://www.stsci.edu/institute/software_hardware/pyfits/Download">PyFits</a>,
+<a class="reference external" href="http://atpy.github.com/">ATpy</a> and <a class="reference external" href="http://astropy.org">Astropy</a>
+to install. <a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a> and
+<a class="reference external" href="http://www.scipy.org/">SciPy</a> are also required for full
+functionality.</p>
+<p>The best way to install is by using <tt class="xref py py-obj docutils literal"><span class="pre">pip</span></tt>:</p>
 <div class="highlight-python"><pre>pip install barak</pre>
 </div>
-<p>but you need to have <a class="reference external" href="http://www.pip-installer.org/en/latest/index.html">pip</a> installed.</p>
+<p>(You may need to put a <tt class="docutils literal"><span class="pre">sudo</span></tt> in front of this). For this to work
+you need to have <a class="reference external" href="http://www.pip-installer.org/en/latest/index.html">pip</a> installed. This
+method allows for easy uninstallation.</p>
+<p>You can also simply download the tarball from the PyPI website, unpack
+it and then do:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
 <p>To run the tests you need <a class="reference external" href="http://pytest.org/latest/">py.test</a>
 installed.  Then run:</p>
 <div class="highlight-python"><pre>py.test barak</pre>
 </div>
-<p>from the <tt class="docutils literal"><span class="pre">barak/</span></tt> directory.</p>
-<p>Feel free to email me if you have any questions: neilcrighton
-.at. gmail .dot. com</p>
+<p>from the <tt class="docutils literal"><span class="pre">barak/</span></tt> directory created by the install commands above.</p>
+<p>The latest stable package can be downloaded from PyPI: <a class="reference external" href="http://pypi.python.org/pypi/Barak">http://pypi.python.org/pypi/Barak</a>.
+The development version can be downloaded from <a class="reference external" href="https://github.com/nhmc/Barak">here</a>.</p>
+<p>Documentation is found here: <a class="reference external" href="https://nhmc.github.com/Barak">https://nhmc.github.com/Barak</a></p>
+<p>Feel free to email me if you have any questions:</p>
+<p>neilcrighton .at. gmail .dot. com</p>
 <a href="https://github.com/nhmc/Barak"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a><div class="toctree-wrapper compound">
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Barak&#8217;s Documentation</a><ul>
@@ -470,46 +473,31 @@ astrophysical gas</td>
 <tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.ang_sep.html#barak.coord.ang_sep" title="barak.coord.ang_sep"><tt class="xref py py-obj docutils literal"><span class="pre">ang_sep</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2)</td>
 <td>Returns the angular separation in degrees on the celestial</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.check_ra_dec.html#barak.coord.check_ra_dec" title="barak.coord.check_ra_dec"><tt class="xref py py-obj docutils literal"><span class="pre">check_ra_dec</span></tt></a>(ra,&nbsp;dec)</td>
-<td>Check 0 &lt;= RA &lt; 360 and -90 &lt;= Dec &lt;= 90.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.dec2s.html#barak.coord.dec2s" title="barak.coord.dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec2s</span></tt></a>(ra,&nbsp;dec)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.dec2s.html#barak.coord.dec2s" title="barak.coord.dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec2s</span></tt></a>(ra,&nbsp;dec)</td>
 <td>Convert an RA and Dec from degrees to sexigesimal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.dec_dec2s.html#barak.coord.dec_dec2s" title="barak.coord.dec_dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec_dec2s</span></tt></a>(dec[,&nbsp;decformat])</td>
-<td>Converts decimal RA and Dec to sexigesimal.</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.dec_dec2s.html#barak.coord.dec_dec2s" title="barak.coord.dec_dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">dec_dec2s</span></tt></a>(dec[,&nbsp;decformat])</td>
+<td>Converts a decimal Dec to a sexigesimal string.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.dec_s2dec.html#barak.coord.dec_s2dec" title="barak.coord.dec_s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">dec_s2dec</span></tt></a>(dec)</td>
-<td>Converts a sexigesimal Dec string to decimal.</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.dec_s2dec.html#barak.coord.dec_s2dec" title="barak.coord.dec_s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">dec_s2dec</span></tt></a>(dec)</td>
+<td>Converts a sexigesimal Dec string to decimal degrees.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.distsq.html#barak.coord.distsq" title="barak.coord.distsq"><tt class="xref py py-obj docutils literal"><span class="pre">distsq</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2)</td>
-<td>Find the distance squared in xyz space between two RAs and</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.distsq_to_radians.html#barak.coord.distsq_to_radians" title="barak.coord.distsq_to_radians"><tt class="xref py py-obj docutils literal"><span class="pre">distsq_to_radians</span></tt></a>(distsq)</td>
-<td>Convert to an angle from a squared xyz separation.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.indmatch.html#barak.coord.indmatch" title="barak.coord.indmatch"><tt class="xref py py-obj docutils literal"><span class="pre">indmatch</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2,&nbsp;tol)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.indmatch.html#barak.coord.indmatch" title="barak.coord.indmatch"><tt class="xref py py-obj docutils literal"><span class="pre">indmatch</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2,&nbsp;tol)</td>
 <td>Finds objects in ra1, dec1 that have a matching object in ra2, dec2 within tol arcsec.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.match.html#barak.coord.match" title="barak.coord.match"><tt class="xref py py-obj docutils literal"><span class="pre">match</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2,&nbsp;tol[,&nbsp;allmatches])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.match.html#barak.coord.match" title="barak.coord.match"><tt class="xref py py-obj docutils literal"><span class="pre">match</span></tt></a>(ra1,&nbsp;dec1,&nbsp;ra2,&nbsp;dec2,&nbsp;tol[,&nbsp;allmatches])</td>
 <td>Given two sets of numpy arrays of ra,dec and a tolerance tol, returns an array of indices and separations with the same length as the first input array.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.ra_dec2s.html#barak.coord.ra_dec2s" title="barak.coord.ra_dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">ra_dec2s</span></tt></a>(ra[,&nbsp;raformat])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.ra_dec2s.html#barak.coord.ra_dec2s" title="barak.coord.ra_dec2s"><tt class="xref py py-obj docutils literal"><span class="pre">ra_dec2s</span></tt></a>(ra[,&nbsp;raformat])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.ra_s2dec.html#barak.coord.ra_s2dec" title="barak.coord.ra_s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">ra_s2dec</span></tt></a>(ra)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.ra_s2dec.html#barak.coord.ra_s2dec" title="barak.coord.ra_s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">ra_s2dec</span></tt></a>(ra)</td>
 <td>Converts a sexigesimal RA string to decimal.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.radec_to_xyz.html#barak.coord.radec_to_xyz" title="barak.coord.radec_to_xyz"><tt class="xref py py-obj docutils literal"><span class="pre">radec_to_xyz</span></tt></a>(ra_deg,&nbsp;dec_deg)</td>
-<td>Convert RA and Dec to xyz positions on a unit sphere.</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.s2dec.html#barak.coord.s2dec" title="barak.coord.s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">s2dec</span></tt></a>(ra,&nbsp;dec)</td>
+<td>Convert sexigesimal ra and dec strings (or list of ras and decs) to decimal degrees.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.radians_to_distsq.html#barak.coord.radians_to_distsq" title="barak.coord.radians_to_distsq"><tt class="xref py py-obj docutils literal"><span class="pre">radians_to_distsq</span></tt></a>(radians)</td>
-<td>Convert to a squared xyz separation from an angle.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.s2dec.html#barak.coord.s2dec" title="barak.coord.s2dec"><tt class="xref py py-obj docutils literal"><span class="pre">s2dec</span></tt></a>(ra,&nbsp;dec)</td>
-<td>Convert a sexigesimal ra and dec (or list of ras and decs) to decimal degrees.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/barak.coord.unique_radec.html#barak.coord.unique_radec" title="barak.coord.unique_radec"><tt class="xref py py-obj docutils literal"><span class="pre">unique_radec</span></tt></a>(ra,&nbsp;dec,&nbsp;tol)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/barak.coord.unique_radec.html#barak.coord.unique_radec" title="barak.coord.unique_radec"><tt class="xref py py-obj docutils literal"><span class="pre">unique_radec</span></tt></a>(ra,&nbsp;dec,&nbsp;tol)</td>
 <td>Find unique ras and decs in a list of coordinates.</td>
 </tr>
 </tbody>
@@ -540,13 +528,12 @@ commonly used quantity is</p>
 </div><p>Analytic approximations for dust attenuation curves are often
 calculated as a function of R(V), and then normalised by A(V) or
 E(B - V).</p>
-<p>The functions in his module give the attenuation for the Milky Way,
-SMC and LMC, as a function of wavelength, and require that R(V) and
-E(B-V) are given. The attenuation is given as the optical depth,
-<img class="math" src="_images/math/b1fcc3ed0ee0525effb72bacae7de4eab531ea68.png" alt="\tau(\lambda)"/>. This is related to <img class="math" src="_images/math/056843848a8143c65e1a4e31ee387f31fd72be3d.png" alt="A(\lambda)"/> in the
-following way:</p>
+<p>The functions in his module give the attenuation as a function of
+wavelength for the Milky Way, SMC and LMC, and a starburst galaxy.
+The attenuation is given as <img class="math" src="_images/math/200bfed7f00aa8ae1834ee007ffa17f7782fd47e.png" alt="A(\lambda)/A(V)"/>. This can be
+converted to an optical depth in the following way:</p>
 <div class="math">
-<p><img src="_images/math/e35d65471ea155726dfdf905052724b2321eb8a3.png" alt="\tau(\lambda) = A(\lambda) / (2.5 \log_{10}(e))"/></p>
+<p><img src="_images/math/c89ca50e046225884fd0f6ec3279aa97abf39ab2.png" alt="\tau(\lambda) = \frac{A(\lambda)}{A(V)}\ R(V)\  E(B-V) / (2.5 \log_{10}(e))"/></p>
 </div><p><strong>References</strong></p>
 <ul class="simple">
 <li>&#8216;Astrophysics of Dust in Cold Clouds&#8217; by B.T. Draine:

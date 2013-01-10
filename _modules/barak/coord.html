@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>barak.coord &mdash; Barak 0.3.0 documentation</title>
+    <title>barak.coord &mdash; Barak 0.3.2 documentation</title>
     
     <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.3.0',
+        VERSION:     '0.3.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,12 +27,12 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/theme_extras.js"></script>
-    <link rel="top" title="Barak 0.3.0 documentation" href="../../index.html" />
+    <link rel="top" title="Barak 0.3.2 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
       <div class="header"><h1 class="heading"><a href="../../index.html">
-          <span>Barak 0.3.0 documentation</span></a></h1>
+          <span>Barak 0.3.2 documentation</span></a></h1>
         <h2 class="heading"><span>barak.coord</span></h2>
       </div>
       <div class="topnav">
@@ -61,7 +61,7 @@
 <span class="n">RAD_PER_DEG</span> <span class="o">=</span> <span class="n">pi</span> <span class="o">/</span> <span class="mf">180.</span>
 <span class="n">DEG_PER_RAD</span> <span class="o">=</span> <span class="mf">180.</span> <span class="o">/</span> <span class="n">pi</span>
 
-<div class="viewcode-block" id="radec_to_xyz"><a class="viewcode-back" href="../../generated/barak.coord.radec_to_xyz.html#barak.coord.radec_to_xyz">[docs]</a><span class="k">def</span> <span class="nf">radec_to_xyz</span><span class="p">(</span><span class="n">ra_deg</span><span class="p">,</span> <span class="n">dec_deg</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_radec_to_xyz</span><span class="p">(</span><span class="n">ra_deg</span><span class="p">,</span> <span class="n">dec_deg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert RA and Dec to xyz positions on a unit sphere.</span>
 
 <span class="sd">    Parameters</span>
@@ -79,14 +79,14 @@
                     <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="distsq"><a class="viewcode-back" href="../../generated/barak.coord.distsq.html#barak.coord.distsq">[docs]</a><span class="k">def</span> <span class="nf">distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find the distance squared in xyz space between two RAs and</span>
 <span class="sd">    Decs.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    </span>
+
 <span class="sd">    ra1, dec1 :  floats or arrays of floats, shape (N,)</span>
 <span class="sd">    ra2, dec2 :  floats or arrays of floats, shape (M,) </span>
 
@@ -95,8 +95,8 @@
 <span class="sd">    distance_squared: array of floats shape (N, M)</span>
 <span class="sd">       If N or M is 1, that dimension is suppressed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">xyz1</span> <span class="o">=</span> <span class="n">radec_to_xyz</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
-    <span class="n">xyz2</span> <span class="o">=</span> <span class="n">radec_to_xyz</span><span class="p">(</span><span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
+    <span class="n">xyz1</span> <span class="o">=</span> <span class="n">_radec_to_xyz</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
+    <span class="n">xyz2</span> <span class="o">=</span> <span class="n">_radec_to_xyz</span><span class="p">(</span><span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
 
     <span class="n">n</span> <span class="o">=</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">xyz2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -108,24 +108,24 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">d2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">d2</span>
-</div>
-<div class="viewcode-block" id="radians_to_distsq"><a class="viewcode-back" href="../../generated/barak.coord.radians_to_distsq.html#barak.coord.radians_to_distsq">[docs]</a><span class="k">def</span> <span class="nf">radians_to_distsq</span><span class="p">(</span><span class="n">radians</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_radians_to_distsq</span><span class="p">(</span><span class="n">radians</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert to a squared xyz separation from an angle.</span>
 
 <span class="sd">    The input is the angle in radians. The conversion is done on a</span>
 <span class="sd">    unit sphere using the cosine rule.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">))</span>
-</div>
-<div class="viewcode-block" id="distsq_to_radians"><a class="viewcode-back" href="../../generated/barak.coord.distsq_to_radians.html#barak.coord.distsq_to_radians">[docs]</a><span class="k">def</span> <span class="nf">distsq_to_radians</span><span class="p">(</span><span class="n">distsq</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_distsq_to_radians</span><span class="p">(</span><span class="n">distsq</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert to an angle from a squared xyz separation.</span>
 
 <span class="sd">    The output angle is in radians. The conversion is done on a unit</span>
 <span class="sd">    sphere using the cosine rule.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">distsq</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="check_ra_dec"><a class="viewcode-back" href="../../generated/barak.coord.check_ra_dec.html#barak.coord.check_ra_dec">[docs]</a><span class="k">def</span> <span class="nf">check_ra_dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_check_ra_dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Check 0 &lt;= RA &lt; 360 and -90 &lt;= Dec &lt;= 90.</span>
 
 <span class="sd">    Raises a ValueError outside these limits.</span>
@@ -149,7 +149,7 @@
 
     <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
-</div>
+
 <div class="viewcode-block" id="ang_sep"><a class="viewcode-back" href="../../generated/barak.coord.ang_sep.html#barak.coord.ang_sep">[docs]</a><span class="k">def</span> <span class="nf">ang_sep</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns the angular separation in degrees on the celestial</span>
 <span class="sd">    sphere between two RA/Dec coordinates.</span>
@@ -166,10 +166,10 @@
 <span class="sd">    separation_in_degrees : array of floats, shape (N, M)</span>
 <span class="sd">       If N or M is 1, that dimension is suppressed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_ra_dec</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
-    <span class="n">check_ra_dec</span><span class="p">(</span><span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
-    <span class="n">d2</span> <span class="o">=</span> <span class="n">distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">DEG_PER_RAD</span> <span class="o">*</span> <span class="n">distsq_to_radians</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+    <span class="n">_check_ra_dec</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">)</span>
+    <span class="n">_check_ra_dec</span><span class="p">(</span><span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">_distsq</span><span class="p">(</span><span class="n">ra1</span><span class="p">,</span> <span class="n">dec1</span><span class="p">,</span> <span class="n">ra2</span><span class="p">,</span> <span class="n">dec2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DEG_PER_RAD</span> <span class="o">*</span> <span class="n">_distsq_to_radians</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="ra_dec2s"><a class="viewcode-back" href="../../generated/barak.coord.ra_dec2s.html#barak.coord.ra_dec2s">[docs]</a><span class="k">def</span> <span class="nf">ra_dec2s</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">raformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%06.3f</span><span class="s">&#39;</span><span class="p">):</span>
     <span class="n">ra</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
@@ -184,7 +184,7 @@
     <span class="k">return</span> <span class="n">s_ra</span>
 </div>
 <div class="viewcode-block" id="dec_dec2s"><a class="viewcode-back" href="../../generated/barak.coord.dec_dec2s.html#barak.coord.dec_dec2s">[docs]</a><span class="k">def</span> <span class="nf">dec_dec2s</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="n">decformat</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%02.0f</span><span class="s"> </span><span class="si">%05.2f</span><span class="s">&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Converts decimal RA and Dec to sexigesimal.</span>
+    <span class="sd">&quot;&quot;&quot; Converts a decimal Dec to a sexigesimal string.</span>
 
 <span class="sd">    Returns two strings, RA and Dec.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -246,7 +246,7 @@
     <span class="k">return</span> <span class="n">d_ra</span>
 </div>
 <div class="viewcode-block" id="dec_s2dec"><a class="viewcode-back" href="../../generated/barak.coord.dec_s2dec.html#barak.coord.dec_s2dec">[docs]</a><span class="k">def</span> <span class="nf">dec_s2dec</span><span class="p">(</span><span class="n">dec</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Converts a sexigesimal Dec string to decimal.</span>
+    <span class="sd">&quot;&quot;&quot; Converts a sexigesimal Dec string to decimal degrees.</span>
 
 <span class="sd">    The separators between deg/arcmin/arcsec can be whitespace or</span>
 <span class="sd">    colons or d m s.</span>
@@ -273,7 +273,7 @@
     <span class="k">return</span> <span class="n">d_dec</span>
 </div>
 <div class="viewcode-block" id="s2dec"><a class="viewcode-back" href="../../generated/barak.coord.s2dec.html#barak.coord.s2dec">[docs]</a><span class="k">def</span> <span class="nf">s2dec</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Convert a sexigesimal ra and dec (or list of ras and decs) to</span>
+    <span class="sd">&quot;&quot;&quot; Convert sexigesimal ra and dec strings (or list of ras and decs) to</span>
 <span class="sd">    decimal degrees.</span>
 
 <span class="sd">    Parameters</span>

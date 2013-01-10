@@ -5,45 +5,50 @@ with a focus on astronomical research. The documentation details
 everything that is available, but some example tasks that can be
 handled are:
 
-  * Calculate absorption profiles for various ions observed in
-    astrophysical environments.
-  * Fit a smooth continuum to a spectrum with many emission or
-    absorption features.
-  * Find the expected broad-band magnitudes given a spectral energy
-    distribution.
-
-The package can be downloaded `here <https://github.com/nhmc/Barak>`_.
+* Calculate absorption profiles for various ions observed in
+  astrophysical environments.
+* Fit a smooth continuum to a spectrum with many emission or
+  absorption features.
+* Find the expected broad-band magnitudes given a spectral energy
+  distribution.
 
 It requires `NumPy <http://numpy.scipy.org/>`_, `PyFits
-<http://www.stsci.edu/institute/software_hardware/pyfits/Download>`_
-and `ATpy <http://atpy.github.com/>`_ to install. `Matplotlib
-<http://matplotlib.sourceforge.net/>`_ and `SciPy
-<http://www.scipy.org/>`_ are also required for full functionality.
+<http://www.stsci.edu/institute/software_hardware/pyfits/Download>`_,
+`ATpy <http://atpy.github.com/>`_ and `Astropy <http://astropy.org>`_
+to install. `Matplotlib <http://matplotlib.sourceforge.net/>`_ and
+`SciPy <http://www.scipy.org/>`_ are also required for full
+functionality.
 
-To install, either download the tarball from the pypi website and then
-do::
+The best way to install is by using `pip`::
 
-  python setup.py install
+   pip install barak
 
-You may need to put a ``sudo`` in front of this. 
+(You may need to put a ``sudo`` in front of this). For this to work
+you need to have `pip
+<http://www.pip-installer.org/en/latest/index.html>`_ installed. This
+method allows for easy uninstallation.
 
-A better way to install (which allows for easy uninstallation) is by
-using `pip`::
+You can also simply download the tarball from the PyPI website, unpack
+it and then do::
 
-  pip install barak
-
-but you need to have `pip
-<http://www.pip-installer.org/en/latest/index.html>`_ installed.
+   python setup.py install
 
 To run the tests you need `py.test <http://pytest.org/latest/>`_
 installed.  Then run::
 
    py.test barak 
 
-from the ``barak/`` directory.
+from the ``barak/`` directory created by the install commands above.
 
-Feel free to email me if you have any questions: neilcrighton
-.at. gmail .dot. com
+The latest stable package can be downloaded from PyPI: http://pypi.python.org/pypi/Barak.
+The development version can be downloaded from `here <https://github.com/nhmc/Barak>`_.
+
+Documentation is found here: https://nhmc.github.com/Barak
+
+Feel free to email me if you have any questions: 
+
+neilcrighton .at. gmail .dot. com
+
 
 .. raw:: html
 
@@ -210,18 +215,13 @@ Astronomical coordinate functions.
    :toctree: generated/
 
    ang_sep
-   check_ra_dec
    dec2s
    dec_dec2s
    dec_s2dec
-   distsq
-   distsq_to_radians
    indmatch
    match
    ra_dec2s
    ra_s2dec
-   radec_to_xyz
-   radians_to_distsq
    s2dec
    unique_radec
 
@@ -263,15 +263,14 @@ Analytic approximations for dust attenuation curves are often
 calculated as a function of R(V), and then normalised by A(V) or
 E(B - V).
 
-The functions in his module give the attenuation for the Milky Way,
-SMC and LMC, as a function of wavelength, and require that R(V) and
-E(B-V) are given. The attenuation is given as the optical depth,
-:math:`\tau(\lambda)`. This is related to :math:`A(\lambda)` in the
-following way:
+The functions in his module give the attenuation as a function of
+wavelength for the Milky Way, SMC and LMC, and a starburst galaxy.
+The attenuation is given as :math:`A(\lambda)/A(V)`. This can be
+converted to an optical depth in the following way:
 
 .. math::
 
-  \tau(\lambda) = A(\lambda) / (2.5 \log_{10}(e))
+  \tau(\lambda) = \frac{A(\lambda)}{A(V)}\ R(V)\  E(B-V) / (2.5 \log_{10}(e))
 
 **References**
 
