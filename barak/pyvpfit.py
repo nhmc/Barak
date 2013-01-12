@@ -1,10 +1,19 @@
 """Contains a class, VpfitModel, useful for parsing f26 and fort.13
 files, and writing out fort.13 files.
 """
+
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+import sys
+if sys.version > '3':
+    basestring = str
+
 import os
 import numpy as np
 from textwrap import wrap
-from constants import c_kms
+from .constants import c_kms
 
 # the data types of the lines and regions numpy arrays:
 
@@ -332,8 +341,8 @@ def calc_v90(vp, plot=False, z0=None,
     tau = np.zeros(len(v))
     for line,vline in zip(lines,vel):
         if line['logN'] > 21.0:
-            print ('very (too?) high logN: %s' % line['logN'])
-            print ('returning width of -1')
+            print('very (too?) high logN: %s' % line['logN'])
+            print('returning width of -1')
             return -1.
         temptau = calctau(v - vline, wav0, osc, gam, line['logN'],
                           btemp=line['b'])

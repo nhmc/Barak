@@ -21,6 +21,7 @@ ending in .fits in the current directory.
 
 >>> fhdr *.fits NAXIS CD1_1 OBSID
 """
+from __future__ import print_function
 import sys
 import warnings
 
@@ -72,7 +73,7 @@ def main(args):
                 elif a == 'p':
                     fullpaths = True
                 else:
-                    print usage
+                    print(usage)
                     sys.exit(1)
         else:
             break
@@ -91,19 +92,23 @@ def main(args):
 
     keys = args
 
-    import pyfits
+    try:
+        import pyfits
+    except ImportError:
+        import astropy.io.fits as pyfits
+
     if not keys:
         for filename in filenames:
             try:
                 fh = pyfits.open(filename)
             except IOError:
-                print 'Problem reading:', filename
+                print('Problem reading:', filename)
                 sys.exit()
             if allext:
                 for hdu in fh:
                     print hdu.header
             else:
-                print fh[iext].header
+                print(fh[iext].header)
             fh.close()
     else:
         fmt = ' '.join(['%%-%is' % width] + ['%s'] * len(keys))
@@ -115,12 +120,12 @@ def main(args):
                 k = '"' + k + '"'
             titles.append(k)
         if not formatting:
-            print fmt % tuple(titles)
+            print(fmt % tuple(titles))
         for filename in filenames:
             try:
                 fh = pyfits.open(filename)
             except IOError:
-                print 'Problem reading:', filename
+                print('Problem reading:', filename)
                 sys.exit()
             if fullpaths:
                 fname = filename
@@ -161,7 +166,7 @@ def main(args):
                 #print 'setting', key, 'to', val, i
                 out.append(val)
             if not formatting:
-                print fmt % tuple(out)
+                print(fmt % tuple(out))
             else:
                 lens = [len(str(v)) for v in out[1:]]
                 for i in range(len(maxlens)):
@@ -172,16 +177,16 @@ def main(args):
         if formatting:
             fmt = ' '.join(['%%-%is' % width]+['%%-%is' % w for w in maxlens])
             tshort = [t.strip('"')[:m] for t,m in zip(titles[1:],maxlens)]
-            print fmt % tuple([titles[0][:width]] + tshort)
+            print(fmt % tuple([titles[0][:width]] + tshort))
             for row in output:
-                print fmt % tuple(row)
+                print(fmt % tuple(row))
              
 if __name__ =='__main__':
     if len(sys.argv) == 1:
-        print usage
+        print(usage)
         sys.exit(1)        
     try:
         main(sys.argv[1:])
     except KeyboardInterrupt:
-        print 'Closing'
+        print('Closing')
         sys.exit()

@@ -1,5 +1,6 @@
 from ..absorb import *
 from ..utilities import get_data_path
+from ..io import loadtxt
 import numpy as np
 
 DATAPATH = get_data_path()
@@ -15,13 +16,13 @@ def test_calctau():
     v = np.linspace(-100, 100, 500)           # km/s
     logN = 13.0                               # cm^-2
     tau = calctau(v, wav0, osc, gam, logN, b)
-    tau13 = np.loadtxt(DATAPATH + 'tests/tau_n13.txt.gz')
+    tau13 = loadtxt(DATAPATH + 'tests/tau_n13.txt.gz')
     assert np.allclose(tau, tau13)
     
     v = np.linspace(-1000, 1000, 1000)        # km/s
     logN = 21.                                # cm^-2
     tau = calctau(v, wav0, osc, gam, logN, b)
-    tau21 = np.loadtxt(DATAPATH + 'tests/tau_n21.txt.gz')
+    tau21 = loadtxt(DATAPATH + 'tests/tau_n21.txt.gz')
     assert np.allclose(tau, tau21)
     
 def text_calc_iontau():

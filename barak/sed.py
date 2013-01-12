@@ -9,9 +9,14 @@ Inspired by the SED module in astLib by Matt Hilton
 
 """
 from __future__ import division
-from io import readtabfits
-from constants import c, c_kms, Jy
-from utilities import get_data_path
+from __future__ import unicode_literals
+import sys
+if sys.version > '3':
+    basestring = str
+
+from .io import readtabfits, loadtxt
+from .constants import c, c_kms, Jy
+from .utilities import get_data_path
 
 import numpy as np
 from numpy.random import randn
@@ -100,7 +105,7 @@ def get_extinction(filename=None, airmass=1.):
     if filename is None:
         return sorted(os.listdir(PATH_EXTINCT))
 
-    wa, emag = np.loadtxt(PATH_EXTINCT + filename, unpack=1)
+    wa, emag = loadtxt(PATH_EXTINCT + filename, unpack=1)
     return wa, 10**(-0.4 * emag * airmass)
 
 
@@ -140,11 +145,14 @@ class Passband(object):
         else:
             filepath = filename
         if filepath.endswith('.fits'):
-            import pyfits
+            try:
+                import pyfits
+            except ImportError:
+                import astropy.io.fits as pyfits
             rec = pyfits.getdata(filepath, 1)
             self.wa, self.tr = rec.wa, rec.tr
         else:
-            self.wa, self.tr = np.loadtxt(filepath, usecols=(0,1), unpack=True)
+            self.wa, self.tr = loadtxt(filepath, usecols=(0,1), unpack=True)
         # check wavelengths are sorted lowest -> highest
         isort = self.wa.argsort()
         self.wa = self.wa[isort]
@@ -169,7 +177,7 @@ class Passband(object):
         if ccd is not None:
             # apply ccd/optics efficiency
             name = PATH_PASSBAND + instr + '/effic_%s.txt' % ccd
-            wa, effic = np.loadtxt(name, usecols=(0,1), unpack=1)
+            wa, effic = loadtxt(name, usecols=(0,1), unpack=1)
             self.effic = np.interp(self.wa, wa, effic)
             self.tr *= self.effic
 
@@ -180,7 +188,7 @@ class Passband(object):
 
         if instr in extinctmap:
             # apply atmospheric extinction
-            wa, emag = np.loadtxt(PATH_EXTINCT + extinctmap[instr], unpack=1)
+            wa, emag = loadtxt(PATH_EXTINCT + extinctmap[instr], unpack=1)
             self.atmos = np.interp(self.wa, wa, 10**(-0.4 * emag))
             self.tr *= self.atmos
 
@@ -274,7 +282,7 @@ class SED(object):
                 rec = readtabfits(filepath)
                 wa, fl = rec.wa, rec.fl
             else:
-                wa, fl = np.loadtxt(filepath, usecols=(0,1), unpack=1)  
+                wa, fl = loadtxt(filepath, usecols=(0,1), unpack=1)  
             if label is None:
                 label = filename
 

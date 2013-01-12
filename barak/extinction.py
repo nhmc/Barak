@@ -53,8 +53,13 @@ Note that much of the code in this module is inspired by Erik
 Tollerud's `Astropysics <https://github.com/eteq/astropysics>`_.
 """
 
-from utilities import get_data_path, between
-from interp import interp_Akima
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+from .utilities import get_data_path, between
+from .interp import interp_Akima
 import numpy as np
 
 import warnings
@@ -81,8 +86,8 @@ class ExtinctionCurve(object):
             self._tau = None
 
     def __repr__(self):
-        return '< %s: R(V)=%s, E(B-V)=%s, A(V)=%s >' % (
-            self._name, self._Rv, self._EBmV, self._Av)
+        s = '< {0._name}: R(V)={0._Rv}, E(B-V)={0._EBmV}, A(V)={0._Av} >'
+        return s.format(self)
 
     @property
     def EBmV(self):

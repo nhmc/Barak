@@ -1,4 +1,5 @@
 from ..utilities import *
+from ..io import loadtxt
 import numpy as np
 
 DATAPATH = get_data_path()
@@ -7,16 +8,16 @@ fl = np.linspace(0,1)
 
 def test_possion_noise():
     fl0,er0 = poisson_noise(fl, 0.1, seed=114)
-    fl1,er1 = np.loadtxt(DATAPATH + 'tests/noisepoisson.txt.gz', unpack=1)
+    fl1,er1 = loadtxt(DATAPATH + 'tests/noisepoisson.txt.gz', unpack=1)
     assert np.allclose(fl0,fl1), np.allclose(er0,er1)
 
 def test_addnoise():
     fl0,er0 = addnoise(fl, 0.2, seed=113)
-    fl1,er1 = np.loadtxt(DATAPATH + 'tests/noisegauss.txt.gz', unpack=1)
+    fl1,er1 = loadtxt(DATAPATH + 'tests/noisegauss.txt.gz', unpack=1)
     assert np.allclose(fl0,fl1), np.allclose(er0, er1)
 
     fl0,er0 = addnoise(fl, 0.2, minsig=0.05, seed=116)
-    fl1,er1 = np.loadtxt(DATAPATH + 'tests/noiseboth.txt.gz', unpack=1)
+    fl1,er1 = loadtxt(DATAPATH + 'tests/noiseboth.txt.gz', unpack=1)
     assert np.allclose(fl0,fl1), np.allclose(er0, er1)
 
 def test_wmean():
@@ -34,6 +35,6 @@ def test_indexnear():
 def test_find_edges_true_regions():
     a = np.array([3,0,1,4,6,7,8,6,3,2,0,3,4,5,6,4,2,0,2,5,0,3])
     ileft, iright = find_edges_true_regions(a > 2)
-    assert zip(ileft, iright) == [(0, 0), (3, 8), (11, 15),
-                                  (19, 19), (21, 21)]
+    assert list(zip(ileft, iright)) == [(0, 0), (3, 8), (11, 15),
+                                        (19, 19), (21, 21)]
 

@@ -1,5 +1,11 @@
 """ Statistics-related functions.
 """
+
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import numpy as np
 
 def _bisect(func, target, xlo=-10, xhi=10):

@@ -1,8 +1,15 @@
 """ Contains an object to describe a spectrum, and various
 spectrum-related functions."""
-from __future__ import division
 
-from itertools import izip
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import sys
+if sys.version > '3':
+    xrange = range
+
 import copy
 import os, pdb
 from math import sqrt
@@ -11,11 +18,11 @@ from pprint import pformat
 import numpy as np
 import matplotlib.pyplot as pl
 
-from utilities import nan2num, between, get_data_path
-from convolve import convolve_psf
-from io import readtxt, readtabfits
-from plot import axvlines, axvfill, puttext
-from constants import c_kms
+from .utilities import nan2num, between, get_data_path
+from .convolve import convolve_psf
+from .io import readtxt, readtabfits, loadtxt
+from .plot import axvlines, axvfill, puttext
+from .constants import c_kms
 
 DATAPATH = get_data_path()
 
@@ -23,7 +30,7 @@ debug = False
 def getwave(hd):
     """ Given a fits header, get the wavelength solution.
     """
-    dv=None
+    dv = None
     if hd.has_key('CDELT1'):
         dw = hd['CDELT1']
     else:
@@ -36,7 +43,7 @@ def getwave(hd):
     if CRVAL < 10:
         wstart = 10**wstart
         dv = c_kms * (1. - 1. / 10. ** -dw)
-        print 'constant dv = %.3f km/s (assume CRVAL1 in log(Angstroms))' % dv
+        print('constant dv = %.3f km/s (assume CRVAL1 in log(Angstroms))' % dv)
 
     npts = hd['NAXIS1']
     return make_wa_scale(wstart, dw, npts, constantdv=dv)
@@ -66,10 +73,10 @@ def make_wa_scale(wstart, dw, npts, constantdv=False, verbose=False):
     [3162.278,  3169.568,  3176.874,  3184.198, 3191.537]
     """
     if constantdv:
-        if verbose:  print 'make_wa_scale(): Using log-linear scale'
+        if verbose:  print('make_wa_scale(): Using log-linear scale')
         wa = 10**(wstart + np.arange(npts, dtype=float) * dw)
     else:
-        if verbose:  print 'make_wa_scale(): Using linear scale'
+        if verbose:  print('make_wa_scale(): Using linear scale')
         wa = wstart + np.arange(npts, dtype=float) * dw
     return wa
 
@@ -181,7 +188,7 @@ class Spectrum(object):
             raise ValueError('Not enough info to make a wavelength scale!')
 
         if makescale:
-            if debug: print 'making wav scale,', wstart, dw, npts, bool(dv)
+            if debug: print('making wav scale,', wstart, dw, npts, bool(dv))
             wa = make_wa_scale(wstart, dw, npts, constantdv=bool(dv))
         else:
             # check whether wavelength scale is linear or log-linear
@@ -258,7 +265,7 @@ class Spectrum(object):
         mer = er.mean()
         snr = mfl / std
         if show:
-            print 'mean %g, std %g, er %g, snr %g' % (mfl, std, mer, snr)
+            print('mean %g, std %g, er %g, snr %g' % (mfl, std, mer, snr))
         return mfl, std, mer, snr
 
     def rebin(self, **kwargs):
@@ -284,7 +291,7 @@ class Spectrum(object):
             c = raw_input('File %s exists - overwrite? (y) or n: ' % filename)
             if c != '':
                 if c.strip().lower()[0] == 'n':
-                    print 'returning without writing anything...'
+                    print('returning without writing anything...')
                     return
         fh = open(filename, 'w')
         if header is not None:
@@ -297,11 +304,11 @@ class Spectrum(object):
         fl = np.nan_to_num(self.fl)
         er = np.nan_to_num(self.er)
         if np.all(np.isnan(self.co)):
-            for w,f,e in izip(self.wa, fl, er):
+            for w,f,e in zip(self.wa, fl, er):
                 fh.write("% .12g % #12.8g % #12.8g\n" % (w,f,e))
         else:
             co = np.nan_to_num(self.co)
-            for w,f,e,c in izip(self.wa, fl, er, co):
+            for w,f,e,c in zip(self.wa, fl, er, co):
                 fh.write("% .12g % #12.8g % #12.8g % #12.8g\n" % (w,f,e,c))
         fh.close()
         if self.filename is None:
@@ -321,17 +328,17 @@ def read(filename, comment='#', debug=False):
     """
     if filename.endswith('.gz'):
         import gzip
-        fh = gzip.open(filename)
+        fh = gzip.open(filename, 'rb')
     else:
-        fh = open(filename,'r')
-    test = fh.next()
+        fh = open(filename, 'rb')
+    test = next(fh)
     fh.close()
 
-    if len(test) < 9 or test[8] != '=': 
+    if test[:20].decode('utf-8')[8] != '=': 
     # Then probably not a fits file
         fwhm = None
         skip = 0
-        test = test.split()
+        test = test.decode('utf-8').split()
         try:
             name = test[0].strip()
         except IndexError:
@@ -341,20 +348,20 @@ def read(filename, comment='#', debug=False):
                 fwhm = float(test[1])
                 skip = 1
         try:         # uves_popler .dat file            
-            wa,fl,er,co = np.loadtxt(filename, usecols=(0,1,2,4), unpack=True,
+            wa,fl,er,co = loadtxt(filename, usecols=(0,1,2,4), unpack=True,
                                      comments=comment, skiprows=skip)
         except IndexError:
             try:
-                wa,fl,er,co = np.loadtxt(filename, usecols=(0,1,2,3),
+                wa,fl,er,co = loadtxt(filename, usecols=(0,1,2,3),
                                          unpack=True, comments=comment,
                                          skiprows=skip)
             except IndexError:
                 try:
-                    wa,fl,er = np.loadtxt(filename, usecols=(0,1,2),
+                    wa,fl,er = loadtxt(filename, usecols=(0,1,2),
                                           unpack=True, comments=comment,
                                           skiprows=skip)
                 except IndexError:
-                    wa,fl = np.loadtxt(filename, usecols=(0,1),
+                    wa,fl = loadtxt(filename, usecols=(0,1),
                                        unpack=True, comments=comment,
                                        skiprows=skip)
                     er = find_err(fl, find_cont(fl))
@@ -362,7 +369,7 @@ def read(filename, comment='#', debug=False):
         else:
             # heuristic to check for Jill Bechtold's FOS spectra
             if filename.endswith('.XY'):
-                wa,fl,er,co = np.loadtxt(
+                wa,fl,er,co = loadtxt(
                     filename, usecols=(0,1,2,3), unpack=True, comments=comment,
                     skiprows=skip)
             else:
@@ -377,7 +384,10 @@ def read(filename, comment='#', debug=False):
         return sp
 
     # Otherwise assume fits file
-    import pyfits
+    try:
+        import pyfits
+    except ImportError:
+        import astropy.io.fits as pyfits
     f = pyfits.open(filename)
     hd = f[0].header
 
@@ -454,7 +464,7 @@ def read(filename, comment='#', debug=False):
     ##########################################################
     if hd.has_key('INSTRUME'):   #  Check if Keck spectrum
         if hd['INSTRUME'].startswith('HIRES'):
-            if debug:  print 'Looks like Makee output format'
+            if debug:  print('Looks like Makee output format')
             fl = f[0].data       # Flux
             f.close()
             errname = filename[0:filename.rfind('.fits')] + 'e.fits'
@@ -673,12 +683,12 @@ def combine(spectra, cliphi=None, cliplo=None, verbose=False):
                 badpix = diff < -cliplo
                 s_rebinned[i].er[canclip][badpix] = np.nan
                 nclipped += len(badpix.nonzero()[0])
-        if debug: print nclipped, 'pixels clipped across all input spectra'
+        if debug: print(nclipped, 'pixels clipped across all input spectra')
         return nclipped
 
     nspectra = len(spectra)
     if verbose:
-        print '%s spectra to combine' % nspectra
+        print('%s spectra to combine' % nspectra)
     if nspectra < 2:
         raise Exception('Need at least 2 spectra to combine.')
 
@@ -692,15 +702,15 @@ def combine(spectra, cliphi=None, cliplo=None, verbose=False):
     needrebin = True
     for sp in spectra:
         if len(sp.wa) != npts:
-            if verbose: print 'Rebin required'
+            if verbose: print('Rebin required')
             break
         if (np.abs(sp.wa - wa) / wa[0]).max() > 1e-8:
             if verbose:
-                print (np.abs(sp.wa - wa) / wa[0]).max(), 'Rebin required'
+                print((np.abs(sp.wa - wa) / wa[0]).max(), 'Rebin required')
             break
     else:
         needrebin = False
-        if verbose:  print 'No rebin required'
+        if verbose:  print('No rebin required')
 
     # interpolate over 1 sigma error arrays
     
@@ -709,17 +719,17 @@ def combine(spectra, cliphi=None, cliplo=None, verbose=False):
         wstart = min(sp.wa[0] for sp in spectra)
         wend = max(sp.wa[-1] for sp in spectra)
         # Choose largest wavelength bin size of old spectra.
-        if verbose:  print 'finding new bin size'
+        if verbose:  print('finding new bin size')
         maxwidth = max((sp.wa[1:] - sp.wa[:-1]).max() for sp in spectra)
         npts = int(np.ceil((wend - wstart) / maxwidth))      # round up
         # rebin spectra to combined wavelength scale
-        if verbose:  print 'Rebinning spectra'
+        if verbose:  print('Rebinning spectra')
         s_rebinned = [s.rebin(wstart=wstart, npts=npts, dw=maxwidth)
                       for s in spectra]
         combined = Spectrum(wstart=wstart, npts=npts, dw=maxwidth)
         if verbose:
-            print ('New wavelength scale wstart=%s, wend=%s, npts=%s, dw=%s'
-                   % (wstart, combined.wa[-1], npts, maxwidth))
+            print('New wavelength scale wstart=%s, wend=%s, npts=%s, dw=%s'
+                  % (wstart, combined.wa[-1], npts, maxwidth))
     else:
         combined = Spectrum(wa=spec0.wa)
         s_rebinned = copy.deepcopy(spectra)
@@ -766,7 +776,7 @@ def cr_reject(flux, error, nsigma=15.0, npix=2, verbose=False):
 
     The default values work ok for S/N~20, Resolution=500 spectra.
     """
-    if verbose:  print nsigma,npix
+    if verbose:  print(nsigma,npix)
     flux,error = list(flux), list(error)  # make copies
     i1 = npix
     i2 = len(flux) - npix
@@ -781,7 +791,7 @@ def cr_reject(flux, error, nsigma=15.0, npix=2, verbose=False):
         if np.abs((flux[i] - medfl) / meder) > nsigma:
             flux[i] = medfl
             error[i] = np.nan
-            if verbose:  print len(fl), len(er)
+            if verbose:  print(len(fl), len(er))
 
     return np.array(flux), np.array(error)
 
@@ -804,7 +814,7 @@ def cr_reject2(fl, er, nsig=10.0, fwhm=2, grow=1, debug=True):
     # interpolate over bad pixels 
     fl1 = convolve_psf(fl, fwhm)
     ibad = np.where(np.abs(fl1 - fl) > nsig*er)[0]
-    if debug: print len(ibad)
+    if debug: print(len(ibad))
     extras1 = np.concatenate([ibad + 1 + i for i in range(grow)]) 
     extras2 = np.concatenate([ibad - 1 - i for i in range(grow)]) 
     ibad = np.union1d(ibad, np.union1d(extras1, extras2))
@@ -887,15 +897,15 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
             continue
         m0, m1 = np.median(s0.fl[good0]), np.median(s1.fl[good1])
         if m0 <= 0:
-            print 'looping'
+            print('looping')
             i0min = max(0, i0min - (len(sp0) - i0min))
         elif m1 <= 0:
-            print 'looping'
+            print('looping')
             i1max = min(len(sp1)-1, 2 * i1max)
         else:
             break
         
-    if debug:  print m0,m1
+    if debug:  print(m0,m1)
     return m0 / m1
 
 
@@ -1066,7 +1076,7 @@ def writesp(filename, sp, resvel=None, overwrite=False):
         c = raw_input('File %s exists - overwrite? (y) or n: ' % filename)
         if c != '':
             if c.strip().lower()[0] == 'n':
-                print 'returning without writing anything...'
+                print('returning without writing anything...')
                 return
     fh = open(filename, 'w')
     if resvel is not None:
@@ -1075,11 +1085,11 @@ def writesp(filename, sp, resvel=None, overwrite=False):
     fl = np.nan_to_num(sp.fl)
     er = np.nan_to_num(sp.er)
     if not hasattr(sp, 'co') or np.all(np.isnan(sp.co)):
-        for w,f,e in izip(sp.wa, fl, er):
+        for w,f,e in zip(sp.wa, fl, er):
             fh.write("% .12g % #12.8g % #12.8g\n" % (w,f,e))
     else:
         co = np.nan_to_num(sp.co)
-        for w,f,e,c in izip(sp.wa, fl, er, co):
+        for w,f,e,c in zip(sp.wa, fl, er, co):
             fh.write("% .12g % #12.8g % #12.8g % #12.8g\n" % (w,f,e,c))
     fh.close()
 
@@ -1128,7 +1138,7 @@ def find_err(fl, co, nchunks=10):
     step = npts // nchunks  + 1
     indices = range(0, npts, step) + [npts]
     for i,j in zip(indices[:-1], indices[1:]):
-        #print i,j
+        #print(i,j)
         imid = int(0.5 * (i + j))
         midpoints.append(imid)
         df = fl[i:j] - co[i:j]

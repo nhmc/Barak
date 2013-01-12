@@ -3,16 +3,22 @@
 them to make a new header for the given fits file, with suffix _newhd
 added.  
 """
-import pyfits
-from StringIO import StringIO
+from __future__ import print_function
+try:
+    import pyfits
+except ImportError:
+    import astropy.io.fits as pyfits
 import sys
-
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 if 1:
     assert len(sys.argv[1:]) == 2
     txtname, fitsname = sys.argv[1:]
 
-    print 'Reading %s' % txtname
+    print('Reading %s' % txtname)
     fh = open(txtname, 'r')
     s = fh.read()
     fh.close()
@@ -26,11 +32,11 @@ if 1:
     fh = pyfits.open(fitsname)
 
     for c in hd.ascard:
-        print 'Adding %s' % c
+        print('Adding %s' % c)
         hd.update(c.key, c.value, comment=c.comment)
 
     fh[0].header = hd
     newfitsname = fitsname.replace('.fits', '_newhd.fits')
-    print 'Writing to %s' % newfitsname
+    print('Writing to %s' % newfitsname)
     fh.writeto(newfitsname, clobber=True)
     fh.close()

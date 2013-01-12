@@ -1,10 +1,26 @@
 """ Functions to read and write text, fits and pickle files.
 """
-from itertools import izip
-import cPickle as pickle
+
+# python 2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+import sys
+if sys.version < '3':
+    import cPickle as pickle
+else:
+    import pickle
+    basestring = str
+    xrange = range
+
 import os, gzip
 import numpy as np
-from utilities import adict
+from .utilities import adict
+
+def loadtxt(filename, **kwargs):
+    """ A wrapper for numpy's loadtxt, which doesn;t seem to work if
+    passed a unicode string in python 2.x."""
+    return np.loadtxt(str(filename), **kwargs)
 
 def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
             arrays=True, names=None, readnames=False, converters=None,
@@ -147,9 +163,9 @@ def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
         if names is not None:
             out = np.rec.fromrecords(out, names=names)
         else:
-            out = [np.array(c) for c in izip(*out)]
+            out = [np.array(c) for c in zip(*out)]
     else:
-        out = [list(c) for c in izip(*out)]
+        out = [list(c) for c in zip(*out)]
 
     if len(out) == 1 and names is None:
         return out[0]
@@ -195,7 +211,7 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
                     break
                 else:
                     fh = raw_input('Enter new filename: ')
-        fh = open(fh, 'w')
+        fh = open(fh, 'wt')
 
     if isinstance(names, basestring):
         names = names.split(',')
@@ -261,7 +277,7 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
 
     if names:
         fh.write(fmtnames % tuple(names))
-    for row in izip(*cols):
+    for row in zip(*cols):
         fh.write(fmt % tuple(row))
 
     fh.close()
@@ -283,7 +299,10 @@ def writetabfits(filename, rec, units=None, overwrite=True):
     units : list of str (default None)
       Sequence of strings giving the units for each column.
     """
-    import pyfits
+    try:
+        import pyfits
+    except ImportError:
+        import astropy.io.fits as pyfits
 
     fmts = dict(f4='E', f8='F', i2='I', i4='J', i8='K', b1='L')
 
@@ -316,7 +335,11 @@ def readtabfits(filename, ext=None):
 
     Consider using `atpy.Table(filename)` instead.
     """
-    import pyfits
+    try:
+        import pyfits
+    except ImportError:
+        import astropy.io.fits as pyfits
+
     if ext is not None:
         return pyfits.getdata(filename, ext=ext).view(np.recarray)
     else:
@@ -377,11 +400,12 @@ def parse_config(filename, defaults={}):
     cfg.update(defaults)
 
     if isinstance(filename, basestring):
-        fh = open(filename)
+        fh = open(filename, 'rb')
     else:
         fh = filename
 
     for row in fh:
+        row = row.decode('utf-8')
         if not row.strip() or row.lstrip().startswith('#'):
             continue
         option, value = [r.strip() for r in row.split('#')[0].split('=', 1)]
@@ -431,7 +455,7 @@ def readsex(filename, catnum=None):
         try:
             import pyfits
         except ImportError:
-            raise ValueError("Install Pyfits to read fits files")
+            import astropy.io.fits as pyfits
         fh = pyfits.open(filename)
         if len(fh) > 3 and catnum is None:
             raise ValueError("specify catalogue number")
@@ -557,7 +581,7 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
     if not iscontainer(width):
         width = [width] * len(x)
     if not iscontainer(text):
-        text = range(len(x))
+        text = list(range(len(x)))
     if not iscontainer(c):
         c = [c] * len(x)
     if not iscontainer(tag):

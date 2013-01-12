@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 """ Make a ds9 region file from a SExtractor catalogue."""
+from __future__ import print_function
+
 from barak.io import readsex, sex_to_DS9reg
 
 usage = """\
@@ -14,7 +16,7 @@ drawn, otherwise just points.
 def main(args):
 
     if len(args) not in (1,2):
-        print usage
+        print(usage)
         sys.exit()
 
     catname = args[0] 
@@ -23,9 +25,9 @@ def main(args):
     else:
         regname = args[1]
 
-    print 'Reading', catname
+    print('Reading', catname)
     s = readsex(catname)
-    print 'writing to', regname
+    print('writing to', regname)
     sex_to_DS9reg(regname, s)
 
 if __name__ == '__main__':

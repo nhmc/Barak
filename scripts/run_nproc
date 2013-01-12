@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 """ Run a shell command on a list of files using multiple processors.
-""" 
+"""
+from __future__ import print_function
+
 from multiprocessing import Pool
 from subprocess import call
 import sys, time
-import argparse
+try:
+    import argparse
+except ImportError:
+    print("""\
+argparse is required for this script. It is part of the
+standard library for python versions >= 2.7.
+""")
 
 parser = argparse.ArgumentParser(description="""
 Run a shell command on a list of files using multiple processors.""")

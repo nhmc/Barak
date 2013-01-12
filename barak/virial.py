@@ -1,10 +1,15 @@
 """ Calculate virial quantities for a dark matter halo given a
 cosmology.
 """
+
+# p2.6+ compatibility
 from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from astropy import cosmology
 from astropy.utils import isiterable
-from barak.constants import G, Msun, kpc, kboltz, mp
+from .constants import G, Msun, kpc, kboltz, mp
 from math import pi
 import numpy as np
 

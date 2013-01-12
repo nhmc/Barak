@@ -1,5 +1,12 @@
 """ Plotting routines. """
+
+# python 2.6+ compatibility
 from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+import sys
+if sys.version > '3':
+    xrange = range
 
 from math import log10
 import numpy as np
@@ -546,13 +553,13 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
     xvert = np.array([0, 0, 0.5*capsize, 0, -0.5*capsize, 0])
 
     if direction == 'down':
-        arrow_verts = zip(xvert, -yvert)
+        arrow_verts = list(zip(xvert, -yvert))
     elif direction == 'up':
-        arrow_verts = zip(xvert, yvert)
+        arrow_verts = list(zip(xvert, yvert))
     elif direction == 'left':
-        arrow_verts = zip(-yvert, xvert)
+        arrow_verts = list(zip(-yvert, xvert))
     elif direction == 'up':
-        arrow_verts = zip(yvert, xvert)
+        arrow_verts = list(zip(yvert, xvert))
     else:
         raise ValueError(
             "direction must be one of 'up', 'down', 'left', 'right'")

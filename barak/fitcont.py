@@ -1,15 +1,21 @@
 """ Functions and Classes used to fit an estimate of an unabsorbed
 continuum to a QSO spectrum.
 """
+
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import numpy as np
 import matplotlib.pyplot as pl
 import matplotlib.transforms as mtran
 
-from utilities import between, Gaussian, stats, indexnear
-from convolve import convolve_psf
-from io import loadobj, saveobj
-from interp import AkimaSpline
-from sed import qso_template
+from .utilities import between, Gaussian, stats, indexnear
+from .convolve import convolve_psf
+from .io import loadobj, saveobj
+from .interp import AkimaSpline
+from .sed import qso_template
 
 import os
 
@@ -78,7 +84,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
     # find indices of chunk edges and central wavelengths of chunks
     indices = wa.searchsorted(edges)
     indices = [(i0,i1) for i0,i1 in zip(indices[:-1],indices[1:])]
-    if debug:  print ' indices', indices
+    if debug:  print(' indices', indices)
     wavc = [0.5*(w1 + w2) for w1,w2 in zip(edges[:-1],edges[1:])]
 
     # information per chunks
@@ -88,7 +94,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
     res_std = np.zeros(npts, float) # residuals standard dev
     res_med = np.zeros(npts, float) # residuals median
     if debug:
-        print 'chunk centres', wavc
+        print('chunk centres', wavc)
         cont, = ax.plot(wa,co,'k')
         midpoints, = ax.plot(wavc, mfl,'rx',mew=1.5,ms=8)
 
@@ -97,14 +103,14 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
         for i,(j1,j2) in enumerate(indices):
             if goodfit[i]:  continue
             # calculate median flux
-            #print i,j1,j2
+            #print(i,j1,j2)
             w,f,e,m = (item[j1:j2] for item in (wa,fl,er,mask))
             ercond = (e > 0) & (~np.isnan(f))
             cond = m & ercond
             chfl = f[cond]
             chflgood = f[ercond]
             if len(chflgood) == 0: continue
-            #print len(chfl), len(chflgood)
+            #print(len(chfl), len(chflgood))
             if float(len(chfl)) / len(chflgood) < minfrac:
                 f_cutoff = np.percentile(chflgood, minfrac)
                 cond = ercond & (f >= f_cutoff)
@@ -135,7 +141,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
             if float(len(chfl)) / len(chflgood) < minfrac:
                 f_cutoff = np.percentile(chflgood, minfrac)
                 cond = ercond & (fl[j1:j2] > f_cutoff)
-            #print len(co), len(fl), i1, j1, j2
+            #print(len(co), len(fl), i1, j1, j2)
             residuals = (fl[j1:j2][cond] - co[j1:j2][cond]
                          ) / er[j1:j2][cond]
             res_std[i] = residuals.std()
@@ -148,16 +154,16 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
                 goodfit[i] = True
 
         if debug:
-            print 'median and st. dev. of residuals by region - aiming for 0,1'
+            print('median and st. dev. of residuals by region - aiming for 0,1')
             for i,(f0,f1) in  enumerate(zip(res_med, res_std)):
-                print '%s %.2f %.2f' % (i,f0,f1)
+                print('{0} {0:.2f} {0:.2f}'.format(i,f0,f1))
             raw_input('Enter...')
 
         # (3) Remove flux values that fall more than N*sigma below the
         # spline fit.
         cond = (co - fl) > nsig * er
         if debug:
-            print np.nanmax(np.abs(co - oldco)/co)
+            print(np.nanmax(np.abs(co - oldco)/co))
         # Finish when the biggest change between the new and old
         # medians is smaller than the number below.
         if np.nanmax(np.abs(co - oldco)/co) < 4e-3:
@@ -169,7 +175,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
     # get a smooth continuum.
     final = AkimaSpline(wavc, mfl)
 
-    return final(wa), zip(wavc,mfl)
+    return final(wa), list(zip(wavc,mfl))
 
 
 def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
@@ -217,13 +223,13 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
     div.num[:2] = np.ceil(div.num[:2] * forest_divmult)    
     div.left *= zp1
     div.right *= zp1
-    if debug: print div.tolist()
+    if debug: print(div.tolist())
     temp = [np.linspace(left, right, n+1)[:-1] for left,right,n in div]
     edges = np.concatenate(temp)
     if debug: stats(edges)
 
     i0,i1,i2 = edges.searchsorted([wa[0], 1210*zp1, wa[-1]])
-    if debug: print i0,i1,i2
+    if debug: print(i0,i1,i2)
 
     contpoints = []
     if knots is not None:
@@ -389,7 +395,7 @@ class InteractiveCoFit(object):
             cpts = [(x,y) for x,y in self.contpoints if b0 <= x <= b1]
             if len(cpts) == 0:
                 continue 
-            spline = AkimaSpline(*zip(*cpts))
+            spline = AkimaSpline(*list(zip(*cpts)))
             i,j = wa.searchsorted([b0,b1])
             co[i:j] = spline(wa[i:j])
         
@@ -405,7 +411,7 @@ class InteractiveCoFit(object):
         X = 0.05 * X / Xmax
         self.markers['hist_left'].set_data(X, b)
 
-        self.markers['contpoints'].set_data(zip(*self.contpoints))
+        self.markers['contpoints'].set_data(list(zip(*self.contpoints)))
         nbin = self.nbin
         self.markers['cont'].set_data(wa[::nbin], co[::nbin])
         self.markers['resid'].set_data(wa[::nbin], resid[::nbin])
@@ -473,21 +479,21 @@ class InteractiveCoFit(object):
                 try:
                     fwhm = float(c)
                 except TypeError:
-                    print 'FWHM must be a floating point number >= 1'
+                    print('FWHM must be a floating point number >= 1')
                 if fwhm < 1:
                     self.smoothby = None
                 else:
                     self.smoothby = fwhm
                 self.update()
         elif event.key == '?':
-            print self.help_message
+            print(self.help_message)
 
     def on_button_release(self, event):
         self.update()
 
     def modifypoints(self):
         """ Add/remove continuum points."""
-        print self.help_message
+        print(self.help_message)
         id1 = self.fig.canvas.mpl_connect('key_press_event',self.on_keypress)
         id2 = self.fig.canvas.mpl_connect('button_release_event',self.on_button_release)
         self.connections.extend([id1, id2])

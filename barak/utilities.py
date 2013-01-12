@@ -1,4 +1,13 @@
 """ Various general-use functions."""
+
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+import sys
+if sys.version > '3':
+    xrange = range
+
 from textwrap import wrap
 import sys, os
 import numpy as np
@@ -273,13 +282,13 @@ def indexnear(ar, val):
     --------
     >>> wa = np.linspace(4000, 4500, 100)
     >>> i = indexnear(wa, 4302.5)
-    >>> print i, wa[i]
+    >>> i, wa[i]
     60 4303.03030303
     >>> i = indexnear(wa, 4600.0)
-    >>> print i, wa[i]
+    >>> i, wa[i]
     99 4500.0
     >>> i = indexnear(wa, 3000.0)
-    >>> print i, wa[i]
+    >>> i, wa[i]
     0 4000.0
     """
 
@@ -336,7 +345,7 @@ def find_edges_true_regions(condition):
     --------
     >>> a = np.array([3,0,1,4,6,7,8,6,3,2,0,3,4,5,6,4,2,0,2,5,0,3])
     >>> ileft, iright = find_edges_true_regions(a > 2)
-    >>> zip(ileft, iright)
+    >>> list(zip(ileft, iright))
     [(0, 0), (3, 8), (11, 15), (19, 19), (21, 21)]
 
     """
@@ -384,7 +393,7 @@ def meshgrid_nd(*arrs):
     """ Like numpy's meshgrid, but works on more than two dimensions.
     """
     arrs = tuple(reversed(arrs))
-    lens = map(len, arrs)
+    lens = list(map(len, arrs))
     dim = len(arrs)
 
     sz = 1

@@ -1,7 +1,13 @@
 """ Interpolation-related functions and classes.
 """ 
+
+# p2.6+ compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import numpy as np
-from utilities import between, indices_from_grid, meshgrid_nd
+from .utilities import between, indices_from_grid, meshgrid_nd
 
 class CubicSpline(object):
     """ Class to generate a cubic spline through a set of points.
@@ -100,13 +106,13 @@ class CubicSpline(object):
           1st derivative of f(x) at x[-1].  If None, then 2nd
           derivative is set to 0 ('natural').
         """
-        if verbose:  print 'first deriv,last deriv',firstderiv,lastderiv
+        if verbose:  print('first deriv,last deriv', firstderiv, lastderiv)
         x, y, npts = self.x, self.y, self.npts
         d2 = np.empty(npts)
         temp = np.empty(npts-1)
 
         if firstderiv is None:
-            if verbose:  print "Lower boundary condition set to 'natural'"
+            if verbose:  print("Lower boundary condition set to 'natural'")
             d2[0] = 0.
             temp[0] = 0.
         else:
@@ -116,7 +122,7 @@ class CubicSpline(object):
         temp = self._tridiag(temp,d2)
 
         if lastderiv is None:
-            if verbose:  print "Upper boundary condition set to 'natural'"
+            if verbose:  print("Upper boundary condition set to 'natural'")
             qn = 0.
             un = 0.
         else:

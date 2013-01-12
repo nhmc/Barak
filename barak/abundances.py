@@ -23,9 +23,11 @@ cond_temp:
   gaseous state.
 
 """
+from __future__ import unicode_literals
+
 import numpy as np
-from utilities import get_data_path
-from io import readtxt
+from .utilities import get_data_path
+from .io import readtxt
 from collections import OrderedDict
 
 datapath = get_data_path()

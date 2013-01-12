@@ -1,7 +1,12 @@
 """ Functions related to convolution.""" 
+
+# py2.6+ compatibility
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import numpy as np
-from utilities import nan2num
-from sed import make_constant_dv_wa_scale
+from .utilities import nan2num
+from .sed import make_constant_dv_wa_scale
 
 def convolve_psf(a, fwhm, edge='invert', replace_nan=True, debug=False):
     """ Convolve an array with a gaussian window.
@@ -39,7 +44,7 @@ def convolve_psf(a, fwhm, edge='invert', replace_nan=True, debug=False):
     if replace_nan:
         a = nan2num(a, replace='interp')
     if debug:
-        print "First and last %s pixels of output array will be invalid" % n
+        print("First and last {0} pixels of output will be invalid".format(n))
     x = np.linspace(-n, n, 2*n + 1)        # total no. of pixels = 2n+1
     gauss = np.exp(-0.5 * (x / sigma) ** 2 )
 

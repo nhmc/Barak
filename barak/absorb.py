@@ -1,19 +1,30 @@
 """ This module has routines for analysing the absorption profiles
 from ions and molecules.
 """
+
+# p2.6+ compatibility
 from __future__ import division
-from voigt import voigt
-from convolve import convolve_psf
-from utilities import between, adict, get_data_path, indexnear
-from constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
-from spec import find_wa_edges
-from sed import  make_constant_dv_wa_scale
-from abundances import Asolar
-from pyvpfit import readf26
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import sys
+if sys.version > '3':
+    from io import StringIO
+    basestring = str
+else:
+    from cStringIO import StringIO
+
+from .voigt import voigt
+from .convolve import convolve_psf
+from .utilities import between, adict, get_data_path, indexnear
+from .constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
+from .spec import find_wa_edges
+from .sed import  make_constant_dv_wa_scale
+from .abundances import Asolar
+from .pyvpfit import readf26
 
 import numpy as np
 
-from cStringIO import StringIO
 import math
 from math import pi, sqrt, exp
 
@@ -71,8 +82,8 @@ def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
     # Now use doppler relation between v and nu assuming gam << nu0
     gam_v = gam / nu0 * c             # cm/s
     if debug:
-        print ('Widths in km/s (Lorentzian Gamma, Gaussian b):',
-               gam_v/1.e5, b/1.e5)
+        print('Widths in km/s (Lorentzian Gamma, Gaussian b):',
+              gam_v/1.e5, b/1.e5)
 
     if verbose:
         fwhml = gam_v / (2.*pi)                # cm/s
@@ -93,8 +104,9 @@ def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
         fwhm = max(gam_v/1.e5, fwhmg/1.e5)
         
         if vstep > fwhm:
-            print 'Warning: tau profile undersampled!'
-            print '  Pixel width: %f km/s, transition fwhm: %f km/s' % (vstep,fwhm)
+            print('Warning: tau profile undersampled!')
+            print('  Pixel width: %f km/s, transition fwhm: %f km/s' % (
+                vstep, fwhm))
             # best not to correct for this here, because even if we do,
             # we'll get nonsense if we convolve the resulting flux with an
             # instrumental profile.  Need to use smaller dv size
@@ -203,7 +215,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     if debug:
         i = int(len(wa)/2)
         psize =  c_kms * (wa[i] - wa[i-1]) / wa[i]
-        print 'approx pixel width %.1f km/s at %.1f Ang' % (psize, wa[i])
+        print('approx pixel width %.1f km/s at %.1f Ang' % (psize, wa[i]))
 
     #select only ions with redshifted central wavelengths inside wa,
     #+/- the padding velocity range vpad.
@@ -213,7 +225,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     trans = ion[between(obswavs, wmin, wmax)]
     if debug:
         if len(trans) == 0:
-            print 'No transitions found overlapping with wavelength array'
+            print('No transitions found overlapping with wavelength array')
 
     tickmarks = []
     sumtau = np.zeros_like(wa)
@@ -272,7 +284,8 @@ def find_tau(wa, lines, atom, per_trans=False):
         ticks.extend(tick)
         ions.extend([ion]*len(tick))
 
-    ticks = np.rec.fromarrays([ions] + zip(*ticks),names='name,wa,z,wa0,ind')
+    ticks = np.rec.fromarrays([ions] + zip(*ticks),
+                              names=str('name,wa,z,wa0,ind'))
 
     if per_trans:
         return tau, ticks, taus
@@ -524,7 +537,7 @@ def readatom(filename=None, debug=False,
     atomflat = []
     specials = set(['??', '__', '>>', '<<', '<>'])
     for line in fh:
-        if debug:  print line
+        if debug:  print(line)
         if not line[0].isupper() and line[:2] not in specials:
             continue
         ion = line[:6].replace(' ','')
@@ -544,9 +557,9 @@ def readatom(filename=None, debug=False,
     fh.close()
     # turn each ion into a record array
     for ion in atom:
-        atom[ion] = np.rec.fromrecords(atom[ion], names='wa,osc,gam')
+        atom[ion] = np.rec.fromrecords(atom[ion], names=str('wa,osc,gam'))
 
-    atomflat = np.rec.fromrecords(atomflat,names='name,wa,osc,gam')
+    atomflat = np.rec.fromrecords(atomflat,names=str('name,wa,osc,gam'))
 
     if flat:
         return atom, atomflat
@@ -672,12 +685,12 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
     """
     off = -12 + logN + logZ
     temp = b_to_T('H', bHI)
-    print 'b %.2f km/s gives a temperature of %.1f K' % (bHI, temp)
+    print('b %.2f km/s gives a temperature of %.1f K' % (bHI, temp))
     
     elements = 'O Si Fe C Ca Al Ti N Zn Cr'.split()
     b = dict((el, T_to_b(el, temp)) for el in elements)
-    print 'using low ion b values:'
-    print ', '.join('%s %.1f' % (el, b[el]) for el in elements)
+    print('using low ion b values:')
+    print(', '.join('%s %.1f' % (el, b[el]) for el in elements))
     
     f26 = [
         'HI    %.6f  0  %.2f 0 %.2f 0' % (z, bHI, logN),    
@@ -696,7 +709,7 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
         'CrII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Cr'], (Asolar['Cr']  + off)),
         ]
     if highions:
-        print 'Including O VI, Si IV, C IV and N V'
+        print('Including O VI, Si IV, C IV and N V')
         logNCIV = 15.
         logNSiIV = logNCIV - (Asolar['C'] - Asolar['Si'] )
         f26 = f26 + [
@@ -706,7 +719,7 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
             'NV    %.6f  0  30.0 0 15.0 0' % z,
             ]
     if molecules:
-        print 'Including H_2 and CO'
+        print('Including H_2 and CO')
         f26 = f26 + [
             'H2J0  %.6f  0  5.0  0 18.0 0' % z,
             'H2J1  %.6f  0  5.0  0 19.0 0' % z,
