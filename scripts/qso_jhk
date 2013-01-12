@@ -2,8 +2,9 @@
 """ Plot the spectrum of a QSO in the IR overlayed with atmospheric
 absorption and sky background emission.
 """
-from barak.sed import get_bands
-from barak.spec import qso_template
+from __future__ import print_function
+from barak.sed import get_bands, qso_template
+
 from barak.utilities import between, get_data_path
 from barak.io import readtxt
 
