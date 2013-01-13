@@ -178,7 +178,7 @@ def blackbody_nu(nu, T):
     --------
     blackbody_lam
     """
-    from constants import hplanck, c, kboltz
+    from .constants import hplanck, c, kboltz
     return 2*hplanck*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
 
 def blackbody_lam(lam, T):
@@ -198,7 +198,7 @@ def blackbody_lam(lam, T):
     --------
     blackbody_nu
     """
-    from constants import hplanck, c, kboltz
+    from .constants import hplanck, c, kboltz
     # to cm
     lam = lam * 1e-8
     # erg/s/cm^2/cm/sr
