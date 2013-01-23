@@ -592,7 +592,8 @@ def calc_log_minor_ticks(majticks):
 
     return minticks
 
-def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
+def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True,
+                  c='k'):
     """ plot a ticks on a wavelength scale.
 
     This plots ticks (such as those returned by `find_tau()`) on a
@@ -614,7 +615,9 @@ def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
       contain this string in their name.
     labels : bool (True)
       Whether to plot labels next to the tickmarks.
-
+    c : matplotlib colour ('k')
+      Tick colour. The default is black.
+      
     Returns
     -------
     Ticks, Tlabels : Matplotlib collection of tickmarks and tick labels.
@@ -638,7 +641,7 @@ def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
         Tlabels.append(ax.text(t.wa, ymin[i] + 1.1*height, label, rotation=60,
                                fontsize=8, va='bottom', alpha=0.7))
 
-    Ticks = ax.vlines(ticks.wa[c1], ymin[c1], ymin[c1] + height, color='c',
+    Ticks = ax.vlines(ticks.wa[c1], ymin[c1], ymin[c1] + height, color=c,
                       lw=1) 
 
     return Ticks, Tlabels
