@@ -19,22 +19,22 @@ from .constants import c_kms
 
 len_filename = 150
 
-dtype_lines = [('name', 'S6'),
+dtype_lines = [('name', 'U6'),
                ('z', 'f8'),
-               ('zpar', 'S2'),
+               ('zpar', 'U2'),
                ('b', 'f8'),
-               ('bpar', 'S2'),
+               ('bpar', 'U2'),
                ('logN', 'f8'),
-               ('logNpar', 'S2'),
+               ('logNpar', 'U2'),
                ('zsig', 'f8'),
                ('bsig', 'f8'),
                ('logNsig', 'f8')]
 
-dtype_regions = [('filename', 'S%i' % len_filename),
-                 ('num', 'S2'),
+dtype_regions = [('filename', 'U%i' % len_filename),
+                 ('num', 'U2'),
                  ('wmin', 'f8'),
                  ('wmax', 'f8'),
-                 ('resolution', 'S100')]
+                 ('resolution', 'U100')]
 
 def parse_entry(entry):
     """ Separates an entry into a numeric value and a tied/fixed
@@ -207,7 +207,7 @@ def readf26(fh, res=None):
     For example: res='vsig=69.0'
     """
     if isinstance(fh, basestring):
-        fh = open(fh)
+        fh = open(fh, 'rt')
     f = fh.readlines()
     fh.close()
     vp = VpfitModel()
