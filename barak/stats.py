@@ -207,7 +207,7 @@ def blackbody_lam(lam, T):
     # erg/s/cm^2/Ang/sr
     return Jlam * 1e8
 
-def remove_outliers(data, nsigma, clip='both', method='median',
+def remove_outliers(data, nsig_lo, nsig_hi, method='median',
                     nitermax=100, verbose=False):
     """Strip outliers from a dataset, iterating until converged.
 
@@ -215,9 +215,12 @@ def remove_outliers(data, nsigma, clip='both', method='median',
     ----------
       data : 1D numpy array.
         data from which to remove outliers.
-      nsigma : float
-        limit defining outliers: number of standard deviations from
-        center of data.
+      nsigma_lo : float
+        limit defining low outliers: number of standard deviations below the
+        centre of the data.
+      nsigma_hi : float
+        limit defining high outliers: number of standard deviations above the
+        centre of the data.
       clip : {'low'|'high'|'both'}
         Respectively removes outliers below, above, or on both sides
         of the limits set by nsigma.
@@ -245,11 +248,11 @@ def remove_outliers(data, nsigma, clip='both', method='median',
         method = funcs[method]
 
     if clip == 'low':
-        def find_outliers(d, cen, thresh): return d > (cen - thresh)
+        def find_good(d, cen, thresh): return d > (cen - thresh)
     elif clip == 'high':
-        def find_outliers(d, cen, thresh): return d < (cen + thresh)
+        def find_good(d, cen, thresh): return d < (cen + thresh)
     else:
-        def find_outliers(d, cen, thresh): return np.abs(d) < (cen + thresh)
+        def find_good(d, cen, thresh): return np.abs(d) < (cen + thresh)
 
     good = ~np.isnan(data)
     ngood = good.sum()
@@ -259,7 +262,9 @@ def remove_outliers(data, nsigma, clip='both', method='median',
         centre = method(d)
         stdev = d.std()
         if stdev > 0:
-            good[good] = find_outliers(d, centre, nsigma*stdev)
+            c0 = d > (centre - nsigma_lo * stdev)
+            c0 &= d < (centre + nsigma_hi * stdev)
+            good[good] = c0
 
         niter += 1
         ngoodnew = good.sum()
