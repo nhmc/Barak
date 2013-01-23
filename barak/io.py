@@ -422,6 +422,8 @@ def parse_config(filename, defaults={}):
                 elif value == 'None':
                     value = None
 
+        if option in cfg and option not in defaults:
+            raise RuntimeError('%s is specified twice in %s' % (option, cfg))
         cfg[option] = value
 
     fh.close()
