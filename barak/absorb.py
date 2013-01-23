@@ -284,7 +284,7 @@ def find_tau(wa, lines, atom, per_trans=False):
         ticks.extend(tick)
         ions.extend([ion]*len(tick))
 
-    ticks = np.rec.fromarrays([ions] + zip(*ticks),
+    ticks = np.rec.fromarrays([ions] + list(zip(*ticks)),
                               names=str('name,wa,z,wa0,ind'))
 
     if per_trans:
@@ -529,14 +529,15 @@ def readatom(filename=None, debug=False,
 
     if filename.endswith('.gz'):
         import gzip
-        fh = gzip.open(filename)
+        fh = gzip.open(filename, 'rb')
     else:
-        fh = open(filename)
+        fh = open(filename, 'rb')
 
     atom = dict()
     atomflat = []
     specials = set(['??', '__', '>>', '<<', '<>'])
     for line in fh:
+        line = line.decode('utf-8')
         if debug:  print(line)
         if not line[0].isupper() and line[:2] not in specials:
             continue
@@ -556,6 +557,7 @@ def readatom(filename=None, debug=False,
 
     fh.close()
     # turn each ion into a record array
+
     for ion in atom:
         atom[ion] = np.rec.fromrecords(atom[ion], names=str('wa,osc,gam'))
 
