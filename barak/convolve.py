@@ -101,7 +101,7 @@ def convolve_window(a, window, edge='invert'):
         med2 = np.median(a[-edge:])
         temp1 =  med1 * np.ones(n) , a, med2 * np.ones(n)
 
-    temp2 = np.convolve(np.concatenate(temp1), window, mode='same')
+    temp2 = np.convolve(np.concatenate(temp1), window, mode=str('same'))
 
     return temp2[n:-n]
 
