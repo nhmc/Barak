@@ -207,3 +207,68 @@ def blackbody_lam(lam, T):
     # erg/s/cm^2/Ang/sr
     return Jlam * 1e8
 
+def remove_outliers(data, nsigma, clip='both', method='median',
+                    nitermax=100, verbose=False):
+    """Strip outliers from a dataset, iterating until converged.
+
+    Parameters
+    ----------
+      data : 1D numpy array.
+        data from which to remove outliers.
+      nsigma : float
+        limit defining outliers: number of standard deviations from
+        center of data.
+      clip : {'low'|'high'|'both'}
+        Respectively removes outliers below, above, or on both sides
+        of the limits set by nsigma.
+      method : {'mean'|'median'|function}
+        set central value, or method to compute it.
+      nitermax : int
+        number of iterations before exit; defaults to 100
+
+    Returns
+    -------
+    mask : boolean array same shape as data
+      This is False wherever there is an outlier.
+    """
+    # 2009-09-04 13:24 IJC: Created
+    # 2009-09-24 17:34 IJC: Added 'retind' feature.  Tricky, but nice!
+    # 2009-10-01 10:40 IJC: Added check for stdev==0
+    # 2009-12-08 15:42 IJC: Added check for isfinite
+
+    # if a string, use the corresponding numpy function
+
+    data = np.asarray(data).ravel()
+
+    funcs = {'mean': np.mean, 'median': np.median}
+    if method in funcs:
+        method = funcs[method]
+
+    if clip == 'low':
+        def find_outliers(d, cen, thresh): return d > (cen - thresh)
+    elif clip == 'high':
+        def find_outliers(d, cen, thresh): return d < (cen + thresh)
+    else:
+        def find_outliers(d, cen, thresh): return np.abs(d) < (cen + thresh)
+
+    good = ~np.isnan(data)
+    ngood = good.sum()
+    niter = 0
+    while ngood > 0:
+        d = data[good]
+        centre = method(d)
+        stdev = d.std()
+        if stdev > 0:
+            good[good] = find_outliers(d, centre, nsigma*stdev)
+
+        niter += 1
+        ngoodnew = good.sum()
+        if ngoodnew == ngood or niter > nitermax:
+            break
+        if verbose:
+            print(i, ngood, ngoodnew)
+            print("centre, std", centre, stdev)
+
+        ngood = ngoodnew
+
+    return good
