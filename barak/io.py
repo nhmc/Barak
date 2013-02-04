@@ -2,15 +2,14 @@
 """
 
 # python 2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
+from __future__ import division, print_function
 from __future__ import unicode_literals
 import sys
 if sys.version < '3':
     import cPickle as pickle
 else:
     import pickle
-    basestring = str
+    unicode = basestring = str
     xrange = range
 
 import os, gzip
@@ -110,8 +109,10 @@ def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
         len_comment = len(comment)
 
     if names and isinstance(names, basestring):
-        names = [n.strip() for n in names.split(',')]
-
+        names = [n.strip() for n in str(names).split(',')]
+    elif names:
+        names = map(str, names)
+        
     skipped = 0
     out = []
     # main loop to read data
@@ -397,8 +398,6 @@ def parse_config(filename, defaults={}):
     """
     cfg = adict()
 
-    cfg.update(defaults)
-
     if isinstance(filename, basestring):
         fh = open(filename, 'rb')
     else:
@@ -422,9 +421,13 @@ def parse_config(filename, defaults={}):
                 elif value == 'None':
                     value = None
 
-        if option in cfg and option not in defaults:
+        if option in cfg:
             raise RuntimeError('%s is specified twice in %s' % (option, cfg))
         cfg[option] = value
+
+    for key,val in defaults.items():
+        if key not in cfg:
+            cfg[key] = val
 
     fh.close()
     return cfg
