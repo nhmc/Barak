@@ -208,38 +208,31 @@ def blackbody_lam(lam, T):
     return Jlam * 1e8
 
 def remove_outliers(data, nsig_lo, nsig_hi, method='median',
-                    nitermax=100, verbose=False):
+                    nitermax=100, maxfrac_remove=0.95, verbose=False):
     """Strip outliers from a dataset, iterating until converged.
 
     Parameters
     ----------
-      data : 1D numpy array.
+      data : ndarray.
         data from which to remove outliers.
-      nsigma_lo : float
-        limit defining low outliers: number of standard deviations below the
+      nsig_lo : float
+        Clip points that are this number of standard deviations below the
         centre of the data.
-      nsigma_hi : float
-        limit defining high outliers: number of standard deviations above the
+      nsig_hi : float
+        Clip points that are this number of standard deviations above the
         centre of the data.
-      clip : {'low'|'high'|'both'}
-        Respectively removes outliers below, above, or on both sides
-        of the limits set by nsigma.
-      method : {'mean'|'median'|function}
-        set central value, or method to compute it.
+      method : {'mean', 'median', function}
+        Method to find the central value.
       nitermax : int
         number of iterations before exit; defaults to 100
+      maxfrac_remove : float (0.95)  
+        Clip at most this fraction of the original points.
 
     Returns
     -------
     mask : boolean array same shape as data
       This is False wherever there is an outlier.
     """
-    # 2009-09-04 13:24 IJC: Created
-    # 2009-09-24 17:34 IJC: Added 'retind' feature.  Tricky, but nice!
-    # 2009-10-01 10:40 IJC: Added check for stdev==0
-    # 2009-12-08 15:42 IJC: Added check for isfinite
-
-    # if a string, use the corresponding numpy function
 
     data = np.asarray(data).ravel()
 
@@ -247,28 +240,23 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
     if method in funcs:
         method = funcs[method]
 
-    if clip == 'low':
-        def find_good(d, cen, thresh): return d > (cen - thresh)
-    elif clip == 'high':
-        def find_good(d, cen, thresh): return d < (cen + thresh)
-    else:
-        def find_good(d, cen, thresh): return np.abs(d) < (cen + thresh)
-
     good = ~np.isnan(data)
     ngood = good.sum()
     niter = 0
+
+    minpoints = int(len(data) * (1 - maxfrac_remove)) + 1
     while ngood > 0:
         d = data[good]
         centre = method(d)
         stdev = d.std()
         if stdev > 0:
-            c0 = d > (centre - nsigma_lo * stdev)
-            c0 &= d < (centre + nsigma_hi * stdev)
+            c0 = d > (centre - nsig_lo * stdev)
+            c0 &= d < (centre + nsig_hi * stdev)
             good[good] = c0
 
         niter += 1
         ngoodnew = good.sum()
-        if ngoodnew == ngood or niter > nitermax:
+        if ngoodnew == ngood or niter > nitermax or ngoodnew <= minpoints:
             break
         if verbose:
             print(i, ngood, ngoodnew)
@@ -277,3 +265,4 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
         ngood = ngoodnew
 
     return good
+
