@@ -3,9 +3,11 @@ continuum to a QSO spectrum.
 """
 
 # p2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
 
 import numpy as np
 import matplotlib.pyplot as pl
@@ -217,7 +219,7 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
                               (1940., 2240., 15),
                               (2240., 3000., 25),
                               (3000., 6000., 80),
-                              ], names='left,right,num')
+                              ], names=str('left,right,num'))
 
     div.num[2:] = np.ceil(div.num[2:] * divmult)
     div.num[:2] = np.ceil(div.num[:2] * forest_divmult)    
