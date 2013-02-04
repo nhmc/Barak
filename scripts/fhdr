@@ -106,7 +106,7 @@ def main(args):
                 sys.exit()
             if allext:
                 for hdu in fh:
-                    print hdu.header
+                    print(hdu.header)
             else:
                 print(fh[iext].header)
             fh.close()

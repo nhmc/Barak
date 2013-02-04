@@ -45,7 +45,7 @@ CRPIX2
 """.split()
 
 for n in sys.argv[1:]:
-    print n
+    print(n)
     hd = pyfits.getheader(n)
     i = n.index('.fits')
     fh = open((n[:i] + '_wcs.hdr'), 'w')
