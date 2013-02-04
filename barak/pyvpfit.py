@@ -19,22 +19,22 @@ from .constants import c_kms
 
 len_filename = 150
 
-dtype_lines = [('name', 'U6'),
-               ('z', 'f8'),
-               ('zpar', 'U2'),
-               ('b', 'f8'),
-               ('bpar', 'U2'),
-               ('logN', 'f8'),
-               ('logNpar', 'U2'),
-               ('zsig', 'f8'),
-               ('bsig', 'f8'),
-               ('logNsig', 'f8')]
+dtype_lines = [(str('name'),    str('S6')),
+               (str('z'),       str('f8')),
+               (str('zpar'),    str('S2')),
+               (str('b'),       str('f8')),
+               (str('bpar'),    str('S2')),
+               (str('logN'),    str('f8')),
+               (str('logNpar'), str('S2')),
+               (str('zsig'),    str('f8')),
+               (str('bsig'),    str('f8')),
+               (str('logNsig'), str('f8'))]
 
-dtype_regions = [('filename', 'U%i' % len_filename),
-                 ('num', 'U2'),
-                 ('wmin', 'f8'),
-                 ('wmax', 'f8'),
-                 ('resolution', 'U100')]
+dtype_regions = [(str('filename'),   str('S%i' % len_filename)),
+                 (str('num'),        str('S2')),
+                 (str('wmin'),       str('f8')),
+                 (str('wmax'),       str('f8')),
+                 (str('resolution'), str('S100'))]
 
 def parse_entry(entry):
     """ Separates an entry into a numeric value and a tied/fixed
