@@ -1,7 +1,6 @@
 """ This module has routines for analysing the absorption profiles
 from ions and molecules.
 """
-
 # p2.6+ compatibility
 from __future__ import division
 from __future__ import print_function
@@ -34,14 +33,11 @@ DATAPATH = get_data_path()
 # this constant gets used in several functions (units of cm^2/s)
 e2_me_c = e**2 / (me*c)
 
-def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
-    """ Returns the optical depth (Voigt profile) for a transition.
+def calc_sigma_on_f(vel, wa0, gam, b, debug=False, verbose=True):
+    """ Calculate the quantity sigma / oscillator strength.
 
-    Given an transition with rest wavelength wa0, osc strength,
-    natural linewidth gam; b parameter (doppler and turbulent); and
-    log10 (column density), returns the optical depth in velocity
-    space. v is an array of velocity values in km/s. The absorption
-    line must be centred at v=0.
+    Multiply this by the oscillator strength and the column density
+    (cm^-2) to get the optical depth.
 
     Parameters
     ----------
@@ -49,34 +45,18 @@ def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
       Velocities in km/s.
     wa0 : float
       Rest wavelength of transition in Angstroms.
-    osc : float
-      Oscillator strength of transition (dimensionless).
     gam : float
       Gamma parameter for the transition (dimensionless).
-    logN : float:
-      log10 of the column density in absorbers per cm^2.
     b : float
       *b* parameter (km/s).
 
     Returns
     -------
-    tau : array of floats, shape (N,)
-      The optical depth as a function of `vel`.
-
-    Notes
-    -----
-    The step size for `vel` must be small enough to properly
-    sample the profile.
-
-    To map the velocity array to some wavelength for a transitions
-    with rest wavelength wa0 at redshift z:
-
-    >>> z = 3.0
-    >>> wa = wa0 * (1 + z) * (1 + v/c_kms)
+    sigma_on_f: array, shape (N,)
+      sigma/oscillator strength in units of cm^2.
     """
     # note units are cgs
     wa0 = wa0 * 1e-8                    # cm
-    N = 10**logN                          # absorbers/cm^2
     b = b * 1e5                           # cm/s
     nu0 = c / wa0                        # rest frequency, s^-1
     # Now use doppler relation between v and nu assuming gam << nu0
@@ -117,9 +97,59 @@ def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
     u = 1.e5 / b * vel                         # dimensionless
     a = gam_v / (4*pi*b)                       # dimensionless
     vp = voigt(a, u)                           # dimensionless
-    tau = pi * e2_me_c * N * osc * wa0 / (sqrt(pi) * b) * vp # dimensionless
+    
+    # Note the below isn't exactly the same as sigma as defined by
+    # Draine et al. It must be multiplid by the oscillator strength
+    # and the coloumn density to give the optical depth.
+    sigma = pi * e2_me_c * wa0 / (sqrt(pi) * b) * vp
 
-    return tau
+    return sigma
+
+
+def calctau(vel, wa0, osc, gam, logN, b, debug=False, verbose=True):
+    """ Returns the optical depth (Voigt profile) for a transition.
+
+    Given an transition with rest wavelength wa0, osc strength,
+    natural linewidth gam; b parameter (doppler and turbulent); and
+    log10 (column density), returns the optical depth in velocity
+    space. v is an array of velocity values in km/s. The resulting
+    absorption feature is centred at v=0.
+
+    Parameters
+    ----------
+    vel : array of floats, shape (N,)
+      Velocities in km/s.
+    wa0 : float
+      Rest wavelength of transition in Angstroms.
+    osc : float
+      Oscillator strength of transition (dimensionless).
+    gam : float
+      Gamma parameter for the transition (dimensionless).
+    logN : float:
+      log10 of the column density in absorbers per cm^2.
+    b : float
+      *b* parameter (km/s).
+
+    Returns
+    -------
+    tau : array of floats, shape (N,)
+      The optical depth as a function of `vel`.
+
+    Notes
+    -----
+    The step size for `vel` must be small enough to properly
+    sample the profile.
+
+    To map the velocity array to some wavelength for a transition
+    with rest wavelength `wa0` at redshift `z`:
+
+    >>> z = 3.0
+    >>> wa = wa0 * (1 + z) * (1 + v/c_kms)
+    """
+    temp = calc_sigma_on_f(vel, wa0, gam, b, debug=debug, verbose=verbose)
+    # note units are cgs
+    return (10**logN * osc) * temp
+
 
 def calc_tau_peak(logN, b, wa0, osc):
     """ Find the optical depth of a transition at line centre assuming
@@ -294,9 +324,11 @@ def find_tau(wa, lines, atom, per_trans=False):
 
 
 def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
-            cohi=0.02, colo=0.02):
+            cohi=0.05, colo=0.05):
     """ Find the rest equivalent width of a feature, and column
     density assuming optically thin.
+
+    You must give either fl, er and co, or ew and ewer.
 
     Parameters
     ----------
@@ -317,11 +349,11 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
       Observed flux 1 sigma error.
     co : array of floats, shape (N,), optional
       Observed continuum.
-    cohi : float (0.02)
+    cohi : float (0.05)
       When calculating one sigma upper error and detection limit,
       increase the continuum by this fractional amount. Only used if
       fl, er and co are also given.
-    colo : float (0.02)
+    colo : float (0.05)
       When calculating one sigma lower error decrease the continuum by
       this fractional amount.  Only used if fl, er and co are also
       given.
@@ -330,18 +362,27 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
     -------
     A dictionary with keys:
 
-    ======== =========================================================
-    logN     1 sigma low val, value, 1 sigma upper val
-    Ndetlim  log N 5 sigma upper limit
-    Wr       Rest equivalent width in same units as wa
-    Wre      1 sigma error on rest equivalent width
-    zp1      1 + redshift
-    ngoodpix number of good pixels contributing to the measurements 
-    Nmult    multiplier to get from equivalent width to column density
-    ======== =========================================================
+    ========= =========================================================
+    logN      1 sigma low val, value, 1 sigma upper val
+    Ndetlim   log N 5 sigma upper limit
+    Wr        Rest equivalent width in same units as wa
+    Wre       1 sigma error on rest equivalent width
+    zp1       1 + redshift
+    ngoodpix  number of good pixels contributing to the measurements 
+    Nmult     multiplier to get from equivalent width to column density
+    saturated Are more than 10% of the pixels between limits saturated?
+    ========= =========================================================
     """
     wa1 = wa[i0:i1+1]
+
+    npts = i1 - i0 + 1
+    # if at least this many points are saturated, then mark the
+    # transition as saturated
+    n_saturated_thresh = int(0.1 * npts)
+    saturated = None
+    
     if ew is None:
+        assert None not in (fl, er, co)
         wedge = find_wa_edges(wa1)
         dw = wedge[1:] - wedge[:-1]
         ew1 = dw * (1 - fl[i0:i1+1] / co[i0:i1+1]) 
@@ -352,7 +393,13 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
         c = (1 - colo) * co[i0:i1+1]
         ew1lo = dw * (1 - fl[i0:i1+1] / c)
         ewer1lo = dw * er[i0:i1+1] / c
+        if (fl[i0:i1+1] < er[i0:i1+1]).sum() >= n_saturated_thresh:
+            saturated = True
+        else:
+            saturated = False
+        
     else:
+        assert None not in (ew, ewer)
         ew1 = np.array(ew[i0:i1+1])
         ewer1 = np.array(ewer[i0:i1+1])
 
@@ -393,16 +440,17 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
     # 5 sigma detection limit
     detlim = np.log10( Nmult * 5*Wre )
 
-    c = np.log10(Nmult * Wr)
+    logN = np.log10(Nmult * Wr)
     if fl is not None:
-        chi = np.log10( Nmult * (Wrhi + Wrehi) )
-        clo = np.log10( Nmult * (Wrlo - Wrelo) )
+        logNhi = np.log10( Nmult * (Wrhi + Wrehi) )
+        logNlo = np.log10( Nmult * (Wrlo - Wrelo) )
     else:
-        chi = np.log10( Nmult * (Wr + Wre) )
-        clo = np.log10( Nmult * (Wr - Wre) )
+        logNhi = np.log10( Nmult * (Wr + Wre) )
+        logNlo = np.log10( Nmult * (Wr - Wre) )
 
-    return adict(logN=(clo,c,chi), Ndetlim=detlim, Wr=Wr, Wre=Wre, zp1=zp1,
-                 ngoodpix=good.sum(), Nmult=Nmult)
+    return adict(logN=(logNlo,logN,logNhi), Ndetlim=detlim,
+                 Wr=Wr, Wre=Wre, zp1=zp1,
+                 ngoodpix=good.sum(), Nmult=Nmult, saturated=saturated)
 
 def b_to_T(atom, bvals):
     """ Convert b parameters (km/s) to a temperature in K for an atom
