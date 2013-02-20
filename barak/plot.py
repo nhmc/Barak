@@ -289,7 +289,7 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
     if pl.isinteractive():
         pl.show()
 
-    return ax
+    return [l]
 
 def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
           label=None, loc='right,bottom', xhistmax=None, yhistmax=None,
@@ -645,3 +645,13 @@ def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True,
                       lw=1) 
 
     return Ticks, Tlabels
+
+def get_subplot(nrow, ncol, num):
+    """ Get a matplotlib subplot.
+
+    Like pylab.subplot, but the numbering goes down column rather than
+    across rows.
+    """
+    i = num - 1
+    num_new = (i % nrow ) * ncol + i // nrow + 1
+    return plt.subplot(nrow, ncol, num_new)
