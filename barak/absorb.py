@@ -99,8 +99,8 @@ def calc_sigma_on_f(vel, wa0, gam, b, debug=False, verbose=True):
     vp = voigt(a, u)                           # dimensionless
     
     # Note the below isn't exactly the same as sigma as defined by
-    # Draine et al. It must be multiplid by the oscillator strength
-    # and the coloumn density to give the optical depth.
+    # Draine et al. It must be multiplied by the oscillator strength
+    # and the column density to give the optical depth.
     sigma = pi * e2_me_c * wa0 / (sqrt(pi) * b) * vp
 
     return sigma
@@ -840,3 +840,50 @@ def guess_logN_b(ion, wa0, osc, tau0):
         b = 30.
 
     return logN_from_tau_peak(tau0, b, wa0, osc), b
+
+def Nvel_from_tau(tau, wa, osc):
+    """ Returns the N_vel, the column density per velocity interval.
+
+    Parameters
+    ----------
+    tau : array_like, shape (N,)
+      Array of optical depths/    
+    wa : float
+      Rest wavelength of the transition.
+    osc : float
+      Transition oscillator strength.
+
+    Returns
+    -------
+    N_vel : ndarray, shape (N,)
+      The column density per velocity interval, with units cm^-2
+      (km/s)^-1 Multiply this by a velocity interval in km/s to get a
+      column density.
+    """
+    # the 1e5 here converts from (cm/s)^-1 to (km/s)^-1 
+    return tau / (pi * e2_me_c * osc) / (wa * 1e-8) * 1e5
+
+
+def Nlam_from_tau(tau, wa, osc):
+    """ Returns the N_lambda, the column density per rest wavelength
+    interval.
+
+    Parameters
+    ----------
+    tau : array_like, shape (N,)
+      Array of optical depths/    
+    wa : float
+      Rest wavelength of the transition.
+    osc : float
+      Transition oscillator strength.
+
+    Returns
+    -------
+    N_vel : ndarray, shape (N,)
+
+      The column density per velocity interval, with units cm^-2
+      Angstrom^-1. Multiply this by a rest wavelength interval in
+      Angstroms to get a column density.
+    """
+    # the 1e-8 here converts from cm^-1 to Angstrom^-1 
+    return tau / (pi * e2_me_c * osc) * c / (wa * 1e-8)**2 * 1e-8
