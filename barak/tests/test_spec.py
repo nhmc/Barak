@@ -3,8 +3,8 @@ from ..utilities import get_data_path
 
 DATAPATH = get_data_path()
 
-def test_find_wa_edges():
-    assert np.allclose(find_wa_edges([1, 2.1, 3.3, 4.6]),
+def test_find_bin_edges():
+    assert np.allclose(find_bin_edges([1, 2.1, 3.3, 4.6]),
                        [0.45,  1.55,  2.7,   3.95,  5.25])
 
 def test_make_wa_scale():

@@ -17,7 +17,7 @@ from .voigt import voigt
 from .convolve import convolve_psf
 from .utilities import between, adict, get_data_path, indexnear
 from .constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
-from .spec import find_wa_edges
+from .spec import find_bin_edges
 from .sed import  make_constant_dv_wa_scale
 from .abundances import Asolar
 from .pyvpfit import readf26
@@ -383,7 +383,7 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
     
     if ew is None:
         assert None not in (fl, er, co)
-        wedge = find_wa_edges(wa1)
+        wedge = find_bin_edges(wa1)
         dw = wedge[1:] - wedge[:-1]
         ew1 = dw * (1 - fl[i0:i1+1] / co[i0:i1+1]) 
         ewer1 = dw * er[i0:i1+1] / co[i0:i1+1]

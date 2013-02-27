@@ -23,6 +23,7 @@ from .convolve import convolve_psf
 from .io import readtxt, readtabfits, loadtxt
 from .plot import axvlines, axvfill, puttext
 from .constants import c_kms
+from .stats import remove_outliers
 
 DATAPATH = get_data_path()
 
@@ -48,20 +49,19 @@ def getwave(hd):
     npts = hd['NAXIS1']
     return make_wa_scale(wstart, dw, npts, constantdv=dv)
 
-def find_wa_edges(wa):
-    """ Given wavelength bin centres, find the edges of wavelengh
-    bins.
+def find_bin_edges(cbins):
+    """ Given bin centres, find the bin edges.
 
     Examples
     --------
-
-    >>> print find_wa_edges([1, 2.1, 3.3, 4.6])
+    >>> print find_bin_edges([1, 2.1, 3.3, 4.6])
     [ 0.45  1.55  2.7   3.95  5.25]
     """
-    wa = np.asarray(wa)
-    edges = wa[:-1] + 0.5 * (wa[1:] - wa[:-1])
-    edges = [2*wa[0] - edges[0]] + edges.tolist() + [2*wa[-1] - edges[-1]]
-    return np.array(edges)
+    cbins = np.asarray(cbins)
+    edges = cbins[:-1] + 0.5 * (cbins[1:] - cbins[:-1])
+    edges = np.concatenate( ([2*cbins[0] - edges[0]], edges,
+                             [2*cbins[-1] - edges[-1]]) )
+    return edges
 
 def make_wa_scale(wstart, dw, npts, constantdv=False, verbose=False):
     """ Generates a wavelength scale from the wstart, dw, and npts
@@ -545,8 +545,8 @@ def rebin(wav, fl, er, **kwargs):
     # Create rebinned spectrum wavelength scale
     sp1 = Spectrum(**kwargs)
     # find pixel edges, used when rebinning
-    edges0 = find_wa_edges(wav)
-    edges1 = find_wa_edges(sp1.wa)
+    edges0 = find_bin_edges(wav)
+    edges1 = find_bin_edges(sp1.wa)
     if debug:
         pl.clf()
         x0,x1 = edges1[0:2]
@@ -928,7 +928,7 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
         lines = readtxt(DATAPATH + 'linelists/galaxy_lines', names='wa,name,select')
     else:
         lines = np.rec.fromrecords([(l['name'], l['wa']) for l in lines],
-                                   names='name,wa')
+                                   names=str('name,wa'))
     autoscale = ax.get_autoscale_on()
     if autoscale:
         ax.set_autoscale_on(False)
@@ -1095,7 +1095,7 @@ def writesp(filename, sp, resvel=None, overwrite=False):
 
 
     
-def find_cont(fl, fwhm1=300, fwhm2=200, nchunks=4):
+def find_cont(fl, fwhm1=300, fwhm2=200, nchunks=4, nsiglo=2, nsighi=3):
     """ Given the flux, estimate the continuum. fwhm values are
     smoothing lengths.
     """
@@ -1113,14 +1113,17 @@ def find_cont(fl, fwhm1=300, fwhm2=200, nchunks=4):
     nfl = fl / co
     step = npts // nchunks  + 1
     ind = range(0, npts, step) + [npts]
-    igood = []
+    #igood = []
+    good = np.ones(len(nfl), dtype=bool)
     for i0,i1 in zip(ind[:-1], ind[1:]):
-        isort = nfl[i0:i1].argsort()
-        len_isort = len(isort)
-        j0,j1 = int(0.05 * len_isort), int(0.95 * len_isort)
-        igood.extend(isort[j0:j1]+i0)
+        c0 = remove_outliers(nfl[i0:i1], nsiglo, nsighi)
+        good[i0:i1] &= c0
+        #isort = nfl[i0:i1].argsort()
+        #len_isort = len(isort)
+        #j0,j1 = int(0.05 * len_isort), int(0.95 * len_isort)
+        #igood.extend(isort[j0:j1]+i0)
 
-    good = np.in1d(indices, igood)
+    #good = np.in1d(indices, igood)
     sfl = fl.copy()
 
     sfl[~good] = np.interp(indices[~good], indices[good], sfl[good])
@@ -1278,3 +1281,37 @@ def air2vac_Ciddor(airw):
     if len(vacw) == 1:
         return vacw[0]
     return vacw
+
+def resamplespec(wa1, wa, fl, oversamp=100):
+    """
+    Resample a spectrum while conserving flux density.
+
+    Parameters
+    ----------
+    wa1 : sequence
+      new wavelength grid (i.e., center wavelength of each pixel)
+    wa : sequence
+      old wavelength grid (i.e., center wavelength of each pixel)
+    fl : sequence
+      old spectrum (e.g. flux density or photon counts)
+    oversamp : int
+      The factor by which to oversample input spectrum prior to
+      rebinning.  The worst fractional precision one achieves is
+      roughly 1./oversamp.
+
+    References
+    ----------
+    Originally written by Ian Crossfield.
+    """
+    wa_oversamp = np.linspace(wa[0], wa[-1], len(wa) * oversamp)
+    fl_oversamp = np.interp(wa_oversamp, wa, fl) / oversamp
+
+    # Set up the bin edges for down-binning
+    wbin_edges = find_bin_edges(wa1)
+    # Bin down the interpolated spectrum
+    indices = wa_oversamp.searchsorted(wbin_edges)
+    fl_resampled = []
+    for i0,i1 in zip(indices[:-1], indices[1:]):
+        fl_resampled.append(fl_oversamp[i0:i1].sum())
+
+    return np.array(fl_resampled)
