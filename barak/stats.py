@@ -96,7 +96,7 @@ def poisson_confidence_interval(conf, nevents):
     """        
     if nevents == 0:
         return poisson_min_max_limits(conf, nevents)
-    return poisson_min_max_limits(conf + 0.5*(100-conf), nevents)
+    return poisson_min_max_limits(conf + 0.5*(100 - conf), nevents)
 
 def binomial_min_max_limits(conf, ntrial, nsuccess):
     """ Calculate the minimum and maximum binomial probability
