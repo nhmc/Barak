@@ -466,3 +466,52 @@ def indices_from_grid(c, ref):
 
     return ind
 
+
+def concat_recarrays(arr):
+    """ Concatenate two or more record arrays.
+
+    This increases the string field size to accommodate strings in all
+    the arrays, converting to a new dtype where necessary.
+
+    The original arrays are not changed. 
+
+    Parameters
+    ----------
+    arr : sequence of Numpy record/structured arrays
+
+    Returns
+    -------
+    out : ndarray
+       The concatenated arrays, with altered dtype to contain the
+       largest string size in all the input arrays.
+    """ 
+    dtype = {}
+    keys = []
+    for a in arr:
+        names = a.dtype.names
+        for n in names:
+            dt = a.dtype[n]
+            if n in dtype:
+                # check types are the same.
+                if dt.type != dtype[n][1]:
+                    raise ValueError('Different types found! %s and %s' %
+                                     (dt.type, dtype[n][1]))
+                if dt.char == 'S':
+                    if dtype[n][2] < dt.itemsize:
+                        dtype[n] = (n, dt.type, dt.itemsize)
+                        keys.append(n)
+            else:
+                if dt.char == 'S':
+                    dtype[n] = (n, dt.type, dt.itemsize)
+                    keys.append(n)
+                else:
+                    dtype[n] = (n, dt.type)
+                    keys.append(n)
+
+    dtype = np.dtype([dtype[k] for k in keys])
+    
+    for i in range(len(arr)):
+        if arr[i].dtype != dtype:
+            arr[i] = np.rec.fromrecords(arr[i], dtype=dtype)
+
+    return np.concatenate(arr)
