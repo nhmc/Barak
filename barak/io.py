@@ -687,5 +687,5 @@ def writetable(filename, cols, units=None, names=None, header=None,
 
     if isinstance(cols, atpy.Table):
         # return column formats to their original values
-        for fmt in old_formats:
+        for name,fmt in zip(t.keys(), old_formats):
             t.columns[name].format = fmt
