@@ -865,10 +865,20 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
     good regions overlap, regions close to the overlap are searched
     for.
 
-    Returns::
+    Parameters
+    ----------
+    w0, f0, e0 : arrays of shape (M,)
+      Wavelength, flux and 1 sigma error for spectrum 0.
+    w1, f1, e1 : arrays of shape (N,)
+      Wavelength, flux and 1 sigma error for spectrum 1.
 
-     scale_factor : float
-         Multiply spectrum 1 by scale_factor to match spectrum 0.
+    Returns
+    -------
+    scale_factor, i0, i1 : float, int, int
+      Multiply spectrum 1 by scale_factor to match spectrum 0. i0
+      gives the index into spectrum 0 where the overlapping region
+      starts, i1 gives the index into spectrum 1where the overlap
+      ends.
     """
 
    # find overlapping regions
