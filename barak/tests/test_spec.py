@@ -94,3 +94,13 @@ def test_air2vac_vac2air():
                        [2000, 80000], rtol=1e-9)
     assert np.allclose(vac2air_Ciddor(air2vac_Ciddor(5000)), 5000, rtol=1e-9)
     assert np.allclose(vac2air_Morton(air2vac_Morton(5000)), 5000, rtol=1e-9)
+
+def test_scale_overlap():
+    w0 = np.arange(1200, 1250, 0.5)
+    w0 = np.arange(1200, 1250, 0.5)
+    w1 = np.arange(1240, 1280, 0.3)
+    f0 = np.ones_like(w0)
+    f1 = np.ones_like(w1) * 0.8
+    e0 = f0 / 10.
+    e1 = f1 / 10.
+    assert np.allclose(scale_overlap(w0, f0, e0, w1, f1, e1), (1.25, 80, 31))
