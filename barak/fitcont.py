@@ -71,8 +71,8 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
         ax.plot(wa,fl)
         ax.plot(wa,er)
         ax.axhline(0, color='0.7')
-        good = ~np.isnan(fl) & ~np.isnan(er)
-        ymax = 2*sorted(fl[good])[int(len(fl[good])*0.95)]
+        good = ~np.isnan(fl) & ~np.isnan(er) & ~np.isinf(fl)
+        ymax = 2*np.percentile(fl[good], 0.90)
         ax.set_ylim(-0.1*ymax, ymax)
         ax.set_xlim(min(edges), max(edges))
         ax.set_autoscale_on(0)
@@ -361,10 +361,9 @@ class InteractiveCoFit(object):
         m2, = a0.plot([0], [0], 'o', mfc='None',mew=1, ms=8, mec='r', picker=5,
                       alpha=0.7)
         a0.set_xlim(min(wa), max(wa))
-        good = (er > 0) & ~np.isnan(fl)
-        ymin = -5 * np.median(er[good])
-        ymax = 2 * sorted(fl[good])[int(good.sum()*0.95)]
-        a0.set_ylim(ymin, ymax)
+        good = (er > 0) & ~np.isnan(fl) & ~np.isinf(fl)
+        ymax = 2 * np.abs(np.percentile(fl[good], 95))
+        a0.set_ylim(-0.1*ymax, ymax)
         a0.text(0.9,0.9, 'z=%.2f' % self.redshift, transform=a0.transAxes)
 
         # for histogram
@@ -395,8 +394,8 @@ class InteractiveCoFit(object):
         co.fill(np.nan)
         for b0,b1 in zip(self.breaks[:-1], self.breaks[1:]):
             cpts = [(x,y) for x,y in self.contpoints if b0 <= x <= b1]
-            if len(cpts) == 0:
-                continue 
+            if len(cpts) < 3:
+                continue
             spline = AkimaSpline(*list(zip(*cpts)))
             i,j = wa.searchsorted([b0,b1])
             co[i:j] = spline(wa[i:j])
