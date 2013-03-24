@@ -872,23 +872,34 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
     """
 
    # find overlapping regions
-    dtype = [('wa','f8'),('fl','f8'),('er','f8')]
+    dtype = [(str('wa'), str('f8')),
+             (str('fl'), str('f8')),
+             (str('er'), str('f8'))]
     sp0 = np.rec.fromarrays([w0,f0,e0], dtype=dtype)
     sp1 = np.rec.fromarrays([w1,f1,e1], dtype=dtype)
     if sp0.wa.max() < sp1.wa.min():
-        raise ValueError('No overlap!')
+        print('No overlap! Matching medians of whole spectra')
+        good0 = (sp0.er > 0) & ~np.isnan(sp0.fl) & (sp0.fl > 2*sp0.er)  
+        good1 = (sp1.er > 0) & ~np.isnan(sp1.fl) & (sp1.fl > 2*sp1.er) 
+        if good0.sum() and good1.sum():
+            m0, m1 = np.median(sp0.fl[good0]), np.median(sp1.fl[good1]) 
+            return m0 / m1, 0, len(sp1)-1
+        else:
+            return 1, 0, len(sp1)-1
     # find first overlapping good pixel
     i = 0
-    while np.isnan(sp1.er[i]):  i += 1
+    while not (sp1.er[i] > 0):  i += 1
     i0min = sp0.wa.searchsorted(sp1.wa[i])
     i = -1
-    while np.isnan(sp0.er[i]):  i -= 1
+    while not (sp0.er[i] > 0):  i -= 1
     i1max = sp1.wa.searchsorted(sp0.wa[i])
+    #print(sp0.wa[i0min], sp1.wa[i1max])
     while True:
         s0 = sp0[i0min:]
         s1 = sp1[:i1max]
-        good0 = (s0.er > 0) & ~np.isnan(s0.fl)
-        good1 = (s1.er > 0) & ~np.isnan(s1.fl)
+        # don't want saturated pixels...
+        good0 = (s0.er > 0) & ~np.isnan(s0.fl) & (s0.fl > 2*s0.er)  
+        good1 = (s1.er > 0) & ~np.isnan(s1.fl) & (s1.fl > 2*s1.er) 
         if good0.sum() == 0 or good1.sum() == 0:
             i0min = i0min - (len(sp0) - i0min)
             i1max = 2 * i1max
@@ -904,9 +915,11 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
             i1max = min(len(sp1)-1, 2 * i1max)
         else:
             break
-        
-    if debug:  print(m0,m1)
-    return m0 / m1
+
+    #print(m0, m1)
+    return m0 / m1,  i0min, i1max-1
+
+
 
 
 def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
