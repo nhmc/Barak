@@ -461,6 +461,11 @@ def trilinear_interp(x, y, z, xref, yref, zref, vals):
     Returns
     -------
     output : array of floats, shape (M, N, O)
+
+    See Also
+    --------
+    barak.plot.arrplot for plotting 2-d slices of the reference and
+    interpolated arrays.
     """
     assert (len(xref), len(yref), len(zref)) == vals.shape
     
@@ -473,3 +478,38 @@ def trilinear_interp(x, y, z, xref, yref, zref, vals):
     # Note the index order and transpose!
     return out.reshape(len(z), len(y), len(x)).T
 
+def CloughTocher2d_interp(x, y, xref, yref, vals):
+    """ Bilinear interpolation (requires Scipy to be installed.)
+
+    Parameters
+    ----------
+    x, y : arrays of floats, shapes (M,), (N,)
+      Coordinate grid at which to interpolate `vals`.
+    xref, yref : array of floats, shapes (I,), (J,)
+      Reference coordinate grid. The grid must be equally spaced along
+      each direction, but the spacing can be different between
+      directions.
+    vals : array of floats, shape (I, J)
+      Reference values at the reference grid positions.
+
+    Returns
+    -------
+    output : array of floats, shape (M, N)
+
+    See Also
+    --------
+    barak.plot.arrplot for plotting the reference and interpolated arrays.
+    """
+    try:
+        from scipy.interpolate import CloughTocher2DInterpolator
+    except ImportError:
+        print("Scipy (Version 0.9 or greater) must be installed to "
+              "use CloughTocher2d_interp")
+        return None
+
+    assert (len(yref), len(xref)) == vals.shape
+    XREF,YREF = np.meshgrid(xref, yref)
+    interp = CloughTocher2DInterpolator((XREF.ravel(), YREF.ravel()),
+                                        vals.ravel())
+    X, Y = np.meshgrid(x,y)
+    return interp((X, Y))
