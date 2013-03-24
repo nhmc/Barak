@@ -471,9 +471,8 @@ def concat_recarrays(arr):
     """ Concatenate two or more record arrays.
 
     This increases the string field size to accommodate strings in all
-    the arrays, converting to a new dtype where necessary.
-
-    The original arrays are not changed. 
+    the arrays, converting to a new dtype where necessary. The
+    original input arrays are not changed.
 
     Parameters
     ----------
@@ -499,19 +498,19 @@ def concat_recarrays(arr):
                 if dt.char == 'S':
                     if dtype[n][2] < dt.itemsize:
                         dtype[n] = (n, dt.type, dt.itemsize)
-                        keys.append(n)
             else:
                 if dt.char == 'S':
                     dtype[n] = (n, dt.type, dt.itemsize)
-                    keys.append(n)
                 else:
                     dtype[n] = (n, dt.type)
-                    keys.append(n)
+                keys.append(n)
 
-    dtype = np.dtype([dtype[k] for k in keys])
-    
+    #import pdb; pdb.set_trace()
+    new_dtype = np.dtype([dtype[k] for k in keys])
+
+    # convert arrays to the new dtype where necessary
     for i in range(len(arr)):
-        if arr[i].dtype != dtype:
-            arr[i] = np.rec.fromrecords(arr[i], dtype=dtype)
+        if arr[i].dtype != new_dtype:
+            arr[i] = np.rec.fromrecords(arr[i], dtype=new_dtype)
 
     return np.concatenate(arr)
