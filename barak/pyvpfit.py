@@ -326,6 +326,8 @@ def calc_v90(vp, plot=False, z0=None,
 
     At the moment it guesses how big a velocity range it has to
     calculate the optical depth over - a bit dodgy"""
+
+    from .absorb import calctau
     lines = vp.lines
     #print 'calculating for %s' % lines
     # work in velocity space
@@ -344,8 +346,7 @@ def calc_v90(vp, plot=False, z0=None,
             print('very (too?) high logN: %s' % line['logN'])
             print('returning width of -1')
             return -1.
-        temptau = calctau(v - vline, wav0, osc, gam, line['logN'],
-                          btemp=line['b'])
+        temptau = calctau(v - vline, wav0, osc, gam, line['logN'], line['b'])
         tau += temptau
         #pl.plot(v,tau,'+-')
         #raw_input('N %(logN)f b %(b)f enter to continue' % line)
