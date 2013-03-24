@@ -405,6 +405,8 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
 
     # interpolate over bad values
     good = ~np.isnan(ew1) & (ewer1 > 0)
+    if not good.any():
+        return None
     if not good.all():
         ew1[~good] = np.interp(wa1[~good], wa1[good], ew1[good])
         ewer1[~good] = np.interp(wa1[~good], wa1[good], ewer1[good]) 
@@ -879,11 +881,42 @@ def Nlam_from_tau(tau, wa, osc):
 
     Returns
     -------
-    N_vel : ndarray, shape (N,)
-
-      The column density per velocity interval, with units cm^-2
+    Nlam : ndarray, shape (N,)
+      The column density per wavelength interval, with units cm^-2
       Angstrom^-1. Multiply this by a rest wavelength interval in
       Angstroms to get a column density.
     """
     # the 1e-8 here converts from cm^-1 to Angstrom^-1 
     return tau / (pi * e2_me_c * osc) * c / (wa * 1e-8)**2 * 1e-8
+
+def log10N_from_Wr(Wr, wa0, osc):
+    """ Find log10(Column density) from a rest frame equivalent width
+    assuming optically thin.
+
+    Parameters
+    ----------
+    Wr : float
+       Rest frame equivalent width in Angstroms.
+    wa0 : float
+       Transition wavelength in Angstroms.
+    osc: float
+       Transition oscillator strength.
+
+    Returns
+    -------
+    log10N : float
+      log10(column density in cm^-2), or zero if the equivalent width
+      is 0 or negative.
+
+    Notes
+    -----
+    Assumes we are on the linear part of curve of growth (will be an
+    underestimate if saturated). See Draine,"Physics of the
+    Interstellar and Intergalactic medium", ISBN 978-0-691-12214-4,
+    chapter 9.
+    """
+    if not Wr > 0:
+        return 0
+
+    Nmult = 1.13e20 / (osc * wa0**2)    
+    return np.log10(Nmult * Wr)
