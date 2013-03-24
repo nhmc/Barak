@@ -266,3 +266,33 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
 
     return good
 
+
+def find_conf_levels(a):
+    """ Find the 1, 2, and 3 sigma confidence levels for an array of
+    probabilities.
+
+    Parameters
+    ----------
+    a : ndarray
+      Probabilities. Can be N-dimensional.
+
+    """
+    a = np.asarray(a)
+    tot = a.sum()
+    sig1 = 0.683 * tot
+    sig2 = 0.955 * tot
+    sig3 = 0.997 * tot
+    asorted = np.sort(a.ravel())
+    i = -2
+    out = []
+    while a[a > asorted[i]].sum() < sig1:
+        i -= 1
+    out.append(asorted[i])
+    while a[a > asorted[i]].sum() < sig2:
+        i -= 1
+    out.append(asorted[i])
+    while a[a > asorted[i]].sum() < sig3:
+        i -= 1
+    out.append(asorted[i])
+
+    return out
