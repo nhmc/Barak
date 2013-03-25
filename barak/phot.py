@@ -1,9 +1,7 @@
 """ Photometry-based tools.
 """
 # p2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import division, print_function, unicode_literals
 
 def UBVRI_to_ugriz(U, BmV, UmB, RmI):
     """ Conversion from Fukugita et al. 1996."""

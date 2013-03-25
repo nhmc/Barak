@@ -54,9 +54,7 @@ Tollerud's `Astropysics <https://github.com/eteq/astropysics>`_.
 """
 
 # p2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import division, print_function, unicode_literals
 
 from .utilities import get_data_path, between
 from .interp import interp_Akima

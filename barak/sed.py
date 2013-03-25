@@ -8,11 +8,12 @@ Inspired by the SED module in astLib by Matt Hilton
 - SUN: The SED of the Sun.
 
 """
-from __future__ import division
-from __future__ import unicode_literals
-import sys
-if sys.version > '3':
-    basestring = str
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
 
 from .io import readtabfits, loadtxt
 from .constants import c, c_kms, Jy

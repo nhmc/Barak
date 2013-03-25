@@ -1,13 +1,13 @@
 """Astronomical coordinate functions."""
 # p2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
-import sys
-if sys.version > '3':
-    basestring = str
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
     xrange = range
-
 import re
+
 import numpy as np
 from numpy.core.records import fromarrays
 

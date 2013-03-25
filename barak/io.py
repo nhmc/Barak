@@ -2,15 +2,15 @@
 """
 
 # python 2.6+ compatibility
-from __future__ import division, print_function
-from __future__ import unicode_literals
-import sys
-if sys.version < '3':
-    import cPickle as pickle
-else:
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
     import pickle
     unicode = basestring = str
     xrange = range
+else:
+    import cPickle as pickle
 
 import os, gzip
 import numpy as np

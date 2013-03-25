@@ -2,9 +2,12 @@
 """
 
 # p2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
 
 import numpy as np
 
