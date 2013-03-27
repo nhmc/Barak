@@ -368,7 +368,8 @@ def loadobj(filename):
     return obj
 
 def parse_config(filename, defaults={}):
-    """ Read options for a configuration file.
+    """ Read options for a configuration file. It does some basic type
+    conversion (boolean, float or string).
 
     Parameters
     ----------
@@ -422,7 +423,7 @@ def parse_config(filename, defaults={}):
                     value = None
 
         if option in cfg:
-            raise RuntimeError('%s is specified twice in %s' % (option, cfg))
+            raise RuntimeError("'%s' appears twice in %s" % (option, filename))
         cfg[option] = value
 
     for key,val in defaults.items():

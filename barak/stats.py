@@ -270,32 +270,45 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
     return good
 
 
-def find_conf_levels(a):
-    """ Find the 1, 2, and 3 sigma confidence levels for an array of
-    probabilities.
+def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
+    """ Find the threshold value in aarray that give confidence levels
+    for an array of probabilities.
 
     Parameters
     ----------
     a : ndarray
-      Probabilities. Can be N-dimensional.
+      Array of probabilities. Can have more than one dimension.
+    pvals : list of floats, shape (N,)
+      Confidence levels to find the values for (must be between 0 and
+      1). Default correspond to 1, 2 and 3 sigma. Must be smallest to
+      largest.
 
+    Returns
+    -------
+    athresh : list of shape (N,)
+      The threshold values of `a` giving the confidence ranges in
+      pvals.
     """
-    a = np.asarray(a)
+    assert all(0 <= float(p) <= 1 for p in pvals)
+    assert np.allclose(np.sort(pvals), pvals)
+    a = np.asarray(a).ravel()
+
+    assert not np.isnan(a).any()
+    assert not np.isinf(a).any()
+
     tot = a.sum()
-    sig1 = 0.683 * tot
-    sig2 = 0.955 * tot
-    sig3 = 0.997 * tot
-    asorted = np.sort(a.ravel())
-    i = -2
+    conflevels = [p * tot for p in pvals]
+    asorted = np.sort(a)
+
     out = []
-    while a[a > asorted[i]].sum() < sig1:
-        i -= 1
-    out.append(asorted[i])
-    while a[a > asorted[i]].sum() < sig2:
-        i -= 1
-    out.append(asorted[i])
-    while a[a > asorted[i]].sum() < sig3:
-        i -= 1
-    out.append(asorted[i])
+    i = -2
+    for iconf, clevel in enumerate(conflevels):
+        while asorted[i:].sum() < clevel:
+            i -= 1
+            if i == -len(a):
+                i += 1
+                break
+        #print (i, asorted[i], asorted[i:].sum(), clevel, pvals[iconf])
+        out.append(asorted[i])
 
     return out
