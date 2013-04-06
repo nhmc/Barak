@@ -578,6 +578,26 @@ def make_constant_dv_wa_scale(wmin, wmax, dv):
     wa = wmin * 10**(np.arange(npts)*dlogw)
     return wa
 
+def vel_from_wa(wa, wa0, redshift=0):
+    """ Find velocity scale from wavelengths, given a redshift and
+    transition.
+
+    Parameters
+    ----------
+    wa : array, shape (N,)
+      Observed wavelength array.
+    wa0 : float
+      Transition rest wavelength, must be same units as `wa`.
+    redshift : float
+      Redshift. Default 0.
+
+    Returns
+    -------
+    vel : arr of shape (N,)
+      Velocities in km/s.
+    """
+    obswa = wa0 * (1 + redshift)
+    return (wa / obswa - 1) * c_kms
 
 # Data
 VEGA = SED('reference/Vega_bohlin2006')

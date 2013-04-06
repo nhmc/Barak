@@ -23,7 +23,7 @@ km = 1e5
 find_rvT_output = namedtuple('virial_rvT', 'r v T')
 
 def deltavir(redshift, cosmo=None):
-    """ The Virial overdensity as a function redshift. 
+    """ The virial overdensity as a function redshift. 
 
     This is an approximation parameterized by Bryan & Norman 98, ApJ,
     495, 80.  Good to 1% for omega(z) = 0.1-1, requires either omega =

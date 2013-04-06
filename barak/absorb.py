@@ -285,7 +285,8 @@ def find_tau(wa, lines, atom, per_trans=False):
     log10(column density) and b parameter, return the tau at each
     wavelength from all these transitions.
 
-    lines can also be the name of a VPFIT fort.26 format file.
+    lines can also be the name of a VPFIT fort.26 format file or a
+    VpfitModel.lines record array.
 
     Note this assumes the wavelength array has small enough pixel
     separations so that the profiles are properly sampled.
@@ -294,10 +295,10 @@ def find_tau(wa, lines, atom, per_trans=False):
         vp = readf26(lines)
     except AttributeError:
         pass
-    else:
-        lines = [(l['name'].strip(), l['z'], l['b'], l['logN'])
-                 for l in vp.lines]
-
+    if hasattr(lines, 'dtype'):
+        lines = [(l['name'].replace(' ', ''), l['z'], l['b'], l['logN'])
+                 for l in lines]
+        
     tau = np.zeros_like(wa)
     #print 'finding tau...'
     ticks = []

@@ -11,6 +11,7 @@ except NameError:
 from math import log10
 import numpy as np
 import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 from matplotlib.collections import PolyCollection, LineCollection
 import matplotlib.transforms as mtransforms
 
@@ -810,7 +811,7 @@ def get_fig_axes(nrows, ncols, nplots, width=11.7, height=None, aspect=0.5):
               ileft=ileft, ibottom=ibottom)
     return fig, ax
 
-def get_nrows_ncols(nplots):
+def get_nrows_ncols(nplots, prefer_rows=True):
     """ Get the number of rows and columns to plot a given number of plots.
 
     Parameters
@@ -825,6 +826,9 @@ def get_nrows_ncols(nplots):
     nrows = max(int(np.sqrt(nplots)), 1)
     ncols = nrows
     while nplots > (nrows * ncols):
-        nrows += 1
+        if prefer_rows:
+            nrows += 1
+        else:
+            ncols += 1
 
     return nrows, ncols

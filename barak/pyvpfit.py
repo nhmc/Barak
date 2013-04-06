@@ -200,11 +200,15 @@ class VpfitModel(object):
         return deepcopy(self)
 
 def readf26(fh, res=None):
-    """ Reads a f26 style file and returns a VpfitModel object. If the
-    keyword res is given, this string provides the resolution
-    information for the spectra fitted.
+    """ Reads a f26 style file and returns a VpfitModel object.
 
-    For example: res='vsig=69.0'
+    Parameters
+    ----------
+    fh : file object or a filename
+      Input file
+    res : str
+      If the keyword res is given, this string provides the resolution
+      information for the spectra fitted. e.g. 'vsig=69.0'.
     """
     if isinstance(fh, basestring):
         fh = open(fh, 'rt')
@@ -266,9 +270,13 @@ def readf26(fh, res=None):
     return vp
 
 
-def readf13(filename, read_regions=True, res=None):
+def readf13(fh, read_regions=True, res=None):
     """ Reads a fort.13 style file. """
-    fh = open(filename)
+    filename = None
+    if isinstance(fh, basestring):
+        filename = fh
+        fh = open(filename, 'rt')
+
     f = fh.readlines()
     fh.close()
     if len(f) == 0:
