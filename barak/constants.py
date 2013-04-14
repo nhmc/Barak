@@ -58,6 +58,11 @@ Constants defined:
  Ar                                             dictionary of atomic weights
  ======== ===================== =============== ===============================
 """
+from __future__ import division
+from __future__ import unicode_literals
+
+from math import pi
+
 c       = 2.99792458e10       # cm/s            speed of light
 G       = 6.67384e-8          # cm^3/g/s^2      gravitational constant
 hplanck = 6.6260775e-27       # erg s           Planck's constant
@@ -96,7 +101,6 @@ Ryd_Ang = hplanck * c * 1.0e8 / Ryd # Angstroms       Rydberg in Angstroms
 c_kms   = 2.99792458e5        # km/s            speed of light
 
 sqrt_ln2 = 0.832554611158     # sqrt(ln(2))
-from math import pi
 
 wlya = 1215.6701              # Angstroms       Wavelength of HI Lya transition
 wlyb = 1025.72                # Angstroms       Wavelength of HI Lyb transition

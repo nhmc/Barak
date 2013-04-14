@@ -1,9 +1,17 @@
 """ Plotting routines. """
-from __future__ import division
+
+# python 2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
 
 from math import log10
 import numpy as np
 import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 from matplotlib.collections import PolyCollection, LineCollection
 import matplotlib.transforms as mtransforms
 
@@ -282,7 +290,7 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
     if pl.isinteractive():
         pl.show()
 
-    return ax
+    return [l]
 
 def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
           label=None, loc='right,bottom', xhistmax=None, yhistmax=None,
@@ -391,7 +399,7 @@ def arrplot(a, x=None, y=None, ax=None, perc=(0, 100), colorbar=True,
     if ax is None:
         pl.figure()
         ax = pl.gca()
-    
+
     assert np.allclose(x, np.sort(x))
     assert np.allclose(y, np.sort(y))
 
@@ -415,10 +423,9 @@ def arrplot(a, x=None, y=None, ax=None, perc=(0, 100), colorbar=True,
 
     return col
 
-def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0,
-                  color='b'):
+def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0, color='b'):
     """ Shade a region between two curves including a color gradient.
-    
+
     Parameters
     ----------
     xvals, yvals : array_like
@@ -447,7 +454,7 @@ def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0,
         y0 = np.ones_like(yvals) * y0[0]
     else:
         assert len(y0) == len(yvals)
-        
+
     c = [color, '1']
     cm = mpl.colors.LinearSegmentedColormap.from_list('mycm', c)
 
@@ -471,7 +478,7 @@ def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0,
 def shade_to_line_vert(yvals, xvals, blend=1, ax=None, x0=0,
                   color='b'):
     """ Shade a region between two curves including a color gradient.
-    
+
     Parameters
     ----------
     yvals, xvals : array_like
@@ -500,7 +507,7 @@ def shade_to_line_vert(yvals, xvals, blend=1, ax=None, x0=0,
         x0 = np.ones_like(xvals) * x0[0]
     else:
         assert len(x0) == len(xvals)
-        
+
     c = [color, '1']
     cm = mpl.colors.LinearSegmentedColormap.from_list('mycm', c)
 
@@ -537,7 +544,7 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
       x and y positions.
     direction: str {'up', 'down', 'left', 'right'}
       The direction in which the arrows should point.
-    
+
     """
     arrowlength=10.
     capsize = min(capsize, arrowlength)
@@ -546,13 +553,13 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
     xvert = np.array([0, 0, 0.5*capsize, 0, -0.5*capsize, 0])
 
     if direction == 'down':
-        arrow_verts = zip(xvert, -yvert)
+        arrow_verts = list(zip(xvert, -yvert))
     elif direction == 'up':
-        arrow_verts = zip(xvert, yvert)
+        arrow_verts = list(zip(xvert, yvert))
     elif direction == 'left':
-        arrow_verts = zip(-yvert, xvert)
+        arrow_verts = list(zip(-yvert, xvert))
     elif direction == 'up':
-        arrow_verts = zip(yvert, xvert)
+        arrow_verts = list(zip(yvert, xvert))
     else:
         raise ValueError(
             "direction must be one of 'up', 'down', 'left', 'right'")
@@ -560,7 +567,7 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
     if ax is None:
         pl.figure()
         ax = pl.gca()
-    
+
     c = ax.scatter(x, y, s=(1000/6.)*ms, marker=None, verts=arrow_verts,
                    edgecolors=c, **kwargs)
     return c
@@ -572,11 +579,11 @@ def calc_log_minor_ticks(majticks):
     ----------
     majticks : array_like
         log10 of the major tick positions.
-        
+
     Returns
     -------
     minticks : ndarray
-        log10 of the minor tick positions.        
+        log10 of the minor tick positions.
     """
     tickpos = np.log10(np.arange(2, 10))
     minticks = []
@@ -585,7 +592,8 @@ def calc_log_minor_ticks(majticks):
 
     return minticks
 
-def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
+def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True,
+                  c='k'):
     """ plot a ticks on a wavelength scale.
 
     This plots ticks (such as those returned by `find_tau()`) on a
@@ -607,6 +615,8 @@ def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
       contain this string in their name.
     labels : bool (True)
       Whether to plot labels next to the tickmarks.
+    c : matplotlib colour ('k')
+      Tick colour. The default is black.
 
     Returns
     -------
@@ -631,7 +641,194 @@ def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True):
         Tlabels.append(ax.text(t.wa, ymin[i] + 1.1*height, label, rotation=60,
                                fontsize=8, va='bottom', alpha=0.7))
 
-    Ticks = ax.vlines(ticks.wa[c1], ymin[c1], ymin[c1] + height, color='c',
-                      lw=1) 
+    Ticks = ax.vlines(ticks.wa[c1], ymin[c1], ymin[c1] + height, color=c,
+                      lw=1)
 
     return Ticks, Tlabels
+
+def get_subplot(nrow, ncol, num):
+    """ Get a matplotlib subplot.
+
+    Like pylab.subplot, but the numbering goes down columns rather
+    than across rows.
+    """
+    i = num - 1
+    num_new = (i % nrow ) * ncol + i // nrow + 1
+    return plt.subplot(nrow, ncol, num_new)
+
+
+def makefig(cols, rows, width=8, height=None, left=1.5, bottom=1.5, top=1.5,
+              right=0.7, horizgap=1, vertgap=1):
+    """ Make a figure that will hold a set of plots with a fixed size
+    in cm.
+    """
+    W = float(width)*cols + float(horizgap)*(cols-1) + left + right
+    height = height or width
+    H = float(height)*rows + float(vertgap)*(rows-1) + top + bottom
+    fig = pl.figure(figsize=(W/2.54, H/2.54))
+    fig.subplots_adjust(left=left/W, bottom=bottom/H,
+                        wspace=horizgap/float(width),
+                        hspace=vertgap/float(height),
+                        right=1 - right/W, top=1 - top/H)
+    return fig
+
+def subplots(cols, rows, *args, **kwargs):
+    """ Create an axes that covers a portion of the figure.
+
+    The axes has position and extent given by a grid of rows and cols
+    and the pos string, which uses indexing syntax. If a fig keyword
+    is not present giving the figure, a figure is generated using
+    makefig. keywords can be passed to makefig; the defaults are
+    width=8, left=1.5, bottom=1.5, top=1.5, right=0.7, horizgap=1 and
+    vertgap=1.
+
+    If the indexing argument is omitted, then a grid of plots is
+    returned, from upper left to lower right ordered such that columns
+    are increasing fastest.
+
+    Inspired by the Supermongo subplots command.
+
+    Examples
+    --------
+    >>> axleft, axright = subplots(2, 1)
+
+    >>> ax = subplots(3, 3, '1:,2')
+    >>> pylab.show()
+
+    More examples of indexing notation
+
+    >>> ax = subplots(3, 3, '1,0:2')
+    >>> ax = subplots(3, 3, '2,0')
+    >>> ax = subplots(3, 3, '2,1')
+
+    Use a single call to generate multiple subplotss
+
+    >>> ax1,ax2,ax3 = subplots(3, 3, '0,: 1:,:2 1:,2')
+    """
+    fig = kwargs.pop('fig', None)
+    if fig is None:
+        fig = makefig(cols, rows, **kwargs)
+
+    pars = fig.subplotpars
+    # in units of figure fraction
+    w = (pars.right - pars.left) / (cols + pars.wspace * (cols-1))
+    h = (pars.top - pars.bottom) / (rows + pars.hspace * (rows-1))
+
+    xgap = pars.wspace * w
+    ygap = pars.hspace * h
+
+    if len(args) == 0:
+        axes = [fig.add_subplot(rows,cols, i+1) for i in range(rows*cols)]
+        return tuple(axes)
+    elif len(args) > 1:
+        raise "Only a single position string is allowed"
+
+    axes = []
+    for pos in args[0].split():
+        ix,iy = pos.split(',')
+        temp = []
+        for i,ind in enumerate([ix,iy]):
+            if i == 0:
+                ntot = cols
+            else:
+                ntot = rows
+            start = 0
+            if ':' in ind:
+                if ind == ':':
+                    span = ntot
+                elif ind.startswith(':'):
+                    span = int(ind[1:])
+                elif ind.endswith(':'):
+                    start = int(ind[:-1])
+                    span = ntot - start
+                else:
+                    start,end = map(int, ind.split(':'))
+                    span = min(end - start, ntot)
+            else:
+                start = int(ind)
+                span = 1
+            temp.append((start, span))
+
+        (i,ispan),(j,jspan) = temp
+        left1 = pars.left + i*(w + xgap)
+        bottom1 = pars.bottom + j*(h + ygap)
+        w1 = ispan*w + (ispan-1)*xgap
+        h1 = jspan*h + (jspan-1)*ygap
+
+        axes.append(fig.add_axes([left1, bottom1, w1, h1]))
+
+    if len(axes) == 1:
+        return axes[0]
+    else:
+        return tuple(axes)
+
+def get_fig_axes(nrows, ncols, nplots, width=11.7, height=None, aspect=0.5):
+    """ Generate a figure with a number of equally-sized subplots.
+
+    Parameters
+    ----------
+    nrows : int
+      Number of rows
+    ncols : int
+      Number of columns
+    nplots : int
+      Number of plots in total
+    width : float
+      Width of the figure in inches
+    aspect : float
+      width / height of each sub-plot.
+
+    Returns
+    -------
+    fig : matplotlib figure object
+    ax : dictionary with matplotlib axes objects
+      ordered from top left going down columns.
+    """
+    if height is None:
+        height = width*aspect*nrows/ncols
+    fig = pl.figure(figsize=(width, height))
+
+    axes = [fig.add_subplot(nrows, ncols, i+1) for i in range(nplots)]
+
+    # reorder axes so they go from top left down columns instead of across
+    axes1 = []
+    ileft = []
+    ibottom = []
+    for j in range(ncols):
+        for i in range(nrows):
+            ind = j + i*ncols
+            if ind > nplots - 1:
+                continue
+            axes1.append(axes[ind])
+    # find the indices of the left and bottom plots (used to set axes
+    # labels)
+    ileft = range(nrows)
+    ibottom = [i*nrows - 1 for i in range(1, ncols+1)]
+    for i in range(ncols*nrows - nplots):
+        ibottom[-(i+1)] -= ncols*nrows - nplots - i
+
+    ax = dict(axes=axes1, nrows=nrows, ncols=ncols,
+              ileft=ileft, ibottom=ibottom)
+    return fig, ax
+
+def get_nrows_ncols(nplots, prefer_rows=True):
+    """ Get the number of rows and columns to plot a given number of plots.
+
+    Parameters
+    ----------
+    nplots : int
+      Desired number of plots.
+
+    Returns
+    -------
+    nrows, ncols : int
+    """
+    nrows = max(int(np.sqrt(nplots)), 1)
+    ncols = nrows
+    while nplots > (nrows * ncols):
+        if prefer_rows:
+            nrows += 1
+        else:
+            ncols += 1
+
+    return nrows, ncols

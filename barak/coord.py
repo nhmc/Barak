@@ -1,5 +1,13 @@
 """Astronomical coordinate functions."""
+# p2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
 import re
+
 import numpy as np
 from numpy.core.records import fromarrays
 
@@ -247,7 +255,7 @@ def s2dec(ra, dec):
     >>> sras = ['10:12:01.25', '10:14:06.13']
     >>> sdecs =['01:01:45.65', '01:13:47.02']
     >>> ra, dec = s2dec(sras, sdecs)
-    >>> print zip(ra, dec)
+    >>> list(zip(ra, dec))
     [(153.00520833333334, 1.0293472222222222),
     (153.52554166666667, 1.229727777777778)]
     """
@@ -301,7 +309,7 @@ def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
     for ra,dec in zip(ra1,dec1):
         i1 = sra2.searchsorted(ra - RA_LIM)
         i2 = i1 + sra2[i1:].searchsorted(ra + RA_LIM)
-        #print i1,i2
+        #print(i1,i2)
         close = []
         for j in xrange(i1,i2):
             if abs(dec - sdec2[j]) > LIM:
@@ -412,7 +420,7 @@ def unique_radec(ra, dec, tol):
     assigned = set()
     for j,m in enumerate(matches):
         if not (j % 1000):
-            print j
+            print(j)
         # get the lowest index in this group
         isort = sorted(m.ind)
         ilow = isort[0]

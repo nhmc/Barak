@@ -1,5 +1,14 @@
 """ Statistics-related functions.
 """
+
+# p2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
+
 import numpy as np
 
 def _bisect(func, target, xlo=-10, xhi=10):
@@ -90,7 +99,7 @@ def poisson_confidence_interval(conf, nevents):
     """        
     if nevents == 0:
         return poisson_min_max_limits(conf, nevents)
-    return poisson_min_max_limits(conf + 0.5*(100-conf), nevents)
+    return poisson_min_max_limits(conf + 0.5*(100 - conf), nevents)
 
 def binomial_min_max_limits(conf, ntrial, nsuccess):
     """ Calculate the minimum and maximum binomial probability
@@ -172,7 +181,7 @@ def blackbody_nu(nu, T):
     --------
     blackbody_lam
     """
-    from constants import hplanck, c, kboltz
+    from .constants import hplanck, c, kboltz
     return 2*hplanck*nu**3 / (c**2 * (np.exp(hplanck*nu / (kboltz*T)) - 1))
 
 def blackbody_lam(lam, T):
@@ -192,7 +201,7 @@ def blackbody_lam(lam, T):
     --------
     blackbody_nu
     """
-    from constants import hplanck, c, kboltz
+    from .constants import hplanck, c, kboltz
     # to cm
     lam = lam * 1e-8
     # erg/s/cm^2/cm/sr
@@ -201,3 +210,105 @@ def blackbody_lam(lam, T):
     # erg/s/cm^2/Ang/sr
     return Jlam * 1e8
 
+def remove_outliers(data, nsig_lo, nsig_hi, method='median',
+                    nitermax=100, maxfrac_remove=0.95, verbose=False):
+    """Strip outliers from a dataset, iterating until converged.
+
+    Parameters
+    ----------
+      data : ndarray.
+        data from which to remove outliers.
+      nsig_lo : float
+        Clip points that are this number of standard deviations below the
+        centre of the data.
+      nsig_hi : float
+        Clip points that are this number of standard deviations above the
+        centre of the data.
+      method : {'mean', 'median', function}
+        Method to find the central value.
+      nitermax : int
+        number of iterations before exit; defaults to 100
+      maxfrac_remove : float (0.95)  
+        Clip at most this fraction of the original points.
+
+    Returns
+    -------
+    mask : boolean array same shape as data
+      This is False wherever there is an outlier.
+    """
+
+    data = np.asarray(data).ravel()
+
+    funcs = {'mean': np.mean, 'median': np.median}
+    if method in funcs:
+        method = funcs[method]
+
+    good = ~np.isnan(data)
+    ngood = good.sum()
+    niter = 0
+
+    minpoints = int(len(data) * (1 - maxfrac_remove)) + 1
+    while ngood > 0:
+        d = data[good]
+        centre = method(d)
+        stdev = d.std()
+        if stdev > 0:
+            c0 = d > (centre - nsig_lo * stdev)
+            c0 &= d < (centre + nsig_hi * stdev)
+            good[good] = c0
+
+        niter += 1
+        ngoodnew = good.sum()
+        if ngoodnew == ngood or niter > nitermax or ngoodnew <= minpoints:
+            break
+        if verbose:
+            print(i, ngood, ngoodnew)
+            print("centre, std", centre, stdev)
+
+        ngood = ngoodnew
+
+    return good
+
+
+def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
+    """ Find the threshold value in aarray that give confidence levels
+    for an array of probabilities.
+
+    Parameters
+    ----------
+    a : ndarray
+      Array of probabilities. Can have more than one dimension.
+    pvals : list of floats, shape (N,)
+      Confidence levels to find the values for (must be between 0 and
+      1). Default correspond to 1, 2 and 3 sigma. Must be smallest to
+      largest.
+
+    Returns
+    -------
+    athresh : list of shape (N,)
+      The threshold values of `a` giving the confidence ranges in
+      pvals.
+    """
+    assert all(0 <= float(p) <= 1 for p in pvals)
+    assert np.allclose(np.sort(pvals), pvals)
+    a = np.asarray(a).ravel()
+
+    assert not np.isnan(a).any()
+    assert not np.isinf(a).any()
+
+    tot = a.sum()
+    conflevels = [p * tot for p in pvals]
+    asorted = np.sort(a)
+
+    out = []
+    i = -2
+    for iconf, clevel in enumerate(conflevels):
+        while asorted[i:].sum() < clevel:
+            i -= 1
+            if i == -len(a):
+                i += 1
+                break
+        #print (i, asorted[i], asorted[i:].sum(), clevel, pvals[iconf])
+        out.append(asorted[i])
+
+    return out

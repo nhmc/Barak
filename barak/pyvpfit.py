@@ -1,31 +1,40 @@
 """Contains a class, VpfitModel, useful for parsing f26 and fort.13
 files, and writing out fort.13 files.
 """
+
+# p2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
+
 import os
 import numpy as np
 from textwrap import wrap
-from constants import c_kms
+from .constants import c_kms
 
 # the data types of the lines and regions numpy arrays:
 
 len_filename = 150
 
-dtype_lines = [('name', 'S6'),
-               ('z', 'f8'),
-               ('zpar', 'S2'),
-               ('b', 'f8'),
-               ('bpar', 'S2'),
-               ('logN', 'f8'),
-               ('logNpar', 'S2'),
-               ('zsig', 'f8'),
-               ('bsig', 'f8'),
-               ('logNsig', 'f8')]
+dtype_lines = [(str('name'),    str('S6')),
+               (str('z'),       str('f8')),
+               (str('zpar'),    str('S2')),
+               (str('b'),       str('f8')),
+               (str('bpar'),    str('S2')),
+               (str('logN'),    str('f8')),
+               (str('logNpar'), str('S2')),
+               (str('zsig'),    str('f8')),
+               (str('bsig'),    str('f8')),
+               (str('logNsig'), str('f8'))]
 
-dtype_regions = [('filename', 'S%i' % len_filename),
-                 ('num', 'S2'),
-                 ('wmin', 'f8'),
-                 ('wmax', 'f8'),
-                 ('resolution', 'S100')]
+dtype_regions = [(str('filename'),   str('S%i' % len_filename)),
+                 (str('num'),        str('S2')),
+                 (str('wmin'),       str('f8')),
+                 (str('wmax'),       str('f8')),
+                 (str('resolution'), str('S100'))]
 
 def parse_entry(entry):
     """ Separates an entry into a numeric value and a tied/fixed
@@ -191,14 +200,18 @@ class VpfitModel(object):
         return deepcopy(self)
 
 def readf26(fh, res=None):
-    """ Reads a f26 style file and returns a VpfitModel object. If the
-    keyword res is given, this string provides the resolution
-    information for the spectra fitted.
+    """ Reads a f26 style file and returns a VpfitModel object.
 
-    For example: res='vsig=69.0'
+    Parameters
+    ----------
+    fh : file object or a filename
+      Input file
+    res : str
+      If the keyword res is given, this string provides the resolution
+      information for the spectra fitted. e.g. 'vsig=69.0'.
     """
     if isinstance(fh, basestring):
-        fh = open(fh)
+        fh = open(fh, 'rt')
     f = fh.readlines()
     fh.close()
     vp = VpfitModel()
@@ -257,9 +270,13 @@ def readf26(fh, res=None):
     return vp
 
 
-def readf13(filename, read_regions=True, res=None):
+def readf13(fh, read_regions=True, res=None):
     """ Reads a fort.13 style file. """
-    fh = open(filename)
+    filename = None
+    if isinstance(fh, basestring):
+        filename = fh
+        fh = open(filename, 'rt')
+
     f = fh.readlines()
     fh.close()
     if len(f) == 0:
@@ -317,6 +334,8 @@ def calc_v90(vp, plot=False, z0=None,
 
     At the moment it guesses how big a velocity range it has to
     calculate the optical depth over - a bit dodgy"""
+
+    from .absorb import calctau
     lines = vp.lines
     #print 'calculating for %s' % lines
     # work in velocity space
@@ -332,11 +351,10 @@ def calc_v90(vp, plot=False, z0=None,
     tau = np.zeros(len(v))
     for line,vline in zip(lines,vel):
         if line['logN'] > 21.0:
-            print ('very (too?) high logN: %s' % line['logN'])
-            print ('returning width of -1')
+            print('very (too?) high logN: %s' % line['logN'])
+            print('returning width of -1')
             return -1.
-        temptau = calctau(v - vline, wav0, osc, gam, line['logN'],
-                          btemp=line['b'])
+        temptau = calctau(v - vline, wav0, osc, gam, line['logN'], line['b'])
         tau += temptau
         #pl.plot(v,tau,'+-')
         #raw_input('N %(logN)f b %(b)f enter to continue' % line)

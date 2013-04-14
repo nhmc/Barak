@@ -1,4 +1,13 @@
 """ Various general-use functions."""
+
+# p2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
+
 from textwrap import wrap
 import sys, os
 import numpy as np
@@ -273,13 +282,13 @@ def indexnear(ar, val):
     --------
     >>> wa = np.linspace(4000, 4500, 100)
     >>> i = indexnear(wa, 4302.5)
-    >>> print i, wa[i]
+    >>> i, wa[i]
     60 4303.03030303
     >>> i = indexnear(wa, 4600.0)
-    >>> print i, wa[i]
+    >>> i, wa[i]
     99 4500.0
     >>> i = indexnear(wa, 3000.0)
-    >>> print i, wa[i]
+    >>> i, wa[i]
     0 4000.0
     """
 
@@ -336,7 +345,7 @@ def find_edges_true_regions(condition):
     --------
     >>> a = np.array([3,0,1,4,6,7,8,6,3,2,0,3,4,5,6,4,2,0,2,5,0,3])
     >>> ileft, iright = find_edges_true_regions(a > 2)
-    >>> zip(ileft, iright)
+    >>> list(zip(ileft, iright))
     [(0, 0), (3, 8), (11, 15), (19, 19), (21, 21)]
 
     """
@@ -384,7 +393,7 @@ def meshgrid_nd(*arrs):
     """ Like numpy's meshgrid, but works on more than two dimensions.
     """
     arrs = tuple(reversed(arrs))
-    lens = map(len, arrs)
+    lens = list(map(len, arrs))
     dim = len(arrs)
 
     sz = 1
@@ -457,3 +466,51 @@ def indices_from_grid(c, ref):
 
     return ind
 
+
+def concat_recarrays(arr):
+    """ Concatenate two or more record arrays.
+
+    This increases the string field size to accommodate strings in all
+    the arrays, converting to a new dtype where necessary. The
+    original input arrays are not changed.
+
+    Parameters
+    ----------
+    arr : sequence of Numpy record/structured arrays
+
+    Returns
+    -------
+    out : ndarray
+       The concatenated arrays, with altered dtype to contain the
+       largest string size in all the input arrays.
+    """ 
+    dtype = {}
+    keys = []
+    for a in arr:
+        names = a.dtype.names
+        for n in names:
+            dt = a.dtype[n]
+            if n in dtype:
+                # check types are the same.
+                if dt.type != dtype[n][1]:
+                    raise ValueError('Different types found! %s and %s' %
+                                     (dt.type, dtype[n][1]))
+                if dt.char == 'S':
+                    if dtype[n][2] < dt.itemsize:
+                        dtype[n] = (n, dt.type, dt.itemsize)
+            else:
+                if dt.char == 'S':
+                    dtype[n] = (n, dt.type, dt.itemsize)
+                else:
+                    dtype[n] = (n, dt.type)
+                keys.append(n)
+
+    #import pdb; pdb.set_trace()
+    new_dtype = np.dtype([dtype[k] for k in keys])
+
+    # convert arrays to the new dtype where necessary
+    for i in range(len(arr)):
+        if arr[i].dtype != new_dtype:
+            arr[i] = np.rec.fromrecords(arr[i], dtype=new_dtype)
+
+    return np.concatenate(arr)

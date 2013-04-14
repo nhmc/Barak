@@ -3,8 +3,8 @@ from ..utilities import get_data_path
 
 DATAPATH = get_data_path()
 
-def test_find_wa_edges():
-    assert np.allclose(find_wa_edges([1, 2.1, 3.3, 4.6]),
+def test_find_bin_edges():
+    assert np.allclose(find_bin_edges([1, 2.1, 3.3, 4.6]),
                        [0.45,  1.55,  2.7,   3.95,  5.25])
 
 def test_make_wa_scale():
@@ -94,3 +94,13 @@ def test_air2vac_vac2air():
                        [2000, 80000], rtol=1e-9)
     assert np.allclose(vac2air_Ciddor(air2vac_Ciddor(5000)), 5000, rtol=1e-9)
     assert np.allclose(vac2air_Morton(air2vac_Morton(5000)), 5000, rtol=1e-9)
+
+def test_scale_overlap():
+    w0 = np.arange(1200, 1250, 0.5)
+    w0 = np.arange(1200, 1250, 0.5)
+    w1 = np.arange(1240, 1280, 0.3)
+    f0 = np.ones_like(w0)
+    f1 = np.ones_like(w1) * 0.8
+    e0 = f0 / 10.
+    e1 = f1 / 10.
+    assert np.allclose(scale_overlap(w0, f0, e0, w1, f1, e1), (1.25, 80, 31))

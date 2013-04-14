@@ -1,10 +1,18 @@
 """ Calculate virial quantities for a dark matter halo given a
 cosmology.
 """
-from __future__ import division
+
+# p2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
+
 from astropy import cosmology
 from astropy.utils import isiterable
-from barak.constants import G, Msun, kpc, kboltz, mp
+from .constants import G, Msun, kpc, kboltz, mp
 from math import pi
 import numpy as np
 
@@ -15,7 +23,7 @@ km = 1e5
 find_rvT_output = namedtuple('virial_rvT', 'r v T')
 
 def deltavir(redshift, cosmo=None):
-    """ The Virial overdensity as a function redshift. 
+    """ The virial overdensity as a function redshift. 
 
     This is an approximation parameterized by Bryan & Norman 98, ApJ,
     495, 80.  Good to 1% for omega(z) = 0.1-1, requires either omega =

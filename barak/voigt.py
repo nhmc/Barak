@@ -1,6 +1,9 @@
 """ A fast implementation of the Voigt function.
 """
-from __future__ import division
+
+# p2.6+ compatibility
+from __future__ import division, print_function, unicode_literals
+
 import numpy as np
 from math import sqrt, pi
 
@@ -1033,7 +1036,7 @@ def voigt_wofz(a, u):
     except ImportError:
          s = ("Can't find scipy.special.wofz(), can only calculate Voigt "
               " function for 0 < a < 0.1 (a=%g)" % a)  
-         print s
+         print(s)
     else:
          return wofz(u + 1j * a).real
 

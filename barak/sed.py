@@ -8,10 +8,16 @@ Inspired by the SED module in astLib by Matt Hilton
 - SUN: The SED of the Sun.
 
 """
-from __future__ import division
-from io import readtabfits
-from constants import c, c_kms, Jy
-from utilities import get_data_path
+from __future__ import division, print_function, unicode_literals
+try:
+    unicode
+except NameError:
+    unicode = basestring = str
+    xrange = range
+
+from .io import readtabfits, loadtxt
+from .constants import c, c_kms, Jy
+from .utilities import get_data_path
 
 import numpy as np
 from numpy.random import randn
@@ -100,7 +106,7 @@ def get_extinction(filename=None, airmass=1.):
     if filename is None:
         return sorted(os.listdir(PATH_EXTINCT))
 
-    wa, emag = np.loadtxt(PATH_EXTINCT + filename, unpack=1)
+    wa, emag = loadtxt(PATH_EXTINCT + filename, unpack=1)
     return wa, 10**(-0.4 * emag * airmass)
 
 
@@ -140,11 +146,14 @@ class Passband(object):
         else:
             filepath = filename
         if filepath.endswith('.fits'):
-            import pyfits
+            try:
+                import pyfits
+            except ImportError:
+                import astropy.io.fits as pyfits
             rec = pyfits.getdata(filepath, 1)
             self.wa, self.tr = rec.wa, rec.tr
         else:
-            self.wa, self.tr = np.loadtxt(filepath, usecols=(0,1), unpack=True)
+            self.wa, self.tr = loadtxt(filepath, usecols=(0,1), unpack=True)
         # check wavelengths are sorted lowest -> highest
         isort = self.wa.argsort()
         self.wa = self.wa[isort]
@@ -169,7 +178,7 @@ class Passband(object):
         if ccd is not None:
             # apply ccd/optics efficiency
             name = PATH_PASSBAND + instr + '/effic_%s.txt' % ccd
-            wa, effic = np.loadtxt(name, usecols=(0,1), unpack=1)
+            wa, effic = loadtxt(name, usecols=(0,1), unpack=1)
             self.effic = np.interp(self.wa, wa, effic)
             self.tr *= self.effic
 
@@ -180,7 +189,7 @@ class Passband(object):
 
         if instr in extinctmap:
             # apply atmospheric extinction
-            wa, emag = np.loadtxt(PATH_EXTINCT + extinctmap[instr], unpack=1)
+            wa, emag = loadtxt(PATH_EXTINCT + extinctmap[instr], unpack=1)
             self.atmos = np.interp(self.wa, wa, 10**(-0.4 * emag))
             self.tr *= self.atmos
 
@@ -274,7 +283,7 @@ class SED(object):
                 rec = readtabfits(filepath)
                 wa, fl = rec.wa, rec.fl
             else:
-                wa, fl = np.loadtxt(filepath, usecols=(0,1), unpack=1)  
+                wa, fl = loadtxt(filepath, usecols=(0,1), unpack=1)  
             if label is None:
                 label = filename
 
@@ -569,6 +578,26 @@ def make_constant_dv_wa_scale(wmin, wmax, dv):
     wa = wmin * 10**(np.arange(npts)*dlogw)
     return wa
 
+def vel_from_wa(wa, wa0, redshift=0):
+    """ Find velocity scale from wavelengths, given a redshift and
+    transition.
+
+    Parameters
+    ----------
+    wa : array, shape (N,)
+      Observed wavelength array.
+    wa0 : float
+      Transition rest wavelength, must be same units as `wa`.
+    redshift : float
+      Redshift. Default 0.
+
+    Returns
+    -------
+    vel : arr of shape (N,)
+      Velocities in km/s.
+    """
+    obswa = wa0 * (1 + redshift)
+    return (wa / obswa - 1) * c_kms
 
 # Data
 VEGA = SED('reference/Vega_bohlin2006')

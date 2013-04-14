@@ -4,7 +4,6 @@ absorption and sky background emission.
 """
 from __future__ import print_function
 from barak.sed import get_bands, qso_template
-
 from barak.utilities import between, get_data_path
 from barak.io import readtxt
 

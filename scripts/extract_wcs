@@ -5,8 +5,11 @@ image header to a text file.
 This makes a suitable input file for Swarp:
 http://www.astromatic.net/software/swarp
 """
-
-import pyfits
+from __future__ import print_function
+try:
+    import pyfits
+except ImportError:
+    import astropy.io.fits as pyfits
 import sys
 
 usage = """\
@@ -17,7 +20,7 @@ file, suitable for input to Swarp.
 """
 
 if len(sys.argv[1:]) == 0:
-    print usage
+    print(usage)
     sys.exit()
 
 # only for 2d images
@@ -42,7 +45,7 @@ CRPIX2
 """.split()
 
 for n in sys.argv[1:]:
-    print n
+    print(n)
     hd = pyfits.getheader(n)
     i = n.index('.fits')
     fh = open((n[:i] + '_wcs.hdr'), 'w')
