@@ -131,12 +131,28 @@ def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None):
     Returns
     -------
     fl_out : array of length N
-      fl convolved with the gaussian kernel with the specified FWHM.
-     
+      fl convolved with the gaussian kernel with the specified FWHM.     
+
+    Examples
+    --------
+    >>> from barak import sed
+    >>> wa = np.arange(5000, 7000, 0.03)
+    >>> fl = np.random.randn(len(wa)) + 1.
+    >>> instrument_profile_fwhm = 5.5 # resolution fwhm km/s
+    >>> flsmooth = convolve_constant_dv(wa, fl, vfwhm=instrument_profile)
+
+    To avoid generating a new constant velocity scale for multiple
+    convolutions of the same spectrum, you can create your own and
+    pass it as the wa_dv argument:
+
+    >>> from barak import sed
+    >>> subpixkms = 1.3  # km/s    
+    >>> wa_dv = sed.make_constant_dv_wa_scale(wa[0], wa[-1], subpixkms)
+    >>> npix = instrument_profile / subpixkms
+    >>> flsmooth = convolve_constant_dv(wa, fl, wa_dv=wa_dv, npix=npix)
     """
     # interpolate to the log-linear scale, convolve, then
     # interpolate back again.
-    # convolve with the gaussian
     if vfwhm is not None:
         wa_dv = make_constant_dv_wa_scale(wa[0], wa[-1], float(vfwhm)/npix)
     fl_dv = np.interp(wa_dv, wa, fl)
