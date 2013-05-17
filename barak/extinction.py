@@ -147,8 +147,7 @@ def starburst_Calzetti00(wa, Rv=4.05):
 
     Returns
     -------
-    AlamAv : ndarray of floats, shape (N,)
-      A(lambda)/A(V) at each input wavelength.
+    Ext : ExtinctionCurve instance
 
     References
     ----------
@@ -159,11 +158,11 @@ def starburst_Calzetti00(wa, Rv=4.05):
     Examples
     --------
     wa = np.arange(1500, 3300, 0.1)
-    tau = starburst_Calzetti00(wa, 0.08)
+    ext = starburst_Calzetti00(wa, 0.08)
 
     # Assume a power law for the input flux
     flux = (wa/1500) ** -1.5
-    extincted_flux = flux * np.exp(-tau)
+    extincted_flux = flux * np.exp(-ext.tau)
     """
 
     wa = np.atleast_1d(wa)
@@ -231,8 +230,7 @@ def MW_Cardelli89(wa, Rv=3.1):
 
     Returns
     -------
-    AlamAv, Rv : ndarray, float
-      A(lambda) / A(V) at each wavelength and Rv.
+    Ext : ExtinctionCurve instance
 
     Notes
     -----
@@ -432,7 +430,6 @@ def LMC2_Gordon03(wa):
         return ExtinctionCurve(wa[0], 2.76, AlamAv[0], name='LMC2_Gordon03')
     else:
         return ExtinctionCurve(wa, 2.76, AlamAv, name='LMC2_Gordon03')
-
 
     
 def SMC_Gordon03(wa):
