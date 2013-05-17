@@ -572,25 +572,99 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
                    edgecolors=c, **kwargs)
     return c
 
-def calc_log_minor_ticks(majticks):
+def calc_log_minor_ticks(majorticks):
     """ Get minor tick positions for a log scale.
 
     Parameters
     ----------
-    majticks : array_like
+    majorticks : array_like
         log10 of the major tick positions.
 
     Returns
     -------
-    minticks : ndarray
+    minorticks : ndarray
         log10 of the minor tick positions.
     """
     tickpos = np.log10(np.arange(2, 10))
-    minticks = []
-    for t in np.atleast_1d(majticks):
-        minticks.extend(t + tickpos)
+    minorticks = []
+    for t in np.atleast_1d(majorticks):
+        minorticks.extend(t + tickpos)
 
-    return minticks
+    return minorticks
+
+def make_log_xlabels(ax, yoff=-0.05):
+    """ make the labels on the x axis of ax log.
+    """
+    x0, x1 = ax.get_xlim()
+    ticks = ax.get_xticks()
+    tdecade = [t for t in ticks if np.allclose(t % 1, 0)]
+    floor = np.floor(ticks[0])
+    ceil = np.ceil(ticks[-1])
+    if tdecade[0] > floor:
+        tdecade = [floor] + tdecade 
+    elif tdecade[0] < ceil:
+        tdecade.append(ceil) 
+    minorticks = calc_log_minor_ticks(tdecade)
+    ax.set_xticks(minorticks, minor=True)
+    ax.set_xticks(tdecade)
+    ticklabels = []
+    for t in tdecade:
+        if t == 0:
+            ticklabels.append('$\mathdefault{1}$')
+        elif t == 1:
+            ticklabels.append('$\mathdefault{10}$')
+        elif t == -1:
+            ticklabels.append('$\mathdefault{0.1}$')
+        elif t == 2:
+            ticklabels.append('$\mathdefault{100}$')
+        elif t == -2:
+            ticklabels.append('$\mathdefault{0.01}$')
+        else:
+            ticklabels.append('$\mathdefault{10^{%.0f}}$' % t)
+
+
+    ax.set_xticklabels(ticklabels)
+    for t in ax.xaxis.get_ticklabels():
+        t.set_verticalalignment('bottom')
+        t.set_y(yoff)
+
+    ax.set_xlim(x0, x1)
+    return ax
+
+def make_log_ylabels(ax):
+    """ make the labels on the y axis of ax log.
+    """
+    y0, y1 = ax.get_ylim()
+    ticks = ax.get_yticks()
+    tdecade = [t for t in ticks if np.allclose(t % 1, 0)]
+    floor = np.floor(ticks[0])
+    ceil = np.ceil(ticks[-1])
+    if tdecade[0] > floor:
+        tdecade = [floor] + tdecade 
+    elif tdecade[0] < ceil:
+        tdecade.append(ceil) 
+    minorticks = calc_log_minor_ticks(tdecade)
+    ax.set_yticks(minorticks, minor=True)
+    ax.set_yticks(tdecade)
+    ticklabels = []
+    for t in tdecade:
+        if t == 0:
+            ticklabels.append('$\mathdefault{1}$')
+        elif t == 1:
+            ticklabels.append('$\mathdefault{10}$')
+        elif t == -1:
+            ticklabels.append('$\mathdefault{0.1}$')
+        elif t == 2:
+            ticklabels.append('$\mathdefault{100}$')
+        elif t == -2:
+            ticklabels.append('$\mathdefault{0.01}$')
+        else:
+            ticklabels.append('$\mathdefault{10^{%.0f}}$' % t)
+
+    ax.set_yticklabels(ticklabels)
+    ax.set_ylim(y0, y1)
+    return ax
+
 
 def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True,
                   c='k'):
@@ -800,6 +874,7 @@ def get_fig_axes(nrows, ncols, nplots, width=11.7, height=None, aspect=0.5):
             if ind > nplots - 1:
                 continue
             axes1.append(axes[ind])
+
     # find the indices of the left and bottom plots (used to set axes
     # labels)
     ileft = range(nrows)
