@@ -56,14 +56,11 @@ Tollerud's `Astropysics <https://github.com/eteq/astropysics>`_.
 # p2.6+ compatibility
 from __future__ import division, print_function, unicode_literals
 
-from .utilities import get_data_path, between
+from .utilities import between
 from .interp import interp_Akima
 import numpy as np
 
 import warnings
-
-datapath = get_data_path()
-PATH_EXTINCT = datapath + '/dust_extinction/'
 
 # interpolation limits
 W0, W1 = 2850, 3700

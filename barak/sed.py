@@ -94,22 +94,7 @@ def get_SEDs(kind=None, names=None):
     elif names is None:
         names = TEMPLATES[kind]
 
-    return [SED(kind + '/' + n) for n in names]
-
-def get_extinction(filename=None, airmass=1.):
-    """ return the atmospheric extinction from the given file.
-
-    returns extinction = 10^(0.4 * extinction_in_mags * airmass),
-
-    where flux_true = flux_extincted * extinction
-    """ 
-    if filename is None:
-        return sorted(os.listdir(PATH_EXTINCT))
-
-    wa, emag = loadtxt(PATH_EXTINCT + filename, unpack=1)
-    return wa, 10**(-0.4 * emag * airmass)
-
-
+    return [SED(kind + '/' + n) for n in 
 class Passband(object):
     """This class describes a filter transmission curve. Passband
     objects are created by loading data from from text files
