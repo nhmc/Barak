@@ -9,7 +9,7 @@ except NameError:
     unicode = basestring = str
     xrange = range
 
-import copy
+import copy, warnings
 import os, pdb
 from math import sqrt
 from pprint import pformat
@@ -17,7 +17,7 @@ from pprint import pformat
 import numpy as np
 import matplotlib.pyplot as pl
 
-from .utilities import nan2num, between, get_data_path
+from .utilities import nan2num, between, get_data_path, stats
 from .convolve import convolve_psf
 from .io import readtxt, readtabfits, loadtxt
 from .plot import axvlines, axvfill, puttext
@@ -870,7 +870,7 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
       Wavelength, flux and 1 sigma error for spectrum 0.
     w1, f1, e1 : arrays of shape (N,)
       Wavelength, flux and 1 sigma error for spectrum 1.
-
+     
     Returns
     -------
     scale_factor, i0, i1 : float, int, int
@@ -887,9 +887,11 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
     sp0 = np.rec.fromarrays([w0,f0,e0], dtype=dtype)
     sp1 = np.rec.fromarrays([w1,f1,e1], dtype=dtype)
     if sp0.wa.max() < sp1.wa.min():
-        print('No overlap! Matching medians of whole spectra')
-        good0 = (sp0.er > 0) & ~np.isnan(sp0.fl) & (sp0.fl > 2*sp0.er)  
-        good1 = (sp1.er > 0) & ~np.isnan(sp1.fl) & (sp1.fl > 2*sp1.er) 
+        print('No overlap! Matching medians of closest half spectra')
+        good0 = (sp0.er > 0) & ~np.isnan(sp0.fl) & (sp0.fl > 2*sp0.er) & \
+                (sp0.wa > 0.5*(sp0.wa.max() + sp0.wa.min()))
+        good1 = (sp1.er > 0) & ~np.isnan(sp1.fl) & (sp1.fl > 2*sp1.er) & \
+                (sp1.wa < 0.5*(sp1.wa.max() + sp1.wa.min()))
         if good0.sum() and good1.sum():
             m0, m1 = np.median(sp0.fl[good0]), np.median(sp1.fl[good1]) 
             return m0 / m1, 0, len(sp1)-1
@@ -1124,6 +1126,13 @@ def find_cont(fl, fwhm1=300, fwhm2=200, nchunks=4, nsiglo=2, nsighi=3):
     # smooth flux, with smoothing length much longer than expected
     # emission line widths.
     fl = nan2num(fl.astype(float), replace='mean')
+    if len(fl) < 3*fwhm1:
+        fwhm1 = len(fl) / 3.
+        warnings.warn('Reducing fwhm1 to %i pixels' % fwhm1)
+    if len(fl) < 3*fwhm2:
+        fwhm2 = len(fl) / 3.
+        warnings.warn('Reducing fwhm2 to %i pixels' % fwhm2)
+
     co = convolve_psf(fl, fwhm1, edge=10)
     
     npts = len(fl)
