@@ -30,6 +30,7 @@ from math import pi, sqrt, exp, log, isnan
 
 DATAPATH = get_data_path()
 
+ION_CACHE = {}
 ATOMDAT = None
 # this constant gets used in several functions (units of cm^2/s)
 e2_me_c = e**2 / (me*c)
@@ -1267,3 +1268,36 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
     names = str('name,latex,logNlo,logN,logNhi,Wr,Wre,Wrlo,'
                 'Wrhi,logN_5sig,logN_Whi,saturated')
     return np.rec.fromrecords(results, names=names)
+
+def get_ionization_energy(species):
+    """ Find the ionization energy for a species.
+
+    Parameters
+    ----------
+    species : str or list of str
+      For example 'CII'.
+
+    Returns
+    -------
+    energy : float or array of floats
+      Threshold ionization energy in eV.
+
+    Example
+    -------
+    energy = get_ionization_energy('CII')
+    """
+    global ION_CACHE
+    if 'table' not in ION_CACHE:
+        import atpy
+        ION_CACHE['table'] = atpy.Table(
+            DATAPATH + '/ionization_energies/Verner94_table4.tbl', type='ipac')
+        ION_CACHE['row_map'] = {s:i for i,s in enumerate(
+            ION_CACHE['table'].species)}
+
+    if isinstance(species, basestring):
+        i = ION_CACHE['row_map'][species]
+        return ION_CACHE['table'].ionizthresh[i]
+    else:
+        ind = [ION_CACHE['row_map'][s] for s in species]
+        return np.array([ION_CACHE['table'].ionizthresh[i] for i in ind],
+                        dtype=float)
