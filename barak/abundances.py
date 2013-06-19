@@ -40,6 +40,13 @@ cond_temp = readtxt(datapath +
                     'abundances/CondensationTemperatures.txt',
                     readnames=1, sep='|')
 
+
+# Mass fractions of H (X), He (Y) and metals (Z) below are from Aspluind et
+# al. 2009ARA&A..47..481A, table 4.
+
+protosolar = dict(X=0.7381, Y=0.2485, Z=0.0134, ZonX=0.0181)
+photosphere = dict(X=0.7154, Y=0.2703, Z=0.0142, ZonX=0.0199)
+
 def calc_abund(X, Y, logNX, logNY):
     """ Find the abundance relative to solar given two elements and
     their column densities.

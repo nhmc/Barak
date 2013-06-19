@@ -1,4 +1,4 @@
-# Values from Table 2 (soalr system abundances) in
+# Values from Table 2 (solar system abundances) in Lodders et al.
 # http://adsabs.harvard.edu/abs/2003ApJ...591.1220L. Errors are at the
 # few percent level.
 
