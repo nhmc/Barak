@@ -57,7 +57,7 @@ def get_bands(instr=None, names=None, ccd=None):
 
     Examples
     --------
-    
+
     >>> sdss = get_bands('SDSS', 'u,g,r,i,z')  # get the SDSS passbands
     >>> U = get_bands('LBC', 'u')    # get the LBC U_spec filter
     """
@@ -74,7 +74,7 @@ def get_bands(instr=None, names=None, ccd=None):
     return [Passband(instr + '/' + n, ccd=ccd) for n in names]
 
 def get_SEDs(kind=None, names=None):
-    """ Get one or more SEDs based on their type and filename 
+    """ Get one or more SEDs based on their type and filename
 
     If `names` is not given, then every SED of that type is returned.
     SED types and filenames are listed in the dictionary TEMPLATES.
@@ -104,14 +104,14 @@ class Passband(object):
     transmission efficiency in the second column (whitespace
     delimited). For example, to create a Passband object for the 2MASS
     J filter:
-    
+
     passband = Passband('J_2MASS.res')
 
     where 'J_2MASS.res' is a file in the current working directory
     that describes the filter.
 
     The available passbands are in PASSBANDS.
-    
+
     Attributes
     ----------
     wa : array of floats
@@ -191,11 +191,11 @@ class Passband(object):
             i = 0
             c0 = ind < imax
             if c0.any():
-                i = ind[c0].max() 
+                i = ind[c0].max()
             j = len(self.wa) - 1
             c0 = ind > imax
             if c0.any():
-                j = ind[c0].min() 
+                j = ind[c0].min()
             i = min(abs(i-2), 0)
             j += 1
             self.wa = self.wa[i:j]
@@ -204,7 +204,7 @@ class Passband(object):
             self.atmos = self.atmos[i:j]
         if self.effic is not None:
             self.effic = self.effic[i:j]
-            
+
         # normalise
         self.ntr = self.tr / np.trapz(self.tr, self.wa)
 
@@ -256,10 +256,10 @@ class SED(object):
     using::
 
      nu = c / lambda
-     f_lambda = c / lambda^2 * f_nu 
+     f_lambda = c / lambda^2 * f_nu
 
     Available SED template filenames are in TEMPLATES.
-    """   
+    """
     def __init__(self, filename=None, wa=[], fl=[], z=0., label=None):
 
         # filename overrides wave and flux keywords
@@ -270,7 +270,7 @@ class SED(object):
                 rec = readtabfits(filepath)
                 wa, fl = rec.wa, rec.fl
             else:
-                wa, fl = loadtxt(filepath, usecols=(0,1), unpack=1)  
+                wa, fl = loadtxt(filepath, usecols=(0,1), unpack=1)
             if label is None:
                 label = filename
 
@@ -283,7 +283,7 @@ class SED(object):
         self.wa = np.array(wa)
         self.fl = np.array(fl)
         self.z = z
-        self.label = label    
+        self.label = label
 
         if abs(z) > 1e-6:
             self.redshift_to(z)
@@ -327,7 +327,7 @@ class SED(object):
             pl.show()
 
     def redshift_to(self, z, cosmo=None):
-        """Redshifts the SED to redshift z. """        
+        """Redshifts the SED to redshift z. """
         # We have to conserve energy so the area under the redshifted
         # SED has to be equal to the area under the unredshifted SED,
         # otherwise magnitude calculations will be wrong when
@@ -335,7 +335,7 @@ class SED(object):
 
         self.wa = np.array(self.z0wa)
         self.fl = np.array(self.z0fl)
-        
+
         z0fluxtot = np.trapz(self.z0wa, self.z0fl)
         self.wa *= z + 1
         zfluxtot = np.trapz(self.wa, self.fl)
@@ -351,7 +351,7 @@ class SED(object):
         norm = magflux / sedflux
         self.fl *= norm
         self.z0fl *= norm
-        
+
     def calc_flux(self, band):
         """Calculate the mean flux for a passband, weighted by the
         response and wavelength in the given passband.
@@ -401,7 +401,7 @@ class SED(object):
         mag_sigma : float
           Add a gaussian random deviate to the magnitude, with sigma
           given by this value.
-          
+
         `system` is either 'Vega' or 'AB'
         """
         f1 = self.calc_flux(band)
@@ -415,7 +415,7 @@ class SED(object):
             mag = np.inf
 
         return mag
-    
+
     def calc_colour(self, band1, band2, system="Vega"):
         """Calculates the colour band1 - band2.
 
@@ -427,7 +427,7 @@ class SED(object):
         """
         mag1 = self.calc_mag(band1, system=system)
         mag2 = self.calc_mag(band2, system=system)
-    
+
         return mag1 - mag2
 
     def apply_extinction(self, ext_type, EBmV):
@@ -451,7 +451,7 @@ class SED(object):
                       )
 
         sed = self.copy()
-        sed.z0fl[:] = sed.z0fl_noextinct 
+        sed.z0fl[:] = sed.z0fl_noextinct
         tau = ecurve[ext_type](self.z0wa, EBmV=EBmV).tau
         sed.z0fl *= np.exp(-tau)
         sed.EBmV = EBmV
@@ -467,7 +467,7 @@ def mag2flux(ABmag, band):
     """
     # AB mag (See Oke, J.B. 1974, ApJS, 27, 21)
     # fnu in erg/s/cm^2/Hz
-    fnu = 10**(-(ABmag + 48.6)/2.5)          
+    fnu = 10**(-(ABmag + 48.6)/2.5)
     # convert to erg/s/cm^2/Ang
     flambda = fnu_to_flambda(band.effective_wa, fnu)
 
@@ -480,7 +480,7 @@ def flux2mag(flambda, band):
     """
     # convert to erg/s/cm^2/Hz
     fnu = flambda_to_fnu(band.effective_wa, flambda)
-    mag = -2.5*math.log10(fnu) - 48.6    
+    mag = -2.5*math.log10(fnu) - 48.6
     return mag
 
 def mag2Jy(ABmag):
@@ -514,7 +514,7 @@ def fnu_to_flambda(wa, f_nu):
 
 def flambda_to_fnu(wa, f_lambda):
     """ Convert flux per unit wavelength to a flux per unit frequency.
-    
+
     Parameters
     ----------
     wa : array_like
@@ -536,7 +536,7 @@ def qso_template(wa, z):
     This uses the SDSS composite at wa > 1680 and a smoothed version
     of the HST/COS EUV+FUV AGN composite spectrum shown in Figure 5
     from Shull, Stevans, and Danforth 2012 for wa < 1680.
-    
+
     The spectrum is in arbitrary units of F_lambda. wa must be in
     angstroms.
     """
@@ -577,7 +577,7 @@ def qso_template_uv(wa, z):
 
     Only good between 550 and 1730 Angstroms (rest frame)
     """
-    T = readtabfits(DATAPATH + 'templates/qso/Shull_composite.fits')                     
+    T = readtabfits(DATAPATH + 'templates/qso/Shull_composite.fits')
     return np.interp(wa, T.wa*(1 + z), T.fl)
 
 
