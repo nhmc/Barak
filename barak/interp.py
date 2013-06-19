@@ -228,6 +228,8 @@ class AkimaSpline(object):
         c0 = x < self.xvals[0]
         c2 = x > self.xvals[-1]
         c1 = ~(c0 | c2)
+        if c1.sum() == 0:
+            raise ValueError('All points are outside the interpolation range!')
         x1 = x[c1]
         out = np.empty_like(x)
         bins = np.digitize(x1, self.xvals)
