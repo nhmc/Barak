@@ -44,7 +44,7 @@ http://matplotlib.org/users/installing.html.
 """)
     
 
-with open('README') as fh:
+with open('README.rst') as fh:
     readme = fh.read()
 
 readme += '\n'
