@@ -94,7 +94,9 @@ def get_SEDs(kind=None, names=None):
     elif names is None:
         names = TEMPLATES[kind]
 
-    return [SED(kind + '/' + n) for n in 
+    return [SED(kind + '/' + n) for n in names]
+
+
 class Passband(object):
     """This class describes a filter transmission curve. Passband
     objects are created by loading data from from text files
@@ -275,15 +277,13 @@ class SED(object):
         # We keep a copy of the wavelength, flux at z = 0
         self.z0wa = np.array(wa)
         self.z0fl = np.array(fl)
+        self.z0fl_noextinct = np.array(fl)
+        self.EBmV = None
+
         self.wa = np.array(wa)
         self.fl = np.array(fl)
         self.z = z
         self.label = label    
-
-        # Store the intrinsic (i.e. unextincted) flux in case we
-        # change extinction
-        self.EBmV = 0.
-        self.z0fl_no_extinct = np.array(fl)
 
         if abs(z) > 1e-6:
             self.redshift_to(z)
@@ -316,11 +316,10 @@ class SED(object):
         if ymax is not None:
             fl = self.fl / self.fl.max() * ymax
 
-        label = '%s z=%.1f E(B-V)=%.2f' % (self.label, self.z, self.EBmV)
         if log:
-            pl.loglog(self.wa, fl, label=label, **kwargs)
+            pl.loglog(self.wa, fl, **kwargs)
         else:
-            pl.plot(self.wa, fl, label=label, **kwargs)
+            pl.plot(self.wa, fl, **kwargs)
         pl.xlabel('Wavelength ($\AA$)')
         pl.ylabel('Flux (ergs s$^{-1}$cm$^{-2}$ $\AA^{-1}$)')
         #pl.legend()
@@ -430,6 +429,35 @@ class SED(object):
         mag2 = self.calc_mag(band2, system=system)
     
         return mag1 - mag2
+
+    def apply_extinction(self, ext_type, EBmV):
+        """ Return a new SED instance with the extinction curve at the
+        same redshift as the template.
+
+        Allowed extiction laws are:
+
+           MW
+           SMC
+           LMC
+           starburst
+
+        See the extinction module for more information.
+        """
+        import extinction as ext
+        ecurve = dict(MW= ext.MW_Cardelli89             ,
+                      SMC=ext.SMC_Gordon03              ,
+                      LMC=ext.LMC_Gordon03              ,
+                      starburst=ext.starburst_Calzetti00
+                      )
+
+        sed = self.copy()
+        sed.z0fl[:] = sed.z0fl_noextinct 
+        tau = ecurve[ext_type](self.z0wa, EBmV=EBmV).tau
+        sed.z0fl *= np.exp(-tau)
+        sed.EBmV = EBmV
+
+        sed.redshift_to(sed.z)
+        return sed
 
 def mag2flux(ABmag, band):
     """ Converts given AB magnitude into flux in the given band, in

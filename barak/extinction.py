@@ -125,7 +125,7 @@ class ExtinctionCurve(object):
     def name(self):
         return self._name
 
-def starburst_Calzetti00(wa, Rv=4.05):
+def starburst_Calzetti00(wa, Rv=4.05, EBmV=None):
     """ Dust extinction in starburst galaxies using the Calzetti
     relation.
 
@@ -213,11 +213,13 @@ def starburst_Calzetti00(wa, Rv=4.05):
             AlamAv[c1] = interp_Akima(wa[c1], wa[~c1], AlamAv[~c1])
 
     if len(wa) == 1:
-        return ExtinctionCurve(wa[0], Rv, AlamAv[0], name='starburst_Calzetti00')
+        return ExtinctionCurve(wa[0], Rv, AlamAv[0], EBmV=EBmV,
+                               name='starburst_Calzetti00')
     else:
-        return ExtinctionCurve(wa, Rv, AlamAv, name='starburst_Calzetti00')
+        return ExtinctionCurve(wa, Rv, AlamAv, EBmV=EBmV,
+                               name='starburst_Calzetti00')
 
-def MW_Cardelli89(wa, Rv=3.1):
+def MW_Cardelli89(wa, EBmV=None, Rv=3.1):
     """ Milky Way Extinction law from Cardelli et al. 1989.
 
     Parameters
@@ -311,9 +313,11 @@ def MW_Cardelli89(wa, Rv=3.1):
         AlamAv[uv_extrap] = np.exp(np.polyval(coeff, np.log(x[uv_extrap])))
 
     if len(x) == 1:
-        return ExtinctionCurve(wa[0], Rv, AlamAv[0], name='MW_Cardelli89')
+        return ExtinctionCurve(wa[0], Rv, AlamAv[0], EBmV=EBmV,
+                               name='MW_Cardelli89')
     else:
-        return ExtinctionCurve(wa, Rv, AlamAv, name='MW_Cardelli89')
+        return ExtinctionCurve(wa, Rv, AlamAv, EBmV=EBmV,
+                               name='MW_Cardelli89')
 
 
 def ElamV_FM(wa, c1, c2, c3, c4, x0, gamma):
@@ -350,7 +354,7 @@ def ElamV_FM(wa, c1, c2, c3, c4, x0, gamma):
 
     return ElamV
 
-def LMC_Gordon03(wa):
+def LMC_Gordon03(wa, EBmV=None):
     """ LMC Extinction law from Gordon et al. 2003 LMC Average Sample.
 
     Parameters
@@ -387,11 +391,13 @@ def LMC_Gordon03(wa):
             AlamAv[c1] = interp_Akima(wa[c1], wa[~c1], AlamAv[~c1])
         
     if len(AlamAv) == 1:
-        return ExtinctionCurve(wa[0], 3.41, AlamAv[0], name='LMC_Gordon03')
+        return ExtinctionCurve(wa[0], 3.41, AlamAv[0], EBmV=EBmV,
+                               name='LMC_Gordon03')
     else:
-        return ExtinctionCurve(wa, 3.41, AlamAv, name='LMC_Gordon03')
+        return ExtinctionCurve(wa, 3.41, AlamAv, EBmV=EBmV,
+                               name='LMC_Gordon03')
 
-def LMC2_Gordon03(wa):
+def LMC2_Gordon03(wa, EBmV=None):
     """ LMC Extinction law from Gordon et al. 2003 LMC supershell
     sample.
 
@@ -427,12 +433,14 @@ def LMC2_Gordon03(wa):
             AlamAv[c1] = interp_Akima(wa[c1], wa[~c1], AlamAv[~c1])
 
     if len(AlamAv) == 1:
-        return ExtinctionCurve(wa[0], 2.76, AlamAv[0], name='LMC2_Gordon03')
+        return ExtinctionCurve(wa[0], 2.76, AlamAv[0], EBmV=EBmV,
+                               name='LMC2_Gordon03')
     else:
-        return ExtinctionCurve(wa, 2.76, AlamAv, name='LMC2_Gordon03')
+        return ExtinctionCurve(wa, 2.76, AlamAv, EBmV=EBmV,
+                               name='LMC2_Gordon03')
 
     
-def SMC_Gordon03(wa):
+def SMC_Gordon03(wa, EBmV=None):
     """ SMC Extinction law from Gordon et al. 2003 SMC Bar Sample.
 
     Parameters
@@ -467,9 +475,11 @@ def SMC_Gordon03(wa):
             AlamAv[c1] = interp_Akima(wa[c1], wa[~c1], AlamAv[~c1])
 
     if len(AlamAv) == 1:
-        return ExtinctionCurve(wa[0], 2.74, AlamAv[0], name='SMC_Gordon03')
+        return ExtinctionCurve(wa[0], 2.74, AlamAv[0], EBmV=EBmV,
+                               name='SMC_Gordon03')
     else:
-        return ExtinctionCurve(wa, 2.74, AlamAv, name='SMC_Gordon03')
+        return ExtinctionCurve(wa, 2.74, AlamAv, EBmV=EBmV,
+                               name='SMC_Gordon03')
 
 def tau_from_AlamAv(AlamAv, Av):
     """ Find tau(lambda) from A(lambda)/A(V)
