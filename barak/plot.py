@@ -162,7 +162,7 @@ def distplot(vals, xvals=None, perc=(68, 95), showmean=False,
             # no data, skip this position
             continue
         # get percentile levels
-        levels.append(scoreatpercentile(d, percentiles))
+        levels.append(np.percentile(d, percentiles))
         if showmean:
             means.append(d.mean())
         # get outliers
