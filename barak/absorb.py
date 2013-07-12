@@ -681,12 +681,19 @@ def findtrans(name, atomdat=None):
         atomdat = get_atomdat()
     i = 0
     name = name.strip()
-    if name[:4] in ['H2J0','H2J1','H2J2','H2J3','H2J4','H2J5']:
+    if name[:4] in ['H2J0','H2J1','H2J2','H2J3','H2J4','H2J5','H2J6','H2J7',
+                    'COJ0','COJ1','COJ2','COJ3','COJ4','COJ5']:
         i = 4
+    elif name[:3] == 'HI2':
+        i = 3
     else:
         while name[i].isalpha() or name[i] == '*': i += 1
     ion = name[:i]
-    wa = float(name[i:])
+    try:
+        wa = float(name[i:])
+    except:
+        print(name, repr(name[:i]), repr(name[i:]))
+        raise
     # must be sorted lowest to highest for indexnear
     isort = np.argsort(atomdat[ion].wa)
     sortwa = atomdat[ion].wa[isort]
