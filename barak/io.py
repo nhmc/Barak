@@ -690,3 +690,23 @@ def writetable(filename, cols, units=None, names=None, header=None,
         # return column formats to their original values
         for name,fmt in zip(t.keys(), old_formats):
             t.columns[name].format = fmt
+
+def read_sdss_info(filename):
+    """ Read the magnitudes, template, redshift and class for a BOSS
+    spectrum from the fits binary table extension.
+
+    Return a dictionary with this information.
+    """
+    try:
+        import pyfits
+    except ImportError:
+        import astropy.io.fits as pyfits
+    D = pyfits.getdata(filename, 2)
+    d = {}
+    d['z'] = D[str('Z')]
+    d['tfile'] = D[str('TFILE')]
+    d['class'] = D[str('CLASS')]
+    mags = D[str('MODELMAG')][0]
+    for i,key in enumerate('ugriz'):
+        d['mag' + key] = mags[i] 
+    return d
