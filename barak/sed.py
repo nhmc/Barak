@@ -537,8 +537,17 @@ def qso_template(wa, z):
     of the HST/COS EUV+FUV AGN composite spectrum shown in Figure 5
     from Shull, Stevans, and Danforth 2012 for wa < 1680.
 
-    The spectrum is in arbitrary units of F_lambda. wa must be in
-    angstroms.
+    Parameters
+    ----------
+    wa : array_like, shape (N,)
+      Wavelength array in Angstroms
+    z : float
+      Redshift.
+    
+    Returns
+    -------
+    f_lambda : ndarray, shape (N,)
+      The QSO spectrum in F_lambda (the normalisation is arbitrary).
     """
     wa = np.array(wa, copy=False)
     wrest = wa / (1+z)
@@ -560,9 +569,9 @@ def qso_template_sdss(wa, z):
     """ Return a composite visible QSO spectrum at redshift z.
 
     The SDSS composite spectrum as a function of F_lambda is returned
-    at each wavelength of wa. wa must be in angstroms.
+    at each wavelength wa. wa must be in Angstroms.
 
-    Only good between 700 and 8000 (rest frame).
+    Only good between 700 and 8000 Angstroms (rest frame).
     """
     T = readtabfits(DATAPATH + '/templates/qso/dr1QSOspec.fits')
     return np.interp(wa, T.wa*(1+z), T.fl)
@@ -573,7 +582,7 @@ def qso_template_uv(wa, z):
     Wavelengths must be in Angstroms.
 
     This is a smoothed version of the HST/COS EUV+FUV AGN composite
-    spectrum shown in Figure 5 from Shull, Stevans, and Danforth 2012.
+    spectrum shown in Figure 5 of Shull, Stevans, and Danforth 2012.
 
     Only good between 550 and 1730 Angstroms (rest frame)
     """
@@ -582,8 +591,20 @@ def qso_template_uv(wa, z):
 
 
 def make_constant_dv_wa_scale(wmin, wmax, dv):
-    """ Make a constant velocity width scale given a start and end
-    wavelength, and velocity pixel width.
+    """ Make a wavelength scale with bin widths corresponding to a
+    constant velocity width scale.
+
+    Parameters
+    ----------
+    wmin, wmax : floats
+      Start and end wavelength.
+    dv : float
+      Velocity pixel width.
+
+    Returns
+    -------
+    wa : ndarray
+      Wavelength scale. 
     """
     dlogw = np.log10(1 + dv/c_kms)
     # find the number of points needed.
@@ -592,8 +613,8 @@ def make_constant_dv_wa_scale(wmin, wmax, dv):
     return wa
 
 def vel_from_wa(wa, wa0, redshift=0):
-    """ Find velocity scale from wavelengths, given a redshift and
-    transition.
+    """ Find a velocity scale from wavelengths, given a redshift and
+    transition rest wavelength.
 
     Parameters
     ----------
