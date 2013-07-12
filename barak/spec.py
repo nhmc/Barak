@@ -389,7 +389,16 @@ def read(filename, comment='#', debug=False):
         import astropy.io.fits as pyfits
     f = pyfits.open(filename)
     hd = f[0].header
-
+    if hd.has_key(str('TELESCOP')) and hd.has_key(str('FLAVOR')):
+        if hd[str('TELESCOP')] == 'SDSS 2.5-M' and \
+               hd[str('flavor')] == 'science':
+            d = f[1].data
+            wa = 10**d[str('loglam')]
+            fl = d[str('flux')]
+            er = 1 / np.sqrt(d[str('ivar')])
+            co = d[str('model')]
+            return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
+            
     # try record array
     try:
         data = f[1].data
