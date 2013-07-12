@@ -33,14 +33,21 @@ Analytic approximations for dust attenuation curves are often
 calculated as a function of R(V), and then normalised by A(V) or
 E(B - V).
 
-The functions in his module give the attenuation as a function of
-wavelength for the Milky Way, SMC and LMC, and a starburst galaxy.
-The attenuation is given as :math:`A(\lambda)/A(V)`. This can be
+The attenuation as a function of wavelength for a given extinction
+curve is often given as as :math:`A(\lambda)/A(V)`. This can be
 converted to an optical depth in the following way:
 
 .. math::
 
   \tau(\lambda) = \frac{A(\lambda)}{A(V)}\ R(V)\  E(B-V) / (2.5 \log_{10}(e))
+
+The functions in this module use an `ExtinctionCurve` class to
+represent the attentuation as a function of wavelength for the Milky
+Way, SMC and LMC, and a starburst galaxy. Using attributes of this
+class, you can express the extinction curve as an optical depth
+:math:`\tau`, as :math:`A(\lambda)/A(V)` or as
+:math:`E(B-\lambda)/E(B-V)`. R(V), A(V) and E(B-V) are also stored as
+attributes.
 
 **References**
 
@@ -497,3 +504,4 @@ def ElamV_from_AlamAv(AlamAv, Rv):
     """ Find E(lambda - V) / E(B - V) from A(lambda)/A(V).
     """
     return AlamAv*Rv - Rv
+1
