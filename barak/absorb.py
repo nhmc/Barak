@@ -2,9 +2,7 @@
 from ions and molecules.
 """
 # p2.6+ compatibility
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import division, print_function, unicode_literals
 
 import sys
 if sys.version > '3':
@@ -35,7 +33,7 @@ ATOMDAT = None
 # this constant gets used in several functions (units of cm^2/s)
 e2_me_c = e**2 / (me*c)
 
-def get_atomdat():
+def _get_atomdat():
 
     global ATOMDAT
     if ATOMDAT is None:
@@ -517,7 +515,7 @@ def b_to_T(atom, bvals):
       Either an abbreviation for an element name (for example 'Mg'),
       or a mass in amu.
     bvals : array_like
-      One or more b values in km/s
+      One or more b values in km/s.
 
     Returns
     -------
@@ -678,7 +676,7 @@ def findtrans(name, atomdat=None):
     >>> name, tr = findtrans('CIV 1550')
     """
     if atomdat is None:
-        atomdat = get_atomdat()
+        atomdat = _get_atomdat()
     i = 0
     name = name.strip()
     if name[:4] in ['H2J0','H2J1','H2J2','H2J3','H2J4','H2J5','H2J6','H2J7',
@@ -1165,7 +1163,7 @@ def calc_N_AOD(wa, nfl, ner, colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig,
 def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax, 
                  colo_nsig=2, cohi_nsig=2, zerolo_nsig=2, zerohi_nsig=2,
                  atomdat=None):
-    """ measure N for a series of transitions in a spectrum over the
+    """ Measure N for a series of transitions in a spectrum over the
     velocity range.
 
     Uses optically thin approximation for upper limits, and Apparent
@@ -1177,20 +1175,15 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
     ----------
     wa, fl, er, co: arrays shape (N,)
       spectrum wavelength flux, 1 sigma error, continuuum
-
     trans : list of str
       e.g. ['CIV 1548', 'CII 1334']
-
     redshift : float
       Redshift of zero velocity.
-
     vmin, vmax : float
       Minimum and maximum velocities over which to calculate column
       density and equivalent width.
-
     colo_sig, cohi_sig : float
       Continuum offsets in units of 1 sigma (both > 0)
-
     zerolo_nsig, zerohi_nsig : float
       Zero level offsets in units of 1 sigma (both > 0).
 
@@ -1220,7 +1213,7 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
           Whether or not the line is saturated.
     """
     if atomdat is None:
-        atomdat = get_atomdat()
+        atomdat = _get_atomdat()
 
     if isinstance(trans, basestring):
         trans = [trans]
@@ -1289,8 +1282,8 @@ def get_ionization_energy(species):
     energy : float or array of floats
       Threshold ionization energy in eV.
 
-    Example
-    -------
+    Examples
+    --------
     energy = get_ionization_energy('CII')
     """
     global ION_CACHE
