@@ -325,70 +325,111 @@ def calc_Ntot(f26name, trans=None):
     Nmax = np.sum(10**(logN + sig))
     return np.log10(Ntot), np.log10(Nmin), np.log10(Nmax)
         
-def calc_v90(vp, plot=False, z0=None,
-             wav0=1215.6701, osc=0.4164, gam=6.265e8):
-    """ For a vp model, we want to calculate the velocity width that
-    contains 90% of the the total optical depth at the lya line (or
-    perhaps it is the same regardless of which transition I take?) v_90
-    is defined in Prochaska and Wolfe 1997.
+def calc_v90(tau):
+    """ Find the start and end indices of a tau array that give v90.
 
-    At the moment it guesses how big a velocity range it has to
-    calculate the optical depth over - a bit dodgy"""
+    Defined by Prochaska and Wolfe 97.
 
-    from .absorb import calctau
-    lines = vp.lines
-    #print 'calculating for %s' % lines
-    # work in velocity space
-    z = lines.z
-    if z0 is None:  z0 = np.median(z)
-    vel = (z - z0) / (1 + z0) * c_kms
-    # calculate the optical depth as a function of velocity, 500 km/s
-    # past the redmost and bluemost components - hopefully this is far
-    # enough (maybe not for DLAs?)
-    dv = 0.5
-    vhalf = (vel.max() - vel.min())/2. + 300
-    v = np.arange(-vhalf, vhalf + dv, dv)
-    tau = np.zeros(len(v))
-    for line,vline in zip(lines,vel):
-        if line['logN'] > 21.0:
-            print('very (too?) high logN: %s' % line['logN'])
-            print('returning width of -1')
-            return -1.
-        temptau = calctau(v - vline, wav0, osc, gam, line['logN'], line['b'])
-        tau += temptau
-        #pl.plot(v,tau,'+-')
-        #raw_input('N %(logN)f b %(b)f enter to continue' % line)
+    Assumes equally spaced x values.
 
-    # integrate over the entire v range to calculate integral of tau wrt v.
-    sumtaudv = np.trapz(tau,dx=dv)
-    lenv = len(v)
+    Returns
+    -------
+    imin, imax: int
+       The start and end indices of the region that contains 90% of
+       the optical depth.
+    """
+    sumtau = np.trapz(tau)
+    assert sumtau > 0
+    lenv = len(tau)
     # starting from the left v edge, increase v until int from left
     # edge to v gives 5% of total integral
-    sum5perc = sumtaudv / 20.
-    sumtau = 0.
-    i = 0
-    while (sumtau < sum5perc):
+    sum5perc = sumtau / 20.
+    tautotal = 0.
+    i = 1
+    while tautotal < sum5perc:
+        tautotal = np.trapz(tau[:i])
         i += 1
-        sumtau = np.trapz(tau[:i])
         if i == lenv:
             raise Exception('Problem with velocity limits!')
-    vmin = v[i-1]
+    imin = i - 1
     # Do the same starting from the right edge.
-    sumtau = 0
+    tautotal = 0
     i = -1
-    while (sumtau < sum5perc):
-        sumtau = np.trapz(tau[i:])
+    while tautotal < sum5perc:
+        tautotal = np.trapz(tau[i:])
         i -= 1
         if -i == lenv:
             raise Exception('Problem with velocity limits!')
-    vmax = v[i+1]
-    # Difference between the two is v_90
-    v90 = vmax - vmin
-    if plot:
-        pl.plot(v,tau,'+-')
-        pl.vlines((vmin,vmax),0,tau.max())
-    #raw_input('Enter to continue...')
-    return v90
+    imax = len(tau) + (i + 2)
+    return imin, imax
+
+
+# def calc_v90(lines, plot=False, z0=None,
+#              wav0=1215.6701, osc=0.4164, gam=6.265e8):
+#     """ Find the velocity width v_90.
+
+#     v_90 is the velocity width that contains 90% of the total optical
+#     depth for a transition. It's defined in Prochaska and Wolfe 1997.
+
+#     lines must be a VpfitModel.lines instance (or similar)
+
+#     This code looks messy and unecessarily complex. Please do not use.
+#     """
+
+#     from .absorb import calctau
+#     lines = vp.lines
+#     #print 'calculating for %s' % lines
+#     # work in velocity space
+#     z = lines.z
+#     if z0 is None:  z0 = np.median(z)
+#     vel = (z - z0) / (1 + z0) * c_kms
+#     # calculate the optical depth as a function of velocity, 500 km/s
+#     # past the redmost and bluemost components - hopefully this is far
+#     # enough (maybe not for DLAs?)
+#     dv = 0.5
+#     vhalf = (vel.max() - vel.min())/2. + 300
+#     v = np.arange(-vhalf, vhalf + dv, dv)
+#     tau = np.zeros(len(v))
+#     for line,vline in zip(lines,vel):
+#         if line['logN'] > 21.0:
+#             print('very (too?) high logN: %s' % line['logN'])
+#             print('returning width of -1')
+#             return -1.
+#         temptau = calctau(v - vline, wav0, osc, gam, line['logN'], line['b'])
+#         tau += temptau
+#         #pl.plot(v,tau,'+-')
+#         #raw_input('N %(logN)f b %(b)f enter to continue' % line)
+
+#     # integrate over the entire v range to calculate integral of tau wrt v.
+#     sumtaudv = np.trapz(tau,dx=dv)
+#     lenv = len(v)
+#     # starting from the left v edge, increase v until int from left
+#     # edge to v gives 5% of total integral
+#     sum5perc = sumtaudv / 20.
+#     sumtau = 0.
+#     i = 0
+#     while (sumtau < sum5perc):
+#         i += 1
+#         sumtau = np.trapz(tau[:i])
+#         if i == lenv:
+#             raise Exception('Problem with velocity limits!')
+#     vmin = v[i-1]
+#     # Do the same starting from the right edge.
+#     sumtau = 0
+#     i = -1
+#     while (sumtau < sum5perc):
+#         sumtau = np.trapz(tau[i:])
+#         i -= 1
+#         if -i == lenv:
+#             raise Exception('Problem with velocity limits!')
+#     vmax = v[i+1]
+#     # Difference between the two is v_90
+#     v90 = vmax - vmin
+#     if plot:
+#         pl.plot(v,tau,'+-')
+#         pl.vlines((vmin,vmax),0,tau.max())
+#     #raw_input('Enter to continue...')
+#     return v90
 
 def make_rdgen_input(specfilename, filename, wmin=None, wmax=None):
     temp = ('rd %(specfilename)s\n'

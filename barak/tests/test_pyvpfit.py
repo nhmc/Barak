@@ -45,6 +45,6 @@ def test_readf26():
     global vp
     vp = readf26(StringIO(f26string))
 
-def test_calc_v90():
-    assert np.allclose(calc_v90(vp), 381.5)
+#def test_calc_v90():
+#    assert np.allclose(calc_v90(vp), 381.5)
 

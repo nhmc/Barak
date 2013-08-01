@@ -132,6 +132,10 @@ def ang_sep(ra1, dec1, ra2, dec2):
     return DEG_PER_RAD * _distsq_to_radians(d2)
 
 def ra_dec2s(ra, raformat='%02.0f %02.0f %06.3f'):
+    """ Converts a decimal RA to a sexigesimal string.
+
+    Uses the format given by the raformat keyword
+    """
     ra = float(ra)
     if not (0.0 <= ra < 360.):
         raise ValueError("RA outside sensible limits: %s" % ra)
@@ -189,6 +193,8 @@ def dec2s(ra, dec):
 def ra_s2dec(ra):
     """ Converts a sexigesimal RA string to decimal.
 
+    Parameters
+    ----------
     ra : string or sequence of three strings
       The input hour, minute and second. If a string, separators
       between hours minutes and seconds can be whitespace, colons or

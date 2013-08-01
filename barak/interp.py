@@ -15,7 +15,7 @@ class CubicSpline(object):
     = f(xp).
 
     The spline can be reset to use a new first and last derivative
-    while still using the same initial points by calling the set_d2()
+    while still using the same initial points by calling the _set_d2()
     method.
 
     If you want to calculate a new spline using a different set of x
@@ -51,12 +51,12 @@ class CubicSpline(object):
         self.x = x
         self.y = y
         self.npts = len(x)
-        self.set_d2(firstderiv, lastderiv)
+        self._set_d2(firstderiv, lastderiv)
 
     def __call__(self,xp):
         """ Given an array of x values, returns cubic-spline
         interpolated values yp = f(xp) using the derivatives
-        calculated in set_d2().
+        calculated in _set_d2().
         """
         x = self.x;  y = self.y;  npts = self.npts;  d2 = self.d2
 
@@ -90,7 +90,7 @@ class CubicSpline(object):
             temp[i] = (6.*temp[i]/(x[i+1]-x[i-1]) - ratio * temp[i-1]) / denom
         return temp
 
-    def set_d2(self, firstderiv=None, lastderiv=None, verbose=False):
+    def _set_d2(self, firstderiv=None, lastderiv=None, verbose=False):
         """ Calculates the second derivative of a cubic spline
         function y = f(x) for each value in array x. This is called by
         __init__() when a new class instance is created.
@@ -134,8 +134,7 @@ class CubicSpline(object):
         self.d2 = d2
 
 class AkimaSpline(object):
-    """ A class used to generate an Akima Spline through a set of
-    points.
+    """ Descibes an Akima Spline through a set of points.
 
     It must be instantiated with a set of `xvals` and `yvals` knot values,
     and then can be called with a new set of x values `x`. This is

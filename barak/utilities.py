@@ -71,6 +71,10 @@ class adict(dict):
     __getattr__ = __getitem__
 
     def copy(self):
+        """ Return a copy of the attribute dictionary.
+
+        Does not perform a deep copy
+        """
         return adict(self)
 
 

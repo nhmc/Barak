@@ -216,25 +216,25 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
 
     Parameters
     ----------
-      data : ndarray.
-        data from which to remove outliers.
-      nsig_lo : float
-        Clip points that are this number of standard deviations below the
-        centre of the data.
-      nsig_hi : float
-        Clip points that are this number of standard deviations above the
-        centre of the data.
-      method : {'mean', 'median', function}
-        Method to find the central value.
-      nitermax : int
-        number of iterations before exit; defaults to 100
-      maxfrac_remove : float (0.95)  
-        Clip at most this fraction of the original points.
+    data : ndarray.
+      data from which to remove outliers.
+    nsig_lo : float
+      Clip points that are this number of standard deviations below the
+      centre of the data.
+    nsig_hi : float
+      Clip points that are this number of standard deviations above the
+      centre of the data.
+    method : {'mean', 'median', function}
+      Method to find the central value.
+    nitermax : int
+      number of iterations before exit; defaults to 100
+    maxfrac_remove : float (0.95)  
+      Clip at most this fraction of the original points.
 
     Returns
     -------
     mask : boolean array same shape as data
-      This is False wherever there is an outlier.
+      This is False whereever there is an outlier.
     """
 
     data = np.asarray(data).ravel()
@@ -271,8 +271,8 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
 
 
 def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
-    """ Find the threshold value in aarray that give confidence levels
-    for an array of probabilities.
+    """ Find the threshold value in an array that give confidence
+    levels for an array of probabilities.
 
     Parameters
     ----------

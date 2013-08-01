@@ -544,7 +544,6 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
       x and y positions.
     direction: str {'up', 'down', 'left', 'right'}
       The direction in which the arrows should point.
-
     """
     arrowlength=10.
     capsize = min(capsize, arrowlength)
@@ -593,7 +592,7 @@ def calc_log_minor_ticks(majorticks):
     return minorticks
 
 def make_log_xlabels(ax, yoff=-0.05):
-    """ make the labels on the x axis of ax log.
+    """ Make the labels on the x axis log.
     """
     x0, x1 = ax.get_xlim()
     ticks = ax.get_xticks()
@@ -632,7 +631,7 @@ def make_log_xlabels(ax, yoff=-0.05):
     return ax
 
 def make_log_ylabels(ax):
-    """ make the labels on the y axis of ax log.
+    """ make the labels on the y axis log.
     """
     y0, y1 = ax.get_ylim()
     ticks = ax.get_yticks()
@@ -683,7 +682,7 @@ def plot_ticks_wa(ax, wa, fl, height, ticks, keeponly=None, labels=True,
       tick height in flux units.
     ticks : record array
       A record array of the sort returned by `find_tau`. The fields
-      wa, wa0, and name are required.
+      `wa`, `wa0`, and `name` are required.
     keeponly : str
       If this is not None (the default), then only plot ticks that
       contain this string in their name.

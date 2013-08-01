@@ -34,7 +34,7 @@ ATOMDAT = None
 e2_me_c = e**2 / (me*c)
 
 def _get_atomdat():
-
+    """ Function to cache atom.dat"""
     global ATOMDAT
     if ATOMDAT is None:
         ATOMDAT = readatom(molecules=True)
@@ -520,7 +520,7 @@ def b_to_T(atom, bvals):
     Returns
     -------
     T : ndarray or float
-      The temperature corresponding to each value in `bvals'.
+      The temperature corresponding to each value in `bvals`.
     """
     if isinstance(atom, basestring):
         amu = Ar[atom]
@@ -571,12 +571,13 @@ def T_to_b(atom, T):
 
 
 def read_HITRAN(thelot=False):
-    """ Return a list of molecular absorption features in the HITRAN
-    2004 list with wavelengths < 25000 Ang (Journal of Quantitative
-    Spectroscopy & Radiative Transfer 96, 2005, 139-204).
+    """ Returns a list of molecular absorption features.
 
-    By default only lines with intensity > 5e-26 are returned. Set
-    thelot=True if you really want the whole catalogue.
+    This uses the HITRAN 2004 list with wavelengths < 25000 Ang
+    (Journal of Quantitative Spectroscopy & Radiative Transfer 96,
+    2005, 139-204). By default only lines with intensity > 5e-26 are
+    returned. Set thelot=True if you really want the whole catalogue
+    (not recommended).
 
     The returned wavelengths are in Angstroms.
 
@@ -1163,13 +1164,11 @@ def calc_N_AOD(wa, nfl, ner, colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig,
 def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax, 
                  colo_nsig=2, cohi_nsig=2, zerolo_nsig=2, zerohi_nsig=2,
                  atomdat=None):
-    """ Measure N for a series of transitions in a spectrum over the
-    velocity range.
+    """ Measure N for a series of transitions over the given velocity
+    range.
 
     Uses optically thin approximation for upper limits, and Apparent
     optical depth measurements otherwise.
-
-    trans is a list of strings, e.g. ['HI 1215', 'CIV 1548', 'SiII 1260'].
 
     Parameters
     ----------
@@ -1191,26 +1190,23 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
     -------
     results : record array
 
-      It has fields:
-
-        name,latex,logNlo,logN,logNhi,Wr,Wre,Wrlo,Wrhi,logN_5sig,logN_Whi,
-          saturated
-    
-      Description of these fields:
-
-          transition name
-          best column density estimate in latex format
-          the low, best and high logN estimates from the apparent
-            optical depth (the low and high estimates include uncertainties
-            in the continuum and zero level as given by colo_nsig,
-            cohi_nsig, zerolo_nsig, zerohi_nsig)
-          The rest-frame equivalent width in Angstroms and 1 sigma error.
-          Low and high rest frame equivalent widths in Angstroms and 1
-            sigma error, assuming continuum uncertainties only.
-          5 sigma upper limit on N from the error in the equivalent
-            width, assuming optically thin.
-          The optically thin N value corresponding to the Wrhi.
-          Whether or not the line is saturated.
+     ================== ====================================================
+     name               transition name
+     latex              best column density estimate in latex format
+     logNlo,logN,logNhi Low, best and high logN estimates from the apparent
+                        optical depth. Low and high estimates include
+                        uncertainties in the continuum and zero level given
+                        by colo_nsig, cohi_nsig, zerolo_nsig, zerohi_nsig
+     Wr,Wre             The rest-frame equivalent width in Angstroms and 1
+                        sigma error.
+     Wrlo,Wrhi          Low and high rest frame equivalent widths in
+                        Angstroms and 1 sigma error, assuming continuum
+                        uncertainties only.
+     logN_5sig          5 sigma upper limit on N from the error in the
+                        equivalent width, assuming optically thin.
+     logN_Whi           Optically thin N value corresponding to the Wrhi
+     saturated          Whether or not the line is saturated.
+     ================== ====================================================
     """
     if atomdat is None:
         atomdat = _get_atomdat()
@@ -1271,6 +1267,8 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
 
 def get_ionization_energy(species):
     """ Find the ionization energy for a species.
+
+    Uses table 4 in Verner et al., 94.
 
     Parameters
     ----------

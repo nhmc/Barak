@@ -23,8 +23,9 @@ import os
 
 def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
                      resid_std=1.3, debug=False):
-    """ Given a section of spectrum, fit a continuum to it very
-    loosely based on the method in Aguirre et al. 2002.
+    """ Fit a continuum to a chunk of a spectrum.
+
+    Very loosely based on the method in Aguirre et al. 2002.
 
     Parameters
     ----------

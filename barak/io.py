@@ -17,7 +17,7 @@ import numpy as np
 from .utilities import adict
 
 def loadtxt(filename, **kwargs):
-    """ A wrapper for numpy's loadtxt, which doesn;t seem to work if
+    """ A wrapper for numpy's loadtxt, which doesn't seem to work if
     passed a unicode string in python 2.x."""
     return np.loadtxt(str(filename), **kwargs)
 

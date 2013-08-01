@@ -1,6 +1,6 @@
 """ Abundances and condensation temperatures.
 
-This contains the following two datasets:
+This contains the following datasets:
 
 Asolar:
   An ordered dictionary of abundances from `Lodders 2003, ApJ, 591,
@@ -22,6 +22,9 @@ cond_temp:
   `tc50` is the temperature when 50% of the element is left in a
   gaseous state.
 
+protosolar, photosphere:
+  Protosolar and phtospheric mass fractions of H (X), He (Y) and
+  metals (Z) from Asplund et al. 2009ARA&A..47..481A, table 4.
 """
 from __future__ import unicode_literals
 
@@ -40,8 +43,7 @@ cond_temp = readtxt(datapath +
                     'abundances/CondensationTemperatures.txt',
                     readnames=1, sep='|')
 
-
-# Mass fractions of H (X), He (Y) and metals (Z) below are from Aspluind et
+# Mass fractions of H (X), He (Y) and metals (Z) below are from Asplund et
 # al. 2009ARA&A..47..481A, table 4.
 
 protosolar = dict(X=0.7381, Y=0.2485, Z=0.0134, ZonX=0.0181)
