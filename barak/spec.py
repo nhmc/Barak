@@ -31,12 +31,11 @@ def getwave(hd):
     """ Given a fits header, get the wavelength solution.
     """
     dv = None
-    if hd.has_key('CDELT1'):
-        dw = hd['CDELT1']
-    else:
-        dw = hd['CD1_1']
-    CRVAL = hd['CRVAL1']
-    CRPIX = hd['CRPIX1']
+    dw = get_cdelt(hd)
+    if dw is None:
+        raise ValueError('Neither CD1_1 nor CDELT1 are present!')
+    CRVAL = hd[str('CRVAL1')]
+    CRPIX = hd[str('CRPIX1')]
     # wavelength of pixel 1
     wstart = CRVAL + (1 - CRPIX) * dw
     # check if it's log-linear scale (heuristic)
@@ -45,8 +44,32 @@ def getwave(hd):
         dv = c_kms * (1. - 1. / 10. ** -dw)
         print('constant dv = %.3f km/s (assume CRVAL1 in log(Angstroms))' % dv)
 
-    npts = hd['NAXIS1']
+    npts = hd[str('NAXIS1')]
     return make_wa_scale(wstart, dw, npts, constantdv=dv)
+
+def get_cdelt(hd):
+    """ Return wavelength stepsize keyword from a fits header.
+
+    Returns None if nothing suitable is found.
+    """
+    cdelt = None
+    if hd.has_key(str('CDELT1')):
+        cdelt = hd[str('CDELT1')]
+    elif hd.has_key(str('CD1_1')):
+        cdelt = hd[str('CD1_1')]
+    return cdelt
+
+def parse_UVES_popler(filename):
+    """ Read a spectrum from a UVES_popler-style fits file.
+    """
+    fh = pyfits.open(filename)
+    cdelt = get_cdelt(fh[0].header)
+    co = fh[0].data[3]
+    fl = fh[0].data[0] * co  #  Flux
+    er = fh[0].data[1] * co
+    fh.close()
+    return Spectrum(fl=fl, er=er, co=co, filename=filename, CDELT=cdelt,
+                    CRVAL=hd[str('CRVAL1')], CRPIX=hd[str('CRPIX1')])
 
 def find_bin_edges(cbins):
     """ Given bin centres, find the bin edges.
@@ -66,6 +89,33 @@ def make_wa_scale(wstart, dw, npts, constantdv=False, verbose=False):
     """ Generates a wavelength scale from the wstart, dw, and npts
     values.
 
+    Parameters
+    ----------
+    wstart : float
+      The wavelength of the first pixel in Angstroms.  If constantdv
+      is True, this should be log10 of the wavelength.
+    dw : float
+      The width of each bin in Angstroms. If constantdv is True, this
+      must be log10 of the width.
+    npts : int
+      Number of points in the spectrum.
+    constantdv : bool
+      If True, then create a constant dv scale, i.e. a constant
+      log10(wavelength) step size.
+
+    Returns
+    -------
+    wa : ndarray
+      The wavelength in Angstroms.
+
+    See Also
+    --------
+    `barak.sed.make_constant_dv_wa_scale`
+      Make a wavelength scale with a constant velocity pixel size by
+      specifying, the start, end and width in km/s.
+    
+    Examples
+    --------
     >>> print make_wa_scale(40, 1, 5)
     [40., 41., 42., 43., 44.]
     >>> print make_wa_scale(3.5, 1e-3, 5, constantdv=True)
@@ -437,11 +487,8 @@ def read(filename, comment='#', debug=False):
 
     #naxis1 = hd['NAXIS1']     # 1st axis length (no. data points)
     # pixel stepsize
-    if hd.has_key('CDELT1'):
-        cdelt = hd['CDELT1']
-    elif hd.has_key('CD1_1'):
-        cdelt = hd['CD1_1']
-    else:
+    cdelt = get_cdelt(hd)
+    if cdelt is None:
         # Read Songaila's spectra
         wa = f[0].data[0]
         fl = f[0].data[1]
@@ -459,20 +506,21 @@ def read(filename, comment='#', debug=False):
     ##########################################################
     # Check if SDSS spectrum
     ##########################################################
-    if hd.has_key('TELESCOP'):
-        if hd['TELESCOP'] == 'SDSS 2.5-M':  # then Sloan spectrum
+    if hd.has_key(str('TELESCOP')):
+        if hd[str('TELESCOP')] == 'SDSS 2.5-M':  # then Sloan spectrum
             data = f[0].data
             fl = data[0]
             er = data[2]
             f.close()
             return Spectrum(fl=fl, er=er, filename=filename, CDELT=cdelt,
-                            CRVAL=hd['CRVAL1'], CRPIX=hd['CRPIX1'])
+                            CRVAL=hd[str('CRVAL1')],
+                            CRPIX=hd[str('CRPIX1')])
 
     ##########################################################
     # Check if HIRES spectrum
     ##########################################################
-    if hd.has_key('INSTRUME'):   #  Check if Keck spectrum
-        if hd['INSTRUME'].startswith('HIRES'):
+    if hd.has_key(str('INSTRUME')):   #  Check if Keck spectrum
+        if hd[str('INSTRUME')].startswith('HIRES'):
             if debug:  print('Looks like Makee output format')
             fl = f[0].data       # Flux
             f.close()
@@ -482,7 +530,7 @@ def read(filename, comment='#', debug=False):
             except IOError:
                 er = np.ones(len(fl))
             return Spectrum(fl=fl, er=er, filename=filename, CDELT=cdelt,
-                            CRVAL=hd['CRVAL1'], CRPIX=hd['CRPIX1'])
+                            CRVAL=hd[str('CRVAL1')], CRPIX=hd[str('CRPIX1')])
 
     ##########################################################
     # Check if UVES_popler output
@@ -490,23 +538,18 @@ def read(filename, comment='#', debug=False):
     history = hd.get_history()
     for row in history:
         if 'UVES POst Pipeline Echelle Reduction' in row:
-            co = f[0].data[3]
-            fl = f[0].data[0] * co #  Flux
-            er = f[0].data[1] * co
-            f.close()
-            return Spectrum(fl=fl, er=er, co=co, filename=filename, CDELT=cdelt,
-                            CRVAL=hd['CRVAL1'], CRPIX=hd['CRPIX1'])
+            return parse_UVES_popler()
 
     data = f[0].data
     fl = data[0]
     er = data[2]
     f.close()
-    if hd.has_key('CRPIX1'):
-        crpix = hd['CRPIX1']
+    if hd.has_key(str('CRPIX1')):
+        crpix = hd[str('CRPIX1')]
     else:
         crpix = 1
     return Spectrum(fl=fl, er=er, filename=filename, CDELT=cdelt,
-                    CRVAL=hd['CRVAL1'], CRPIX=crpix)
+                    CRVAL=hd[str('CRVAL1')], CRPIX=crpix)
     #raise Exception('Unknown file format')
 
 def rebin_simple(wa, fl, er, co, n):
