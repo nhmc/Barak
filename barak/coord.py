@@ -348,11 +348,13 @@ def match(ra1, dec1, ra2, dec2, tol, allmatches=False):
                 else:
                     break
             match.append(fromarrays([isorted[jclose], seps],
-                                    dtype=[('ind','i8'), ('sep','f8')]))
+                                    dtype=[(str('ind'),str('i8')),
+                                           str(('sep'),str('f8'))
+                                           ]))
 
     if not allmatches:
         # return both indices and separations in a recarray
-        temp = np.rec.fromrecords(match, names='ind,sep')
+        temp = np.rec.fromrecords(match, names=str('ind,sep'))
         # change to arcseconds
         temp.sep *= 3600.
         temp.sep[temp.sep < 0] = -1.
@@ -373,7 +375,7 @@ def indmatch(ra1, dec1, ra2, dec2, tol):
 
     Returns
     -------
-    i1 : arrays of int, shape (P,)
+    i1, i2 : arrays of int, shape (P,)
       `i1` are the indices into ra1,dec1 that have matches in the ra2,
       dec2. `i2` are the indices into ra2,dec2 giving the matching objects.
 
