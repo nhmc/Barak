@@ -318,13 +318,13 @@ def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False):
         
     tau = np.zeros_like(wa)
     if debug:
-        print 'finding tau...'
+        print('finding tau...')
     ticks = []
     ions = []
     taus = []
     for ion,z,b,logN in lines:
         if debg:
-            print 'z, logN, b', z, logN, b
+            print('z, logN, b', z, logN, b)
         maxdv = 20000 if logN > 18 else 1000
         t,tick = calc_iontau(wa, atomdat[ion], z+1, logN, b, ticks=True,
                              maxdv=maxdv)
