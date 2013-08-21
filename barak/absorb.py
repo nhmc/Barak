@@ -287,7 +287,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     else:
         return sumtau
 
-def find_tau(wa, lines, atom, per_trans=False):
+def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False):
     """ Given a wavelength array, a reference atom.dat file read with
     readatom, and a list of lines giving the ion, redshift,
     log10(column density) and b parameter, return the tau at each
@@ -299,23 +299,34 @@ def find_tau(wa, lines, atom, per_trans=False):
     Note this assumes the wavelength array has small enough pixel
     separations so that the profiles are properly sampled.
     """
+    if atomdat is None:
+        atomdat = _get_atomdat()
     try:
         vp = readf26(lines)
     except AttributeError:
         pass
+    else:
+        if debug:
+            print('Lines read from %s' % lines)
+        lines = vp.lines
+
     if hasattr(lines, 'dtype'):
+        if debug:
+            print('Looks like a VpfitModel.lines-style record array.')
         lines = [(l['name'].replace(' ', ''), l['z'], l['b'], l['logN'])
                  for l in lines]
         
     tau = np.zeros_like(wa)
-    #print 'finding tau...'
+    if debug:
+        print 'finding tau...'
     ticks = []
     ions = []
     taus = []
     for ion,z,b,logN in lines:
-        #print 'z, logN, b', z, logN, b
+        if debg:
+            print 'z, logN, b', z, logN, b
         maxdv = 20000 if logN > 18 else 1000
-        t,tick = calc_iontau(wa, atom[ion], z+1, logN, b, ticks=True,
+        t,tick = calc_iontau(wa, atomdat[ion], z+1, logN, b, ticks=True,
                              maxdv=maxdv)
         tau += t
         if per_trans:
@@ -843,7 +854,7 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
     if atom is None:
         atom = readatom(molecules=molecules)
 
-    tau,ticks = find_tau(wa, f26, atom)
+    tau,ticks = find_tau(wa, f26, atomdat=atom)
     tau += tau_LL(logN, wa/(1+z), wstart=912.5)
     return tau, ticks
 
