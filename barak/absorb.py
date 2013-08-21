@@ -235,7 +235,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     logN : float
       log10(column density in cm**-2)
     b : float
-      b parameter (km/s).  Assumes thermal broadening.
+      b parameter (km/s).
     maxdv : float (default 1000)
       For performance reasons, only calculate the Voigt profile for a
       single line to +/- maxdv.  Increase this if you expect DLA-type
@@ -248,6 +248,11 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     -------
     tau : array of floats
       Array of optical depth values.
+
+    or
+
+    tau, tickmarks : arrays of floats and record array
+      Optical depths and tick mark info.
     """
     z = zp1 - 1
     if debug:
@@ -255,20 +260,19 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
         psize =  c_kms * (wa[i] - wa[i-1]) / wa[i]
         print('approx pixel width %.1f km/s at %.1f Ang' % (psize, wa[i]))
 
-    #select only ions with redshifted central wavelengths inside wa,
-    #+/- the padding velocity range vpad.
+    # select only ions with redshifted central wavelengths inside wa,
+    # +/- the padding velocity range vpad.
     obswavs = ion.wa * zp1
     wmin = wa[0] * (1 - vpad / c_kms)
     wmax = wa[-1] * (1 + vpad / c_kms)
     trans = ion[between(obswavs, wmin, wmax)]
-    if debug:
-        if len(trans) == 0:
-            print('No transitions found overlapping with wavelength array')
+    if debug and len(trans) == 0:
+        print('No transitions found overlapping with wavelength array')
 
     tickmarks = []
     sumtau = np.zeros_like(wa)
     i0 = i1 = None 
-    for i,(wa0,osc,gam) in enumerate(trans):
+    for i, (wa0, osc, gam) in enumerate(trans):
         tau0 = calc_tau_peak(logN, b, wa0, osc)
         if 1 - exp(-tau0) < 1e-3:
             continue
@@ -281,6 +285,14 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
         if ticks and tau0 > label_tau_threshold:
             tickmarks.append((refwav, z, wa0, i))
         sumtau[i0:i1] += tau
+
+    if logN > 14.8 and abs(ion['wa'][0] - 1215.6701) < 1e-3:
+        wstart_LL = 912.8
+        # remove tau from lines that move into the LL approximation
+        # region.
+        c0 = wa < (wstart_LL * (1+z))
+        sumtau[c0] = 0
+        sumtau += tau_LL(logN, wa/(1+z), wstart=wstart_LL)
 
     if ticks:
         return sumtau, tickmarks
@@ -301,6 +313,7 @@ def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False):
     """
     if atomdat is None:
         atomdat = _get_atomdat()
+
     try:
         vp = readf26(lines)
     except AttributeError:
@@ -323,7 +336,7 @@ def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False):
     ions = []
     taus = []
     for ion,z,b,logN in lines:
-        if debg:
+        if debug:
             print('z, logN, b', z, logN, b)
         maxdv = 20000 if logN > 18 else 1000
         t,tick = calc_iontau(wa, atomdat[ion], z+1, logN, b, ticks=True,
@@ -799,14 +812,23 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
     logZ : float (0)
        log10 of the metal abundance relative to solar. For example 0
        (the default) gives solar abundances, -1 gives 1/10th of solar.
+    bHI : float (50)
+       The b parameter to use for HI.
+    molecules : bool (False)
+       Whether to include absorption from H2 and CO.
     verbose : bool (False)
        Print helpful information
+    highions : bool (True)
+       Whether to include absorption from CIV, SiIV, NV and OVI
 
     Returns
     -------
     tau, ticks : ndarrays, structured array
       tau at each wavelength and tick positions and names.
     """
+    if atom is None:
+        atom = _get_atomdat()
+
     off = -12 + logN + logZ
     temp = b_to_T('H', bHI)
     print('b %.2f km/s gives a temperature of %.1f K' % (bHI, temp))
@@ -815,9 +837,9 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
     b = dict((el, T_to_b(el, temp)) for el in elements)
     print('using low ion b values:')
     print(', '.join('%s %.1f' % (el, b[el]) for el in elements))
-    
+
     f26 = [
-        'HI    %.6f  0  %.2f 0 %.2f 0' % (z, bHI, logN),    
+        'HI    %.6f  0  %.2f 0 %.2f 0' % (z, bHI, logN),
         'OI    %.6f  0  %.2f 0 %.2f 0' % (z, b['O'], (Asolar['O']  + off)), 
         'SiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 0.05)), 
         'SiIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 1)),    
@@ -850,12 +872,9 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
             'COJ0  %.6f  0  5.0  0 14.0 0' % z,
             ]
 
-    f26 = StringIO('\n'.join(f26))
-    if atom is None:
-        atom = readatom(molecules=molecules)
-
-    tau,ticks = find_tau(wa, f26, atomdat=atom)
-    tau += tau_LL(logN, wa/(1+z), wstart=912.5)
+    tau, ticks = find_tau(wa, StringIO('\n'.join(f26)), atomdat=atom)
+    ticks.sort(order=str('wa'))
+    
     return tau, ticks
 
 def calc_DLA_trans(wa, redshift, vfwhm, logN=20.3, logZ=0, bHI=50,
