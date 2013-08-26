@@ -608,7 +608,7 @@ def make_constant_dv_wa_scale(wmin, wmax, dv):
 
     See Also
     --------
-    `barak.spec.make_wa_scale` : 
+    barak.spec.make_wa_scale
     """
     dlogw = np.log10(1 + dv/c_kms)
     # find the number of points needed.

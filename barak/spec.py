@@ -53,9 +53,9 @@ def get_cdelt(hd):
     Returns None if nothing suitable is found.
     """
     cdelt = None
-    if hd.has_key(str('CDELT1')):
+    if str('CDELT1') in hd:
         cdelt = hd[str('CDELT1')]
-    elif hd.has_key(str('CD1_1')):
+    elif str('CD1_1') in hd:
         cdelt = hd[str('CD1_1')]
     return cdelt
 
@@ -110,7 +110,7 @@ def make_wa_scale(wstart, dw, npts, constantdv=False, verbose=False):
 
     See Also
     --------
-    `barak.sed.make_constant_dv_wa_scale`
+    barak.sed.make_constant_dv_wa_scale
       Make a wavelength scale with a constant velocity pixel size by
       specifying, the start, end and width in km/s.
     
@@ -439,7 +439,7 @@ def read(filename, comment='#', debug=False):
         import astropy.io.fits as pyfits
     f = pyfits.open(filename)
     hd = f[0].header
-    if hd.has_key(str('TELESCOP')) and hd.has_key(str('FLAVOR')):
+    if str('TELESCOP') in hd and str('FLAVOR') in hd:
         if hd[str('TELESCOP')] == 'SDSS 2.5-M' and \
                hd[str('flavor')] == 'science':
             d = f[1].data
