@@ -566,9 +566,9 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
       DS9 tag.
     width : int (1)
     """
-    regions = ['global font="helvetica 10 normal" select=1 highlite=1 '
+    header = ['global font="helvetica 10 normal" select=1 highlite=1 '
                'edit=0 move=1 delete=1 include=1 fixed=0 source\n']
-    regions.append(coord + '\n')
+    header.append(coord + '\n')
 
     def iscontainer(s):
         try:
@@ -587,12 +587,16 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
     if not iscontainer(width):
         width = [width] * len(x)
     if not iscontainer(text):
-        text = list(range(len(x)))
+        if isinstance(text, basestring):
+            text = [text]* len(x)
+        else:
+            text = list(range(len(x)))
     if not iscontainer(c):
         c = [c] * len(x)
     if not iscontainer(tag):
         tag = [tag] * len(x)
 
+    regions = []
     fmt = ('point(%12.8f,%12.8f) # \
 point=%s %s width=%s text={%s} color=%s tag={%s}\n')
     for i in xrange(len(x)):
@@ -602,9 +606,9 @@ point=%s %s width=%s text={%s} color=%s tag={%s}\n')
 
     if filename is not None:
         fh = open(filename,'w')
-        fh.writelines(regions)
+        fh.writelines(header + regions)
         fh.close()
-    return regions
+    return header, regions
 
 def writetable(filename, cols, units=None, names=None, header=None,
                keywords=None, overwrite=False):
