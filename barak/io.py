@@ -484,7 +484,8 @@ def readsex(filename, catnum=None):
     # read in the data
     return readtxt(filename, names=names, usecols=indcol)
 
-def sex_to_DS9reg(filename, s, colour='green', tag='all', withtext=False):
+def sex_to_DS9reg(filename, s, colour='green', tag='all', withtext=False,
+                  use_WORLD=False):
     """Write a DS9 region file from SExtractor output.
 
     Parameters
@@ -501,22 +502,31 @@ def sex_to_DS9reg(filename, s, colour='green', tag='all', withtext=False):
     with_text : bool (False)
       If True, then mark each region with either its magnitude (if
       given), otherwise its index in the input array `s`.
+    use_WORLD : bool (False)
+      If True, use WORLD coordinates (typically RA/Dec) instead of
+      IMAGE coordinates.
     """
 
     names = set(s.dtype.names)
     regions = ['global font="helvetica 10 normal" select=1 highlite=1 '
                'edit=0 move=1 delete=1 include=1 fixed=0 source']
-    regions.append('image')
-    fields = ['X_IMAGE', 'Y_IMAGE']
-    if not ('X_IMAGE' in names and 'Y_IMAGE' in names):
-        fields = ['XWIN_IMAGE', 'YWIN_IMAGE']
-        if not ('XWIN_IMAGE' in names and 'YWIN_IMAGE' in names):
-            raise ValueError('require either X_IMAGE and Y_IMAGE '
-                             'or XWIN_IMAGE and YWIN_IMAGE')
-
     fmt = 'ellipse(%s %s %s %s %s) # text={%s} color=%s tag={%s}'
-    ellipse_vals = ['A_IMAGE','B_IMAGE','THETA_IMAGE']
-    ellipsewin_vals = ['AWIN_IMAGE','BWIN_IMAGE','THETAWIN_IMAGE']
+    if not use_WORLD:
+        regions.append('image')
+        fields = ['X_IMAGE', 'Y_IMAGE']
+        if not ('X_IMAGE' in names and 'Y_IMAGE' in names):
+            fields = ['XWIN_IMAGE', 'YWIN_IMAGE']
+            if not ('XWIN_IMAGE' in names and 'YWIN_IMAGE' in names):
+                raise ValueError('require either X_IMAGE and Y_IMAGE '
+                                 'or XWIN_IMAGE and YWIN_IMAGE')
+     
+        ellipse_vals = ['A_IMAGE','B_IMAGE','THETA_IMAGE']
+        ellipsewin_vals = ['AWIN_IMAGE','BWIN_IMAGE','THETAWIN_IMAGE']
+    else:
+        regions.append('J2000')
+        fields = ['X_WORLD', 'Y_WORLD']
+        ellipse_vals = ['A_WORLD','B_WORLD','THETA_WORLD']
+        
     if all((n in names) for n in ellipse_vals):
         fields = list(fields) +  ellipse_vals
     elif all((n in names) for n in ellipsewin_vals):

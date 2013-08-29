@@ -27,8 +27,15 @@ def main(args):
 
     print('Reading', catname)
     s = readsex(catname)
-    print('writing to', regname)
-    sex_to_DS9reg(regname, s)
+    print('Writing to', regname)
+    names = s.dtype.names
+    if 'X_WORLD' in names and 'Y_WORLD' in names and \
+       'A_WORLD' in names and 'B_WORLD' in names and \
+       'THETA_WORLD' in names:
+        print('Using WORLD coordinates')
+        sex_to_DS9reg(regname, s, use_WORLD=1)
+    else:
+        sex_to_DS9reg(regname, s)
 
 if __name__ == '__main__':
     import sys
