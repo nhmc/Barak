@@ -17,6 +17,11 @@ from pprint import pformat
 import numpy as np
 import matplotlib.pyplot as pl
 
+try:
+    import pyfits
+except ImportError:
+    import astropy.io.fits as pyfits
+
 from .utilities import nan2num, between, get_data_path, stats
 from .convolve import convolve_psf
 from .io import readtxt, readtabfits, loadtxt
@@ -63,7 +68,8 @@ def parse_UVES_popler(filename):
     """ Read a spectrum from a UVES_popler-style fits file.
     """
     fh = pyfits.open(filename)
-    cdelt = get_cdelt(fh[0].header)
+    hd = fh[0].header
+    cdelt = get_cdelt(hd)
     co = fh[0].data[3]
     fl = fh[0].data[0] * co  #  Flux
     er = fh[0].data[1] * co
@@ -433,10 +439,6 @@ def read(filename, comment='#', debug=False):
         return sp
 
     # Otherwise assume fits file
-    try:
-        import pyfits
-    except ImportError:
-        import astropy.io.fits as pyfits
     f = pyfits.open(filename)
     hd = f[0].header
     if str('TELESCOP') in hd and str('FLAVOR') in hd:
@@ -538,7 +540,7 @@ def read(filename, comment='#', debug=False):
     history = hd.get_history()
     for row in history:
         if 'UVES POst Pipeline Echelle Reduction' in row:
-            return parse_UVES_popler()
+            return parse_UVES_popler(filename)
 
     data = f[0].data
     fl = data[0]
