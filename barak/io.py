@@ -586,7 +586,7 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
         except TypeError:
             return False
         else:
-            if isinstance(s, basestring) and len(s) != len(x):
+            if isinstance(s, basestring):
                 return False
         return True
 

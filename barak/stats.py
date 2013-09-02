@@ -312,3 +312,107 @@ def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
         out.append(asorted[i])
 
     return out
+
+def polyfitr(x, y, order=2, clip=6, xlim=None, ylim=None,
+             mask=None, debug=False):
+    """ Fit a polynomial to data, rejecting outliers.
+
+    Fits a polynomial f(x) to data, x,y.  Finds standard deviation of
+    y - f(x) and removes points that differ from f(x) by more than
+    clip*stddev, then refits.  This repeats until no points are
+    removed.
+
+    Inputs
+    ------
+    x,y:
+        Data points to be fitted.  They must have the same length.
+    order: int (2)
+        Order of polynomial to be fitted.
+    clip: float (6)
+        After each iteration data further than this many standard
+        deviations away from the fit will be discarded.
+    xlim: tuple of maximum and minimum x values, optional
+        Data outside these x limits will not be used in the fit.
+    ylim: tuple of maximum and minimum y values, optional
+        As for xlim, but for y data.
+    mask: sequence of pairs, optional
+        A list of minimum and maximum x values (e.g. [(3, 4), (8, 9)])
+        giving regions to be excluded from the fit.
+    debug: boolean, default False
+        If True, plots the fit at each iteration in matplotlib.
+
+    Returns
+    -------
+    coeff, x, y:
+        x, y are the data points contributing to the final fit. coeff
+        gives the coefficients of the final polynomial fit (use
+        np.polyval(coeff,x)).
+
+    Examples
+    --------
+    >>> x = np.linspace(0,4)
+    >>> np.random.seed(13)
+    >>> y = x**2 + np.random.randn(50)
+    >>> coeff, x1, y1 = polyfitr(x, y)
+    >>> np.allclose(coeff, [1.05228393, -0.31855442, 0.4957111])
+    True
+    >>> coeff, x1, y1 = polyfitr(x, y, order=1, xlim=(0.5,3.5), ylim=(1,10))
+    >>> np.allclose(coeff, [3.23959627, -1.81635911])
+    True
+    >>> coeff, x1, y1 = polyfitr(x, y, mask=[(1, 2), (3, 3.5)])
+    >>> np.allclose(coeff, [1.08044631, -0.37032771, 0.42847982])
+    True
+    """
+
+    good = ~np.isnan(x) & ~np.isnan(y)
+    x = np.asanyarray(x[good])
+    y = np.asanyarray(y[good])
+    isort = x.argsort()
+    x, y = x[isort], y[isort]
+
+    keep = np.ones(len(x), bool)
+    if xlim is not None:
+        keep &= (xlim[0] < x) & (x < xlim[1])
+    if ylim is not None:
+        keep &= (ylim[0] < y) & (y < ylim[1])
+    if mask is not None:
+        badpts = np.zeros(len(x), bool)
+        for x0,x1 in mask:
+            badpts |=  (x0 < x) & (x < x1)
+        keep &= ~badpts
+
+    x,y = x[keep], y[keep]
+    if debug:
+        fig = pl.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(x,y,'.')
+        ax.set_autoscale_on(0)
+        pl.show()
+
+    coeff = np.polyfit(x, y, order)
+    if debug:
+        pts, = ax.plot(x, y, '.')
+        poly, = ax.plot(x, np.polyval(coeff, x), lw=2)
+        pl.show()
+        raw_input('Enter to continue')
+    norm = np.abs(y - np.polyval(coeff, x))
+    stdev = np.std(norm)
+    condition =  norm < clip * stdev
+    y = y[condition]
+    x = x[condition]
+    while norm.max() > clip * stdev:
+        if len(y) < order + 1:
+            raise Exception('Too few points left to fit!')
+        coeff = np.polyfit(x, y, order)
+        if debug:
+            pts.set_data(x, y)
+            poly.set_data(x, np.polyval(coeff, x))
+            pl.show()
+            raw_input('Enter to continue')
+        norm = np.abs(y - np.polyval(coeff, x))
+        stdev = norm.std()
+        condition =  norm < clip * stdev
+        y = y[condition]
+        x = x[condition]
+
+    return coeff,x,y
