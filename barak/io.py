@@ -249,6 +249,9 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
         if dtype.startswith('S'):
             maxwidths.append(int(dtype[1:]))
             formats.append('s')
+        elif dtype.startswith('U'):
+            maxwidths.append(int(dtype[1:]))
+            formats.append('s')
         elif dtype.startswith('i'):
             maxwidths.append(max([len('%i' % i) for i in col]))
             formats.append('i')
