@@ -10,6 +10,7 @@ except NameError:
     unicode = basestring = str
     xrange = range
 
+import astropy
 from astropy import cosmology
 from astropy.utils import isiterable
 from .constants import G, Msun, kpc, kboltz, mp
@@ -127,8 +128,12 @@ def find_rvT(M, z, cosmo=None, mu=0.59):
 
     # convert to cgs
     M_g = M * Msun
+    
+    crit_dens = cosmo.critical_density(z)
+    if astropy.__version__ >= '3':
+        crit_dens = crit_dens.value#to('g/cm^3').value
 
-    rho_virial = deltavir(z, cosmo=cosmo) * cosmo.critical_density(z)
+    rho_virial = deltavir(z, cosmo=cosmo) * crit_dens
 
     # deal with cases where we have two input arrays
     if isiterable(M) and isiterable(rho_virial):
