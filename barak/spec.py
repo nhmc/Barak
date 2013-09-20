@@ -55,7 +55,14 @@ def getwave(hd):
 def get_cdelt(hd):
     """ Return wavelength stepsize keyword from a fits header.
 
-    Returns None if nothing suitable is found.
+    Parameters
+    ----------
+    hd: astropy.io.fits header instance
+
+    Returns
+    -------
+    cdelt: float
+      Wavelength stepsize, or None if nothing suitable is found.
     """
     cdelt = None
     if str('CDELT1') in hd:
