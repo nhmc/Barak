@@ -13,6 +13,16 @@ import sys, os
 import numpy as np
 from math import sqrt
 
+def iscontainer(s):
+    try:
+        it = iter(s)
+    except TypeError:
+        return False
+    else:
+        if isinstance(s, basestring) and len(s) != len(x):
+            return False
+    return True
+
 class Bunch(object):
     """Bunch class from the python cookbook with __str__ and __repr__
     methods.

@@ -14,7 +14,7 @@ else:
 
 import os, gzip
 import numpy as np
-from .utilities import adict
+from .utilities import adict, iscontainer
 
 def loadtxt(filename, **kwargs):
     """ A wrapper for numpy's loadtxt, which doesn't seem to work if
@@ -582,16 +582,6 @@ def write_DS9reg(x, y, filename=None, coord='IMAGE', ptype='x', size=20,
     header = ['global font="helvetica 10 normal" select=1 highlite=1 '
                'edit=0 move=1 delete=1 include=1 fixed=0 source\n']
     header.append(coord + '\n')
-
-    def iscontainer(s):
-        try:
-            it = iter(s)
-        except TypeError:
-            return False
-        else:
-            if isinstance(s, basestring):
-                return False
-        return True
 
     if not iscontainer(ptype):
         ptype = [ptype] * len(x)
