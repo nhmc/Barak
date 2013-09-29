@@ -205,7 +205,7 @@ def ra_s2dec(ra):
         ra = ra.split()
 
     rah,ram,ras = [float(item) for item in ra]
-    if not 0. <= rah < 24. or not 0. <= ram <= 60. or not 0. <= ras <= 60.:
+    if not 0. <= rah <= 24. or not 0. <= ram <= 60. or not 0. <= ras <= 60.:
         raise ValueError('RA is outside sensible limits. RA = %s' % ra)
 
     d_ra = DEG_PER_HR * rah + DEG_PER_MIN * ram + DEG_PER_S * ras
