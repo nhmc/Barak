@@ -1,6 +1,6 @@
-barak.spec.air2vac_Morton
+barak.spec.air2vac_morton
 =========================
 
 .. currentmodule:: barak.spec
 
-.. autofunction:: air2vac_Morton
+.. autofunction:: air2vac_morton
