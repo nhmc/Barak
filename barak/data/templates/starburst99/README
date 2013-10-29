@@ -1,0 +1,4 @@
+This a starburst 99 template, using the input parameters from the
+template in the Cloudy Python package.
+
+units are wavelength in Angstroms and log10(Flux in erg/s/A)
