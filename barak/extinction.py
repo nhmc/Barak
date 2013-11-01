@@ -214,7 +214,7 @@ def starburst_Calzetti00(wa, Rv=4.05, EBmV=None):
     # unphysical values on converting to A(lambda).
     c0 = wa > W0
     if c0.any():
-        c1 = between(wa, W0, 10000)
+        c1 = between(wa, W0, W1)
         if c1.any():
             AlamAv[c0] = MW_Cardelli89(wa[c0], 3.1).AlamAv
             AlamAv[c1] = interp_Akima(wa[c1], wa[~c1], AlamAv[~c1])
