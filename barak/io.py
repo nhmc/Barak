@@ -287,7 +287,7 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
     fh.close()
     return
 
-def writetabfits(filename, rec, units=None, overwrite=True):
+def writetabfits(filename, rec, units=None, overwrite=True, header=None):
     """ This is deprecated. Use `writetable()` with file type '.fits'
     instead.
 
@@ -302,6 +302,8 @@ def writetabfits(filename, rec, units=None, overwrite=True):
       Data to write.
     units : list of str (default None)
       Sequence of strings giving the units for each column.
+    hdr : fits header object (default None)
+      A header to copy to the primary fits extension.
     """
     try:
         import pyfits
@@ -332,6 +334,10 @@ def writetabfits(filename, rec, units=None, overwrite=True):
 
     tbhdu = pyfits.new_table(pyfits.ColDefs(cols))
     tbhdu.writeto(filename, clobber=overwrite)
+    fh = pyfits.open(filename)
+    fh[0].header = header
+    fh.writeto(filename, clobber=1, output_verify='silentfix')
+    fh.close()
 
 def readtabfits(filename, ext=None):
     """ Read fits binary table data, such as that written by
@@ -717,3 +723,4 @@ def read_sdss_info(filename):
     for i,key in enumerate('ugriz'):
         d['mag' + key] = mags[i] 
     return d
+
