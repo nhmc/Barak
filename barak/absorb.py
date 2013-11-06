@@ -1329,3 +1329,16 @@ def get_ionization_energy(species):
         ind = [ION_CACHE['row_map'][s] for s in species]
         return np.array([ION_CACHE['table'].ionizthresh[i] for i in ind],
                         dtype=float)
+
+
+# def read_xidl_linelist(name):
+
+#     if name in 'lls dla dla_shrt'.split():
+#         t = readtxt(DATAPATH + 'linelists/xidl/'+ name + '.lst',
+#                    usecols=(0,1,2), names=('wa','ion','wname'), skip=1)
+#     elif name in 'qso gal'.split()
+
+#     else:
+#         raise ValueError('Unknown xidl linelist %s' % name)
+
+    
