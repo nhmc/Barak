@@ -10,7 +10,18 @@ try:
 except ImportError:
     import astropy.io.fits as pyfits
 
+from barak.utilities import stats
+
 for filename in sys.argv[1:]:
     f = pyfits.open(filename)
-    f.info()
+    results = filename + '\n'
+    for j in range(len(f)):
+        results += "  %-3d  %s\n"%(j, f[j]._summary())
+        if f[j].data is not None:
+	    try:
+                results = results +  '  ' + stats(f[j].data) + '\n'
+            except TypeError:
+                pass
+    results = results[:-1]
+    print(results)
     f.close()
