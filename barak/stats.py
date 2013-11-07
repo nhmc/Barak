@@ -315,29 +315,29 @@ def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
     return out
 
 
-"""
-Table 7
-
-z=1.9 to 2.7
-
-alpha         M*           1e3* phi*
-
-# ground
--1.88 0.27   -21.01 0.38   1.62  0.46
-# fixed alpha
--1.60 0.00   -20.60 0.08   3.31  0.22
-
-z=2.7 to 3.4
-
-# ground
--1.85 0.26   -21.12 0.02   1.12  0.52
-# ground + space
--1.57 0.11   -20.84 0.12   1.66  0.63
-"""
-
 def Schechter_Mag(M):
     """ phi = phi_star * (M / Mstar)**alpha * np.exp(M/Mstar)
+
+    From Reddy et al. 2008?
+    Table 7
+
+    z=1.9 to 2.7
+
+    alpha         M*           1e3* phi*
+    
+    # ground
+    -1.88 0.27   -21.01 0.38   1.62  0.46
+    # fixed alpha
+    -1.60 0.00   -20.60 0.08   3.31  0.22
+
+    z=2.7 to 3.4
+
+    # ground
+    -1.85 0.26   -21.12 0.02   1.12  0.52
+    # ground + space
+    -1.57 0.11   -20.84 0.12   1.66  0.63
     """
+
     MSTAR = -21.01
     ALPHA = -1.88
     # this is in h_0.7^3 * Mpc^-3 * mag^-1
