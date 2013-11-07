@@ -130,7 +130,7 @@ def find_rvT(M, z, cosmo=None, mu=0.59):
     M_g = M * Msun
     
     crit_dens = cosmo.critical_density(z)
-    if astropy.__version__ >= '3':
+    if astropy.__version__ >= '0.3':
         crit_dens = crit_dens.value#to('g/cm^3').value
 
     rho_virial = deltavir(z, cosmo=cosmo) * crit_dens
