@@ -989,7 +989,8 @@ def scale_overlap(w0, f0, e0, w1, f1, e1):
 
 
 def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
-              color='k', trim=False, fontsize=10, **kwargs):
+              color='k', lcolor='k', trim=False, fontsize=10,
+              offsets=True, **kwargs):
     """ Draw vertical dotted lines showing expected positions of
     absorption and emission lines, given a redshift.
 
@@ -1026,14 +1027,16 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
                     continue
                 #name = l.name + '%.2f' % l.wa
                 name = l.name
+                off = (0.7 + i*0.08 if offsets else 0.9)
                 artists.append(puttext(
-                    w, 0.7 + i*0.08, name, ax,
+                    w, off, name, ax,
                     xcoord='data', alpha=1, fontsize=fontsize,
-                    rotation=90, ha='right', color=color))
+                    rotation=90, ha='right', color=lcolor))
     if atmos:
         if atmos == True:
             atmos = None
-        artists.append(plotatmos(ax, atmos=atmos))
+        artists.extend(plotatmos(ax, atmos=atmos))
+
     if autoscale:
         ax.set_autoscale_on(True)
 
@@ -1046,7 +1049,6 @@ def plotatmos(ax, atmos=None, color='y'):
     autoscale = ax.get_autoscale_on()
     if autoscale:
         ax.set_autoscale_on(False)
-    artists = []
     if atmos is None:
         atmos = [(5570, 5590),
                  (5885, 5900),
