@@ -10,6 +10,7 @@ except NameError:
     xrange = range
 
 import numpy as np
+from .utilities import between
 
 def _bisect(func, target, xlo=-10, xhi=10):
     """ Find x value such that func(x) = target.
@@ -313,8 +314,90 @@ def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
 
     return out
 
-def polyfitr(x, y, order=2, clip=6, xlim=None, ylim=None,
-             mask=None, debug=False):
+
+"""
+Table 7
+
+z=1.9 to 2.7
+
+alpha         M*           1e3* phi*
+
+# ground
+-1.88 0.27   -21.01 0.38   1.62  0.46
+# fixed alpha
+-1.60 0.00   -20.60 0.08   3.31  0.22
+
+z=2.7 to 3.4
+
+# ground
+-1.85 0.26   -21.12 0.02   1.12  0.52
+# ground + space
+-1.57 0.11   -20.84 0.12   1.66  0.63
+"""
+
+def Schechter_Mag(M):
+    """ phi = phi_star * (M / Mstar)**alpha * np.exp(M/Mstar)
+    """
+    MSTAR = -21.01
+    ALPHA = -1.88
+    # this is in h_0.7^3 * Mpc^-3 * mag^-1
+    PHI_STAR = 1.62e-3
+    Mterm = 10**(-0.4*(M - MSTAR))
+    return 0.4 * np.log(10) * PHI_STAR * Mterm**(ALPHA + 1) * np.exp(-Mterm)
+
+def BX_number_density(lmin, lmax=10, Mstar=-21.0):
+    """ Give the low luminosity cutoff for the 
+
+    lmin and lmax are the luminosity integration limits in units of L*.
+    
+    Returns density in Mpc^-3 h(0.7)^3
+    """
+    Mlo = Mstar - np.log10(lmax) * 2.5
+    Mhi = Mstar - np.log10(lmin) * 2.5
+    print('using Mlo=%.2f, Mhi=%.2f' % (Mlo, Mhi))
+    from scipy.integrate import quad
+    return quad(Schechter_Mag, Mlo, Mhi)[0]
+
+def slit_losses(seeing_on_slitwidth):
+    """Find the slit losses for a given seeing and slit width.
+
+    Parameters
+    ----------
+    seeing_on_slitwidth : array_like
+       The ratio of seeing FWHM to slit width.
+
+    Returns
+    -------
+    losses: float
+      Fraction of light that falls outside the slit.
+ 
+    Notes
+    -----
+    Assumes a 2d Gaussian for the seeing profile.
+    """
+    # derived from this Sage calculation:
+
+    # var('x y w')
+    # assume(w > 0)
+    # # assume seeing FWHM is always 1
+    # sig = 1 / (2*sqrt(2*log(2)))
+    # expr = exp(-(x/sig)^2/2 - (y/sig)^2/2
+    # # Note that minus sign below is needed due a bug in Sage, I think.
+    # area = -integral(integral(expr), x, -w/2, w/2), y, -oo, oo)
+    # total = integral(integral(expr), x, -oo, oo), y, -oo, oo)
+    # ans = 1 - area/total
+
+    from math import sqrt, log, erf
+    from .utilities import iscontainer
+    const = sqrt(log(2))
+    if iscontainer(seeing_on_slitwidth):
+        out = np.array([erf(const / r) for r in seeing_on_slitwidth])
+        return out
+    return 1 - erf(const / seeing_on_slitwidth)
+
+
+def polyfitr(x, y, order=2, clip=6, xlim=None, ylim=None, mask=None,
+             debug=False):
     """ Fit a polynomial to data, rejecting outliers.
 
     Fits a polynomial f(x) to data, x,y.  Finds standard deviation of
@@ -363,7 +446,6 @@ def polyfitr(x, y, order=2, clip=6, xlim=None, ylim=None,
     >>> np.allclose(coeff, [1.08044631, -0.37032771, 0.42847982])
     True
     """
-
     good = ~np.isnan(x) & ~np.isnan(y)
     x = np.asanyarray(x[good])
     y = np.asanyarray(y[good])
@@ -416,3 +498,4 @@ def polyfitr(x, y, order=2, clip=6, xlim=None, ylim=None,
         x = x[condition]
 
     return coeff,x,y
+
