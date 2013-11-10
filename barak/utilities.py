@@ -19,7 +19,7 @@ def iscontainer(s):
     except TypeError:
         return False
     else:
-        if isinstance(s, basestring) and len(s) != len(x):
+        if isinstance(s, basestring):
             return False
     return True
 
