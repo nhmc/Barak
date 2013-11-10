@@ -335,7 +335,8 @@ def writetabfits(filename, rec, units=None, overwrite=True, header=None):
     tbhdu = pyfits.new_table(pyfits.ColDefs(cols))
     tbhdu.writeto(filename, clobber=overwrite)
     fh = pyfits.open(filename)
-    fh[0].header = header
+    if header is not None:
+        fh[0].header = header
     fh.writeto(filename, clobber=1, output_verify='silentfix')
     fh.close()
 
@@ -553,6 +554,8 @@ def sex_to_DS9reg(filename, s, colour='green', tag='all', withtext=False,
                 text = i+1
         else:
             text = ''
+        if use_WORLD:
+            vals[-1] = -vals[-1]
         vals.extend([text, colour, tag])
         regions.append(fmt % tuple(vals))
 
