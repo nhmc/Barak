@@ -597,3 +597,23 @@ def chi2_prob(chi2val, df):
     from scipy.integrate import quad
     phi, err = quad(chi2.pdf, chi2val, np.inf, (df,))
     return phi, 1-phi
+
+def calc_chi2(data, data_sigma, model):
+    """ Calculate the Chi^2 given data and errors and a model.
+
+    Parameters
+    ----------
+    data : array_like, shape (N,)
+      Data values.
+    data_sigma : array_like, shape (N,)
+      One sigma errors on each data value.
+
+    Returns
+    -------
+    chi2 : float
+      The sum of ((data - model) / data_sigma)**2
+    """
+    y,ysigma,model = map(np.asarray, (y, ysigma, model))
+    chi = (y - model) / ysigma
+    return np.dot(chi, chi)
+    
