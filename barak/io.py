@@ -12,6 +12,7 @@ except NameError:
 else:
     import cPickle as pickle
 
+import json
 import os, gzip
 import numpy as np
 from .utilities import adict, iscontainer
@@ -369,13 +370,30 @@ def saveobj(filename, obj, overwrite=False):
 
 def loadobj(filename):
     """ Load a python object pickled with saveobj."""
+
+    with open(filename, 'rb') as fh:
+        obj = pickle.load(fh)
+    return obj
+
+def savejson(filename, obj, overwrite=False, indent=None):
+    """ Save a python object to filename using using the JSON encoder."""
+
+    if os.path.lexists(filename) and not overwrite:
+        raise IOError('%s exists' % filename)
     if filename.endswith('.gz'):
-        fh = gzip.open(filename, 'rb')
+        fh = gzip.open(filename, 'wb')
     else:
-        fh = open(filename, 'rb')
-    obj = pickle.load(fh)
+        fh = open(filename, 'wb')
+    json.dump(obj, fh, indent=indent)
+    fh.close()
+
+def loadjson(filename):
+    """ Load a python object saved with savejson."""
+    fh = open(filename, 'rb')
+    obj = json.load(fh)
     fh.close()
     return obj
+
 
 def parse_config(filename, defaults={}):
     """ Read options for a configuration file. It does some basic type
