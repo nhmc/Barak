@@ -292,6 +292,34 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
 
     return [l]
 
+def hist_yedge(y, ax, bins=20, height=0.2, histmax=None, fmt='',
+               loc='right', **kwargs):
+    y, ybins = np.histogram(y, bins=bins)
+
+    b = np.repeat(ybins, 2)
+    Y = np.concatenate([[0], np.repeat(y,2), [0]])
+    Ymax = (histmax if histmax is not None else y.max())
+    Y = height * Y / Ymax
+    if 'right' in loc:
+        Y = 1 - Y
+    trans = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
+    artist, = ax.plot(Y, b, fmt, transform=trans, **kwargs)
+    
+    return artist
+
+def hist_xedge(x, ax, bins=20, height=0.2, histmax=None, fmt='',
+               loc='bottom', **kwargs):
+    x, xbins = np.histogram(x, bins=bins)
+    b = np.repeat(xbins, 2)
+    X = np.concatenate([[0], np.repeat(x,2), [0]])
+    Xmax = (histmax if histmax is not None else x.max())
+    X = height * X / Xmax
+    if 'top' in loc:
+        X = 1 - X
+    trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
+    artist, = ax.plot(b, X, fmt, transform=trans, **kwargs)
+    return artist
+
 def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
           label=None, loc='right,bottom', xhistmax=None, yhistmax=None,
           histlw=1, xtop=0.2, ytop=0.2, chist=None, **kwargs):
