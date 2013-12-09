@@ -399,10 +399,6 @@ def stats(arr):
     return 'min %.5g max %.5g median %.5g mean %.5g shape %s #NaN %i of %i' % (
         arr[0], arr[-1], median, arr.mean(), shape, nbad, size)
 
-def Gaussian(x, x0, sigma, height):
-    """ Gaussian."""
-    return height * np.exp(-0.5 * ((x-x0)/sigma)**2)
-
 def meshgrid_nd(*arrs):
     """ Like numpy's meshgrid, but works on more than two dimensions.
     """

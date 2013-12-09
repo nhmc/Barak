@@ -11,6 +11,7 @@ except NameError:
 
 import numpy as np
 from .utilities import between
+import astropy.units as u
 
 def _bisect(func, target, xlo=-10, xhi=10):
     """ Find x value such that func(x) = target.
@@ -97,7 +98,7 @@ def poisson_confidence_interval(conf, nevents):
       The two-sided confidence interval such that for mulo, >=
       observed number of events occurs in fewer than conf% of cases,
       and for muhi, <= nevents occurs in fewer than conf% of cases.
-    """        
+    """
     if nevents == 0:
         return poisson_min_max_limits(conf, nevents)
     return poisson_min_max_limits(conf + 0.5*(100 - conf), nevents)
@@ -229,7 +230,7 @@ def remove_outliers(data, nsig_lo, nsig_hi, method='median',
       Method to find the central value.
     nitermax : int
       number of iterations before exit; defaults to 100
-    maxfrac_remove : float (0.95)  
+    maxfrac_remove : float (0.95)
       Clip at most this fraction of the original points.
 
     Returns
@@ -324,7 +325,7 @@ def Schechter_Mag(M):
     z=1.9 to 2.7
 
     alpha         M*           1e3* phi*
-    
+
     # ground
     -1.88 0.27   -21.01 0.38   1.62  0.46
     # fixed alpha
@@ -345,11 +346,12 @@ def Schechter_Mag(M):
     Mterm = 10**(-0.4*(M - MSTAR))
     return 0.4 * np.log(10) * PHI_STAR * Mterm**(ALPHA + 1) * np.exp(-Mterm)
 
+
 def BX_number_density(lmin, lmax=10, Mstar=-21.0):
-    """ Give the low luminosity cutoff for the 
+    """ Give the low luminosity cutoff for the
 
     lmin and lmax are the luminosity integration limits in units of L*.
-    
+
     Returns density in Mpc^-3 h(0.7)^3
     """
     Mlo = Mstar - np.log10(lmax) * 2.5
@@ -370,7 +372,7 @@ def slit_losses(seeing_on_slitwidth):
     -------
     losses: float
       Fraction of light that falls outside the slit.
- 
+
     Notes
     -----
     Assumes a 2d Gaussian for the seeing profile.
@@ -509,7 +511,7 @@ class SFR_Lum:
     >>> import astropy.units as u
     >>> sfr_rel = SFR_Lum(SFR=10 * u.M_sun / u.yr)
     >>> print sfr_rel
-    
+
     Relations between Star formation rate and luminosities in
     different emission lines or broad bands from Kennicutt Jr. R. C.,
     1998, ARAA , 36, 189."""
@@ -518,6 +520,7 @@ class SFR_Lum:
                  SFR=None):
         """ One luminosity or a SFR keyword argument must given.
         """
+
         const = u.M_sun / u.yr / (u.erg / u.s)
 
         if L_Lya is not None:
@@ -534,11 +537,11 @@ class SFR_Lum:
             SFR = 4.5e-44 * const * L_FIR
         elif SFR is None:
             raise KeyError('Must specify a SFR or luminosity!')
-        
+
         self.const = const
         self.SFR = SFR.to(u.M_sun / u.yr)
         self.set_Lum()
-       
+
     def __str__(self):
         s = []
         for attr in 'SFR L_Lya L_Ha L_OII L_UV L_FIR'.split():
@@ -556,3 +559,41 @@ class SFR_Lum:
         self.L_UV = (self.SFR / (1.4e-28 * u.M_sun / u.yr /
                                  (u.erg / u.s / u.Hz))).to(u.erg / u.s / u.Hz)
         self.L_FIR = (self.SFR / (4.5e-44 * const)).to(u.erg / u.s)
+
+def Gaussian(x, x0, sigma, height):
+    """ Gaussian.
+
+    Convert between sigma and FWHM using the relation:
+
+    FWHM = sigma * 2 * sqrt(2 * ln(2)) ~ sigma * 2.35482
+    """
+    return height * np.exp(-0.5 * ((x-x0)/sigma)**2)
+
+def chi2_prob(chi2val, df):
+    """ Calculate the probability of finding this chi2 value or higher/lower.
+
+    Parameters
+    ----------
+    chi2val : float
+      chi^2 value
+    df :
+      Number of degrees of freedom
+
+    Returns
+    -------
+    phi,plo : floats
+      The probability of finding this chi^2 value or higher and this
+      chi^2 value or lower (plo = 1 - phi).
+
+    Notes
+    -----
+
+    This uses the probability density function for the chi2
+    distribution, which is:
+
+      chi2.pdf(x,df) = 1 / (2*gamma(df/2)) * (x/2)**(df/2-1) * exp(-x/2)
+    """
+    from scipy.stats import chi2
+    from scipy.integrate import quad
+    phi, err = quad(chi2.pdf, chi2val, np.inf, (df,))
+    return phi, 1-phi
