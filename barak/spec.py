@@ -515,7 +515,7 @@ def read(filename, comment='#', debug=False):
     ##########################################################
     # Check if SDSS spectrum
     ##########################################################
-    if hd.has_key(str('TELESCOP')):
+    if str('TELESCOP') in hd:
         if hd[str('TELESCOP')] == 'SDSS 2.5-M':  # then Sloan spectrum
             data = f[0].data
             fl = data[0]
@@ -528,7 +528,7 @@ def read(filename, comment='#', debug=False):
     ##########################################################
     # Check if HIRES spectrum
     ##########################################################
-    if hd.has_key(str('INSTRUME')):   #  Check if Keck spectrum
+    if str('INSTRUME') in hd:   #  Check if Keck spectrum
         if hd[str('INSTRUME')].startswith('HIRES'):
             if debug:  print('Looks like Makee output format')
             fl = f[0].data       # Flux
@@ -553,7 +553,7 @@ def read(filename, comment='#', debug=False):
     fl = data[0]
     er = data[2]
     f.close()
-    if hd.has_key(str('CRPIX1')):
+    if str('CRPIX1') in hd:
         crpix = hd[str('CRPIX1')]
     else:
         crpix = 1
@@ -1019,14 +1019,15 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
     autoscale = ax.get_autoscale_on()
     if autoscale:
         ax.set_autoscale_on(False)
-    artists = []
+    artists = {'labels' : []}
     w0,w1 = ax.get_xlim()
     wa = lines.wa * (z+1)
     if trim:
         c0 = between(wa,w0,w1)
         wa = wa[c0]
         lines = lines[c0]
-    artists.append(axvlines(wa, ax=ax, ls=ls, color=color, **kwargs))
+    artists['lines'] = []
+    artists['lines'].append(axvlines(wa, ax=ax, ls=ls, color=color, **kwargs))
     if labels:
         for i in range(3):
             for w,l in zip(wa[i::3], lines[i::3]):
@@ -1035,14 +1036,15 @@ def plotlines(z, ax, atmos=None, lines=None, labels=False, ls='dotted',
                 #name = l.name + '%.2f' % l.wa
                 name = l.name
                 off = (0.7 + i*0.08 if offsets else 0.9)
-                artists.append(puttext(
+                artists['labels'].append(puttext(
                     w, off, name, ax,
                     xcoord='data', alpha=1, fontsize=fontsize,
                     rotation=90, ha='right', color=lcolor))
+    artists['atmos'] = []
     if atmos:
         if atmos == True:
             atmos = None
-        artists.extend(plotatmos(ax, atmos=atmos))
+        artists['atmos'].extend(plotatmos(ax, atmos=atmos))
 
     if autoscale:
         ax.set_autoscale_on(True)
