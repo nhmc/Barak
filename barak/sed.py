@@ -391,9 +391,10 @@ class SED(object):
         # weight by response and wavelength, appropriate when we're
         # counting the number of photons within the band.
         flux = np.trapz(band_tr * fl * wa, wa) / np.trapz(band_tr * wa, wa)
+        
         return flux
 
-    def calc_mag(self, band, system="Vega"):
+    def calc_mag(self, band, system="AB"):
         """Calculates magnitude in the given passband.
 
         Note that the distance modulus is not added.
@@ -408,15 +409,15 @@ class SED(object):
 
         if f1 > 0:
             mag = -2.5 * math.log10(f1/band.flux[system])
-            # Add 0.026 because Vega has V=0.026 (e.g. Bohlin & Gilliland 2004)
             if system == "Vega":
+                # Add 0.026 because Vega has V=0.026 (e.g. Bohlin & Gilliland 2004)
                 mag += 0.026
         else:
             mag = np.inf
 
         return mag
 
-    def calc_colour(self, band1, band2, system="Vega"):
+    def calc_colour(self, band1, band2, system="AB"):
         """Calculates the colour band1 - band2.
 
         system is either 'Vega' or 'AB'.
@@ -431,10 +432,10 @@ class SED(object):
         return mag1 - mag2
 
     def apply_extinction(self, ext_type, EBmV):
-        """ Return a new SED instance with the extinction curve at the
-        same redshift as the template.
+        """ Return a new SED instance with the extinction curve
+        applied at the same redshift as the template.
 
-        Allowed extiction laws are:
+        Allowed extinction laws are:
 
            MW
            SMC
@@ -527,7 +528,7 @@ def flambda_to_fnu(wa, f_lambda):
     f_nu : ndarray
       Flux at each wavelength in erg/s/cm^2/Hz
     """
-    return (wa *1e-8)**2 * f_lambda * 1e8 / c
+    return (wa * 1e-8)**2 * f_lambda * 1e8 / c
 
 
 def qso_template(wa, z):

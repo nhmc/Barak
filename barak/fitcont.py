@@ -13,7 +13,8 @@ import numpy as np
 import matplotlib.pyplot as pl
 import matplotlib.transforms as mtran
 
-from .utilities import between, Gaussian, stats, indexnear
+from .stats import Gaussian 
+from .utilities import between, stats, indexnear
 from .convolve import convolve_psf
 from .io import loadobj, saveobj
 from .interp import AkimaSpline
@@ -383,7 +384,6 @@ class InteractiveCoFit(object):
 
     def update(self):
         """ Calculates the new continuum, residuals and updates the plots.
-
 
         Updates the following attributes:
 
