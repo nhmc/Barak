@@ -613,7 +613,7 @@ def calc_chi2(data, data_sigma, model):
     chi2 : float
       The sum of ((data - model) / data_sigma)**2
     """
-    y,ysigma,model = map(np.asarray, (y, ysigma, model))
-    chi = (y - model) / ysigma
+    data,data_sigma,model = map(np.asarray, (data, data_sigma, model))
+    chi = (data - model) / data_sigma
     return np.dot(chi, chi)
     
