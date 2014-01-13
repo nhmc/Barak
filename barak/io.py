@@ -371,8 +371,13 @@ def saveobj(filename, obj, overwrite=False):
 def loadobj(filename):
     """ Load a python object pickled with saveobj."""
 
-    with open(filename, 'rb') as fh:
-        obj = pickle.load(fh)
+    if filename.endswith('.gz'):
+        fh = gzip.open(filename, 'rb')
+    else:
+        fh = open(filename, 'rb')
+    obj = pickle.load(fh)
+    fh.close()
+
     return obj
 
 def savejson(filename, obj, overwrite=False, indent=None):
