@@ -556,7 +556,6 @@ def shade_to_line_vert(yvals, xvals, blend=1, ax=None, x0=0,
     return art, im, X, Y
 
 
-
 def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
                 c='k', **kwargs):
     """ Draw arrows that can be used to show limits.
@@ -575,29 +574,35 @@ def draw_arrows(x, y, ax=None, capsize=2,  ms=6, direction='up',
     """
     arrowlength=10.
     capsize = min(capsize, arrowlength)
-    yvert = np.array([0, arrowlength, arrowlength - capsize, arrowlength,
-                      arrowlength - capsize, arrowlength])
-    xvert = np.array([0, 0, 0.5*capsize, 0, -0.5*capsize, 0])
-
-    if direction == 'down':
-        arrow_verts = list(zip(xvert, -yvert))
-    elif direction == 'up':
-        arrow_verts = list(zip(xvert, yvert))
-    elif direction == 'left':
-        arrow_verts = list(zip(-yvert, xvert))
-    elif direction == 'up':
-        arrow_verts = list(zip(yvert, xvert))
-    else:
-        raise ValueError(
-            "direction must be one of 'up', 'down', 'left', 'right'")
+    al = arrowlength
+    yverts = (np.array([al, al-capsize]),
+              np.array([al, 0]),
+              np.array([al, al-capsize]))
+    xverts = (np.array([0, 0.5*capsize]),
+              np.array([0, 0]),
+              np.array([0, -0.5*capsize]))
 
     if ax is None:
         pl.figure()
         ax = pl.gca()
 
-    c = ax.scatter(x, y, s=(1000/6.)*ms, marker=None, verts=arrow_verts,
-                   edgecolors=c, **kwargs)
-    return c
+    art = []
+    for xvert,yvert in zip(xverts, yverts):
+        if direction == 'down':
+            arrow_verts = list(zip(xvert, -yvert))
+        elif direction == 'up':
+            arrow_verts = list(zip(xvert, yvert))
+        elif direction == 'left':
+            arrow_verts = list(zip(-yvert, xvert))
+        elif direction == 'up':
+            arrow_verts = list(zip(yvert, xvert))
+        else:
+            raise ValueError(
+                "direction must be one of 'up', 'down', 'left', 'right'")
+
+        art.append(ax.scatter(x, y, s=(1000/6.) * ms, marker=None,
+                            verts=arrow_verts, edgecolors=c, **kwargs))
+    return art
 
 def calc_log_minor_ticks(majorticks):
     """ Get minor tick positions for a log scale.
