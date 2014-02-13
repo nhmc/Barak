@@ -487,7 +487,7 @@ def CloughTocher2d_interpolator(xref, yref, vals):
 
     Parameters
     ----------
-    xref, yref : array of floats, shapes (I,), (J,)
+    xref, yref : array of floats, shapes (J,), (I,)
       Reference coordinate grid. The grid must be equally spaced along
       each direction, but the spacing can be different between
       directions.
@@ -497,8 +497,8 @@ def CloughTocher2d_interpolator(xref, yref, vals):
     Returns
     -------
     interpolator: CloughTocher2DInterpolater instance
-      Object that accepts an (x,y) tuple and returns the interpolated
-      value.
+      Object that accepts a (y,x) tuple (note reversed order from the
+      input to this function!) and returns the interpolated value.
 
     See Also
     --------
@@ -513,8 +513,8 @@ def CloughTocher2d_interpolator(xref, yref, vals):
 
     assert (len(yref), len(xref)) == vals.shape
     XREF,YREF = np.meshgrid(xref, yref)
-    interpolator = CloughTocher2DInterpolator((XREF.ravel(), YREF.ravel()),
-                                        vals.ravel())
+    interpolator = CloughTocher2DInterpolator((YREF.ravel(), XREF.ravel()),
+                                              vals.ravel())
 
     return interpolator
 
@@ -525,9 +525,9 @@ def CloughTocher2d_interp(x, y, xref, yref, vals):
 
     Parameters
     ----------
-    x, y : arrays of floats, shapes (M,), (N,)
+    x, y : arrays of floats, shapes (N,), (M,)
       Coordinate grid at which to interpolate `vals`.
-    xref, yref : array of floats, shapes (I,), (J,)
+    xref, yref : array of floats, shapes (J,), (I,)
       Reference coordinate grid. The grid must be equally spaced along
       each direction, but the spacing can be different between
       directions.
@@ -544,4 +544,4 @@ def CloughTocher2d_interp(x, y, xref, yref, vals):
     """
     interp = CloughTocher2d_interpolator(xref, yref, vals)
     X, Y = np.meshgrid(x,y)
-    return interp((X, Y))
+    return interp((Y, X))
