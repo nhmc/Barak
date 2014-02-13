@@ -407,9 +407,9 @@ def arrplot(a, x=None, y=None, ax=None, perc=(0, 100), colorbar=True,
     ----------
     a : array, shape (N, M)
       Values at each coordinate.
-    x : shape (N,)
+    x : shape (M,)
       Coordinates, must be equally spaced.
-    y : shape (M,)
+    y : shape (N,)
       Coordinates, must be equally spaced.
     ax : axes
       Axes in which to plot.
@@ -417,31 +417,32 @@ def arrplot(a, x=None, y=None, ax=None, perc=(0, 100), colorbar=True,
       Whether to also plot a colorbar.
     """
     if x is None:
-        x = np.arange(a.shape[0])
+        x = np.arange(a.shape[1])
+    else:
+        assert len(x) == a.shape[1]
+    
     if y is None:
-        y = np.arange(a.shape[1])
-
-    assert len(x) == a.shape[0]
-    assert len(y) == a.shape[1]
+        y = np.arange(a.shape[0])
+    else:
+        assert len(y) == a.shape[0]
 
     if ax is None:
         pl.figure()
         ax = pl.gca()
 
-    assert np.allclose(x, np.sort(x))
-    assert np.allclose(y, np.sort(y))
-
     dxvals = x[1:] - x[:-1]
     dx = dxvals[0]
+    assert dx > 0
     assert np.allclose(dx, dxvals[1:])
     x0, x1 = x[0] - 0.5*dx, x[-1] + 0.5*dx
 
     dyvals = y[1:] - y[:-1]
     dy = dyvals[0]
+    assert dy > 0
     assert np.allclose(dy, dyvals[1:])
     y0, y1 = y[0] - 0.5*dy, y[-1] + 0.5*dy
 
-    col = ax.imshow(a.T, aspect='auto', extent=(x0, x1, y0, y1),
+    col = ax.imshow(a, aspect='auto', extent=(x0, x1, y0, y1),
                     interpolation='nearest', origin='lower',
                     **kwargs)
     if colorbar:
