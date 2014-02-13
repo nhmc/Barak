@@ -1184,7 +1184,6 @@ def writesp(filename, sp, resvel=None, overwrite=False):
     fh.close()
 
 
-    
 def find_cont(fl, fwhm1=300, fwhm2=200, nchunks=4, nsiglo=2, nsighi=3):
     """ Given the flux, estimate the continuum. fwhm values are
     smoothing lengths.
@@ -1200,14 +1199,19 @@ def find_cont(fl, fwhm1=300, fwhm2=200, nchunks=4, nsiglo=2, nsighi=3):
         warnings.warn('Reducing fwhm2 to %i pixels' % fwhm2)
 
     co = convolve_psf(fl, fwhm1, edge=10)
-    
+        
     npts = len(fl)
     indices = np.arange(npts)
     
     # throw away top and bottom 2% of data that deviates from
     # continuum and re-fit new continuum. Go chunk by chunk so that
     # points are thrown away evenly across the spectrum.
+
+    c0 = co <= 0.
+    co[c0] = co[~c0].mean()
+    
     nfl = fl / co
+
     step = npts // nchunks  + 1
     ind = range(0, npts, step) + [npts]
     #igood = []
