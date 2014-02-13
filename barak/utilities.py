@@ -401,50 +401,10 @@ def stats(arr):
 
 def meshgrid_nd(*arrs):
     """ Like numpy's meshgrid, but works on more than two dimensions.
-
-    Note that the input coordinates must be in the same order as used
-    when indexing that array, i.e. last index chagnes fastest.
-
-    Example
-    -------
-    from scipy.ndimage import map_coordinates
-    nx,ny,nz = 9,5,3
-    x = np.arange(nx)
-    y = np.arange(ny)
-    z = np.arange(nz)
-    data = np.arange(nz * ny * nx).reshape((nz, ny, nx)).astype(np.float)
-    x1 = np.linspace(x[0], x[-1], 49)
-    y1 = np.linspace(y[0], y[-1], 50)
-    z1 = np.linspace(z[0], z[-1], 51)
-    Z1,Y1,X1 = meshgrid_nd(z1,y1,x1)
-    zi = map_coordinates(data, [Z1, Y1, X1], mode='nearest', order=3)
-
-    from barak.plot import arrplot
-    fig = pl.figure()
-    ax1 = pl.subplot(111)
-    arrplot(data[0,:,:], x=x,y=y, ax=ax1)
-    ax2 = pl.subplot(111)
-    arrplot(zi[0,:,:], x=x1,y=y1, ax=ax2)
     """
-    lens = list(map(len, arrs))
-    dim = len(arrs)
-
-    sz = 1
-    for s in lens:
-        sz*=s
-
-    ans = []    
-    for i, arr in enumerate(arrs):
-        slc = [1]*dim
-        slc[i] = lens[i]
-        arr2 = np.asarray(arr).reshape(slc)
-        for j, sz in enumerate(lens):
-            if j != i:
-                arr2 = arr2.repeat(sz, axis=j) 
-        ans.append(arr2)
-
-    return tuple(ans)
-
+    raise RuntimeError("Deprecated - use numpy.meshgrid() instead, which as of \
+version 1.7 handles n dimensions")
+    
 def autocorr(x, maxlag=300):
     """ Find the autocorrelation of x.
 
