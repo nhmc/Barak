@@ -319,7 +319,7 @@ def find_conf_levels(a, pvals=[0.683, 0.955, 0.997]):
 def Schechter_Mag(M):
     """ phi = phi_star * (M / Mstar)**alpha * np.exp(M/Mstar)
 
-    From Reddy et al. 2008?
+    From Reddy et al. 2009?
     Table 7
 
     z=1.9 to 2.7
@@ -347,12 +347,14 @@ def Schechter_Mag(M):
     return 0.4 * np.log(10) * PHI_STAR * Mterm**(ALPHA + 1) * np.exp(-Mterm)
 
 
-def BX_number_density(lmin, lmax=10, Mstar=-21.0):
+def BX_number_density(lmin, lmax=10, Mstar=-21.01):
     """ Give the low luminosity cutoff for the
 
     lmin and lmax are the luminosity integration limits in units of L*.
 
     Returns density in Mpc^-3 h(0.7)^3
+
+    Numbers are from Reddy et al.
     """
     Mlo = Mstar - np.log10(lmax) * 2.5
     Mhi = Mstar - np.log10(lmin) * 2.5
