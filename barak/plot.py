@@ -204,7 +204,7 @@ def distplot(vals, xvals=None, perc=(68, 95), showmean=False,
         ax.plot(x1, out1, '.', ms=1, color='0.3')
     if showmean:
         ax.plot(x, means, 'k--')
-    ax.plot(x, levels[:,2], 'k-', **kwargs)
+    ax.plot(x, levels[:,2], '-', color=color, **kwargs)
     ax.set_xlim(xvals[0],xvals[-1])
     try:
         ax.minorticks_on()
