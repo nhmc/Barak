@@ -180,6 +180,9 @@ def writetxt(fh, cols, sep=' ', names=None, header=None, overwrite=False,
     """ This is deprecated. Use `writetable()` with file type '.tbl'
     instead.
 
+    T.write('temp.txt', format='ascii.fixed_width', bookend=False,
+    delimiter_pad=False)
+
     Write data to a column-aligned text file.
 
     Structured array data written using this function can be read
@@ -307,11 +310,11 @@ def writetabfits(filename, rec, units=None, overwrite=True, header=None):
       A header to copy to the primary fits extension.
     """
     try:
-        import pyfits
-    except ImportError:
         import astropy.io.fits as pyfits
+    except ImportError:
+        import pyfits
 
-    fmts = dict(f4='E', f8='F', i2='I', i4='J', i8='K', b1='L')
+    fmts = dict(f4='E', f8='E', i2='I', i4='J', i8='K', b1='L')
 
     try:
         rec.dtype
@@ -331,7 +334,8 @@ def writetabfits(filename, rec, units=None, overwrite=True, header=None):
             fmt = 'A' + dtype[1:]
         else:
             fmt = fmts[dtype]
-        cols.append(pyfits.Column(name=name, format=fmt, array=a, unit=unit))
+        cols.append(pyfits.Column(name=name, format=str(fmt),
+                                  array=a, unit=unit))
 
     tbhdu = pyfits.new_table(pyfits.ColDefs(cols))
     tbhdu.writeto(filename, clobber=overwrite)
