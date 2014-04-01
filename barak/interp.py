@@ -471,7 +471,8 @@ def trilinear_interp(x, y, z, xref, yref, zref, vals):
     ix = indices_from_grid(x, xref)
     iy = indices_from_grid(y, yref)
     iz = indices_from_grid(z, zref)
-    iX, iY, iZ = (a.ravel() for a in meshgrid_nd(ix, iy, iz))
+    #iX, iY, iZ = (a.ravel() for a in meshgrid_nd(ix, iy, iz))
+    iX, iY, iZ = (a.ravel() for a in np.meshgrid(ix, iy, iz))
     out = _interp3d(iX, iY, iZ, vals)
 
     # Note the index order and transpose!
