@@ -490,7 +490,7 @@ def mag2Jy(ABmag):
     flux_nu = 10**(-(ABmag + 48.6)/2.5) / Jy
     return flux_nu
 
-def Jy2Mag(fluxJy):
+def Jy2mag(fluxJy):
     """Converts flux density in Jy into AB magnitude (fnu).
     """
     ABmag = -2.5 * (np.log10(fluxJy * Jy)) - 48.6
