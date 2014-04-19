@@ -940,3 +940,7 @@ def get_nrows_ncols(nplots, prefer_rows=True):
             ncols += 1
 
     return nrows, ncols
+
+def get_flux_plotrange(fl):
+    ymax = abs(np.percentile(fl[~np.isnan(fl)], 95)) * 1.5
+    return -0.1*ymax, ymax
