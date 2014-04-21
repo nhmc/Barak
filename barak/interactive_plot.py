@@ -1,12 +1,25 @@
+""" Classes useful for making interactive plots.
+"""
 import numpy as np
 from barak.utilities import between
+from barak.plot import get_flux_plotrange
 from barak.convolve import convolve_psf
-
+from barak.interp import AkimaSpline
+from barak.io import savejson
 
 class PlotWrapBase(object):
     """ A base class that has all the navigation and smoothing
     keypress events. These need to be connected to the wrapped figure
     of the class inheriting from this with something like:
+
+    ** You need to define the following attributes **
+
+    self.wa, self.fl    Spectrum wavelength and flux
+    self.nsmooth        integer > 0 that determines the smoothing
+    self.ax             Axes where specturm is plotted
+    self.fig            Figure which holds the axes.
+    self.artists['fl']  The Matplotlib line artist that represents the flux.
+
 
     def connect(self, fig):
         cids = dict(key=[])
@@ -17,6 +30,18 @@ class PlotWrapBase(object):
             'key_press_event', self.on_keypress_smooth))
         self.cids.update(cids)
     """
+    _help_string = """
+i,o          Zoom in/out x limits
+y            Zoom out y limits
+Y            Guess y limits
+t,b          Set y top/bottom limit
+l,r          Set left/right x limit
+[,]          pan left/right
+w            Return to original view
+
+S,U          Smooth/unsmooth spectrum
+"""
+
     def __init__(self):
         pass
 
@@ -95,3 +120,91 @@ class PlotWrapBase(object):
             self.nsmooth = 0
             self.artists['fl'].set_ydata(self.fl)
             self.fig.canvas.draw()
+
+class PlotWrapBase_Continuum(PlotWrapBase):
+    """
+    This needs the following attributes defined:
+
+    self.contpoints: List of x,y pairs giving the spline knots
+    self.co:         Continuum array
+    self.wa:         Wavelength array (sorted low to high)
+    self.fl:         Flux array
+    self.artists['contpoints']: Matplotlib artist showing the spline knots.
+    self.artists['co']:  Matplotlib artist showing the continuum.
+
+    It will also update a self.artists['model'] line using the new
+    continuum and the array in self.model, if they exist.
+
+    The knots are saved in the current directory in a file call
+    '_knots.json'. This save location and name can be changed using
+    the attributes self.outdir and self.name.
+    """
+
+    _help_string = PlotWrapBase._help_string + """
+3,4          Add (3) or delete (4) a continuum point
+"""
+    def __init__(self):
+        pass
+
+    def update_cont(self):
+        """ Sort the continuum points and update continuum artists. 
+        """
+        if not self.contpoints:
+            self.artists['contpoints'].set_data([0], [0])
+        else:
+            self.contpoints = sorted(self.contpoints, key=lambda pt: pt[0])
+            cpts = self.contpoints
+            self.artists['contpoints'].set_data(list(zip(*cpts)))
+
+            name = '_knots.json'
+            if hasattr(self, 'outdir') and hasattr(self, 'name'):
+                name = self.outdir + self.name + '_knots.json'
+            savejson(name, cpts, overwrite=True)
+            if self.co is None:
+                self.co = np.empty_like(self.fl)
+            if len(cpts) > 2:
+                i,j = self.wa.searchsorted([cpts[0][0], cpts[-1][0]])
+                spline = AkimaSpline(*list(zip(*cpts)))
+                self.co[i:j] = spline(self.wa[i:j])
+                self.co[:i] = self.co[i]
+                self.co[j:] = self.co[j-1]
+            elif len(cpts) > 1:
+                wa_pts, pts = zip(*cpts)
+                self.co = np.interp(self.wa, wa_pts, pts)
+            elif len(cpts) == 1:
+                self.co[:] = cpts[0][1]
+
+        if hasattr(self, 'model') and len(self.co) == len(self.model):
+            self.artists['model'].set_data(self.wa, self.co * self.model)
+        self.artists['co'].set_data(self.wa, self.co)
+
+    def on_keypress_continuum(self, event):
+        """ Add and remove continuum points.
+
+        needs
+
+        self.contpoints
+        self.fig
+        self.ax
+        """
+        if event.key == '3' and event.inaxes:
+            # add a point to contpoints
+            x,y = event.xdata, event.ydata
+            if not self.contpoints or x not in zip(*self.contpoints)[0]:
+                self.contpoints.append((x, y))                
+                self.update_cont()
+            self.fig.canvas.draw()
+        elif event.key == '4' and event.inaxes:
+            # remove a point from contpoints
+            if not self.contpoints:
+                'Define a continuum point first!'
+            elif len(self.contpoints) == 1:
+                self.contpoints = []
+            else:
+                contx,conty = zip(*self.ax.transData.transform(self.contpoints))
+                sep = np.hypot(event.x - np.array(contx),
+                               event.y - np.array(conty))
+                self.contpoints.remove(self.contpoints[sep.argmin()])
+            self.update_cont()
+            self.fig.canvas.draw()
+
