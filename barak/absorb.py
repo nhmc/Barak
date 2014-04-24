@@ -291,7 +291,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
             tickmarks.append((refwav, z, wa0, i))
         sumtau[i0:i1] += tau
 
-    if logN > Nthresh_LL and abs(ion['wa'][0] - 1215.6701) < 1e-3:
+    if logN > logNthresh_LL and abs(ion['wa'][0] - 1215.6701) < 1e-3:
         wstart_LL = 912.8
         # remove tau from lines that move into the LL approximation
         # region.
