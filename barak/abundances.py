@@ -23,7 +23,7 @@ cond_temp:
   gaseous state.
 
 protosolar, photosphere:
-  Protosolar and phtospheric mass fractions of H (X), He (Y) and
+  Protosolar and photospheric mass fractions of H (X), He (Y) and
   metals (Z) from Asplund et al. 2009ARA&A..47..481A, table 4.
 """
 from __future__ import unicode_literals

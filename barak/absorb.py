@@ -221,7 +221,8 @@ def logN_from_tau_peak(tau, b, wa0, osc):
 
 
 def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
-                label_tau_threshold=0.01, vpad=500., verbose=True):
+                label_tau_threshold=0.01, vpad=500., verbose=True,
+                logNthresh_LL=None):
     """ Returns tau values at each wavelength for transitions in ion.
 
     Parameters
@@ -243,7 +244,8 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     vpad : float (default 500)
       Include transitions that are within vpad km/s of either edge of
       the wavelength array.
-
+    logNthresh_LL : float (default 14.8)
+      Threshold value of log10(NHI) for including Lyman limit absorption.
     Returns
     -------
     tau : array of floats
@@ -254,6 +256,9 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     tau, tickmarks : arrays of floats and record array
       Optical depths and tick mark info.
     """
+    if logNthresh_LL is None:
+        logNthresh_LL = 14.8
+
     z = zp1 - 1
     if debug:
         i = int(len(wa)/2)
@@ -286,7 +291,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
             tickmarks.append((refwav, z, wa0, i))
         sumtau[i0:i1] += tau
 
-    if logN > 14.8 and abs(ion['wa'][0] - 1215.6701) < 1e-3:
+    if logN > Nthresh_LL and abs(ion['wa'][0] - 1215.6701) < 1e-3:
         wstart_LL = 912.8
         # remove tau from lines that move into the LL approximation
         # region.
@@ -299,7 +304,8 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     else:
         return sumtau
 
-def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False):
+def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False,
+             logNthresh_LL=None):
     """ Given a wavelength array, a reference atom.dat file read with
     readatom, and a list of lines giving the ion, redshift,
     log10(column density) and b parameter, return the tau at each
@@ -340,7 +346,7 @@ def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False):
             print('z, logN, b', z, logN, b)
         maxdv = 20000 if logN > 18 else 1000
         t,tick = calc_iontau(wa, atomdat[ion], z+1, logN, b, ticks=True,
-                             maxdv=maxdv)
+                             maxdv=maxdv, logNthresh_LL=logNthresh_LL)
         tau += t
         if per_trans:
             taus.append(t)
