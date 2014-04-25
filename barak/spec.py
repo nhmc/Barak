@@ -18,9 +18,9 @@ import numpy as np
 import matplotlib.pyplot as pl
 
 try:
-    import pyfits
+    import astropy.io.fits as fits
 except ImportError:
-    import astropy.io.fits as pyfits
+    import pyfits as fits
 
 from .utilities import nan2num, between, get_data_path, stats
 from .convolve import convolve_psf
@@ -45,8 +45,9 @@ def getwave(hd):
     wstart = CRVAL + (1 - CRPIX) * dw
     # check if it's log-linear scale (heuristic)
     if CRVAL < 10:
-        wstart = 10**wstart
-        dv = c_kms * (1. - 1. / 10. ** -dw)
+        #wstart = 10**wstart
+        #dv = c_kms * (1. - 1. / 10. ** -dw)
+        dv = dw * c_kms * np.log(10) 
         print('constant dv = %.3f km/s (assume CRVAL1 in log(Angstroms))' % dv)
 
     npts = hd[str('NAXIS1')]
@@ -74,7 +75,7 @@ def get_cdelt(hd):
 def parse_UVES_popler(filename):
     """ Read a spectrum from a UVES_popler-style fits file.
     """
-    fh = pyfits.open(filename)
+    fh = fits.open(filename)
     hd = fh[0].header
     cdelt = get_cdelt(hd)
     co = fh[0].data[3]
@@ -446,8 +447,21 @@ def read(filename, comment='#', debug=False):
         return sp
 
     # Otherwise assume fits file
-    f = pyfits.open(filename)
+    f = fits.open(filename)
     hd = f[0].header
+
+    if str('CTYPE1') in hd and '_f.fits' in filename.lower():
+        # ESI, HIRES, etc. from XIDL
+        if hd['CTYPE1'] == 'LINEAR':
+            wa = getwave(hd)
+            fl = fits.getdata(filename)
+            if 'F.fits' in filename:
+                n = filename.replace('F.fits','E.fits') 
+            else: 
+                n = filename.replace('f.fits','e.fits') 
+            er = fits.getdata(n)
+            return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
+
     if str('TELESCOP') in hd and str('FLAVOR') in hd:
         if hd[str('TELESCOP')] == 'SDSS 2.5-M' and \
                hd[str('flavor')] == 'science':
@@ -535,7 +549,7 @@ def read(filename, comment='#', debug=False):
             f.close()
             errname = filename[0:filename.rfind('.fits')] + 'e.fits'
             try:
-                er = pyfits.getdata(errname)
+                er = fits.getdata(errname)
             except IOError:
                 er = np.ones(len(fl))
             return Spectrum(fl=fl, er=er, filename=filename, CDELT=cdelt,
