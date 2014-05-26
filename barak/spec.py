@@ -449,8 +449,9 @@ def read(filename, comment='#', debug=False):
     # Otherwise assume fits file
     f = fits.open(filename)
     hd = f[0].header
-
-    if str('CTYPE1') in hd and '_f.fits' in filename.lower():
+    #import pdb; pdb.set_trace()
+    if str('CTYPE1') in hd and ('_f.fits' in filename.lower() or
+                                '_xf.fits' in filename.lower()):
         # ESI, HIRES, etc. from XIDL
         if hd['CTYPE1'] == 'LINEAR':
             wa = getwave(hd)
