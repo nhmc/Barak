@@ -746,6 +746,43 @@ def split_trans_name(name):
         i += 1
     return name[:i], name[i:]
 
+def photo_cross_section_hydrogenic(E, Z=1):
+    """ The photoionisation cross section of absorption for a
+    hydrogenic (hydrogen-like, single outer electron) atom with charge
+    Z.
+
+    E is the energy (h nu) in eV
+
+    convert from, say eV to Angstroms with:
+
+    import astropy.units as u
+    E.to(u.AA, equivalencies=u.equivalencies.spectral())
+
+    Z = 1 for hydrogen HI, 2 for HeII, etc
+
+
+    E = 10**np.linspace(1,4)
+    sigma = photo_cross_section_hydrogenic(E)
+
+    pl.loglog(E, sigma)
+    
+    Returned value is in cm^2
+    """
+    Z = float(Z)
+    E = np.asarray(E)
+    # Ionization energy in eV
+    IH = 13.599
+    E0 = Z**2 * IH
+    c0 = E >= E0
+    out = np.zeros(len(E), float)
+    sigma0 = 6.304e-18 * Z**-2
+    if c0.any():
+        Enorm = E[c0] / E0
+        x = np.sqrt(Enorm - 1)   # unitless
+        out[c0] = sigma0 * Enorm**-4 * \
+                   np.exp(4 - 4*np.arctan(x)/x) / (1 - np.exp(-2*pi/x))
+    return out
+
 def tau_LL(logN, wa, wstart=912):
     """ Find the optical depth at the neutral hydrogen Lyman limit.
 
