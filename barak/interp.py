@@ -546,3 +546,61 @@ def CloughTocher2d_interp(x, y, xref, yref, vals):
     interp = CloughTocher2d_interpolator(xref, yref, vals)
     X, Y = np.meshgrid(x,y)
     return interp((Y, X))
+
+
+class MapCoord_Interpolator:
+    """ A wrapper around scipy.indimage.map_coordinates
+
+    It creates an object that can be repeatedly called to perform
+    interpolation at different coordinate values.
+
+    Tested in 2, 3 and 4 dimensions.
+    """
+    def __init__(self, data, vals):
+        """
+        data : shape (d0, d1, d2, ...)
+
+        vals = [..., x2, x1, x0]
+
+        where
+
+        x0 : shape (d0,)
+        x1 : shape (d1,)
+        x2 : shape (d2,)
+
+        ...
+
+        """
+        assert data.shape == tuple(len(v) for v in vals)
+        self.val0 = [v[0] for v in vals]
+        self.dval = [v[1] - v[0] for v in vals]
+        self.data = data
+
+    def map_xvals_to_coord(self, vals):
+        """ Find the coordinates to give to map_coordinates from each
+        axis value.
+        """
+        # Check we have as many coordinates as dimensions 
+        assert len(vals) == len(self.data.shape)
+        vals = map(np.atleast_1d, vals)
+        coords = []
+        for i,v in enumerate(vals):
+            coords.append( (v - self.val0[i]) / self.dval[i])
+        return coords
+
+    def __call__(self, vals, order=3, **kwargs):
+        """
+        note: order of vals is x2,x1,x0
+
+        order : int  (default 3)
+          Spline order.
+
+        Possible keywords:
+           for extrapolation outside the initial grid 
+        
+           mode='nearest'        
+        """
+        coords = self.map_xvals_to_coord(vals)
+        out = map_coordinates(self.data, coords, order=order, **kwargs)
+        return out
+    
