@@ -754,3 +754,34 @@ def read_sdss_info(filename):
         d['mag' + key] = mags[i] 
     return d
 
+def read_xidl_linelist(name=None, dirname=None):
+    """ Read one of the line lists bundled with XIDL.
+
+    Parameters
+    ----------
+    name : str
+       The filename of the line list to read. If this is omitted,
+       print alist of the available files.
+    dirname : str (optional)
+       Name of the directory holding the linelists.
+
+    Returns
+    -------
+    rec : record array
+        Array with the transition rest wavelengths, names and
+        oscillator strengths.
+    """
+
+    if dirname is None:
+        dirname = os.environ['XIDL_DIR'] + '/Spec/Lines/Lists/'
+
+    if name is None:
+        print('No filename given. Available names:')
+        print(sorted(glob(dirname + '*.lst')))
+        raise RuntimeError
+
+    wa,n1,n2,osc = readtxt(os.path.join(dirname, name),
+                           skip=1, usecols=(0,1,2,3))
+    names = [a + ' ' +  b for a,b in zip(n1,n2)]
+
+    return np.rec.fromarrays([wa, names, osc], names='wa,name,osc')
