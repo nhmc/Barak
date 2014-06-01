@@ -600,6 +600,7 @@ class MapCoord_Interpolator:
         
            mode='nearest'        
         """
+        from scipy.ndimage import map_coordinates
         coords = self.map_xvals_to_coord(vals)
         out = map_coordinates(self.data, coords, order=order, **kwargs)
         return out
