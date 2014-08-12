@@ -453,14 +453,15 @@ def read(filename, comment='#', debug=False):
     if str('CTYPE1') in hd and ('_f.fits' in filename.lower() or
                                 '_xf.fits' in filename.lower()):
         # ESI, HIRES, etc. from XIDL
+        dontscale = (True if str('BZERO') in hd else False)
         if hd['CTYPE1'] == 'LINEAR':
             wa = getwave(hd)
-            fl = fits.getdata(filename)
+            fl = fits.getdata(filename, do_not_scale_image_data=dontscale)
             if 'F.fits' in filename:
                 n = filename.replace('F.fits','E.fits') 
             else: 
                 n = filename.replace('f.fits','e.fits') 
-            er = fits.getdata(n)
+            er = fits.getdata(n, do_not_scale_image_data=dontscale)
             return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
 
     if str('TELESCOP') in hd and str('FLAVOR') in hd:
@@ -559,7 +560,7 @@ def read(filename, comment='#', debug=False):
     ##########################################################
     # Check if UVES_popler output
     ##########################################################
-    history = hd.get_history()
+    history = hd['HISTORY']
     for row in history:
         if 'UVES POst Pipeline Echelle Reduction' in row:
             return parse_UVES_popler(filename)
