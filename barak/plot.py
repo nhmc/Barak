@@ -293,7 +293,7 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
     return [l]
 
 def hist_yedge(y, ax, bins=20, height=0.2, histmax=None, fmt='',
-               loc='right', **kwargs):
+               loc='right', fill=False, **kwargs):
     y, ybins = np.histogram(y, bins=bins)
 
     b = np.repeat(ybins, 2)
@@ -303,12 +303,20 @@ def hist_yedge(y, ax, bins=20, height=0.2, histmax=None, fmt='',
     if 'right' in loc:
         Y = 1 - Y
     trans = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
-    artist, = ax.plot(Y, b, fmt, transform=trans, **kwargs)
-    
+    if fill is False:
+        artist, = ax.plot(Y, b, fmt, transform=trans, **kwargs)
+    else:
+        if 'right' in loc:
+            artist = ax.fill_betweenx(b, Y, x2=1, transform=trans, **kwargs)
+        else:
+            artist = ax.fill_betweenx(b, Y, transform=trans, **kwargs)
+            
     return artist
 
 def hist_xedge(x, ax, bins=20, height=0.2, histmax=None, fmt='',
-               loc='bottom', **kwargs):
+               loc='bottom', fill=False, **kwargs):
+    """
+    """
     x, xbins = np.histogram(x, bins=bins)
     b = np.repeat(xbins, 2)
     X = np.concatenate([[0], np.repeat(x,2), [0]])
@@ -317,7 +325,14 @@ def hist_xedge(x, ax, bins=20, height=0.2, histmax=None, fmt='',
     if 'top' in loc:
         X = 1 - X
     trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
-    artist, = ax.plot(b, X, fmt, transform=trans, **kwargs)
+    if fill is False:
+        artist, = ax.plot(b, X, fmt, transform=trans, **kwargs)
+    else:
+        if 'top' in loc:
+            artist = ax.fill_between(b, X, y2=1, transform=trans, **kwargs)
+        else:
+            artist = ax.fill_between(b, X, transform=trans, **kwargs)
+
     return artist
 
 def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
@@ -618,7 +633,7 @@ def calc_log_minor_ticks(majorticks):
     minorticks : ndarray
         log10 of the minor tick positions.
     """
-    tickpos = np.log10(np.arange(2, 10))
+    tickpos = np.log10(list(range(2, 10)))
     minorticks = []
     for t in np.atleast_1d(majorticks):
         minorticks.extend(t + tickpos)
@@ -654,7 +669,6 @@ def make_log_xlabels(ax, yoff=-0.05):
             ticklabels.append('$\mathdefault{0.01}$')
         else:
             ticklabels.append('$\mathdefault{10^{%.0f}}$' % t)
-
 
     ax.set_xticklabels(ticklabels)
     for t in ax.xaxis.get_ticklabels():
@@ -908,12 +922,18 @@ def get_fig_axes(nrows, ncols, nplots, width=11.7, height=None, aspect=0.5):
                 continue
             axes1.append(axes[ind])
 
+
+    print(ncols, nrows, nplots)
+    
     # find the indices of the left and bottom plots (used to set axes
     # labels)
     ileft = range(nrows)
     ibottom = [i*nrows - 1 for i in range(1, ncols+1)]
-    for i in range(ncols*nrows - nplots):
+    for i in range(ncols):
+        print(i, -(i+1))
         ibottom[-(i+1)] -= ncols*nrows - nplots - i
+
+    print(ileft, ibottom)
 
     ax = dict(axes=axes1, nrows=nrows, ncols=ncols,
               ileft=ileft, ibottom=ibottom)
@@ -944,3 +964,11 @@ def get_nrows_ncols(nplots, prefer_rows=True):
 def get_flux_plotrange(fl):
     ymax = abs(np.percentile(fl[~np.isnan(fl)], 95)) * 1.5
     return -0.1*ymax, ymax
+
+def add_right_ticklabels(ax):
+    ax.yaxis.set_tick_params(labelright='on')
+    ax.yaxis.set_tick_params(labelleft='off')
+
+def add_top_ticklabels(ax):
+    ax.xaxis.set_tick_params(labeltop='on')
+    ax.xaxis.set_tick_params(labelbottom='off')
