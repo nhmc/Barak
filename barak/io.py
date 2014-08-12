@@ -784,4 +784,4 @@ def read_xidl_linelist(name=None, dirname=None):
                            skip=1, usecols=(0,1,2,3))
     names = [a + ' ' +  b for a,b in zip(n1,n2)]
 
-    return np.rec.fromarrays([wa, names, osc], names='wa,name,osc')
+    return np.rec.fromarrays([wa, names, osc], names=str('wa,name,osc'))
