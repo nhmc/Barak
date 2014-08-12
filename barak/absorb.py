@@ -20,6 +20,7 @@ from .sed import  make_constant_dv_wa_scale, vel_from_wa
 from .abundances import Asolar
 from .pyvpfit import readf26
 
+
 import numpy as np
 
 import math
@@ -747,32 +748,39 @@ def split_trans_name(name):
     return name[:i], name[i:]
 
 def photo_cross_section_hydrogenic(E, Z=1):
-    """ The photoionisation cross section of absorption for a
+    """ The photoionization cross section of absorption for a
     hydrogenic (hydrogen-like, single outer electron) atom with charge
     Z.
 
-    E is the energy (h nu) in eV
+    Parameters
+    ----------
+    E : array of shape (N,)
+      The energy (h nu) in rydbergs.
 
-    convert from, say eV to Angstroms with:
+    Z : int (default 1)
+      Atomic charge. 1 for hydrogen HI, 2 for HeII, etc.
 
-    import astropy.units as u
-    E.to(u.AA, equivalencies=u.equivalencies.spectral())
+    Returns
+    -------
+    sigma : array shape (N,)
+      Cross section in cm^2
 
-    Z = 1 for hydrogen HI, 2 for HeII, etc
+    Examples
+    --------
+    Convert from, say, Ryd to Angstroms with:
 
+    >>> import astropy.units as u
+    >>> E.to(u.AA, equivalencies=u.equivalencies.spectral())
 
-    E = 10**np.linspace(1,4)
-    sigma = photo_cross_section_hydrogenic(E)
+    >>> E = 10**np.linspace(1,4)
+    >>> sigma = photo_cross_section_hydrogenic(E)
 
-    pl.loglog(E, sigma)
-    
-    Returned value is in cm^2
+    >>> plt.loglog(E, sigma)
     """
+
     Z = float(Z)
     E = np.asarray(E)
-    # Ionization energy in eV
-    IH = 13.599
-    E0 = Z**2 * IH
+    E0 = Z**2
     c0 = E >= E0
     out = np.zeros(len(E), float)
     sigma0 = 6.304e-18 * Z**-2
