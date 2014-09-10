@@ -1380,7 +1380,7 @@ def get_ionization_energy(species):
     Returns
     -------
     energy : float or array of floats
-      Threshold ionization energy in eV.
+      Ionization energy in eV.
 
     Examples
     --------
@@ -1388,18 +1388,18 @@ def get_ionization_energy(species):
     """
     global ION_CACHE
     if 'table' not in ION_CACHE:
-        import atpy
-        ION_CACHE['table'] = atpy.Table(
-            DATAPATH + '/ionization_energies/Verner94_table4.tbl', type='ipac')
+        from astropy.table import Table
+        ION_CACHE['table'] = Table.read(
+            DATAPATH + '/ionization_energies/IE.fits')
         ION_CACHE['row_map'] = {s:i for i,s in enumerate(
-            ION_CACHE['table'].species)}
+            ION_CACHE['table']['name'])}
 
     if isinstance(species, basestring):
         i = ION_CACHE['row_map'][species]
-        return ION_CACHE['table'].ionizthresh[i]
+        return ION_CACHE['table']['IE'][i]
     else:
         ind = [ION_CACHE['row_map'][s] for s in species]
-        return np.array([ION_CACHE['table'].ionizthresh[i] for i in ind],
+        return np.array([ION_CACHE['table']['IE'][i] for i in ind],
                         dtype=float)
 
 
