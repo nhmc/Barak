@@ -221,6 +221,7 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
                               (1940., 2240., 15),
                               (2240., 3000., 25),
                               (3000., 6000., 80),
+                              (6000., 20000., 100),
                               ], names=str('left,right,num'))
 
     div.num[2:] = np.ceil(div.num[2:] * divmult)
@@ -427,7 +428,7 @@ class InteractiveCoFit(object):
         self.fig.canvas.draw()
 
     def on_keypress(self, event):
-        """ Add or remove a continuum point.
+        """ Interactive fiddling via the keyboard
 
         Updates:
         
@@ -459,6 +460,14 @@ class InteractiveCoFit(object):
             sep = np.hypot(event.xdata - contx, event.ydata - conty)
             self.contpoints.remove(self.contpoints[sep.argmin()])
             self.update()
+        elif event.key == 'm':
+            # Move a point
+            contx,conty = zip(*self.contpoints)
+            sep = np.hypot(event.xdata - contx, event.ydata - conty)
+            #import pdb
+            #pdb.set_trace()
+            self.contpoints[sep.argmin()] = (event.xdata,event.ydata)
+            self.update()
         elif event.key == 'b':
             # Add a break to the continuum.
             self.breaks.append(event.xdata)
@@ -470,6 +479,10 @@ class InteractiveCoFit(object):
             if i not in (0, len(self.breaks)-1):
                 self.breaks.remove(self.breaks[i])
             self.update()
+        elif event.key == 'S':
+            # Save fit to a temporary file
+            print 'fitcont: Writing output to temporary file tmp.sav'
+            saveobj('tmp.sav', (self.continuum, self.contpoints), overwrite=1)
         elif event.key == 's':
             c = raw_input('New FWHM in pixels of Gaussian to convolve with? '
                           '(blank for no smoothing) ')
