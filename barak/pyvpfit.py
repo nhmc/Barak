@@ -217,7 +217,7 @@ def readf26(fh, res=None):
     vp = VpfitModel()
     if len(f) == 0:
         #print filename, 'is empty'
-        return None
+        return vp #None [JXP FIX;  16 Sep 2014]
     f = [r for r in f if
          not r.lstrip().startswith('!') or 'Stats' in r]
     regionrows = [r for r in f if r.lstrip().startswith('%%')]

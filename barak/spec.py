@@ -45,8 +45,9 @@ def getwave(hd):
     wstart = CRVAL + (1 - CRPIX) * dw
     # check if it's log-linear scale (heuristic)
     if CRVAL < 10:
-        wstart = 10**wstart
-        dv = c_kms * (1. - 1. / 10. ** -dw)
+        #wstart = 10**wstart
+        #dv = c_kms * (1. - 1. / 10. ** -dw)
+        dv = dw * c_kms * np.log(10.)
         print('constant dv = %.3f km/s (assume CRVAL1 in log(Angstroms))' % dv)
 
     npts = hd[str('NAXIS1')]
@@ -136,6 +137,7 @@ def make_wa_scale(wstart, dw, npts, constantdv=False, verbose=False):
     """
     if constantdv:
         if verbose:  print('make_wa_scale(): Using log-linear scale')
+            #import pdb; pdb.set_trace()
         wa = 10**(wstart + np.arange(npts, dtype=float) * dw)
     else:
         if verbose:  print('make_wa_scale(): Using linear scale')
@@ -375,6 +377,32 @@ class Spectrum(object):
         fh.close()
         if self.filename is None:
             self.filename = filename
+    def fits_write(self, filename, header=None, overwrite=False): # Generate a binary FITS table
+        from astropy.table import Table, Column
+        """ Writes out a Spectrum, as binary FITS table - wavelength, flux, error,
+        continuum.
+
+        `overwrite` can be True or False.
+        """
+        # Overwrite?
+        if os.path.lexists(filename) and not overwrite:
+            c = raw_input('File %s exists - overwrite? (y) or n: ' % filename)
+            if c != '':
+                if c.strip().lower()[0] == 'n':
+                    print('returning without writing anything...')
+                    return
+        # Generate FITS table and write
+        cwa = Column(data=self.wa,name=str('wa'))
+        cfl = Column(data=self.fl,name=str('fl'))
+        cer = Column(data=self.er,name=str('er'))
+        cco = Column(data=self.co,name=str('co'))
+        sp = Table()
+        #pdb.set_trace()
+        sp.add_columns([cwa,cfl,cer,cco])
+        sp.write(filename, format='fits',overwrite=True)
+        # Save filename
+        if self.filename is None:
+            self.filename = filename
 
 def read(filename, comment='#', debug=False):
     """
@@ -448,6 +476,21 @@ def read(filename, comment='#', debug=False):
     # Otherwise assume fits file
     f = pyfits.open(filename)
     hd = f[0].header
+
+    #import pdb; pdb.set_trace()
+    if str('CTYPE1') in hd:  # ESI, HIRES, etc. from XIDL
+        if hd['CTYPE1'] == 'LINEAR':
+            wa = getwave(hd)
+            fl = pyfits.getdata(filename)
+            if 'F.fits' in filename:
+                n = filename.replace('F.fits','E.fits') 
+            else: 
+                n = filename.replace('f.fits','e.fits') 
+            er = pyfits.getdata(n)
+            return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
+    
+                
+
     if str('TELESCOP') in hd and str('FLAVOR') in hd:
         if hd[str('TELESCOP')] == 'SDSS 2.5-M' and \
                hd[str('flavor')] == 'science':
