@@ -619,3 +619,30 @@ def calc_chi2(data, data_sigma, model):
     chi = (data - model) / data_sigma
     return np.dot(chi, chi)
     
+
+def boot_sample(arr, nboot, seed=None):
+    """ Take bootstrap samples from an input array.
+
+    The bootstrap samples have the same length as `arr`, and are
+    sampled with replacement.
+
+    Parameters
+    ----------
+    arr : array of shape (M,)
+      Values to take bootstrap samples from.
+    nboot : int
+      Number of samples.
+
+    Returns
+    -------
+    samples : array of shape (M, nboot)
+      Bootstrap samples.
+    """
+    if seed is not None:
+        np.random.seed(seed)
+    arr = np.asarray(arr)
+    n = len(arr)
+    samples = []
+    for i in xrange(nboot):
+        samples.append(arr[np.random.randint(n, size=n)])
+    return samples

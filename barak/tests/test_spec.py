@@ -46,6 +46,8 @@ def test_read():
     sp = read(DATAPATH + 'tests/spSpec-52017-0516-139.fit.gz')
     sp = read(DATAPATH + 'tests/runA_h1_100.txt.gz')
     assert np.allclose(sp.fwhm, 6.6)
+    sp = read(DATAPATH + 'tests/Q2000-330a_b_F.fits')
+    assert np.allclose(sp.wa[0], 3256.25767)
 
 
 def test_rebin():

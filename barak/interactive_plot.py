@@ -1,5 +1,7 @@
 """ Classes useful for making interactive plots.
 """
+from __future__ import division, print_function, unicode_literals
+
 import numpy as np
 from barak.utilities import between
 from barak.plot import get_flux_plotrange
@@ -19,7 +21,6 @@ class PlotWrapBase(object):
     self.ax             Axes where specturm is plotted
     self.fig            Figure which holds the axes.
     self.artists['fl']  The Matplotlib line artist that represents the flux.
-
 
     def connect(self, fig):
         cids = dict(key=[])
@@ -121,6 +122,7 @@ S,U          Smooth/unsmooth spectrum
             self.artists['fl'].set_ydata(self.fl)
             self.fig.canvas.draw()
 
+
 class PlotWrapBase_Continuum(PlotWrapBase):
     """
     This needs the following attributes defined:
@@ -144,7 +146,7 @@ class PlotWrapBase_Continuum(PlotWrapBase):
 3,4          Add (3) or delete (4) a continuum point
 """
     def __init__(self):
-        pass
+        PlotWrapBase.__init__(self)
 
     def update_cont(self):
         """ Sort the continuum points and update continuum artists. 

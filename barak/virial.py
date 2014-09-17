@@ -62,7 +62,7 @@ def _calc_rvT(M_g, rho_virial, mu=0.59):
     rho_virial : float
       Virial overdensity.
     mu : float (default 0.59)
-      Mean molecular weight.
+      Mean molecular weight in proton masses.
 
     Returns
     -------

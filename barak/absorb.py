@@ -20,6 +20,7 @@ from .sed import  make_constant_dv_wa_scale, vel_from_wa
 from .abundances import Asolar
 from .pyvpfit import readf26
 
+
 import numpy as np
 
 import math
@@ -746,6 +747,50 @@ def split_trans_name(name):
         i += 1
     return name[:i], name[i:]
 
+def photo_cross_section_hydrogenic(E, Z=1):
+    """ The photoionization cross section of absorption for a
+    hydrogenic (hydrogen-like, single outer electron) atom with charge
+    Z.
+
+    Parameters
+    ----------
+    E : array of shape (N,)
+      The energy (h nu) in rydbergs.
+
+    Z : int (default 1)
+      Atomic charge. 1 for hydrogen HI, 2 for HeII, etc.
+
+    Returns
+    -------
+    sigma : array shape (N,)
+      Cross section in cm^2
+
+    Examples
+    --------
+    Convert from, say, Ryd to Angstroms with:
+
+    >>> import astropy.units as u
+    >>> E.to(u.AA, equivalencies=u.equivalencies.spectral())
+
+    >>> E = 10**np.linspace(1,4)
+    >>> sigma = photo_cross_section_hydrogenic(E)
+
+    >>> plt.loglog(E, sigma)
+    """
+
+    Z = float(Z)
+    E = np.asarray(E)
+    E0 = Z**2
+    c0 = E >= E0
+    out = np.zeros(len(E), float)
+    sigma0 = 6.304e-18 * Z**-2
+    if c0.any():
+        Enorm = E[c0] / E0
+        x = np.sqrt(Enorm - 1)   # unitless
+        out[c0] = sigma0 * Enorm**-4 * \
+                   np.exp(4 - 4*np.arctan(x)/x) / (1 - np.exp(-2*pi/x))
+    return out
+
 def tau_LL(logN, wa, wstart=912):
     """ Find the optical depth at the neutral hydrogen Lyman limit.
 
@@ -1335,7 +1380,7 @@ def get_ionization_energy(species):
     Returns
     -------
     energy : float or array of floats
-      Threshold ionization energy in eV.
+      Ionization energy in eV.
 
     Examples
     --------
@@ -1343,18 +1388,18 @@ def get_ionization_energy(species):
     """
     global ION_CACHE
     if 'table' not in ION_CACHE:
-        import atpy
-        ION_CACHE['table'] = atpy.Table(
-            DATAPATH + '/ionization_energies/Verner94_table4.tbl', type='ipac')
+        from astropy.table import Table
+        ION_CACHE['table'] = Table.read(
+            DATAPATH + '/ionization_energies/IE.fits')
         ION_CACHE['row_map'] = {s:i for i,s in enumerate(
-            ION_CACHE['table'].species)}
+            ION_CACHE['table']['name'])}
 
     if isinstance(species, basestring):
         i = ION_CACHE['row_map'][species]
-        return ION_CACHE['table'].ionizthresh[i]
+        return ION_CACHE['table']['IE'][i]
     else:
         ind = [ION_CACHE['row_map'][s] for s in species]
-        return np.array([ION_CACHE['table'].ionizthresh[i] for i in ind],
+        return np.array([ION_CACHE['table']['IE'][i] for i in ind],
                         dtype=float)
 
 

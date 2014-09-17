@@ -507,3 +507,19 @@ def concat_recarrays(arr):
             arr[i] = np.rec.fromrecords(arr[i], dtype=new_dtype)
 
     return np.concatenate(arr)
+
+def flatten(l):
+    for elem in l:
+        try:
+            for val in flatten(elem):
+                yield val
+        except TypeError:
+            yield elem
+
+class Bins:
+    def __init__(self, edges):
+        edges = np.asarray(edges)
+        self.edges = edges
+        self.width = np.diff(edges)
+        self.halfwidth = 0.5 * np.diff(edges)
+        self.cen = 0.5 * (edges[:-1] + edges[1:])
