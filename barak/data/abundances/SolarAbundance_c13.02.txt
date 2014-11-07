@@ -1,0 +1,40 @@
+# Solar abundances used by Cloudy version 13.02 (taken from table 7.1
+# in Hazy1)
+
+# The value for an element 'el' on the logarithmic astronomical scale
+# is designated as A(el) = log10 k*(el). On this scale, the number of
+# H atoms is set to A(H) = log10 n(H) = 12, so that
+
+# A(el) = log10 n(el)/n(H) - 12
+
+el     A
+H      12.00
+He     11.00
+Li     3.31
+Be     1.42
+B      2.79
+C      8.39
+N      7.93
+O      8.69
+F      4.48
+Ne     8.00
+Na     6.33
+Mg     7.54
+Al     6.47
+Si     7.54
+P      5.51
+S      7.27
+Cl     5.28
+Ar     6.40
+K      5.12
+Ca     6.36
+Sc     3.17
+Ti     5.02
+V      4.00
+Cr     5.67
+Mn     5.46
+Fe     7.45
+Co     4.92
+Ni     6.25
+Cu     4.21
+Zn     4.60
