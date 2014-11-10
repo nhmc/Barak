@@ -516,11 +516,22 @@ def read(filename, comment='#', debug=False):
             wa = getwave(hd)
             fl = fits.getdata(filename, do_not_scale_image_data=dontscale)
             if 'F.fits' in filename:
-                n = filename.replace('F.fits','E.fits') 
-            else: 
-                n = filename.replace('f.fits','e.fits') 
+                n = filename.replace('F.fits','E.fits')
+                n_co = filename.replace('F.fits','F_c.fits')
+            else:
+                n = filename.replace('f.fits','e.fits')
+                n_co = filename.replace('f.fits','f_c.fits')
             er = fits.getdata(n, do_not_scale_image_data=dontscale)
-            return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
+            co = np.zeros_like(er)
+            try:
+                co = fits.getdata(n_co)
+            except IOError:
+                try:
+                    co = fits.getdata(n_co.replace('.gz', ''))
+                except IOError:
+                   pass
+            
+            return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
 
     if str('TELESCOP') in hd and str('FLAVOR') in hd:
         if hd[str('TELESCOP')] == 'SDSS 2.5-M' and \
