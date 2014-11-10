@@ -170,7 +170,8 @@ def dec_dec2s(dec, decformat='%02.0f %02.0f %05.2f'):
 
     return s_dec
 
-def dec2s(ra, dec):
+def dec2s(ra, dec, raformat='%02.0f %02.0f %06.3f',
+          decformat='%02.0f %02.0f %05.2f'):
     """ Convert an RA and Dec from degrees to sexigesimal.
 
     Parameters
@@ -184,10 +185,12 @@ def dec2s(ra, dec):
       The RA and Dec in 'hour:min:s' 'deg:min:s' format.
     """
     try:
-        return ra_dec2s(ra), dec_dec2s(dec)
+        return ra_dec2s(ra, raformat=raformat), \
+               dec_dec2s(dec, decformat=decformat)
     except TypeError:
         pass
-    radec = [(ra_dec2s(r), dec_dec2s(d)) for r, d in zip(ra, dec)]
+    radec = [(ra_dec2s(r, raformat=raformat),
+              dec_dec2s(d, decformat=decformat)) for r, d in zip(ra, dec)]
     return tuple(zip(*radec))
 
 def ra_s2dec(ra):
