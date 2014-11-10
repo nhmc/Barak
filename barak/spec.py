@@ -23,7 +23,7 @@ except ImportError:
     import pyfits as fits
 
 from .utilities import nan2num, between, get_data_path, stats
-from .convolve import convolve_psf
+from .convolve import convolve_psf, convolve_constant_dv
 from .io import readtxt, readtabfits, loadtxt
 from .plot import axvlines, axvfill, puttext
 from .constants import c_kms
@@ -377,7 +377,9 @@ class Spectrum(object):
         fh.close()
         if self.filename is None:
             self.filename = filename
-    def fits_write(self, filename, header=None, overwrite=False): # Generate a binary FITS table
+
+    # Generate a binary FITS table
+    def fits_write(self, filename, header=None, overwrite=False):
         from astropy.table import Table, Column
         """ Writes out a Spectrum, as binary FITS table - wavelength, flux, error,
         continuum.
@@ -403,6 +405,35 @@ class Spectrum(object):
         # Save filename
         if self.filename is None:
             self.filename = filename
+
+    # Convolve with a Gaussian assuming a fixed FWHM in km/s
+    def gauss_smooth(self, npix=4., vfwhm=None, dv_const=True):
+        """
+        Smooths the Spectrum with a Guassian
+        Error array untouched (for now)
+                 JXP -- 01 November 2014
+
+        Parameters
+        ----------
+        npix : float (4.0)
+            Pixels to smooth over
+        vfwhm : float 
+            FWHM in km/s
+        dv_const : Bool (True)
+            Specifies whether the wavelength array had constant velocity 
+        """
+        if dv_const:
+            if vfwhm is not None: # Set npix
+                dv = np.median( (self.wa - np.roll(self.wa,1))/self.wa * 3e5 )
+                npix = vfwhm / dv
+            # Convolve
+            self.fl = convolve_constant_dv(self.wa, self.fl, npix=npix, dv_const=True)
+        else:
+            self.fl = convolve_constant_dv(self.wa, self.fl, npix=npix, vfwhm=vfwhm)
+    # Puts a quick plot of the spectrum on the screen
+    def qck_plot(self, show=True, **kargs):
+        pl.plot(self.wa, self.fl, **kargs)
+        if show is True: pl.show()
 
 def read(filename, comment='#', debug=False):
     """
@@ -569,20 +600,17 @@ def read(filename, comment='#', debug=False):
                             CRPIX=hd[str('CRPIX1')])
 
     ##########################################################
-    # Check if HIRES spectrum
+    # Check if HIRES/ESI/MagE/MIKE spectrum
     ##########################################################
     if str('INSTRUME') in hd:   #  Check if Keck spectrum
-        if hd[str('INSTRUME')].startswith('HIRES'):
-            if debug:  print('Looks like Makee output format')
-            fl = f[0].data       # Flux
-            f.close()
-            errname = filename[0:filename.rfind('.fits')] + 'e.fits'
-            try:
-                er = fits.getdata(errname)
-            except IOError:
-                er = np.ones(len(fl))
-            return Spectrum(fl=fl, er=er, filename=filename, CDELT=cdelt,
-                            CRVAL=hd[str('CRVAL1')], CRPIX=hd[str('CRPIX1')])
+        if (hd[str('INSTRUME')].startswith('HIRES') or 
+            hd[str('INSTRUME')].startswith('MagE') or 
+            hd[str('INSTRUME')].startswith('ESI') or 
+            hd[str('INSTRUME')].startswith('MIKE')):
+                if debug:  print('Looks like Makee output format')
+                from xastropy.spec import readwrite as xsr
+                f.close()
+                return xsr.readspec(filename)
 
     ##########################################################
     # Check if UVES_popler output
