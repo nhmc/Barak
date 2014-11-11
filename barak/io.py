@@ -13,6 +13,7 @@ else:
     import cPickle as pickle
 
 import json
+from glob import glob
 import os, gzip
 import numpy as np
 from .utilities import adict, iscontainer
@@ -127,7 +128,7 @@ def readtxt(fh, sep=None, usecols=None, comment='#', skip=0,
             continue
         row = row.split(sep)
         if readnames:
-            names = [r.strip() for r in row]
+            names = [str(r.strip()) for r in row]
             readnames = False
             continue
         if not out:
