@@ -104,7 +104,7 @@ def convolve_window(a, window, edge='invert'):
 
     return temp2[n:-n]
 
-def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None):
+def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None, dv_const=False):
     """ Convolve a wavelength array with a gaussian of constant
     velocity width.
 
@@ -127,6 +127,8 @@ def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None):
     wa_dv : array of floats, default `None`
       Wavelength array with a constant velocity width (this can be
       generated with make_constant_dv_wa_scale()).
+    dv_const : Bool, default 'False'
+      Specifies whether the input array has constant velocity
 
     Returns
     -------
@@ -155,7 +157,14 @@ def convolve_constant_dv(wa, fl, wa_dv=None, npix=4., vfwhm=None):
     # interpolate back again.
     if vfwhm is not None:
         wa_dv = make_constant_dv_wa_scale(wa[0], wa[-1], float(vfwhm)/npix)
-    fl_dv = np.interp(wa_dv, wa, fl)
+    if dv_const is False:
+        fl_dv = np.interp(wa_dv, wa, fl)
+    else: fl_dv = fl
+    # Convolve
     fl_dv_smoothed = convolve_psf(fl_dv, npix)
-    fl_out = np.interp(wa, wa_dv, fl_dv_smoothed)
+    # Interpolate as needed
+    if dv_const is False:
+        fl_out = np.interp(wa, wa_dv, fl_dv_smoothed)
+    else: fl_out = fl_dv_smoothed
+    # Return
     return fl_out
