@@ -972,3 +972,11 @@ def add_right_ticklabels(ax):
 def add_top_ticklabels(ax):
     ax.xaxis.set_tick_params(labeltop='on')
     ax.xaxis.set_tick_params(labelbottom='off')
+
+def set_xlabel_padding(pad):
+    plt.rc('xtick.major', pad=pad)
+    plt.rc('xtick.minor', pad=pad)
+
+def set_ylabel_padding(pad):
+    plt.rc('ytick.major', pad=pad)
+    plt.rc('ytick.minor', pad=pad)
