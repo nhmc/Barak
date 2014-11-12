@@ -20,7 +20,6 @@ from .sed import  make_constant_dv_wa_scale, vel_from_wa
 from .abundances import Asolar
 from .pyvpfit import readf26
 
-
 import numpy as np
 
 import math
@@ -396,12 +395,12 @@ def calc_W(dw, nfl, ner, colo_nsig=2, cohi_nsig=2, redshift=0):
     ewlo = dw * (1 - nfl) / cohi_mult
     ewloer = dw * ner / cohi_mult
 
-    zp1 = 1 + redshift
+    zp1 = 1. + redshift
 
-    W = ew.sum() / zp1
-    We = sqrt((ewer**2).sum()) / zp1
-    Wlo = (ewlo - ewloer).sum() / zp1
-    Whi = (ewhi + ewhier).sum() / zp1
+    W = np.sum(ew) / zp1
+    We = sqrt(np.sum(ewer**2)) / zp1
+    Wlo = np.sum(ewlo - ewloer) / zp1
+    Whi = np.sum(ewhi + ewhier) / zp1
 
     return W, We, Wlo, Whi
 
@@ -1401,7 +1400,6 @@ def get_ionization_energy(species):
         ind = [ION_CACHE['row_map'][s] for s in species]
         return np.array([ION_CACHE['table']['IE'][i] for i in ind],
                         dtype=float)
-
 
 # def read_xidl_linelist(name):
 
