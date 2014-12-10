@@ -335,61 +335,27 @@ def hist_xedge(x, ax, bins=20, height=0.2, histmax=None, fmt='',
 
     return artist
 
-def dhist(xvals, yvals, xbins=20, ybins=20, ax=None, c='b', fmt='.', ms=1,
-          label=None, loc='right,bottom', xhistmax=None, yhistmax=None,
-          histlw=1, xtop=0.2, ytop=0.2, chist=None, **kwargs):
-    """ Given two set of values, plot two histograms and the
-    distribution.
+def twinhist(X, Y, ax=None, xbins=10, ybins=10, fmt='o',
+             color='b', histalpha=0.5, xlabel=None, ylabel=None,
+             xlim=None, ylim=None, **kwargs):
+    """ Plot a twin histogram."""
 
-    xvals,yvals are the two properties to plot.  xbins, ybins give the
-    number of bins or the bin edges. c is the color.
-    """
-
-    if chist is None:
-        chist = c
+    from barak.plot import hist_xedge, hist_yedge
     if ax is None:
-        pl.figure()
         ax = pl.gca()
-
-    loc = [l.strip().lower() for l in loc.split(',')]
-
-    if ms is None:
-        ms = default_marker_size(fmt)
-
-    ax.plot(xvals, yvals, fmt, color=c, ms=ms, label=label, **kwargs)
-    x0,x1,y0,y1 = ax.axis()
-
-    if np.__version__ < '1.5':
-        x,xbins = np.histogram(xvals, bins=xbins, new=True)
-        y,ybins = np.histogram(yvals, bins=ybins, new=True)
-    else:
-        x,xbins = np.histogram(xvals, bins=xbins)
-        y,ybins = np.histogram(yvals, bins=ybins)
-
-    b = np.repeat(xbins, 2)
-    X = np.concatenate([[0], np.repeat(x,2), [0]])
-    Xmax = xhistmax or X.max()
-    X = xtop * X / Xmax
-    if 'top' in loc:
-        X = 1 - X
-    trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
-    ax.plot(b, X, color=chist, transform=trans, lw=histlw)
-
-    b = np.repeat(ybins, 2)
-    Y = np.concatenate([[0], np.repeat(y,2), [0]])
-    Ymax = yhistmax or Y.max()
-    Y = ytop * Y / Ymax
-    if 'right' in loc:
-        Y = 1 - Y
-    trans = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
-    ax.plot(Y, b, color=chist, transform=trans, lw=histlw)
-
-    ax.set_xlim(xbins[0], xbins[-1])
-    ax.set_ylim(ybins[0], ybins[-1])
-    if pl.isinteractive():
-        pl.show()
-
-    return ax, dict(x=x, y=y, xbinedges=xbins, ybinedges=ybins)
+    
+    ax.plot(X,Y, fmt, color=color, **kwargs)
+    hist_xedge(X,ax, bins=xbins,fill=True, color=color, alpha=histalpha)
+    hist_yedge(Y,ax, bins=ybins,fill=True, color=color, alpha=histalpha)
+    if xlim is not None:
+        ax.set_xlim(*xlim)
+    if ylim is not None:
+        ax.set_ylim(*ylim)
+    if xlabel is not None:
+        ax.set_xlabel(xlabel)
+    if ylabel is not None:
+        ax.set_ylabel(ylabel)
+    return ax
 
 def histo(a, fmt='b', bins=10, ax=None, lw=2, log=False, **kwargs):
     """ Plot a histogram, without all the unnecessary stuff
