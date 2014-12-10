@@ -941,7 +941,8 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
             ]
 
     tau, ticks = find_tau(wa, StringIO('\n'.join(f26)), atomdat=atom)
-    ticks.sort(order=str('wa'))
+    if str('wa') in ticks.dtype.names:
+        ticks.sort(order=str('wa'))
 
     return tau, ticks
 
@@ -1230,6 +1231,7 @@ def calc_N_AOD(wa, nfl, ner, colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig,
 
     taulo, tau, tauhi = [], [], []
     saturated = False
+    nsat = 0
     for i in xrange(n):
         if not (ner[i] > 0) or isnan(nfl[i]) or np.isinf(nfl[i]):
             taulo.append(np.nan)
@@ -1238,11 +1240,15 @@ def calc_N_AOD(wa, nfl, ner, colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig,
 
         tlo, t, thi, f0, f1 = tau_cont_sigmult(
             nfl[i], ner[i], colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig)
-        if f0 <= ner[i]:
-            saturated = True
+        if f0 <= 0.5*ner[i]:
+            nsat += 1
         taulo.append(tlo)
         tau.append(t)
         tauhi.append(thi)
+
+    # if half the pixels are below 0.5 * error, flag it as saturated.
+    if nsat / float(n) > 0.5:
+        saturated = True
 
     imid = n // 2
     dw0 = (wa[imid+1] - wa[imid]) / zp1
@@ -1303,7 +1309,7 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
      Wrlo,Wrhi          Low and high rest frame equivalent widths in
                         Angstroms and 1 sigma error, assuming continuum
                         uncertainties only.
-     logN_5sig          5 sigma upper limit on N from the error in the
+     logN_3sig          3 sigma upper limit on N from the error in the
                         equivalent width, assuming optically thin.
      logN_Whi           Optically thin N value corresponding to the Wrhi
      saturated          Whether or not the line is saturated.
@@ -1342,7 +1348,7 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
             dw[i0:i1], nfl[i0:i1], ner[i0:i1], colo_nsig=2, cohi_nsig=2,
             redshift=redshift)
 
-        logNlim5sig = log10N_from_Wr(5*We, twa0, tosc)
+        logNlim3sig = log10N_from_Wr(3*We, twa0, tosc)
         logNhi_W = log10N_from_Wr(Whi, twa0, tosc)
 
         logNlo, logN, logNhi, saturated = calc_N_AOD(
@@ -1351,19 +1357,19 @@ def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
             twa0, tosc, redshift=redshift)
 
         flag = ''
-        if logNlim5sig > logN:
+        if logNlim3sig > logN:
             # upper limit
-            s = '$< %.3f$' % max(logNhi_W, logNlim5sig)
+            s = '$< %.3f$' % max(logNhi_W, logNlim3sig)
         else:
             hi_er = logNhi - logN
             lo_er = logN - logNlo
             s = '$%.3f^{%+.3f}_{%+.3f}$' % (logN, hi_er, -lo_er)
 
         results.append((tr, s, logNlo, logN, logNhi, W, We, Wlo, Whi,
-                        logNlim5sig, logNhi_W, saturated))
+                        logNlim3sig, logNhi_W, saturated))
 
     names = str('name,latex,logNlo,logN,logNhi,Wr,Wre,Wrlo,'
-                'Wrhi,logN_5sig,logN_Whi,saturated')
+                'Wrhi,logN_3sig,logN_Whi,saturated')
     return np.rec.fromrecords(results, names=names)
 
 def get_ionization_energy(species):
