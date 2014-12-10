@@ -778,7 +778,7 @@ def read_xidl_linelist(name=None, dirname=None):
 
     if name is None:
         print('No filename given. Available names:')
-        print(sorted(glob(dirname + '*.lst')))
+        print(sorted([n.split('/')[-1] for n in glob(dirname + '*.lst')]))
         raise RuntimeError
 
     wa,n1,n2,osc = readtxt(os.path.join(dirname, name),
