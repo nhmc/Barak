@@ -81,7 +81,7 @@ def poisson_min_max_limits(conf, nevents):
 
     return mulo, muhi
 
-def poisson_confidence_interval(conf, nevents):
+def poisson_confidence_interval(nevents, conf):
     """ Find the Poisson confidence interval.
 
     Parameters
@@ -103,8 +103,8 @@ def poisson_confidence_interval(conf, nevents):
         return poisson_min_max_limits(conf, nevents)
     return poisson_min_max_limits(conf + 0.5*(100 - conf), nevents)
 
-def binomial_confidence_interval(nsuccess, ntrial, conf=68):
-    """ Find the binomial confidence level.
+def binomial_confidence_interval(nsuccess, ntrial, conf=68.27):
+    """ Find a binomial confidence interval.
 
     Parameters
     ----------
@@ -114,7 +114,7 @@ def binomial_confidence_interval(nsuccess, ntrial, conf=68):
       lower limit.
     ntrial: int
       The number of trials.
-    conf: float
+    conf: float (default 68.27)
       Confidence level in percent (95, 90, 68.3% or similar).
 
     Returns
