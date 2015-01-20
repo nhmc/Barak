@@ -103,56 +103,19 @@ def poisson_confidence_interval(conf, nevents):
         return poisson_min_max_limits(conf, nevents)
     return poisson_min_max_limits(conf + 0.5*(100 - conf), nevents)
 
-def binomial_min_max_limits(conf, ntrial, nsuccess):
-    """ Calculate the minimum and maximum binomial probability
-    consistent with seeing nsuccess from ntrial at a given confidence level.
-
-    conf: float
-      95%, 90%, 68.3% or similar.
-    ntrial, nsuccess: int
-      The number of trials and successes.
-
-    Returns
-    -------
-    plo, phi : floats
-      Mean number of events such that >= observed number of events
-      nevents occurs in fewer than conf% of cases (mulo), and mean
-      number of events such that <= nevents occurs in fewer than conf%
-      of cases (muhi)
-    """
-    from scipy.stats import binom
-    nsuccess = int(nsuccess)
-    ntrial = int(ntrial)
-    conf = float(conf)
-
-    if np.isnan(conf):
-        return np.nan, np.nan
-    target = 1 - conf/100.
-    if nsuccess == 0:
-        plo = 0
-    else:
-        plo = _bisect(lambda p: 1 - binom.cdf(nsuccess-1, ntrial, p), target,
-                     xhi=0)
-    if nsuccess == ntrial:
-        phi = 1
-    else:
-        phi = _bisect(lambda p: binom.cdf(nsuccess, ntrial, p), target,
-                     xhi=0)
-
-    return plo, phi
-
-def binomial_confidence_interval(conf, ntrial, nsuccess):
+def binomial_confidence_interval(nsuccess, ntrial, conf=68):
     """ Find the binomial confidence level.
 
     Parameters
     ----------
-    conf: float
-      Confidence level in percent (95, 90, 68.3% or similar).
-    ntrial: int
-      The number of trials.
     nsuccess: int
       The number of successes from the trials. If 0, then return the
-      1-sided upper limit.
+      1-sided upper limit. If the same as ntril, return the 1-sided
+      lower limit.
+    ntrial: int
+      The number of trials.
+    conf: float
+      Confidence level in percent (95, 90, 68.3% or similar).
 
     Returns
     -------
@@ -161,10 +124,27 @@ def binomial_confidence_interval(conf, ntrial, nsuccess):
       observed number of successes occurs in fewer than conf% of cases
       (plo), and prob such that <= number of success occurs in fewer
       than conf% of cases (phi).
-    """
+    """ 
+    from scipy.stats import beta
+
+    nsuccess = int(nsuccess)
+    ntrial = int(ntrial)
+    assert 0 < conf < 100
+    
     if nsuccess == 0:
-        return binomial_min_max_limits(conf, ntrial, nsuccess)
-    return binomial_min_max_limits(conf + 0.5*(100 - conf), ntrial, nsuccess)
+        alpha = 1 - conf / 100.
+        plo = 0.
+        phi = beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
+    elif nsuccess == ntrial:
+        alpha = 1 - conf / 100.
+        plo = beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
+        phi = 1.
+    else:
+        alpha = 0.5 * (1 - conf / 100.)
+        plo = beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
+        phi = beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
+
+    return plo, phi
 
 def blackbody_nu(nu, T):
     """ Blackbody as a function of frequency (Hz) and temperature (K).
