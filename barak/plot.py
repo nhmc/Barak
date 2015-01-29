@@ -473,8 +473,9 @@ def shade_to_line(xvals, yvals, blend=1, ax=None, y0=0, color='b'):
     X, Y = np.meshgrid(xvals, np.linspace(ymin, ymax, 1000))
     im = np.zeros_like(Y)
     for i in xrange(len(xvals)):
-        cond = (Y[:, i] > yvals[i] - blend) & (Y[:, i] > y0[i])
-        im[cond, i] = (Y[cond, i] - (yvals[i] - blend)) / blend
+        if blend > 0:
+            cond = (Y[:, i] > yvals[i] - blend) & (Y[:, i] > y0[i])
+            im[cond, i] = (Y[cond, i] - (yvals[i] - blend)) / blend
         cond = Y[:, i] > yvals[i]
         im[cond, i] = 1
         cond = Y[:, i] < y0[i]
@@ -644,7 +645,7 @@ def make_log_xlabels(ax, yoff=-0.05):
     ax.set_xlim(x0, x1)
     return ax
 
-def make_log_ylabels(ax):
+def make_log_ylabels(ax, mathdefault=True):
     """ make the labels on the y axis log.
     """
     y0, y1 = ax.get_ylim()
@@ -662,17 +663,22 @@ def make_log_ylabels(ax):
     ticklabels = []
     for t in tdecade:
         if t == 0:
-            ticklabels.append('$\mathdefault{1}$')
+            ticklabels.append('1')
         elif t == 1:
-            ticklabels.append('$\mathdefault{10}$')
+            ticklabels.append('10')
         elif t == -1:
-            ticklabels.append('$\mathdefault{0.1}$')
+            ticklabels.append('0.1')
         elif t == 2:
-            ticklabels.append('$\mathdefault{100}$')
+            ticklabels.append('100')
         elif t == -2:
-            ticklabels.append('$\mathdefault{0.01}$')
+            ticklabels.append('0.01')
         else:
-            ticklabels.append('$\mathdefault{10^{%.0f}}$' % t)
+            ticklabels.append('10^{%.0f}' % t)
+
+        if mathdefault:
+            ticklabels[-1] = '$\mathdefault{' + ticklabels[-1] + '}$'
+        else:
+            ticklabels[-1] = '$' + ticklabels[-1] + '$'
 
     ax.set_yticklabels(ticklabels)
     ax.set_ylim(y0, y1)
@@ -946,3 +952,18 @@ def set_xlabel_padding(pad):
 def set_ylabel_padding(pad):
     plt.rc('ytick.major', pad=pad)
     plt.rc('ytick.minor', pad=pad)
+
+def rc_ax_linewidth(w):
+    """ Set the axes linewidth.
+
+    Parameters
+    ----------
+    w : float
+      Line width. the matplotlib default is 1 for the outer box, 0.5
+      for ticks.
+    """
+    plt.rc('axes', linewidth=w)
+    plt.rc('xtick.major', width=w)
+    plt.rc('xtick.minor', width=w)
+    plt.rc('ytick.major', width=w)
+    plt.rc('ytick.minor', width=w)

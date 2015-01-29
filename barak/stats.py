@@ -106,6 +106,11 @@ def poisson_confidence_interval(nevents, conf):
 def binomial_confidence_interval(nsuccess, ntrial, conf=68.27):
     """ Find a binomial confidence interval.
 
+    Uses a Bayesian method assuming a flat prior. See Cameron 2011:
+    http://adsabs.harvard.edu/abs/2011PASA...28..128C. This is
+    superior to the commonly-used Normal, Wilson and Clopper & Pearson
+    (AKA 'exact') approaches.
+
     Parameters
     ----------
     nsuccess: int
