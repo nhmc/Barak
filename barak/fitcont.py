@@ -481,7 +481,7 @@ class InteractiveCoFit(object):
             self.update()
         elif event.key == 'S':
             # Save fit to a temporary file
-            print 'fitcont: Writing output to temporary file tmp.sav'
+            print( 'fitcont: Writing output to temporary file tmp.sav')
             saveobj('tmp.sav', (self.continuum, self.contpoints), overwrite=1)
         elif event.key == 's':
             c = raw_input('New FWHM in pixels of Gaussian to convolve with? '
