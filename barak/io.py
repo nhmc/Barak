@@ -786,3 +786,11 @@ def read_xidl_linelist(name=None, dirname=None):
     names = [a + ' ' +  str(b) for a,b in zip(n1,n2)]
 
     return np.rec.fromarrays([wa, names, osc], names=str('wa,name,osc'))
+
+def tread(*args):
+    """ read using astropy.table.Table.read()
+
+    Lazy importing of astropy.table
+    """
+    import astropy.table
+    return astropy.table.Table.read(*args)
