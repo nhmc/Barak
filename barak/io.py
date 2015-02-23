@@ -796,4 +796,4 @@ def tread(filename, **kwargs):
     if filename.endswith('.txt') and 'format' not in kwargs:
         kwargs['format'] = 'ascii'
 
-    return astropy.table.Table.read(*args, **kwargs)
+    return astropy.table.Table.read(filename, **kwargs)
