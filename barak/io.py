@@ -787,10 +787,13 @@ def read_xidl_linelist(name=None, dirname=None):
 
     return np.rec.fromarrays([wa, names, osc], names=str('wa,name,osc'))
 
-def tread(*args, **kwargs):
+def tread(filename, **kwargs):
     """ read using astropy.table.Table.read()
 
     Lazy importing of astropy.table
     """
     import astropy.table
+    if filename.endswith('.txt') and 'format' not in kwargs:
+        kwargs['format'] = 'ascii'
+
     return astropy.table.Table.read(*args, **kwargs)
