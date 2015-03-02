@@ -404,8 +404,33 @@ def calc_W(dw, nfl, ner, colo_nsig=2, cohi_nsig=2, redshift=0):
 
     return W, We, Wlo, Whi
 
+
+def N_from_Wr_linear(osc, wrest):
+    """ Find the multiplier to convert from equivalent width to a
+    column density.
+
+    Assumes the transition is on the linear part of the curve of growth.
+
+
+    Parameters
+    ----------
+    osc: float
+       Transition oscillator strength.
+    wrest: float
+       Transition rest wavelength in Angstroms.    
+
+    Returns
+    -------
+    mult: float
+       Multiply this vale by the rest-frame equivalent width in
+       Angstroms to give the column density in absorbers per square
+       cm.
+    """
+    return 1.13e20 / (osc * wrest**2)
+
+
 def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
-            cohi=0.05, colo=0.05):
+            cohi=0.03, colo=0.03):
     """ Find the rest equivalent width of a feature, and column
     density assuming optically thin.
 
@@ -445,7 +470,7 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
 
     ========= =========================================================
     logN      1 sigma low val, value, 1 sigma upper val
-    Ndetlim   log N 5 sigma upper limit
+    Ndetlim   log N 1 sigma upper limit
     Wr        Rest equivalent width in same units as wa
     Wre       1 sigma error on rest equivalent width
     zp1       1 + redshift
@@ -515,13 +540,13 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
         Wrelo = Welo / zp1
 
     # Assume we are on the linear part of curve of growth (will be an
-    # underestimate if saturated). See Draine, "Physics of the
+    # underestimate if not). See Draine, "Physics of the
     # Interstellar and Intergalactic medium", ISBN 978-0-691-12214-4,
     # chapter 9.
-    Nmult = 1.13e20 / (tr['osc'] * tr['wa']**2)
+    Nmult = N_from_Wr_linear(tr['osc'], tr['wa'])
 
-    # 5 sigma detection limit
-    detlim = np.log10( Nmult * 5*Wre )
+    # 1 sigma detection limit
+    detlim = np.log10( Nmult * Wre )
 
     logN = np.log10(Nmult * Wr)
     if fl is not None:
@@ -1138,7 +1163,10 @@ def tau_from_nfl_ner(nfl, ner, sf=1):
         # then lower limit
         return -log(ner) * sf
     else:
-        return -log(nfl) * sf
+        try:
+            return -log(nfl) * sf
+        except ValueError:
+            import pdb; pdb.set_trace()
 
 
 def tau_cont_mult(nfl, ner, colo_mult, cohi_mult,
@@ -1233,10 +1261,12 @@ def calc_N_AOD(wa, nfl, ner, colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig,
     saturated = False
     nsat = 0
     for i in xrange(n):
-        if not (ner[i] > 0) or isnan(nfl[i]) or np.isinf(nfl[i]):
+        if not (ner[i] > 0) or isnan(nfl[i]) or np.isinf(nfl[i]) \
+               or isnan(ner[i]):
             taulo.append(np.nan)
             tau.append(np.nan)
             tauhi.append(np.nan)
+            continue
 
         tlo, t, thi, f0, f1 = tau_cont_sigmult(
             nfl[i], ner[i], colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig)
