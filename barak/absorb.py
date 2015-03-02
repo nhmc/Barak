@@ -23,7 +23,7 @@ from .pyvpfit import readf26
 import numpy as np
 
 import math
-from math import pi, sqrt, exp, log, isnan
+from math import pi, sqrt, exp, log, isnan, log10
 
 
 DATAPATH = get_data_path()
@@ -430,7 +430,7 @@ def N_from_Wr_linear(osc, wrest):
 
 
 def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
-            cohi=0.03, colo=0.03):
+            cohi=None, colo=None, colo_sig=0.5, cohi_sig=0.5):
     """ Find the rest equivalent width of a feature, and column
     density assuming optically thin.
 
@@ -455,14 +455,23 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
       Observed flux 1 sigma error.
     co : array of floats, shape (N,), optional
       Observed continuum.
-    cohi : float (0.05)
-      When calculating one sigma upper error and detection limit,
-      increase the continuum by this fractional amount. Only used if
-      fl, er and co are also given.
-    colo : float (0.05)
-      When calculating one sigma lower error decrease the continuum by
+    cohi : float (None)
+      When calculating logN upper error, increase the continuum by
+      this fractional amount. Only used if fl, er and co are also
+      given.
+    colo : float (None)
+      When calculating logN lower error decrease the continuum by
       this fractional amount.  Only used if fl, er and co are also
       given.
+    colo_sig : float (0.5)
+      If not None, decrease the continuum by this many sigma to find
+      lower logN. Only used if fl, er and co are also given. Takes
+      precendence over colo.
+    cohi_sig : float (0.5)
+      If not None, increase the continuum by this many sigma to find
+      upper logN. Only used if fl, er and co are also given. Takes
+      precedence over cohi.
+
 
     Returns
     -------
@@ -488,26 +497,34 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
     saturated = None
 
     if ew is None:
-        assert None not in (fl, er, co)
+        assert fl is not None and er is not None and co is not None
         wedge = find_bin_edges(wa1)
         dw = wedge[1:] - wedge[:-1]
         ew1 = dw * (1 - fl[i0:i1+1] / co[i0:i1+1])
         ewer1 = dw * er[i0:i1+1] / co[i0:i1+1]
-        c = (1 + cohi) * co[i0:i1+1]
+        ewer1[np.isnan(ewer1)] = 0
+        if cohi_sig is not None:
+            c = co[i0:+i1+1] + cohi_sig * er[i0:i1+1]
+        else:
+            c = (1 + cohi) * co[i0:i1+1]
         ew1hi = dw * (1 - fl[i0:i1+1] / c)
         ewer1hi = dw * er[i0:i1+1] / c
-        c = (1 - colo) * co[i0:i1+1]
+        if colo_sig is not None:
+            c = co[i0:+i1+1] - colo_sig * er[i0:i1+1]
+        else:
+            c = (1 - colo) * co[i0:i1+1]
         ew1lo = dw * (1 - fl[i0:i1+1] / c)
         ewer1lo = dw * er[i0:i1+1] / c
         if (fl[i0:i1+1] < er[i0:i1+1]).sum() >= n_saturated_thresh:
             saturated = True
         else:
             saturated = False
-
     else:
+        
         assert None not in (ew, ewer)
         ew1 = np.array(ew[i0:i1+1])
         ewer1 = np.array(ewer[i0:i1+1])
+        ewer1[np.isnan(ewer1)] = 0
 
     # interpolate over bad values
     good = ~np.isnan(ew1) & (ewer1 > 0)
@@ -546,15 +563,20 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
     Nmult = N_from_Wr_linear(tr['osc'], tr['wa'])
 
     # 1 sigma detection limit
-    detlim = np.log10( Nmult * Wre )
+    detlim = np.log10(Nmult * Wre)
 
-    logN = np.log10(Nmult * Wr)
+    logN = (log10(Nmult * Wr) if Wr > 0 else 0)
     if fl is not None:
-        logNhi = np.log10( Nmult * (Wrhi + Wrehi) )
-        logNlo = np.log10( Nmult * (Wrlo - Wrelo) )
+        whi = Wrhi + Wrehi
+        wlo = Wrlo - Wrelo
     else:
-        logNhi = np.log10( Nmult * (Wr + Wre) )
-        logNlo = np.log10( Nmult * (Wr - Wre) )
+        whi = Wr + Wre
+        wlo = Wr - Wre
+    try:
+        logNhi = (log10(Nmult * whi) if whi > 0 else 0)
+        logNlo = (log10(Nmult * wlo) if wlo > 0 else 0)
+    except ValueError:
+        import pdb; pdb.set_trace()
 
     return adict(logN=(logNlo,logN,logNhi), Ndetlim=detlim,
                  Wr=Wr, Wre=Wre, zp1=zp1,
