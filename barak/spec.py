@@ -207,7 +207,8 @@ class Spectrum(object):
         if er is not None:
             er = np.asarray(er)
             # replace bad values with NaN
-            er[np.isinf(er)|(er<=0.)] = np.nan
+            er[np.isnan(er) | np.isinf(er)] = 0.
+            er[er < 0] = 0.
             self.er = er
             npts = len(er)
         if co is not None:
