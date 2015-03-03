@@ -74,6 +74,6 @@ setup(
     url = 'http://nhmc.github.com/Barak/',
     description = description,
     long_description = readme,
-    requires = ["numpy", "pyfits", "atpy", "astropy"],
-    install_requires = ["numpy", "pyfits", "atpy", "astropy"]
+    requires = ["numpy", "astropy"],
+    install_requires = ["numpy", "astropy"]
     )
