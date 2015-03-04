@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import numpy as np
 from ..spec import find_bin_edges
 from ..utilities import adict
-from math import sqrt
+from math import sqrt, log10
 
 __all__ = ['N_from_Wr_linear', 'log10N_from_Wr', 'calc_Wr']
 
@@ -63,7 +63,7 @@ def log10N_from_Wr(Wr, wa0, osc):
 
 
 def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
-            cohi=None, colo=None, colo_sig=0.5, cohi_sig=0.5):
+            cohi=None, colo=None, colo_nsig=0.5, cohi_nsig=0.5):
     """ Find the rest equivalent width of a feature, and column
     density assuming optically thin.
 
@@ -96,11 +96,11 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
       When calculating logN lower error decrease the continuum by
       this fractional amount.  Only used if fl, er and co are also
       given.
-    colo_sig : float (0.5)
+    colo_nsig : float (0.5)
       If not None, decrease the continuum by this many sigma to find
       lower logN. Only used if fl, er and co are also given. Takes
       precendence over colo.
-    cohi_sig : float (0.5)
+    cohi_nsig : float (0.5)
       If not None, increase the continuum by this many sigma to find
       upper logN. Only used if fl, er and co are also given. Takes
       precedence over cohi.
@@ -135,14 +135,14 @@ def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
         ew1 = dw * (1 - fl[i0:i1+1] / co[i0:i1+1])
         ewer1 = dw * er[i0:i1+1] / co[i0:i1+1]
         ewer1[np.isnan(ewer1)] = 0
-        if cohi_sig is not None:
-            c = co[i0:+i1+1] + cohi_sig * er[i0:i1+1]
+        if cohi_nsig is not None:
+            c = co[i0:+i1+1] + cohi_nsig * er[i0:i1+1]
         else:
             c = (1 + cohi) * co[i0:i1+1]
         ew1hi = dw * (1 - fl[i0:i1+1] / c)
         ewer1hi = dw * er[i0:i1+1] / c
-        if colo_sig is not None:
-            c = co[i0:+i1+1] - colo_sig * er[i0:i1+1]
+        if colo_nsig is not None:
+            c = co[i0:+i1+1] - colo_nsig * er[i0:i1+1]
         else:
             c = (1 - colo) * co[i0:i1+1]
         ew1lo = dw * (1 - fl[i0:i1+1] / c)

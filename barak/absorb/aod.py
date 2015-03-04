@@ -4,7 +4,7 @@ optical depth method.
 from __future__ import division, print_function, unicode_literals
 
 import numpy as np
-from math import pi
+from math import pi, isnan, isinf, log
 
 import astropy.constants as C
 import astropy.units as u
@@ -94,6 +94,7 @@ def tau_from_nfl_ner(nfl, ner, sf=1):
     from CIV 1558).
     """
     # fast path to avoid expensive checks for array inputs
+    assert ner > 0
     try:
         float(nfl)
     except TypeError:
@@ -202,12 +203,15 @@ def tau_AOD(nfl, ner, colo_nsig=0.5, cohi_nsig=0.5,
     See find_tau_from_nfl_ner() for more details.
     """
 
-    colo_mult = 1 - ner * colo_nsig
-    cohi_mult = 1 + ner * cohi_nsig
     if cohi is not None:
         cohi_mult = 1 + cohi
+    else:
+        cohi_mult = 1 + ner * cohi_nsig
+
     if colo is not None:
         colo_mult = 1 - colo
+    else:
+        colo_mult = 1 - ner * colo_nsig
 
     return _tau_cont_mult(nfl, ner, colo_mult, cohi_mult,
                          zerolo_nsig, zerohi_nsig, sf=sf)
@@ -258,7 +262,7 @@ def calc_N_AOD(wa, nfl, ner, wa0, osc, redshift=None,
     saturated = False
     nsat = 0
     for i in xrange(n):
-        if not (ner[i] > 0) or isnan(nfl[i]) or np.isinf(nfl[i]) \
+        if not (ner[i] > 0) or isnan(nfl[i]) or isinf(nfl[i]) \
                or isnan(ner[i]):
             taulo.append(np.nan)
             tau.append(np.nan)
