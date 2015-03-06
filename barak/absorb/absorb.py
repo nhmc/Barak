@@ -47,6 +47,7 @@ c_cms = C.c.to(u.cm / u.s).value
 # this constant gets used in several functions
 e2_me_c = (C.e.gauss**2 / (C.m_e*C.c)).to(u.cm**2 / u.s).value
 
+
 def _get_atomdat():
     """ Function to cache atom.dat"""
     global ATOMDAT
@@ -430,7 +431,7 @@ def T_to_b(atom, T):
         amu = float(atom)
 
     T = np.atleast_1d(T)
-    b_cms = np.sqrt(2 * kboltz * T / (mp *amu))
+    b_cms = np.sqrt(2 * kboltz * T / (mp_g * amu))
 
     b_kms = b_cms / 1e5
 
