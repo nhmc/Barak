@@ -40,7 +40,7 @@ ION_CACHE = {}
 ATOMDAT = None
 
 
-kboltz = C.k_B.to(u.erg / u.K)
+kboltz = C.k_B.to(u.erg / u.K).value
 mp_g = C.m_p.to(u.g).value
 c_kms = C.c.to(u.km / u.s).value
 c_cms = C.c.to(u.cm / u.s).value
