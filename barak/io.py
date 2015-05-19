@@ -414,7 +414,7 @@ def parse_config(filename, defaults={}):
     filename : str or file object
       The configuration filename or a file object.
     defaults : dict
-      A dictionary with default values for options.
+      A dictionary with default values. 
 
     Returns
     -------
@@ -426,7 +426,7 @@ def parse_config(filename, defaults={}):
     -----
     Ignores blank lines, lines starting with '#', and anything on a
     line after a '#'. The parser attempts to convert the values to
-    int, float or boolean, otherwise they are left as strings.
+    int, float, boolean or None, otherwise they are left as strings.
 
     Sample format::
 
@@ -434,6 +434,7 @@ def parse_config(filename, defaults={}):
      lines = lines.dat
      x = 20
      save = True    # save the data
+
     """
     cfg = adict()
 
@@ -446,7 +447,9 @@ def parse_config(filename, defaults={}):
         row = row.decode('utf-8')
         if not row.strip() or row.lstrip().startswith('#'):
             continue
-        option, value = [r.strip() for r in row.split('#')[0].split('=', 1)]
+        # remove any inline comment
+        row = row.split('#')[0]
+        option, value = [r.strip() for r in row.split('=', 1)]
         try:
             value = int(value)
         except ValueError:
@@ -464,11 +467,12 @@ def parse_config(filename, defaults={}):
             raise RuntimeError("'%s' appears twice in %s" % (option, filename))
         cfg[option] = value
 
+    fh.close()
+
     for key,val in defaults.items():
         if key not in cfg:
             cfg[key] = val
 
-    fh.close()
     return cfg
 
 def readsex(filename, catnum=None):
@@ -815,10 +819,11 @@ def read_HITRAN(thelot=False):
     from barak.utilities import get_data_path
     DATAPATH = get_data_path()
     filename = DATAPATH + '/linelists/HITRAN2004_wa_lt_25000.fits.gz'
-    lines = readtabfits(filename)
+    import astropy.table
+    lines = astropy.table.Table.read(filename)
     if not thelot:
-        lines = lines[lines.intensity > 5e-26]
-    lines.sort(order='wav')
+        lines = lines[lines['intensity'] > 5e-26]
+    lines.sort('wav')
     return lines
 
 def readatom(filename=None, debug=False,
