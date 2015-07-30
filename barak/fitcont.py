@@ -10,15 +10,16 @@ except NameError:
     unicode = basestring = str
 
 import numpy as np
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.transforms as mtran
 
-from .stats import Gaussian 
+from .stats import Gaussian
 from .utilities import between, stats, indexnear
 from .convolve import convolve_psf
 from .io import loadobj, saveobj
 from .interp import AkimaSpline
 from .sed import qso_template
+from .interactive_plot import PlotWrapBase
 
 import os
 
@@ -68,7 +69,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
     wa,fl,er = (np.asarray(a, np.float64) for a in (wa,fl,er))
 
     if debug:
-        ax = pl.gca()
+        ax = plt.gca()
         ax.cla()
         ax.plot(wa,fl)
         ax.plot(wa,er)
@@ -78,7 +79,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
         ax.set_ylim(-0.1*ymax, ymax)
         ax.set_xlim(min(edges), max(edges))
         ax.set_autoscale_on(0)
-        pl.draw()
+        plt.draw()
 
     npts = len(wa)
     mask = np.ones(npts, bool)
@@ -132,7 +133,7 @@ def spline_continuum(wa, fl, er, edges, minfrac=0.01, nsig=3.0,
             cont.set_ydata(co)
             midpoints.set_xdata(wavc)
             midpoints.set_ydata(mfl)
-            pl.draw()
+            plt.draw()
 
         # calculate residuals for each chunk
         for i,(j1,j2) in enumerate(indices):
@@ -190,7 +191,7 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
     divmult=3 works well for R~40000, S/N~10, z=3 QSO spectrum.
 
     nbin bins the data for plotting and continuum fitting (obsolete)
-    """    
+    """
     # choose initial reference continuum points.  Increase divmult for
     # fewer initial continuum points (generally needed for poorer S/N
     # spectra).
@@ -225,7 +226,7 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
                               ], names=str('left,right,num'))
 
     div.num[2:] = np.ceil(div.num[2:] * divmult)
-    div.num[:2] = np.ceil(div.num[:2] * forest_divmult)    
+    div.num[:2] = np.ceil(div.num[:2] * forest_divmult)
     div.left *= zp1
     div.right *= zp1
     if debug: print(div.tolist())
@@ -242,25 +243,23 @@ def fitqsocont(wa, fl, er, redshift, oldco=None, knots=None,
     else:
         co,cp = spline_continuum(wa, fl, er, edges[i0:i2], debug=debug)
         contpoints.extend(cp)
-    fig = pl.figure(figsize=(11, 7))
+    fig = plt.figure(figsize=(11, 7))
     fig.subplots_adjust(left=0.05, right=0.95, bottom=0.1, top=0.95)
     wrapper = InteractiveCoFit(wa, fl, er, contpoints, co=oldco, nbin=nbin,
                                redshift=redshift, fig=fig, atmos=atmos)
     while True:
         if wrapper.finished: break
-        pl.waitforbuttonpress()
+        plt.waitforbuttonpress()
 
     return wrapper.continuum, wrapper.contpoints
 
-class InteractiveCoFit(object):
-    help_message = """
-'a'        : add a new continuum point
-'d'        : delete the nearest point
-'b'        : add a break in the continuum
-'r'        : remove a break in the continuum
-'s'        : smooth the spectrum
-'k'        : keep continuum
-'q'        : quit without keeping continuum
+class InteractiveCoFit(PlotWrapBase):
+    help_message = PlotWrapBase._help_string + """
+a or 3   : add a new continuum point
+d or 4   : delete the nearest point
+m        : move the nearest point
+k        : keep continuum
+q        : quit without keeping continuum
 """
     def __init__(self, wa, fl, er, contpoints, co=None,
                  nbin=8, redshift=None, atmos=None, fig=None):
@@ -284,32 +283,32 @@ class InteractiveCoFit(object):
         Notes
         -----
         Updates the following attributes:
-        
-         self.spec :  Dictionary of wa, fl, er.
+
+         self.wa, self.fl, self.er :  wa, fl, er
          self.contpoints :  Points used to define the continuum.
          self.nbin :  The input nbin value.
-         self.markers :  Dictionary of matplotlib plotting artists.
+         self.artists :  Dictionary of matplotlib plotting artists.
          self.connections :  Callback connections.
          self.fig :  The plotting figure instance.
         """
         #setup
-        #print co
         self.WMIN_LYA = 1040
         self.WMAX_LYA = 1190
 
-        self.spec = dict(wa=wa, fl=fl, er=er, co=co)
+        self.nsmooth = 0
+        self.wa = wa
+        self.fl = fl
+        self.er = er
         self.nbin = nbin
-        self.breaks = [wa[0], wa[-1]] # wavelengths of breaks in the continuum
         self.contpoints = list(contpoints)
         if os.path.lexists('./_knots.sav'):
             c = raw_input('temporary knots file exists, use these knots? (y) ')
             if c.lower() != 'n':
                 self.contpoints = loadobj('./_knots.sav')
 
-        self.markers = dict()
-        self.art_fl = None
+        self.artists = {}
         if fig is None:
-            self.fig = pl.figure()
+            self.fig = plt.figure()
         else:
             self.fig = fig
         # disable any existing key press callbacks
@@ -326,24 +325,25 @@ class InteractiveCoFit(object):
         self.finished = False
         self.redshift = redshift
         self.atmos = atmos
-        self.smoothby = None
         self.plotinit()
         self.update()
         self.modifypoints()
-        pl.draw()
+        plt.draw()
 
     def plotinit(self):
         """ Set up the figure and do initial plots.
 
         Updates the following attributes:
 
-          self.markers
+          self.artists
         """
-        wa,fl,er = [self.spec[k][0:-1:self.nbin] for k in 'wa fl er'.split()]
-        if self.spec['co'] is not None:
-            co = self.spec['co'][0:-1:self.nbin]
+        wa,fl,er = self.wa, self.fl, self.er
+        if self.continuum is not None:
+            co = self.continuum
+
         # axis for spectrum & continuum
         a0 = self.fig.add_axes((0.05,0.1,0.9,0.6))
+        self.ax = a0
         a0.set_autoscale_on(0)
         # axis for residuals
         a1 = self.fig.add_axes((0.05,0.75,0.9,0.2),sharex=a0)
@@ -356,9 +356,10 @@ class InteractiveCoFit(object):
         m0, = a1.plot([0],[0],'.r',marker='.', mec='none', lw=0, mew=0, ms=6, alpha=0.5)
         a1.set_ylim(-4, 4)
         a0.axhline(0, color='0.7')
-        if self.spec['co'] is not None:
-            a0.plot(wa,co, color='0.7', lw=1, ls='dashed')
-        self.art_fl, = a0.plot(wa, fl, 'b', lw=0.5, linestyle='steps-mid')
+        if self.continuum is not None:
+            a0.plot(wa, co, color='0.7', lw=1, ls='dashed')
+        self.artists['fl'], = a0.plot(wa, fl, 'b', lw=0.5,
+                                      linestyle='steps-mid')
         a0.plot(wa, er, lw=0.5, color='orange')
         m1, = a0.plot([0], [0], 'r', alpha=0.7)
         m2, = a0.plot([0], [0], 'o', mfc='None',mew=1, ms=8, mec='r', picker=5,
@@ -376,32 +377,29 @@ class InteractiveCoFit(object):
         a1.plot(Gaussian(x,0,1,0.05), x, color='k', transform=trans, lw=0.5)
 
         if self.template is not None:
-            trans = mtran.blended_transform_factory(a0.transData, a0.transAxes)                
-            a0.plot(self.spec['wa'], self.template/self.template.max(), '-c', lw=2,
+            trans = mtran.blended_transform_factory(a0.transData, a0.transAxes)
+            a0.plot(self.wa, self.template/self.template.max(), '-c', lw=2,
                     alpha=0.5, transform=trans)
 
         self.fig.canvas.draw()
-        self.markers.update(contpoints=m2, cont=m1, resid=m0, hist_left=hist)
+        self.artists.update(contpoints=m2, cont=m1, resid=m0, hist_left=hist)
 
     def update(self):
         """ Calculates the new continuum, residuals and updates the plots.
 
         Updates the following attributes:
 
-          self.markers
+          self.artists
           self.continuum
         """
-        wa,fl,er = (self.spec[key] for key in 'wa fl er'.split())
+        wa,fl,er = self.wa, self.fl, self.er
         co = np.empty(len(wa))
         co.fill(np.nan)
-        for b0,b1 in zip(self.breaks[:-1], self.breaks[1:]):
-            cpts = [(x,y) for x,y in self.contpoints if b0 <= x <= b1]
-            if len(cpts) < 3:
-                continue
+        cpts = [(x,y) for x,y in self.contpoints]
+        if len(cpts) >= 3:
             spline = AkimaSpline(*list(zip(*cpts)))
-            i,j = wa.searchsorted([b0,b1])
-            co[i:j] = spline(wa[i:j])
-        
+            co[:] = spline(wa)
+
         resid = (fl - co) / er
         # histogram
         bins = np.arange(0, 5+0.1, 0.2)
@@ -410,19 +408,14 @@ class InteractiveCoFit(object):
                            bins=bins)
         b = np.repeat(bins, 2)
         X = np.concatenate([[0], np.repeat(x,2), [0]])
-        Xmax = X.max()    
+        Xmax = X.max()
         X = 0.05 * X / Xmax
-        self.markers['hist_left'].set_data(X, b)
+        self.artists['hist_left'].set_data(X, b)
 
-        self.markers['contpoints'].set_data(list(zip(*self.contpoints)))
+        self.artists['contpoints'].set_data(list(zip(*self.contpoints)))
         nbin = self.nbin
-        self.markers['cont'].set_data(wa[::nbin], co[::nbin])
-        self.markers['resid'].set_data(wa[::nbin], resid[::nbin])
-        if self.smoothby is not None:
-            sfl = convolve_psf(fl, self.smoothby)
-            self.art_fl.set_data(wa, sfl)
-        else:
-            self.art_fl.set_data(wa, fl)
+        self.artists['cont'].set_data(wa[::nbin], co[::nbin])
+        self.artists['resid'].set_data(wa[::nbin], resid[::nbin])
         self.continuum = co
         saveobj('_knots.sav', self.contpoints, overwrite=True)
         self.fig.canvas.draw()
@@ -431,7 +424,7 @@ class InteractiveCoFit(object):
         """ Interactive fiddling via the keyboard
 
         Updates:
-        
+
          self.contpoints
         """
         if event.key == 'q':
@@ -446,26 +439,27 @@ class InteractiveCoFit(object):
                 self.fig.canvas.mpl_disconnect(item)
             self.finished = True
             return
-        if event.inaxes != self.fig.axes[0]:  return
-        
-        if event.key == 'a':
+        if event.inaxes != self.fig.axes[0]:
+            return
+
+        if event.key in ('a', '3'):
             # add a point to contpoints
             x,y = event.xdata,event.ydata
-            if x not in zip(*self.contpoints)[0]:
-                self.contpoints.append((x,y))
+            if not self.contpoints or x not in zip(*self.contpoints)[0]:
+                self.contpoints.append((x, y))
                 self.update()
-        elif event.key == 'd':
+        elif event.key in ('d', '4'):
             # remove a point from contpoints
-            contx,conty = zip(*self.contpoints)
-            sep = np.hypot(event.xdata - contx, event.ydata - conty)
+            contx,conty = zip(*self.ax.transData.transform(self.contpoints))
+            sep = np.hypot(event.x - np.array(contx),
+                           event.y - np.array(conty))
             self.contpoints.remove(self.contpoints[sep.argmin()])
             self.update()
         elif event.key == 'm':
             # Move a point
-            contx,conty = zip(*self.contpoints)
-            sep = np.hypot(event.xdata - contx, event.ydata - conty)
-            #import pdb
-            #pdb.set_trace()
+            contx,conty = zip(*self.ax.transData.transform(self.contpoints))
+            sep = np.hypot(event.x - np.array(contx),
+                           event.y - np.array(conty))
             self.contpoints[sep.argmin()] = (event.xdata,event.ydata)
             self.update()
         elif event.key == 'b':
@@ -510,7 +504,7 @@ class InteractiveCoFit(object):
         """ Add/remove continuum points."""
         print(self.help_message)
         id1 = self.fig.canvas.mpl_connect('key_press_event',self.on_keypress)
-        id2 = self.fig.canvas.mpl_connect('button_release_event',self.on_button_release)
-        self.connections.extend([id1, id2])
-
-
+        id2 = self.fig.canvas.mpl_connect('key_press_event',self.on_keypress_smooth)
+        id3 = self.fig.canvas.mpl_connect('key_press_event',self.on_keypress_navigate)
+        id4 = self.fig.canvas.mpl_connect('button_release_event',self.on_button_release)
+        self.connections.extend([id1, id2, id3, id4])

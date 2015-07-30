@@ -523,3 +523,30 @@ class Bins:
         self.width = np.diff(edges)
         self.halfwidth = 0.5 * np.diff(edges)
         self.cen = 0.5 * (edges[:-1] + edges[1:])
+
+def get_bins(x, nbins=10, minfrac=0.08):
+    """ Adaptively choose bin sizes to make roughly the same number of
+    items in each bin.
+    """
+    x = np.sort(x)
+    minwidth = minfrac * (x[-1] - x[0])
+    n_per_bin = int(len(x) / nbins) + 1
+    dx = np.median(np.diff(x)[np.diff(x) > 0])
+    edges = [x[0] - 0.5*dx]
+    i = 0
+    while True:
+        i += n_per_bin
+        if len(x) - i < 0.7*n_per_bin:
+            edge = x[-1] + 0.5*dx
+            edges.append(edge)
+            break
+        else:
+            edge = x[i] + 0.5 * abs(x[i+1] - x[i])
+            if edge - edges[-1] < minwidth:
+                edge = edges[-1] + minwidth
+            edges.append(edge)
+            i = x.searchsorted(edge)
+
+    assert edges[0] < x.min(), (edges[0], x.min())
+    assert edges[-1] > x.max(), (edges[-1], x.max())
+    return np.array(edges)

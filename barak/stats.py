@@ -13,6 +13,9 @@ import numpy as np
 from .utilities import between
 import astropy.units as u
 
+# for legacy reasons
+from .galev import SFR_Lum
+
 def _bisect(func, target, xlo=-10, xhi=10):
     """ Find x value such that func(x) = target.
 
@@ -81,7 +84,7 @@ def poisson_min_max_limits(conf, nevents):
 
     return mulo, muhi
 
-def poisson_confidence_interval(conf, nevents):
+def poisson_confidence_interval(nevents, conf):
     """ Find the Poisson confidence interval.
 
     Parameters
@@ -103,56 +106,24 @@ def poisson_confidence_interval(conf, nevents):
         return poisson_min_max_limits(conf, nevents)
     return poisson_min_max_limits(conf + 0.5*(100 - conf), nevents)
 
-def binomial_min_max_limits(conf, ntrial, nsuccess):
-    """ Calculate the minimum and maximum binomial probability
-    consistent with seeing nsuccess from ntrial at a given confidence level.
+def binomial_confidence_interval(nsuccess, ntrial, conf=68.27):
+    """ Find a binomial confidence interval.
 
-    conf: float
-      95%, 90%, 68.3% or similar.
-    ntrial, nsuccess: int
-      The number of trials and successes.
-
-    Returns
-    -------
-    plo, phi : floats
-      Mean number of events such that >= observed number of events
-      nevents occurs in fewer than conf% of cases (mulo), and mean
-      number of events such that <= nevents occurs in fewer than conf%
-      of cases (muhi)
-    """
-    from scipy.stats import binom
-    nsuccess = int(nsuccess)
-    ntrial = int(ntrial)
-    conf = float(conf)
-
-    if np.isnan(conf):
-        return np.nan, np.nan
-    target = 1 - conf/100.
-    if nsuccess == 0:
-        plo = 0
-    else:
-        plo = _bisect(lambda p: 1 - binom.cdf(nsuccess-1, ntrial, p), target,
-                     xhi=0)
-    if nsuccess == ntrial:
-        phi = 1
-    else:
-        phi = _bisect(lambda p: binom.cdf(nsuccess, ntrial, p), target,
-                     xhi=0)
-
-    return plo, phi
-
-def binomial_confidence_interval(conf, ntrial, nsuccess):
-    """ Find the binomial confidence level.
+    Uses a Bayesian method assuming a flat prior. See Cameron 2011:
+    http://adsabs.harvard.edu/abs/2011PASA...28..128C. This is
+    superior to the commonly-used Normal, Wilson and Clopper & Pearson
+    (AKA 'exact') approaches.
 
     Parameters
     ----------
-    conf: float
-      Confidence level in percent (95, 90, 68.3% or similar).
-    ntrial: int
-      The number of trials.
     nsuccess: int
       The number of successes from the trials. If 0, then return the
-      1-sided upper limit.
+      1-sided upper limit. If the same as ntril, return the 1-sided
+      lower limit.
+    ntrial: int
+      The number of trials.
+    conf: float (default 68.27)
+      Confidence level in percent (95, 90, 68.3% or similar).
 
     Returns
     -------
@@ -161,10 +132,27 @@ def binomial_confidence_interval(conf, ntrial, nsuccess):
       observed number of successes occurs in fewer than conf% of cases
       (plo), and prob such that <= number of success occurs in fewer
       than conf% of cases (phi).
-    """
+    """ 
+    from scipy.stats import beta
+
+    nsuccess = int(nsuccess)
+    ntrial = int(ntrial)
+    assert 0 < conf < 100
+    
     if nsuccess == 0:
-        return binomial_min_max_limits(conf, ntrial, nsuccess)
-    return binomial_min_max_limits(conf + 0.5*(100 - conf), ntrial, nsuccess)
+        alpha = 1 - conf / 100.
+        plo = 0.
+        phi = beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
+    elif nsuccess == ntrial:
+        alpha = 1 - conf / 100.
+        plo = beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
+        phi = 1.
+    else:
+        alpha = 0.5 * (1 - conf / 100.)
+        plo = beta.ppf(alpha, nsuccess, ntrial - nsuccess + 1)
+        phi = beta.ppf(1 - alpha, nsuccess + 1, ntrial - nsuccess)
+
+    return plo, phi
 
 def blackbody_nu(nu, T):
     """ Blackbody as a function of frequency (Hz) and temperature (K).
@@ -503,64 +491,6 @@ def polyfitr(x, y, order=2, clip=6, xlim=None, ylim=None, mask=None,
 
     return coeff,x,y
 
-class SFR_Lum:
-    """ Class for converting from luminosities to a star
-    formation rate and vice versa using the Kennicutt 98 relations.
-
-    All the calculated values can be shown by using `print`. For
-    example:
-
-    >>> import astropy.units as u
-    >>> sfr_rel = SFR_Lum(SFR=10 * u.M_sun / u.yr)
-    >>> print sfr_rel
-
-    Relations between Star formation rate and luminosities in
-    different emission lines or broad bands from Kennicutt Jr. R. C.,
-    1998, ARAA , 36, 189."""
-
-    def __init__(self, L_Ha=None, L_Lya=None, L_OII=None, L_UV=None, L_FIR=None,
-                 SFR=None):
-        """ One luminosity or a SFR keyword argument must given.
-        """
-
-        const = u.M_sun / u.yr / (u.erg / u.s)
-
-        if L_Lya is not None:
-            """ Using Kennicutt 98 H-alpha relation, and converting to Ly-a
-            assuming case B ratio or 8.7 (Brocklehurst et al. 1971)."""
-            SFR = 9.1e-43 * const * L_Lya
-        elif L_Ha is not None:
-            SFR = 7.9e-42 * const * L_Ha
-        elif L_OII is not None:
-            SFR = 1.4e-41 * const * L_OII
-        elif L_UV is not None:
-            SFR = 1.4e-28 * u.M_sun / u.yr / (u.erg / u.s / u.Hz) * L_UV
-        elif L_FIR is not None:
-            SFR = 4.5e-44 * const * L_FIR
-        elif SFR is None:
-            raise KeyError('Must specify a SFR or luminosity!')
-
-        self.const = const
-        self.SFR = SFR.to(u.M_sun / u.yr)
-        self.set_Lum()
-
-    def __str__(self):
-        s = []
-        for attr in 'SFR L_Lya L_Ha L_OII L_UV L_FIR'.split():
-            s.append('{0}:  {1:.2g}'.format(attr, getattr(self, attr)))
-        return '\n'.join(s)
-
-    def set_Lum(self):
-        """ Set all the Luminosities from the SFR.
-        """
-        const = self.const
-
-        self.L_Lya = (self.SFR / (9.1e-43 * const)).to(u.erg / u.s)
-        self.L_Ha = (self.SFR / (7.9e-42 * const)).to(u.erg / u.s)
-        self.L_OII = (self.SFR / (1.4e-41 * const)).to(u.erg / u.s)
-        self.L_UV = (self.SFR / (1.4e-28 * u.M_sun / u.yr /
-                                 (u.erg / u.s / u.Hz))).to(u.erg / u.s / u.Hz)
-        self.L_FIR = (self.SFR / (4.5e-44 * const)).to(u.erg / u.s)
 
 def Gaussian(x, x0, sigma, height):
     """ Gaussian.
@@ -646,3 +576,7 @@ def boot_sample(arr, nboot, seed=None):
     for i in xrange(nboot):
         samples.append(arr[np.random.randint(n, size=n)])
     return samples
+
+def beta(a, b, x):
+    
+    

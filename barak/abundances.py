@@ -30,14 +30,20 @@ from __future__ import unicode_literals
 
 import numpy as np
 from .utilities import get_data_path
+from astropy.io import ascii
+from barak.io import readtxt
 from .io import readtxt
 from collections import OrderedDict
 
 datapath = get_data_path()
 
 Asolar = OrderedDict(
-    (t.el, t.A) for t in
-    readtxt(datapath + 'abundances/SolarAbundance.txt', readnames=1))
+    (t['el'], t['A']) for t in
+    ascii.read(datapath + 'abundances/SolarAbundance.txt'))
+
+Asolar_c13 = OrderedDict(
+    (t['el'], t['A']) for t in
+    ascii.read(datapath + 'abundances/SolarAbundance_c13.02.txt'))
 
 cond_temp = readtxt(datapath +
                     'abundances/CondensationTemperatures.txt',
@@ -49,7 +55,7 @@ cond_temp = readtxt(datapath +
 protosolar = dict(X=0.7381, Y=0.2485, Z=0.0134, ZonX=0.0181)
 photosphere = dict(X=0.7154, Y=0.2703, Z=0.0142, ZonX=0.0199)
 
-def calc_abund(X, Y, logNX, logNY):
+def calc_abund(X, Y, logNX, logNY, ref='Lodders03'):
     """ Find the abundance relative to solar given two elements and
     their column densities.
 
@@ -81,5 +87,10 @@ def calc_abund(X, Y, logNX, logNY):
 
     If Y is hydrogen, then this estimates the metallicity.
     """
-    return logNX - logNY - (Asolar[X] - Asolar[Y])
+    if ref == 'Lodders03':
+        ref = Asolar
+    elif ref == 'cloudy13.02':
+        ref = Asolar_c13
+        
+    return logNX - logNY - (ref[X] - ref[Y])
 

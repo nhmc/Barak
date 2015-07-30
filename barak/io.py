@@ -16,7 +16,7 @@ import json
 from glob import glob
 import os, gzip
 import numpy as np
-from .utilities import adict, iscontainer
+from .utilities import adict, iscontainer, get_data_path
 
 def loadtxt(filename, **kwargs):
     """ A wrapper for numpy's loadtxt, which doesn't seem to work if
@@ -414,7 +414,7 @@ def parse_config(filename, defaults={}):
     filename : str or file object
       The configuration filename or a file object.
     defaults : dict
-      A dictionary with default values for options.
+      A dictionary with default values. 
 
     Returns
     -------
@@ -426,7 +426,7 @@ def parse_config(filename, defaults={}):
     -----
     Ignores blank lines, lines starting with '#', and anything on a
     line after a '#'. The parser attempts to convert the values to
-    int, float or boolean, otherwise they are left as strings.
+    int, float, boolean or None, otherwise they are left as strings.
 
     Sample format::
 
@@ -434,6 +434,7 @@ def parse_config(filename, defaults={}):
      lines = lines.dat
      x = 20
      save = True    # save the data
+
     """
     cfg = adict()
 
@@ -446,7 +447,9 @@ def parse_config(filename, defaults={}):
         row = row.decode('utf-8')
         if not row.strip() or row.lstrip().startswith('#'):
             continue
-        option, value = [r.strip() for r in row.split('#')[0].split('=', 1)]
+        # remove any inline comment
+        row = row.split('#')[0]
+        option, value = [r.strip() for r in row.split('=', 1)]
         try:
             value = int(value)
         except ValueError:
@@ -464,11 +467,12 @@ def parse_config(filename, defaults={}):
             raise RuntimeError("'%s' appears twice in %s" % (option, filename))
         cfg[option] = value
 
+    fh.close()
+
     for key,val in defaults.items():
         if key not in cfg:
             cfg[key] = val
 
-    fh.close()
     return cfg
 
 def readsex(filename, catnum=None):
@@ -778,11 +782,125 @@ def read_xidl_linelist(name=None, dirname=None):
 
     if name is None:
         print('No filename given. Available names:')
-        print(sorted(glob(dirname + '*.lst')))
+        print(sorted([n.split('/')[-1] for n in glob(dirname + '*.lst')]))
         raise RuntimeError
 
     wa,n1,n2,osc = readtxt(os.path.join(dirname, name),
                            skip=1, usecols=(0,1,2,3))
-    names = [a + ' ' +  b for a,b in zip(n1,n2)]
+    names = [a + ' ' +  str(b) for a,b in zip(n1,n2)]
 
     return np.rec.fromarrays([wa, names, osc], names=str('wa,name,osc'))
+
+def tread(filename, **kwargs):
+    """ read using astropy.table.Table.read()
+
+    Lazy importing of astropy.table
+    """
+    import astropy.table
+    if filename.endswith('.txt') and 'format' not in kwargs:
+        kwargs['format'] = 'ascii'
+
+    return astropy.table.Table.read(filename, **kwargs)
+
+def read_HITRAN(thelot=False):
+    """ Returns a list of molecular absorption features.
+
+    This uses the HITRAN 2004 list with wavelengths < 25000 Ang
+    (Journal of Quantitative Spectroscopy & Radiative Transfer 96,
+    2005, 139-204). By default only lines with intensity > 5e-26 are
+    returned. Set thelot=True if you really want the whole catalogue
+    (not recommended).
+
+    The returned wavelengths are in Angstroms.
+
+    The strongest absorption features in the optical range are
+    typically due to O2.
+    """
+    from barak.utilities import get_data_path
+    DATAPATH = get_data_path()
+    filename = DATAPATH + '/linelists/HITRAN2004_wa_lt_25000.fits.gz'
+    import astropy.table
+    lines = astropy.table.Table.read(filename)
+    if not thelot:
+        lines = lines[lines['intensity'] > 5e-26]
+    lines.sort('wav')
+    return lines
+
+def readatom(filename=None, debug=False,
+             flat=False, molecules=False, isotopes=False):
+    """ Reads atomic transition data from a vpfit-style atom.dat file.
+
+    Parameters
+    ----------
+    filename : str, optional
+      The name of the atom.dat-style file. If not given, then the
+      version bundled with `barak` is used.
+    flat : bool (False)
+      If True, return a flattened array, with the data not grouped by
+      transition.
+    molecules : bool (False)
+      If True, also return data for H2 and CO molecules.
+    isotopes : bool (False)
+      If True, also return data for isotopes.
+
+    Returns
+    -------
+    atom [, atom_flat] : dict [, dict]
+      A dictionary of transition data, in general grouped by
+      electronic transition (MgI, MgII and so on). If `flat` = True,
+      also return a flattened version of the same data.
+    """
+
+    # first 2 chars - element.
+    #        Check that only alphabetic characters
+    #        are used (if not, discard line).
+    # next 4 chars - ionization state (I, II, II*, etc)
+    # remove first 6 characters, then:
+    # first string - wavelength
+    # second string - osc strength
+    # third string - lifetime? (intrinsic width constant)
+    # ignore anything else on the line
+
+    if filename is None:
+        filename = get_data_path() + '/linelists/atom.dat'
+
+    if filename.endswith('.gz'):
+        import gzip
+        fh = gzip.open(filename, 'rb')
+    else:
+        fh = open(filename, 'rb')
+
+    atom = dict()
+    atomflat = []
+    specials = set(['??', '__', '>>', '<<', '<>'])
+    for line in fh:
+        line = line.decode('utf-8')
+        if debug:  print(line)
+        if not line[0].isupper() and line[:2] not in specials:
+            continue
+        ion = line[:6].replace(' ','')
+        if not molecules:
+            if ion[:2] in set(['HD','CO','H2']):
+                continue
+        if not isotopes:
+            if ion[-1] in 'abc' or ion[:3] == 'C3I':
+                continue
+        wav,osc,gam = [float(item) for item in line[6:].split()[:3]]
+        if ion in atom:
+            atom[ion].append((wav,osc,gam))
+        else:
+            atom[ion] = [(wav,osc,gam)]
+        atomflat.append( (ion,wav,osc,gam) )
+
+    fh.close()
+    # turn each ion into a record array
+
+    for ion in atom:
+        atom[ion] = np.rec.fromrecords(atom[ion], names=str('wa,osc,gam'))
+
+    atomflat = np.rec.fromrecords(atomflat,names=str('name,wa,osc,gam'))
+
+    if flat:
+        return atom, atomflat
+    else:
+        return atom

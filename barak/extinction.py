@@ -173,6 +173,7 @@ def starburst_Calzetti00(wa, Rv=4.05, EBmV=None):
     """
 
     wa = np.atleast_1d(wa)
+    wa = np.array(wa, float)
 
     assert wa[0] < 22000 and wa[-1] > 1200
 
@@ -209,16 +210,18 @@ def starburst_Calzetti00(wa, Rv=4.05, EBmV=None):
     ElamV = k - Rv
     AlamAv = AlamAv_from_ElamV(ElamV, Rv)
 
-    # assume MW extinction law above these wavelengths. Note we can't
-    # interpolate in E(lambda - V) / E(B - V) because this gives
-    # unphysical values on converting to A(lambda).
-    c0 = wa > W0
+    # assume MW extinction law above W1. 
+    c0 = wa > W1
     if c0.any():
+        AlamAv[c0] = MW_Cardelli89(wa[c0], 3.1).AlamAv
+        # Smoothly interpolate between MW law and Calzetti over the
+        # region W0 < wa < W1. Note we can't interpolate in E(lambda -
+        # V) / E(B - V) because this gives unphysical values on
+        # converting to A(lambda).
         c1 = between(wa, W0, W1)
-        if c1.any():
-            AlamAv[c0] = MW_Cardelli89(wa[c0], 3.1).AlamAv
+        if c1.sum() > 2:
             AlamAv[c1] = interp_Akima(wa[c1], wa[~c1], AlamAv[~c1])
-
+                
     if len(wa) == 1:
         return ExtinctionCurve(wa[0], Rv, AlamAv[0], EBmV=EBmV,
                                name='starburst_Calzetti00')

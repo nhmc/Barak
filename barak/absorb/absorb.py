@@ -12,26 +12,41 @@ else:
     from cStringIO import StringIO
 
 from .voigt import voigt
-from .convolve import convolve_psf
-from .utilities import between, adict, get_data_path, indexnear
-from .constants import Ar, me, mp, kboltz, c, e, sqrt_ln2, c_kms
-from .spec import find_bin_edges
-from .sed import  make_constant_dv_wa_scale, vel_from_wa
-from .abundances import Asolar
-from .pyvpfit import readf26
+from ..convolve import convolve_psf
+from ..utilities import between, get_data_path, indexnear
+from ..constants import Ar, sqrt_ln2
+from ..sed import  make_constant_dv_wa_scale, vel_from_wa
+from ..abundances import Asolar
+from ..pyvpfit import readf26
+from ..io import readatom
 
 import numpy as np
 
+import astropy.constants as C
+import astropy.units as u
+
 import math
-from math import pi, sqrt, exp, log, isnan
+from math import pi, sqrt, exp
+
+__all__ = ['calc_iontau', 'find_tau' , 'b_to_T', 'T_to_b', 'findtrans',
+           'split_trans_name', 'tau_LL', 'calc_DLA_tau', 'calc_DLA_trans',
+           'guess_logN_b', 'get_ionization_energy',
+           'photo_cross_section_hydrogenic', 'readatom']
 
 
 DATAPATH = get_data_path()
 
 ION_CACHE = {}
 ATOMDAT = None
-# this constant gets used in several functions (units of cm^2/s)
-e2_me_c = e**2 / (me*c)
+
+
+kboltz = C.k_B.to(u.erg / u.K).value
+mp_g = C.m_p.to(u.g).value
+c_kms = C.c.to(u.km / u.s).value
+c_cms = C.c.to(u.cm / u.s).value
+# this constant gets used in several functions
+e2_me_c = (C.e.gauss**2 / (C.m_e*C.c)).to(u.cm**2 / u.s).value
+
 
 def _get_atomdat():
     """ Function to cache atom.dat"""
@@ -66,9 +81,9 @@ def calc_sigma_on_f(vel, wa0, gam, b, debug=False, verbose=True):
     # note units are cgs
     wa0 = wa0 * 1e-8                    # cm
     b = b * 1e5                           # cm/s
-    nu0 = c / wa0                        # rest frequency, s^-1
+    nu0 = c_cms / wa0                        # rest frequency, s^-1
     # Now use doppler relation between v and nu assuming gam << nu0
-    gam_v = gam / nu0 * c             # cm/s
+    gam_v = gam / nu0 * c_cms             # cm/s
     if debug:
         print('Widths in km/s (Lorentzian Gamma, Gaussian b):',
               gam_v/1.e5, b/1.e5)
@@ -181,8 +196,7 @@ def calc_tau_peak(logN, b, wa0, osc):
 
     Notes
     -----
-    See Draine "Physics of the Interstellar and Intergalactic medium"
-    for a description of how to calculate this quantity.
+    See Draine "Physics of the Interstellar and Intergalactic medium".
     """
     b_cm_s = b * 1e5
 
@@ -362,179 +376,6 @@ def find_tau(wa, lines, atomdat=None, per_trans=False, debug=False,
         return tau, ticks
 
 
-def calc_W(dw, nfl, ner, colo_nsig=2, cohi_nsig=2, redshift=0):
-    """ Find the rest frame equivalent width from a normalised flux
-    and error array, including a continuum error.
-
-    Parameters
-    ----------
-    dw, nfl, ner: arrays shape (N,)
-      The pixel width in wavelength units, normalised flux and
-      normalised error.
-
-    colo_sig, cohi_sig : float
-      Continuum offsets in units of 1 sigma (both should be > 0).
-
-    redshift : float
-      The redshift of the transition.
-
-    Returns
-    -------
-    W, Wer, Wlo, Whi : float
-      The equivalent width, 1 sigma error, and low and high estimates
-      based on the continuum error.
-    """
-    m_ner = np.median(ner)
-    colo_mult = 1 - colo_nsig * m_ner
-    cohi_mult = 1 + cohi_nsig * m_ner
-
-    ew = dw * (1 - nfl)
-    ewer = dw * ner
-    ewhi = dw * (1 - nfl) / colo_mult
-    ewhier = dw * ner / colo_mult
-    ewlo = dw * (1 - nfl) / cohi_mult
-    ewloer = dw * ner / cohi_mult
-
-    zp1 = 1. + redshift
-
-    W = np.sum(ew) / zp1
-    We = sqrt(np.sum(ewer**2)) / zp1
-    Wlo = np.sum(ewlo - ewloer) / zp1
-    Whi = np.sum(ewhi + ewhier) / zp1
-
-    return W, We, Wlo, Whi
-
-def calc_Wr(i0, i1, wa, tr, ew=None, ewer=None, fl=None, er=None, co=None,
-            cohi=0.05, colo=0.05):
-    """ Find the rest equivalent width of a feature, and column
-    density assuming optically thin.
-
-    You must give either fl, er and co, or ew and ewer.
-
-    Parameters
-    ----------
-    i0, i1 : int
-      Start and end indices of feature (inclusive).
-    wa : array of floats, shape (N,)
-      Observed wavelengths.
-    tr : atom.dat entry
-      Transition entry from an atom.dat array read by `readatom()`.
-    ew : array of floats, shape (N,), optional
-      Equivalent width per pixel.
-    ewer : array of floats, shape (N,), optional
-      Equivalent width 1 sigma error per pixel.
-      with attributes wav (rest wavelength) and osc (oscillator strength).
-    fl : array of floats, shape (N,), optional
-      Observed flux.
-    er : array of floats, shape (N,), optional
-      Observed flux 1 sigma error.
-    co : array of floats, shape (N,), optional
-      Observed continuum.
-    cohi : float (0.05)
-      When calculating one sigma upper error and detection limit,
-      increase the continuum by this fractional amount. Only used if
-      fl, er and co are also given.
-    colo : float (0.05)
-      When calculating one sigma lower error decrease the continuum by
-      this fractional amount.  Only used if fl, er and co are also
-      given.
-
-    Returns
-    -------
-    A dictionary with keys:
-
-    ========= =========================================================
-    logN      1 sigma low val, value, 1 sigma upper val
-    Ndetlim   log N 5 sigma upper limit
-    Wr        Rest equivalent width in same units as wa
-    Wre       1 sigma error on rest equivalent width
-    zp1       1 + redshift
-    ngoodpix  number of good pixels contributing to the measurements
-    Nmult     multiplier to get from equivalent width to column density
-    saturated Are more than 10% of the pixels between limits saturated?
-    ========= =========================================================
-    """
-    wa1 = wa[i0:i1+1]
-
-    npts = i1 - i0 + 1
-    # if at least this many points are saturated, then mark the
-    # transition as saturated
-    n_saturated_thresh = int(0.1 * npts)
-    saturated = None
-
-    if ew is None:
-        assert None not in (fl, er, co)
-        wedge = find_bin_edges(wa1)
-        dw = wedge[1:] - wedge[:-1]
-        ew1 = dw * (1 - fl[i0:i1+1] / co[i0:i1+1])
-        ewer1 = dw * er[i0:i1+1] / co[i0:i1+1]
-        c = (1 + cohi) * co[i0:i1+1]
-        ew1hi = dw * (1 - fl[i0:i1+1] / c)
-        ewer1hi = dw * er[i0:i1+1] / c
-        c = (1 - colo) * co[i0:i1+1]
-        ew1lo = dw * (1 - fl[i0:i1+1] / c)
-        ewer1lo = dw * er[i0:i1+1] / c
-        if (fl[i0:i1+1] < er[i0:i1+1]).sum() >= n_saturated_thresh:
-            saturated = True
-        else:
-            saturated = False
-
-    else:
-        assert None not in (ew, ewer)
-        ew1 = np.array(ew[i0:i1+1])
-        ewer1 = np.array(ewer[i0:i1+1])
-
-    # interpolate over bad values
-    good = ~np.isnan(ew1) & (ewer1 > 0)
-    if not good.any():
-        return None
-    if not good.all():
-        ew1[~good] = np.interp(wa1[~good], wa1[good], ew1[good])
-        ewer1[~good] = np.interp(wa1[~good], wa1[good], ewer1[good])
-        if fl is not None:
-            ew1hi[~good] = np.interp(wa1[~good], wa1[good], ew1hi[good])
-            ewer1hi[~good] = np.interp(wa1[~good], wa1[good], ewer1hi[good])
-            ew1lo[~good] = np.interp(wa1[~good], wa1[good], ew1lo[good])
-            ewer1lo[~good] = np.interp(wa1[~good], wa1[good], ewer1lo[good])
-
-    W = ew1.sum()
-    We = sqrt((ewer1**2).sum())
-    if fl is not None:
-        Whi = ew1hi.sum()
-        Wehi = sqrt((ewer1hi**2).sum())
-        Wlo = ew1lo.sum()
-        Welo = sqrt((ewer1lo**2).sum())
-
-    zp1 = 0.5*(wa1[0] + wa1[-1]) / tr['wa']
-    Wr = W / zp1
-    Wre = We / zp1
-    if fl is not None:
-        Wrhi = Whi / zp1
-        Wrehi = Wehi / zp1
-        Wrlo = Wlo / zp1
-        Wrelo = Welo / zp1
-
-    # Assume we are on the linear part of curve of growth (will be an
-    # underestimate if saturated). See Draine, "Physics of the
-    # Interstellar and Intergalactic medium", ISBN 978-0-691-12214-4,
-    # chapter 9.
-    Nmult = 1.13e20 / (tr['osc'] * tr['wa']**2)
-
-    # 5 sigma detection limit
-    detlim = np.log10( Nmult * 5*Wre )
-
-    logN = np.log10(Nmult * Wr)
-    if fl is not None:
-        logNhi = np.log10( Nmult * (Wrhi + Wrehi) )
-        logNlo = np.log10( Nmult * (Wrlo - Wrelo) )
-    else:
-        logNhi = np.log10( Nmult * (Wr + Wre) )
-        logNlo = np.log10( Nmult * (Wr - Wre) )
-
-    return adict(logN=(logNlo,logN,logNhi), Ndetlim=detlim,
-                 Wr=Wr, Wre=Wre, zp1=zp1,
-                 ngoodpix=good.sum(), Nmult=Nmult, saturated=saturated)
-
 def b_to_T(atom, bvals):
     """ Convert b parameters (km/s) to a temperature in K for an atom
     with mass amu.
@@ -560,7 +401,7 @@ def b_to_T(atom, bvals):
     b = np.atleast_1d(bvals) * 1e5
 
     # convert everything to cgs
-    T = 0.5 * b**2 * amu * mp / kboltz
+    T = 0.5 * b**2 * amu * mp_g / kboltz
 
     # b \propto sqrt(2kT/m)
     if len(T) == 1:
@@ -590,7 +431,7 @@ def T_to_b(atom, T):
         amu = float(atom)
 
     T = np.atleast_1d(T)
-    b_cms = np.sqrt(2 * kboltz * T / (mp *amu))
+    b_cms = np.sqrt(2 * kboltz * T / (mp_g * amu))
 
     b_kms = b_cms / 1e5
 
@@ -600,105 +441,6 @@ def T_to_b(atom, T):
     return  b_kms
 
 
-def read_HITRAN(thelot=False):
-    """ Returns a list of molecular absorption features.
-
-    This uses the HITRAN 2004 list with wavelengths < 25000 Ang
-    (Journal of Quantitative Spectroscopy & Radiative Transfer 96,
-    2005, 139-204). By default only lines with intensity > 5e-26 are
-    returned. Set thelot=True if you really want the whole catalogue
-    (not recommended).
-
-    The returned wavelengths are in Angstroms.
-
-    The strongest absorption features in the optical range are
-    typically due to O2.
-    """
-    filename = DATAPATH + '/linelists/HITRAN2004_wa_lt_25000.fits.gz'
-    lines = readtabfits(filename)
-    if not thelot:
-        lines = lines[lines.intensity > 5e-26]
-    lines.sort(order='wav')
-    return lines
-
-def readatom(filename=None, debug=False,
-             flat=False, molecules=False, isotopes=False):
-    """ Reads atomic transition data from a vpfit-style atom.dat file.
-
-    Parameters
-    ----------
-    filename : str, optional
-      The name of the atom.dat-style file. If not given, then the
-      version bundled with `barak` is used.
-    flat : bool (False)
-      If True, return a flattened array, with the data not grouped by
-      transition.
-    molecules : bool (False)
-      If True, also return data for H2 and CO molecules.
-    isotopes : bool (False)
-      If True, also return data for isotopes.
-
-    Returns
-    -------
-    atom [, atom_flat] : dict [, dict]
-      A dictionary of transition data, in general grouped by
-      electronic transition (MgI, MgII and so on). If `flat` = True,
-      also return a flattened version of the same data.
-    """
-
-    # first 2 chars - element.
-    #        Check that only alphabetic characters
-    #        are used (if not, discard line).
-    # next 4 chars - ionization state (I, II, II*, etc)
-    # remove first 6 characters, then:
-    # first string - wavelength
-    # second string - osc strength
-    # third string - lifetime? (intrinsic width constant)
-    # ignore anything else on the line
-
-    if filename is None:
-        filename = DATAPATH + '/linelists/atom.dat'
-
-    if filename.endswith('.gz'):
-        import gzip
-        fh = gzip.open(filename, 'rb')
-    else:
-        fh = open(filename, 'rb')
-
-    atom = dict()
-    atomflat = []
-    specials = set(['??', '__', '>>', '<<', '<>'])
-    for line in fh:
-        line = line.decode('utf-8')
-        if debug:  print(line)
-        if not line[0].isupper() and line[:2] not in specials:
-            continue
-        ion = line[:6].replace(' ','')
-        if not molecules:
-            if ion[:2] in set(['HD','CO','H2']):
-                continue
-        if not isotopes:
-            if ion[-1] in 'abc' or ion[:3] == 'C3I':
-                continue
-        wav,osc,gam = [float(item) for item in line[6:].split()[:3]]
-        if ion in atom:
-            atom[ion].append((wav,osc,gam))
-        else:
-            atom[ion] = [(wav,osc,gam)]
-        atomflat.append( (ion,wav,osc,gam) )
-
-    fh.close()
-    # turn each ion into a record array
-
-    for ion in atom:
-        atom[ion] = np.rec.fromrecords(atom[ion], names=str('wa,osc,gam'))
-
-    atomflat = np.rec.fromrecords(atomflat,names=str('name,wa,osc,gam'))
-
-    if flat:
-        return atom, atomflat
-    else:
-        return atom
 
 def findtrans(name, atomdat=None):
     """ Given an ion and wavelength and list of transitions read with
@@ -941,7 +683,8 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
             ]
 
     tau, ticks = find_tau(wa, StringIO('\n'.join(f26)), atomdat=atom)
-    ticks.sort(order=str('wa'))
+    if str('wa') in ticks.dtype.names:
+        ticks.sort(order=str('wa'))
 
     return tau, ticks
 
@@ -1005,366 +748,6 @@ def guess_logN_b(ion, wa0, osc, tau0):
 
     return logN_from_tau_peak(tau0, b, wa0, osc), b
 
-def Nvel_from_tau(tau, wa, osc):
-    """ Returns the N_vel, the column density per velocity interval.
-
-    Parameters
-    ----------
-    tau : array_like, shape (N,)
-      Array of optical depths/
-    wa : float
-      Rest wavelength of the transition.
-    osc : float
-      Transition oscillator strength.
-
-    Returns
-    -------
-    N_vel : ndarray, shape (N,)
-      The column density per velocity interval, with units cm^-2
-      (km/s)^-1 Multiply this by a velocity interval in km/s to get a
-      column density.
-    """
-    # the 1e5 here converts from (cm/s)^-1 to (km/s)^-1
-    return tau / (pi * e2_me_c * osc) / (wa * 1e-8) * 1e5
-
-
-def Nlam_from_tau(tau, wa, osc):
-    """ Returns the N_lambda, the column density per rest wavelength
-    interval.
-
-    Parameters
-    ----------
-    tau : array_like, shape (N,)
-      Array of optical depths/
-    wa : float
-      Rest wavelength of the transition.
-    osc : float
-      Transition oscillator strength.
-
-    Returns
-    -------
-    Nlam : ndarray, shape (N,)
-      The column density per wavelength interval, with units cm^-2
-      Angstrom^-1. Multiply this by the rest wavelength interval in
-      Angstroms corresponding to the width of one input pixel to get a
-      column density.
-    """
-    # the 1e-8 here converts from cm^-1 to Angstrom^-1
-    return tau / (pi * e2_me_c * osc) * c / (wa * 1e-8)**2 * 1e-8
-
-def log10N_from_Wr(Wr, wa0, osc):
-    """ Find log10(Column density) from a rest frame equivalent width
-    assuming optically thin.
-
-    Parameters
-    ----------
-    Wr : float
-       Rest frame equivalent width in Angstroms.
-    wa0 : float
-       Transition wavelength in Angstroms.
-    osc: float
-       Transition oscillator strength.
-
-    Returns
-    -------
-    log10N : float
-      log10(column density in cm^-2), or zero if the equivalent width
-      is 0 or negative.
-
-    Notes
-    -----
-    Assumes we are on the linear part of curve of growth (will be an
-    underestimate if saturated). See Draine,"Physics of the
-    Interstellar and Intergalactic medium", ISBN 978-0-691-12214-4,
-    chapter 9.
-    """
-    if not Wr > 0:
-        return 0
-
-    Nmult = 1.13e20 / (osc * wa0**2)
-    return np.log10(Nmult * Wr)
-
-
-def tau_from_nfl_ner(nfl, ner, sf=1):
-    """ Find the optical depth given a normalised flux and error.
-
-    Parameters
-    ----------
-    nfl, ner : array_like or float
-      Normalised fluxes and 1 sigma errors.
-
-    sf : array_like or float (optional)
-      Multiplier to give the optical depth. Must either be scalar, or have
-      the same length as nfl and ner.
-
-    Returns
-    -------
-    tau : ndarray or float
-      optical depth
-
-    Notes
-    -----
-    To calculate upper limits, it's better to use the optically thin
-    approximation via the equivalent width calculation in calc_Wr().
-
-    For saturated lines, this estimate is a lower limit. The scale
-    factor is typically 1, it can be non zero if you want to scale the
-    optical depth of one transition to another (e.g. to infer CIV 1550
-    from CIV 1558).
-    """
-    # fast path to avoid expensive checks for array inputs
-    try:
-        float(nfl)
-    except TypeError:
-        # slow path to deal with array inputs
-        nfl = np.atleast_1d(nfl)
-        ner = np.atleast_1d(ner)
-        sf = np.atleast_1d(sf)
-        if len(sf) == 1:
-            sf = np.ones(len(nfl), float) * sf[0]
-        tau = np.empty(len(nfl), float)
-        c0 = nfl > 1
-        tau[c0] = 0
-        c1 = nfl < ner
-        tau[c1]  = -np.log(ner[c1]) * sf[c1]
-        c2 = ~(c0 | c1)
-        tau[c2] = -np.log(nfl[c2]) * sf[c2]
-        return tau
-
-    if nfl >= 1:
-        return 0
-    elif nfl < ner:
-        # then lower limit
-        return -log(ner) * sf
-    else:
-        return -log(nfl) * sf
-
-
-def tau_cont_mult(nfl, ner, colo_mult, cohi_mult,
-                  zerolo_nsig, zerohi_nsig, sf=1):
-    """ find the optical depth from a flux and error taking into
-    account a multiplicative uncertainty in the continuum.
-
-    See find_tau_from_nfl_ner() for more details.
-
-    Parameters
-    ----------
-    nfl, ner : floats
-      Normalised fluxes and 1 sigma errors.
-
-    colo_mult, cohi_mult : float
-      Multiplier to the continuum to represent the continuum
-      uncertainty. For example colo_mult=0.97, cohi_mult=1.03
-      calculates tau for a continuum 3% lower and 3% higher than
-      actual continuum.
-
-    zerolo_nsig, zerohi_nsig : float
-      Zero level offsets in units of 1 sigma (both > 0).
-
-    sf : float
-      Multiplier to give the optical depth.
-
-    Returns
-    -------
-    taulo, tau, tauhi, nfl_min, nfl_max :
-      Minimum, best and maximum optical depths, and the flux minimum
-      and maximum based on the input continuum scale factors.
-    """
-    # highest flux from continuum, zero level, and 1 sigma variation
-    zoff = zerolo_nsig * ner
-    nfl_max = max(nfl / colo_mult, nfl + ner, (nfl + zoff) / (1 + zoff))
-    taulo = tau_from_nfl_ner(nfl_max, ner / colo_mult, sf=sf)
-    # lowest flux from continuum, zero_level, and 1 sigma variation, but no lower
-    # than ner
-    zoff = zerohi_nsig * ner
-    nfl_min = max(
-        min(nfl / cohi_mult, nfl - ner, (nfl - zoff) / (1 - zoff)),
-        ner)
-    tauhi = tau_from_nfl_ner(nfl_min, ner / cohi_mult, sf=sf)
-    tau = tau_from_nfl_ner(nfl, ner, sf=sf)
-
-    return taulo, tau, tauhi, nfl_min, nfl_max
-
-
-def tau_cont_sigmult(nfl, ner, colo_nsig, cohi_nsig,
-                     zerolo_nsig, zerohi_nsig, sf=1):
-    """ Find the optical depth from a flux and error taking into
-    account an additive uncertainty in the continuum.
-
-    Parameters
-    ----------
-    colo_sig, cohi_sig : float
-      Continuum offsets in units of 1 sigma (both > 0)
-
-    zerolo_nsig, zerohi_nsig : float
-      Zero level offsets in units of 1 sigma (both > 0).
-
-    Returns
-    -------
-    taulo, tau, tauhi, nfl_min, nfl_max :
-      Minimum, best and maximum optical depths, and the flux minimum
-      and maximum based on the input continuum scale factors.
-
-    See find_tau_from_nfl_ner() for more details.
-    """
-
-    colo_mult = 1 - ner * colo_nsig
-    cohi_mult = 1 + ner * cohi_nsig
-
-    return tau_cont_mult(nfl, ner, colo_mult, cohi_mult,
-                         zerolo_nsig, zerohi_nsig, sf=sf)
-
-
-def calc_N_AOD(wa, nfl, ner, colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig,
-               wa0, osc, redshift=None):
-    """ Find the column density for a single transition using the AOD
-    method.
-    """
-    n = len(wa)
-    assert len(nfl) == len(ner) == n
-
-    if redshift is None:
-        zp1 = 0.5*(wa[0] + wa[-1]) / wa0
-    else:
-        zp1 = redshift + 1
-
-    taulo, tau, tauhi = [], [], []
-    saturated = False
-    for i in xrange(n):
-        if not (ner[i] > 0) or isnan(nfl[i]) or np.isinf(nfl[i]):
-            taulo.append(np.nan)
-            tau.append(np.nan)
-            tauhi.append(np.nan)
-
-        tlo, t, thi, f0, f1 = tau_cont_sigmult(
-            nfl[i], ner[i], colo_sig, cohi_sig, zerolo_nsig, zerohi_nsig)
-        if f0 <= ner[i]:
-            saturated = True
-        taulo.append(tlo)
-        tau.append(t)
-        tauhi.append(thi)
-
-    imid = n // 2
-    dw0 = (wa[imid+1] - wa[imid]) / zp1
-
-    logNvals = []
-    for t in taulo, tau, tauhi:
-        # interpolate across any bad values
-        t = np.array(t)
-        c0 = np.isnan(t)
-        if c0.any():
-            x = np.arange(len(t))
-            t[c0] = np.interp(x[c0], x[~c0], t[~c0])
-        Nlam = Nlam_from_tau(t, wa0, osc)
-        logNvals.append(np.log10(np.sum(Nlam * dw0)))
-
-    logNlo, logN, logNhi = logNvals
-
-    return logNlo, logN, logNhi, saturated
-
-def calc_N_trans(wa, fl, er, co, trans, redshift, vmin, vmax,
-                 colo_nsig=2, cohi_nsig=2, zerolo_nsig=2, zerohi_nsig=2,
-                 atomdat=None):
-    """ Measure N for a series of transitions over the given velocity
-    range.
-
-    Uses optically thin approximation for upper limits, and Apparent
-    optical depth measurements otherwise.
-
-    Parameters
-    ----------
-    wa, fl, er, co: arrays shape (N,)
-      spectrum wavelength flux, 1 sigma error, continuuum
-    trans : list of str
-      e.g. ['CIV 1548', 'CII 1334']
-    redshift : float
-      Redshift of zero velocity.
-    vmin, vmax : float
-      Minimum and maximum velocities over which to calculate column
-      density and equivalent width.
-    colo_sig, cohi_sig : float
-      Continuum offsets in units of 1 sigma (both > 0)
-    zerolo_nsig, zerohi_nsig : float
-      Zero level offsets in units of 1 sigma (both > 0).
-
-    Returns
-    -------
-    results : record array
-
-     ================== ====================================================
-     name               transition name
-     latex              best column density estimate in latex format
-     logNlo,logN,logNhi Low, best and high logN estimates from the apparent
-                        optical depth. Low and high estimates include
-                        uncertainties in the continuum and zero level given
-                        by colo_nsig, cohi_nsig, zerolo_nsig, zerohi_nsig
-     Wr,Wre             The rest-frame equivalent width in Angstroms and 1
-                        sigma error.
-     Wrlo,Wrhi          Low and high rest frame equivalent widths in
-                        Angstroms and 1 sigma error, assuming continuum
-                        uncertainties only.
-     logN_5sig          5 sigma upper limit on N from the error in the
-                        equivalent width, assuming optically thin.
-     logN_Whi           Optically thin N value corresponding to the Wrhi
-     saturated          Whether or not the line is saturated.
-     ================== ====================================================
-    """
-    if atomdat is None:
-        atomdat = _get_atomdat()
-
-    if isinstance(trans, basestring):
-        trans = [trans]
-
-    nfl = fl / co
-    ner = er / co
-    zp1 = redshift + 1
-    wedge = find_bin_edges(wa)
-    dw = wedge[1:] - wedge[:-1]
-
-    results = []
-    for tr in trans:
-        trans = findtrans(tr)
-        #print(trans[0])
-        twa0 = trans[1]['wa']
-        tosc = trans[1]['osc']
-        wa_obs = twa0 * zp1
-        wmin = wa_obs * (1 + vmin/c_kms)
-        wmax = wa_obs * (1 + vmax/c_kms)
-        #print(wmin, wmax)
-        i0, i1 = wa.searchsorted([wmin, wmax])
-        if not(0 <= i0 < len(wa)) or not (0 < i1 <= len(wa)):
-            results.append(
-                (tr, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan,
-                 np.nan, False))
-
-        # find the equivalent width
-        W, We, Wlo, Whi = calc_W(
-            dw[i0:i1], nfl[i0:i1], ner[i0:i1], colo_nsig=2, cohi_nsig=2,
-            redshift=redshift)
-
-        logNlim5sig = log10N_from_Wr(5*We, twa0, tosc)
-        logNhi_W = log10N_from_Wr(Whi, twa0, tosc)
-
-        logNlo, logN, logNhi, saturated = calc_N_AOD(
-            wa[i0:i1], nfl[i0:i1], ner[i0:i1],
-            colo_nsig, cohi_nsig, zerolo_nsig, zerohi_nsig,
-            twa0, tosc, redshift=redshift)
-
-        flag = ''
-        if logNlim5sig > logN:
-            # upper limit
-            s = '$< %.3f$' % max(logNhi_W, logNlim5sig)
-        else:
-            hi_er = logNhi - logN
-            lo_er = logN - logNlo
-            s = '$%.3f^{%+.3f}_{%+.3f}$' % (logN, hi_er, -lo_er)
-
-        results.append((tr, s, logNlo, logN, logNhi, W, We, Wlo, Whi,
-                        logNlim5sig, logNhi_W, saturated))
-
-    names = str('name,latex,logNlo,logN,logNhi,Wr,Wre,Wrlo,'
-                'Wrhi,logN_5sig,logN_Whi,saturated')
-    return np.rec.fromrecords(results, names=names)
 
 def get_ionization_energy(species):
     """ Find the ionization energy for a species.
@@ -1401,12 +784,3 @@ def get_ionization_energy(species):
         return np.array([ION_CACHE['table']['IE'][i] for i in ind],
                         dtype=float)
 
-# def read_xidl_linelist(name):
-
-#     if name in 'lls dla dla_shrt'.split():
-#         t = readtxt(DATAPATH + 'linelists/xidl/'+ name + '.lst',
-#                    usecols=(0,1,2), names=('wa','ion','wname'), skip=1)
-#     elif name in 'qso gal'.split()
-
-#     else:
-#         raise ValueError('Unknown xidl linelist %s' % name)

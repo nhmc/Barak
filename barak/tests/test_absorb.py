@@ -1,4 +1,5 @@
 from ..absorb import *
+from ..absorb.absorb import calctau
 from ..utilities import get_data_path
 from ..io import loadtxt
 import numpy as np

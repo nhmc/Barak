@@ -207,7 +207,8 @@ class Spectrum(object):
         if er is not None:
             er = np.asarray(er)
             # replace bad values with NaN
-            er[np.isinf(er)|(er<=0.)] = np.nan
+            er[np.isnan(er) | np.isinf(er)] = 0.
+            er[er < 0] = 0.
             self.er = er
             npts = len(er)
         if co is not None:
@@ -273,6 +274,8 @@ class Spectrum(object):
             self.er = np.empty(npts) * np.nan  # error (one sig)
         if co is None:
             self.co = np.empty(npts) * np.nan
+
+        assert len(wa) == len(self.co) == len(self.fl) == len(self.er)
 
         self.fwhm = fwhm
         self.dw = dw
@@ -488,7 +491,7 @@ def read(filename, comment='#', debug=False):
                     er = find_err(fl, find_cont(fl))
                 co = None
         else:
-            # heuristic to check for Jill Bechtold's FOS spectra
+            # check for Jill Bechtold's FOS spectra
             if filename.endswith('.XY'):
                 wa,fl,er,co = loadtxt(
                     filename, usecols=(0,1,2,3), unpack=True, comments=comment,
@@ -537,13 +540,34 @@ def read(filename, comment='#', debug=False):
         if hd[str('TELESCOP')] == 'SDSS 2.5-M' and \
                hd[str('flavor')] == 'science':
             d = f[1].data
-            if 'loglam' in d.dtype.names:
+            if d.dtype.names is not None and 'loglam' in d.dtype.names:
                 wa = 10**d[str('loglam')]
                 fl = d[str('flux')]
                 er = 1 / np.sqrt(d[str('ivar')])
                 co = d[str('model')]
                 return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
-            
+            elif 'ARRAY2' in f[0].header:
+                wa = getwave(f[0].header)
+                d = f[0].data
+                fl = d[0,:]
+                er = d[2,:]
+                co = np.zeros_like(er)
+                return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
+            else:
+                print("Trying BOSS format")
+                wa = getwave(f[0].header)
+                fl = f[0].data
+                er = np.sqrt(1/f[1].data)
+                coname = filename.replace('.fits.gz','_c.fits')
+                if os.path.exists(coname):
+                    co = fits.getdata(coname)
+                    if len(co) == len(er)+1:
+                        co = co[:-1]
+                else:
+                    co = np.zeros_like(er)
+
+                return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
+
     # try record array
     try:
         data = f[1].data
