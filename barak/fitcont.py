@@ -462,6 +462,38 @@ q        : quit without keeping continuum
                            event.y - np.array(conty))
             self.contpoints[sep.argmin()] = (event.xdata,event.ydata)
             self.update()
+        elif event.key == 'b':
+            # Add a break to the continuum.
+            self.breaks.append(event.xdata)
+            self.breaks.sort()
+            self.update()
+        elif event.key == 'r':
+            # remove a break
+            i = indexnear(self.breaks, event.xdata)
+            if i not in (0, len(self.breaks)-1):
+                self.breaks.remove(self.breaks[i])
+            self.update()
+        elif event.key == 'S':
+            # Save fit to a temporary file
+            print('fitcont: Writing output to temporary file tmp.sav')
+            saveobj('tmp.sav', (self.continuum, self.contpoints), overwrite=1)
+        elif event.key == 's':
+            c = raw_input('New FWHM in pixels of Gaussian to convolve with? '
+                          '(blank for no smoothing) ')
+            if c == '':
+                # restore spectrum
+                self.smoothby = None
+                self.update()
+            else:
+                try:
+                    fwhm = float(c)
+                except TypeError:
+                    print('FWHM must be a floating point number >= 1')
+                if fwhm < 1:
+                    self.smoothby = None
+                else:
+                    self.smoothby = fwhm
+                self.update()
         elif event.key == '?':
             print(self.help_message)
 
