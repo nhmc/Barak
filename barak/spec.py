@@ -450,6 +450,17 @@ def read(filename, comment='#', debug=False):
       String that marks beginning of comment line, only used when
       reading in ascii files
     """
+    import linetools.spectra.io as lsio
+    try:
+        s = lsio.readspec(filename)        
+    except Exception:
+        pass
+    else:
+        s = Spectrum(wa=s.dispersion.value,
+                     fl=s.flux.value,
+                     er=s.sig, co=s.co)
+        return s
+        
     if filename.endswith('.gz'):
         import gzip
         fh = gzip.open(filename, 'rb')
@@ -458,7 +469,13 @@ def read(filename, comment='#', debug=False):
     test = next(fh)
     fh.close()
 
-    if test[:20].decode('utf-8')[8] != '=': 
+    if filename.endswith('.npy'):
+        s = np.load(filename)
+        wa = s['wa']
+        fl = s['fl']
+        sp = Spectrum(wa=wa, fl=fl, filename=filename)
+        return sp
+    elif test[:20].decode('utf-8')[8] != '=': 
     # Then probably not a fits file
         fwhm = None
         skip = 0
@@ -512,10 +529,12 @@ def read(filename, comment='#', debug=False):
     hd = f[0].header
     #import pdb; pdb.set_trace()
     if str('CTYPE1') in hd and ('_f.fits' in filename.lower() or
-                                '_xf.fits' in filename.lower()):
+                                '_xf.fits' in filename.lower() or
+                                'f.fits' in filename.lower()):
+        print('XIDL!')
         # ESI, HIRES, etc. from XIDL
         dontscale = (True if str('BZERO') in hd else False)
-        if hd['CTYPE1'] == 'LINEAR':
+        if hd['CTYPE1'].strip() == 'LINEAR':
             wa = getwave(hd)
             fl = fits.getdata(filename, do_not_scale_image_data=dontscale)
             if 'F.fits' in filename:
@@ -576,27 +595,28 @@ def read(filename, comment='#', debug=False):
     else:
         good = False
         names = data.dtype.names
-        if 'wa' in  names and 'fl' in names:
-            wa = data.wa
-            fl = data.fl
-            good = True
-        elif 'wavelength' in names and 'flux' in names:
-            wa = data.wavelength
-            fl = data.flux
-            good = True
-        if good:
-            er = np.ones_like(fl)
-            try:
-                er = data.er
-            except AttributeError:
-                pass
-            co = np.empty_like(fl) * np.nan
-            try:
-                co = data.co
-            except AttributeError:
-                pass
-            return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
-
+        if names is not None:
+            if 'wa' in  names and 'fl' in names:
+                wa = data.wa
+                fl = data.fl
+                good = True
+            elif 'wavelength' in names and 'flux' in names:
+                wa = data.wavelength
+                fl = data.flux
+                good = True
+            if good:
+                er = np.ones_like(fl)
+                try:
+                    er = data.er
+                except AttributeError:
+                    pass
+                co = np.empty_like(fl) * np.nan
+                try:
+                    co = data.co
+                except AttributeError:
+                    pass
+                return Spectrum(wa=wa, fl=fl, er=er, co=co, filename=filename)
+    
     ##################################################################
     #  First generate the wavelength scale.  Look for CTYPE, CRVAL,
     #  CDELT header cards.  Then read in flux values, and look for
@@ -607,19 +627,26 @@ def read(filename, comment='#', debug=False):
     # pixel stepsize
     cdelt = get_cdelt(hd)
     if cdelt is None:
-        # Read Songaila's spectra
-        wa = f[0].data[0]
-        fl = f[0].data[1]
-        npts = len(fl)
-        try:
-            er = f[0].data[2]
-            if len(er[er > 0] < 0.5 * npts):
-                er = f[0].data[3]
-        except IndexError:
-            i = int(npts * 0.75) 
-            er = np.ones(npts) * np.std(fl[i-50:i+50])
-        f.close()
-        return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
+        if f[0].data.ndim > 1:
+            # Read Songaila's spectra
+            wa = f[0].data[0]
+            fl = f[0].data[1]
+            npts = len(fl)
+            try:
+                er = f[0].data[2]
+                if len(er[er > 0] < 0.5 * npts):
+                    er = f[0].data[3]
+            except IndexError:
+                i = int(npts * 0.75) 
+                er = np.ones(npts) * np.std(fl[i-50:i+50])
+            f.close()
+            return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
+        else:
+            wa = f[2].data
+            er = f[1].data
+            fl = f[0].data
+            f.close()
+            return Spectrum(wa=wa, fl=fl, er=er, filename=filename)
 
     ##########################################################
     # Check if SDSS spectrum
@@ -637,15 +664,18 @@ def read(filename, comment='#', debug=False):
     ##########################################################
     # Check if HIRES/ESI/MagE/MIKE spectrum
     ##########################################################
-    if str('INSTRUME') in hd:   #  Check if Keck spectrum
-        if (hd[str('INSTRUME')].startswith('HIRES') or 
-            hd[str('INSTRUME')].startswith('MagE') or 
-            hd[str('INSTRUME')].startswith('ESI') or 
-            hd[str('INSTRUME')].startswith('MIKE')):
-                if debug:  print('Looks like Makee output format')
-                from xastropy.spec import readwrite as xsr
-                f.close()
-                return xsr.readspec(filename)
+    if str('INSTRUME') in hd:
+        if hd[str('INSTRUME')].startswith('HIRES'):
+            if debug:  print('Looks like Makee output format')
+            fl = f[0].data       # Flux
+            f.close()
+            errname = filename[0:filename.rfind('.fits')] + 'e.fits'
+            try:
+                er = fits.getdata(errname)
+            except IOError:
+                er = np.ones(len(fl))
+            return Spectrum(fl=fl, er=er, filename=filename, CDELT=cdelt,
+                            CRVAL=hd[str('CRVAL1')], CRPIX=hd[str('CRPIX1')])
 
     ##########################################################
     # Check if UVES_popler output

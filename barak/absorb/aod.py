@@ -25,8 +25,8 @@ def Nvel_from_tau(tau, wa, osc):
     ----------
     tau : array_like, shape (N,)
       Array of optical depths/
-    wa : float
-      Rest wavelength of the transition.
+    wa : float or astropy quantity
+      Rest wavelength of the transition. 
     osc : float
       Transition oscillator strength.
 
@@ -63,7 +63,6 @@ def Nlam_from_tau(tau, wa, osc):
     """
     # the 1e-8 here converts from cm^-1 to Angstrom^-1
     return tau / (pi * e2_me_c * osc) * c_cms / (wa * 1e-8)**2 * 1e-8
-
 
 
 def tau_from_nfl_ner(nfl, ner, sf=1):
@@ -193,7 +192,7 @@ def tau_AOD(nfl, ner, colo_nsig=0.5, cohi_nsig=0.5,
     sf : float (default 1)
       Multiplier for the optical depth (useful to scale transitions
       with different oscillator strengths to match each other.)
-       
+
     Returns
     -------
     taulo, tau, tauhi, nfl_min, nfl_max :
@@ -243,7 +242,7 @@ def calc_N_AOD(wa, nfl, ner, wa0, osc, redshift=None,
     sf : float (default 1)
       Multiplier for the optical depth (useful to scale transitions
       with different oscillator strengths to match each other.)
-       
+
     Returns
     -------
     taulo, tau, tauhi, sat :

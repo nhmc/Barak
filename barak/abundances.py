@@ -52,8 +52,10 @@ cond_temp = readtxt(datapath +
 # Mass fractions of H (X), He (Y) and metals (Z) below are from Asplund et
 # al. 2009ARA&A..47..481A, table 4.
 
-protosolar = dict(X=0.7381, Y=0.2485, Z=0.0134, ZonX=0.0181)
-photosphere = dict(X=0.7154, Y=0.2703, Z=0.0142, ZonX=0.0199)
+protosolar = dict(X=0.7381, Y=0.2485, Z=0.0134, ZonX=0.0181,
+                  ref='2009ARA&A..47..481A')
+photosphere = dict(X=0.7154, Y=0.2703, Z=0.0142, ZonX=0.0199,
+                   ref='2009ARA&A..47..481A')
 
 def calc_abund(X, Y, logNX, logNY, ref='Lodders03'):
     """ Find the abundance relative to solar given two elements and
@@ -67,6 +69,10 @@ def calc_abund(X, Y, logNX, logNY, ref='Lodders03'):
       log10 of element X column density in cm^-2.
     logNY : array_like, shape (N,)
       log10 of element Y column density in cm^-2.
+    ref : str (default 'Lodders03')
+      Which solar abundance measurements to use as a reference.  One
+      of {'Lodders03', 'cloudy13.02'}.
+
 
     Returns
     -------
@@ -78,7 +84,7 @@ def calc_abund(X, Y, logNX, logNY, ref='Lodders03'):
     The abundance ratio is defined::
 
       [X/Y] = log10 (n_X / n_Y) - log10 (n_Xsun / n_Ysun)
-    
+
     Where N_Xsun / N_Ysun is the ratio of the number density of
     species X to species Y for 'proto-solar' abundances (See Lodders
     2003, ApJ, 591, 1220). For example, if [X/Y] = 0, it has the same

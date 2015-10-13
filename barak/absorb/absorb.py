@@ -28,8 +28,9 @@ import astropy.units as u
 import math
 from math import pi, sqrt, exp
 
-__all__ = ['calc_iontau', 'find_tau' , 'b_to_T', 'T_to_b', 'findtrans',
-           'split_trans_name', 'tau_LL', 'calc_DLA_tau', 'calc_DLA_trans',
+__all__ = ['calctau', 'calc_iontau', 'find_tau' , 'b_to_T', 'T_to_b',
+           'findtrans', 'split_trans_name', 'tau_LL',
+           'calc_DLA_tau', 'calc_DLA_trans',
            'guess_logN_b', 'get_ionization_energy',
            'photo_cross_section_hydrogenic', 'readatom']
 
@@ -595,7 +596,7 @@ def tau_LL(logN, wa, wstart=912):
 
 def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
                  verbose=1, highions=1, molecules=False, same_b=False,
-                 metals=True):
+                 metals=True, Nmet=None):
     """ Create the optical depth due to absorption from a DLA.
 
     The DLA is at z=0. The column density and metallicity can be
@@ -612,13 +613,15 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
     bHI : float (50)
        The b parameter to use for HI.
     same_b : True
-       Use the same b parameter for all species.
+       Use the b parameter for HI for all species.
     molecules : bool (False)
        Whether to include absorption from H2 and CO.
     verbose : bool (False)
        Print helpful information
     highions : bool (True)
        Whether to include absorption from CIV, SiIV, NV and OVI
+    Nmet : dict (None)
+       Optional dictionary of metal column densities. e.g. Nmet['CII'] = 14.5 
 
     Returns
     -------
@@ -647,21 +650,28 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
             print('using low ion b values:')
             print(', '.join('%s %.1f' % (el, b[el]) for el in elements))
 
-        f26 = f26 + [
-            'OI    %.6f  0  %.2f 0 %.2f 0' % (z, b['O'], (Asolar['O']  + off)),
-            'SiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 0.05)),
-            'SiIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 1)),
-            'FeII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Fe'], (Asolar['Fe'] + off)),
-            'CII   %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], (Asolar['C']  + off - 0.05)),
-            'CIII  %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], (Asolar['C']  + off - 1)),
-            'CaII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Ca'], (Asolar['Ca'] + off)),
-            'AlII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Al'], (Asolar['Al'] + off - 0.05)),
-            'AlIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Al'], (Asolar['Al'] + off - 1)),
-            'TiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Ti'], (Asolar['Ti'] + off)),
-            'NII   %.6f  0  %.2f 0 %.2f 0' % (z, b['N'], (Asolar['N']  + off)),
-            'ZnII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Zn'], (Asolar['Zn']  + off)),
-            'CrII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Cr'], (Asolar['Cr']  + off)),
-            ]
+        if Nmet is not None:
+            for ion in Nmet:
+                aname,stage = split_trans_name(ion)
+                row = '%5s  %.6f  0  %.2f 0 %.2f 0' % (ion, z, b[aname], Nmet[ion])
+                print(row)
+                f26 = f26 + [row]
+        else:
+            f26 = f26 + [
+                'OI    %.6f  0  %.2f 0 %.2f 0' % (z, b['O'], (Asolar['O']  + off)),
+                'SiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off)),
+                #'SiIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Si'], (Asolar['Si'] + off - 1)),
+                'FeII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Fe'], (Asolar['Fe'] + off)),
+                'CII   %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], (Asolar['C']  + off)),
+                #'CIII  %.6f  0  %.2f 0 %.2f 0' % (z, b['C'], (Asolar['C']  + off - 1)),
+                'CaII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Ca'], (Asolar['Ca'] + off)),
+                'AlII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Al'], (Asolar['Al'] + off)),
+                #'AlIII %.6f  0  %.2f 0 %.2f 0' % (z, b['Al'], (Asolar['Al'] + off - 1)),
+                'TiII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Ti'], (Asolar['Ti'] + off)),
+                'NII   %.6f  0  %.2f 0 %.2f 0' % (z, b['N'], (Asolar['N']  + off)),
+                'ZnII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Zn'], (Asolar['Zn']  + off)),
+                'CrII  %.6f  0  %.2f 0 %.2f 0' % (z, b['Cr'], (Asolar['Cr']  + off)),
+                ]
     if highions and metals:
         if verbose:
             print('Including O VI, Si IV, C IV and N V')
@@ -682,6 +692,8 @@ def calc_DLA_tau(wa, z=0, logN=20.3, logZ=0, bHI=50, atom=None,
             'COJ0  %.6f  0  5.0  0 14.0 0' % z,
             ]
 
+    #import pdb
+    #pdb.set_trace()
     tau, ticks = find_tau(wa, StringIO('\n'.join(f26)), atomdat=atom)
     if str('wa') in ticks.dtype.names:
         ticks.sort(order=str('wa'))

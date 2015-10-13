@@ -310,7 +310,7 @@ def hist_yedge(y, ax, bins=20, height=0.2, histmax=None, fmt='',
             artist = ax.fill_betweenx(b, Y, x2=1, transform=trans, **kwargs)
         else:
             artist = ax.fill_betweenx(b, Y, transform=trans, **kwargs)
-            
+
     return artist
 
 def hist_xedge(x, ax, bins=20, height=0.2, histmax=None, fmt='',
@@ -343,7 +343,7 @@ def twinhist(X, Y, ax=None, xbins=10, ybins=10, fmt='o',
     from barak.plot import hist_xedge, hist_yedge
     if ax is None:
         ax = pl.gca()
-    
+
     ax.plot(X,Y, fmt, color=color, **kwargs)
     hist_xedge(X,ax, bins=xbins,fill=True, color=color, alpha=histalpha)
     hist_yedge(Y,ax, bins=ybins,fill=True, color=color, alpha=histalpha)
@@ -401,7 +401,7 @@ def arrplot(a, x=None, y=None, ax=None, perc=(0, 100), colorbar=True,
         x = np.arange(a.shape[1])
     else:
         assert len(x) == a.shape[1]
-    
+
     if y is None:
         y = np.arange(a.shape[0])
     else:
@@ -616,9 +616,9 @@ def make_log_xlabels(ax, yoff=-0.05):
     floor = np.floor(ticks[0])
     ceil = np.ceil(ticks[-1])
     if tdecade[0] > floor:
-        tdecade = [floor] + tdecade 
+        tdecade = [floor] + tdecade
     elif tdecade[0] < ceil:
-        tdecade.append(ceil) 
+        tdecade.append(ceil)
     minorticks = calc_log_minor_ticks(tdecade)
     ax.set_xticks(minorticks, minor=True)
     ax.set_xticks(tdecade)
@@ -643,6 +643,7 @@ def make_log_xlabels(ax, yoff=-0.05):
         t.set_y(yoff)
 
     ax.set_xlim(x0, x1)
+
     return ax
 
 def make_log_ylabels(ax, mathdefault=True):
@@ -654,9 +655,9 @@ def make_log_ylabels(ax, mathdefault=True):
     floor = np.floor(ticks[0])
     ceil = np.ceil(ticks[-1])
     if tdecade[0] > floor:
-        tdecade = [floor] + tdecade 
+        tdecade = [floor] + tdecade
     elif tdecade[0] < ceil:
-        tdecade.append(ceil) 
+        tdecade.append(ceil)
     minorticks = calc_log_minor_ticks(tdecade)
     ax.set_yticks(minorticks, minor=True)
     ax.set_yticks(tdecade)
@@ -896,7 +897,7 @@ def get_fig_axes(nrows, ncols, nplots, width=11.7, height=None, aspect=0.5):
 
 
     print(ncols, nrows, nplots)
-    
+
     # find the indices of the left and bottom plots (used to set axes
     # labels)
     ileft = range(nrows)
@@ -946,10 +947,12 @@ def add_top_ticklabels(ax):
     ax.xaxis.set_tick_params(labelbottom='off')
 
 def set_xlabel_padding(pad):
+    """ Deprecated, use ax.tick_params(axis='x', which='major', pad=5) instead"""
     plt.rc('xtick.major', pad=pad)
     plt.rc('xtick.minor', pad=pad)
 
 def set_ylabel_padding(pad):
+    """ Deprecated, use ax.tick_params(axis='y', which='major', pad=5) instead"""
     plt.rc('ytick.major', pad=pad)
     plt.rc('ytick.minor', pad=pad)
 
@@ -967,3 +970,22 @@ def rc_ax_linewidth(w):
     plt.rc('xtick.minor', width=w)
     plt.rc('ytick.major', width=w)
     plt.rc('ytick.minor', width=w)
+
+def set_label_format(ax, axis='both', fmt='$\mathbf{%g}$'):
+    """ Change the tick label formatter.
+    
+    fmt is the format string. The default formats to bold mathtext.
+    axes is 'x', 'y' or 'both' (the default).
+    """
+    import matplotlib.ticker
+    formatter = matplotlib.ticker.FormatStrFormatter(fmt) 
+
+    if axis not in {'x', 'y', 'both'}:
+        print("axis must be 'y', 'y' or 'both'")
+    
+    # need this to assign some tick positions.
+    #ax.figure.canvas.draw()
+    if axis == 'x' or axis == 'both':
+        ax.xaxis.set_major_formatter(formatter)
+    if axis == 'y' or axis == 'both':
+        ax.yaxis.set_major_formatter(formatter)
