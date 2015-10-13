@@ -576,7 +576,5 @@ def boot_sample(arr, nboot, seed=None):
     for i in xrange(nboot):
         samples.append(arr[np.random.randint(n, size=n)])
     return samples
-
-def beta(a, b, x):
     
     
