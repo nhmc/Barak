@@ -245,7 +245,7 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
     wa : array of floats
       wavelength array
     ion : atom.data entry
-      ion entry from readatom output dictionary
+      ion entry from readatom output dictionary or linetools LineList
     zp1 : float
       redshift + 1
     logN : float
@@ -280,6 +280,17 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
         psize =  c_kms * (wa[i] - wa[i-1]) / wa[i]
         print('approx pixel width %.1f km/s at %.1f Ang' % (psize, wa[i]))
 
+    try:
+        from linetools.lists.linelist import LineList
+    except ImportError:
+        pass
+    else:
+        if isinstance(ion, LineList):
+            ion = np.rec.fromarrays([ion.wrest.value, ion.f, ion.gamma.value],
+                                    names=str('wa,osc,gam'))
+            ion.sort(order=['wa'])
+            ion = ion[::-1]
+
     # select only ions with redshifted central wavelengths inside wa,
     # +/- the padding velocity range vpad.
     obswavs = ion.wa * zp1
@@ -310,9 +321,10 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
         wstart_LL = 912.8
         # remove tau from lines that move into the LL approximation
         # region.
-        c0 = wa < (wstart_LL * (1+z))
+        #import pdb; pdb.set_trace()
+        c0 = wa < (wstart_LL * zp1)
         sumtau[c0] = 0
-        sumtau += tau_LL(logN, wa/(1+z), wstart=wstart_LL)
+        sumtau += tau_LL(logN, wa / zp1, wstart=wstart_LL)
 
     if ticks:
         return sumtau, tickmarks
