@@ -601,6 +601,7 @@ def tau_LL(logN, wa, wstart=912):
     >>> plt.legend()
     """
     sigma0 = 6.304e-18           # cm^2
+    assert len(wa) > 1
     i = wa.searchsorted(wstart)
     tau = np.zeros_like(wa)
     tau[:i] = 10**logN * sigma0 * (wa[:i] / 912.)**3
