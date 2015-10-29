@@ -9,6 +9,10 @@ from math import pi, isnan, isinf, log
 import astropy.constants as C
 import astropy.units as u
 
+try:
+    xrange
+except NameError:
+    xrange = range
 
 c_kms = C.c.to(u.km / u.s).value
 c_cms = C.c.to(u.cm / u.s).value
