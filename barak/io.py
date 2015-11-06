@@ -391,15 +391,15 @@ def savejson(filename, obj, overwrite=False, indent=None):
     if os.path.lexists(filename) and not overwrite:
         raise IOError('%s exists' % filename)
     if filename.endswith('.gz'):
-        fh = gzip.open(filename, 'wb')
+        fh = gzip.open(filename, 'wt')
     else:
-        fh = open(filename, 'wb')
+        fh = open(filename, 'wt')
     json.dump(obj, fh, indent=indent)
     fh.close()
 
 def loadjson(filename):
     """ Load a python object saved with savejson."""
-    fh = open(filename, 'rb')
+    fh = open(filename, 'rt')
     obj = json.load(fh)
     fh.close()
     return obj
