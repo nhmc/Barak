@@ -683,7 +683,6 @@ def make_log_ylabels(ax, mathdefault=True):
             ticklabels.append('0.01')
         else:
             ticklabels.append('10^{%.0f}' % t)
-        print(t, spacing, bool(t % spacing), ticklabels[-1])
         
         if mathdefault:
             ticklabels[-1] = '$\mathdefault{' + ticklabels[-1] + '}$'
