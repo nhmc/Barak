@@ -613,18 +613,22 @@ def make_log_xlabels(ax, yoff=-0.05):
     x0, x1 = ax.get_xlim()
     ticks = ax.get_xticks()
     tdecade = [t for t in ticks if np.allclose(t % 1, 0)]
+    spacing = tdecade[1] - tdecade[0] 
     floor = np.floor(ticks[0])
     ceil = np.ceil(ticks[-1])
     if tdecade[0] > floor:
         tdecade = [floor] + tdecade
     elif tdecade[0] < ceil:
         tdecade.append(ceil)
+    tdecade = np.arange(tdecade[0], tdecade[-1] + 0.1, 1)
     minorticks = calc_log_minor_ticks(tdecade)
     ax.set_xticks(minorticks, minor=True)
     ax.set_xticks(tdecade)
     ticklabels = []
     for t in tdecade:
-        if t == 0:
+        if t % spacing:
+            ticklabels.append('')
+        elif t == 0:
             ticklabels.append('$\mathdefault{1}$')
         elif t == 1:
             ticklabels.append('$\mathdefault{10}$')
@@ -652,18 +656,22 @@ def make_log_ylabels(ax, mathdefault=True):
     y0, y1 = ax.get_ylim()
     ticks = ax.get_yticks()
     tdecade = [t for t in ticks if np.allclose(t % 1, 0)]
+    spacing = tdecade[1] - tdecade[0] 
     floor = np.floor(ticks[0])
     ceil = np.ceil(ticks[-1])
     if tdecade[0] > floor:
         tdecade = [floor] + tdecade
     elif tdecade[0] < ceil:
         tdecade.append(ceil)
+    tdecade = np.arange(tdecade[0], tdecade[-1] + 0.1, 1)
     minorticks = calc_log_minor_ticks(tdecade)
     ax.set_yticks(minorticks, minor=True)
     ax.set_yticks(tdecade)
     ticklabels = []
     for t in tdecade:
-        if t == 0:
+        if t % spacing:
+            ticklabels.append('')
+        elif t == 0:
             ticklabels.append('1')
         elif t == 1:
             ticklabels.append('10')
@@ -675,7 +683,8 @@ def make_log_ylabels(ax, mathdefault=True):
             ticklabels.append('0.01')
         else:
             ticklabels.append('10^{%.0f}' % t)
-
+        print(t, spacing, bool(t % spacing), ticklabels[-1])
+        
         if mathdefault:
             ticklabels[-1] = '$\mathdefault{' + ticklabels[-1] + '}$'
         else:
