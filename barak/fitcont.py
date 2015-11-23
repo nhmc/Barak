@@ -445,7 +445,7 @@ q        : quit without keeping continuum
         if event.key in ('a', '3'):
             # add a point to contpoints
             x,y = event.xdata,event.ydata
-            if not self.contpoints or x not in zip(*self.contpoints)[0]:
+            if not self.contpoints or x not in list(zip(*self.contpoints))[0]:
                 self.contpoints.append((x, y))
                 self.update()
         elif event.key in ('d', '4'):
