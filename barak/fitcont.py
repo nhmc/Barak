@@ -8,6 +8,7 @@ try:
     unicode
 except NameError:
     unicode = basestring = str
+    raw_input = input
 
 import numpy as np
 import matplotlib.pyplot as plt

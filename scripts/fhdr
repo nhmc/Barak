@@ -34,8 +34,8 @@ entire header is printed for each file.
 Options:
 
 -[extension number]  The number of the extension to print the header
-		     for.  The first extension header (number 0) is
-		     shown by default.
+                     for.  The first extension header (number 0) is
+                     shown by default.
 -all   Print headers for all extensions.
 -f     Format the output such that columns of keywords are aligned
        (slower). This is only used if one or more keys are given.
@@ -58,139 +58,139 @@ def main(args):
     ext_specified = False
     iext = 0
     while True:
-	if args[0].startswith('-'):
-	    a = args.pop(0)[1:]
-	    #print a
-	    if a == 'all':
-		allext = True
-		continue
-	    try:
-		iext = int(a)
-		ext_specified = True
-	    except ValueError:
-		if a == 'f':
-		    formatting = True
-		elif a == 'p':
-		    fullpaths = True
-		else:
-		    print(usage)
-		    sys.exit(1)
-	else:
-	    break
+        if args[0].startswith('-'):
+            a = args.pop(0)[1:]
+            #print a
+            if a == 'all':
+                allext = True
+                continue
+            try:
+                iext = int(a)
+                ext_specified = True
+            except ValueError:
+                if a == 'f':
+                    formatting = True
+                elif a == 'p':
+                    fullpaths = True
+                else:
+                    print(usage)
+                    sys.exit(1)
+        else:
+            break
 
     filenames = []
     width = 0
     endings = '.fits','.fit','.fits.gz','.fit.gz', '.fits.fz'
     while args and max([args[0].endswith(e) for e in endings]):
-	filename = args.pop(0)
-	if fullpaths:
-	    name = filename
-	else:
-	    name = filename.split('/')[-1]
-	width = max(width, len(name))
-	filenames.append(filename)
+        filename = args.pop(0)
+        if fullpaths:
+            name = filename
+        else:
+            name = filename.split('/')[-1]
+        width = max(width, len(name))
+        filenames.append(filename)
 
     keys = args
 
     try:
-	import astropy.io.fits as pyfits
+        import astropy.io.fits as pyfits
     except ImportError:
-	import pyfits
+        import pyfits
 
     if not keys:
-	for filename in filenames:
-	    try:
-		fh = pyfits.open(filename)
-	    except IOError:
-		print('Problem reading:', filename)
-		sys.exit()
-	    if allext:
-		for hdu in fh:
-		    s = hdu.header.tostring('\n')
-		    sys.stdout.write(s)
-		    sys.stdout.write('\n')
-	    else:
-		s = fh[iext].header.tostring('\n')
-		sys.stdout.write(s)
-		sys.stdout.write('\n')
-	    fh.close()
+        for filename in filenames:
+            try:
+                fh = pyfits.open(filename)
+            except IOError:
+                print('Problem reading:', filename)
+                sys.exit()
+            if allext:
+                for hdu in fh:
+                    s = hdu.header.tostring('\n')
+                    sys.stdout.write(s)
+                    sys.stdout.write('\n')
+            else:
+                s = fh[iext].header.tostring('\n')
+                sys.stdout.write(s)
+                sys.stdout.write('\n')
+            fh.close()
     else:
-	fmt = ' '.join(['%%-%is' % width] + ['%s'] * len(keys))
-	titles = ['FILENAME']
-	output = []
-	maxlens = [0] * len(keys)
-	for k in keys:
-	    if ' ' in k:
-		k = '"' + k + '"'
-	    titles.append(k)
-	if not formatting:
-	    print(fmt % tuple(titles))
-	for filename in filenames:
-	    try:
-		fh = pyfits.open(filename)
-	    except IOError:
-		print('Problem reading:', filename)
-		sys.exit()
-	    if fullpaths:
-		fname = filename
-	    else:
-		fname = filename.split('/')[-1]
+        fmt = ' '.join(['%%-%is' % width] + ['%s'] * len(keys))
+        titles = ['FILENAME']
+        output = []
+        maxlens = [0] * len(keys)
+        for k in keys:
+            if ' ' in k:
+                k = '"' + k + '"'
+            titles.append(k)
+        if not formatting:
+            print(fmt % tuple(titles))
+        for filename in filenames:
+            try:
+                fh = pyfits.open(filename)
+            except IOError:
+                print('Problem reading:', filename)
+                sys.exit()
+            if fullpaths:
+                fname = filename
+            else:
+                fname = filename.split('/')[-1]
 
-	    out = [fname]
-	    for key in keys:
-		# Look for the key in the extension given (first by
-		# default).
-		i = iext
-		while True:
-		    try:
-			hd = fh[i].header
-		    except IndexError:
-			# if we've run out of extensions, give up.
-			val = '***'
-			break
-		    try:
-			val = hd[key]
-			break
-		    except KeyError:
-			# if we can't find it, try adding "HIERARCH
-			# ESO", used for keywords longer than 8
-			# characters.
-			try:
-			    val = hd["HIERARCH ESO " + key]
-			    break
-			except KeyError:
-			    # if we still can't find it and we haven't
-			    # asked for a specific extension, check
-			    # the next extension
-			    if ext_specified:
-				val = '***'
-				break
-			    i += 1
+            out = [fname]
+            for key in keys:
+                # Look for the key in the extension given (first by
+                # default).
+                i = iext
+                while True:
+                    try:
+                        hd = fh[i].header
+                    except IndexError:
+                        # if we've run out of extensions, give up.
+                        val = '***'
+                        break
+                    try:
+                        val = hd[key]
+                        break
+                    except KeyError:
+                        # if we can't find it, try adding "HIERARCH
+                        # ESO", used for keywords longer than 8
+                        # characters.
+                        try:
+                            val = hd["HIERARCH ESO " + key]
+                            break
+                        except KeyError:
+                            # if we still can't find it and we haven't
+                            # asked for a specific extension, check
+                            # the next extension
+                            if ext_specified:
+                                val = '***'
+                                break
+                            i += 1
 
-		#print 'setting', key, 'to', val, i
-		out.append(val)
-	    if not formatting:
-		print(fmt % tuple(out))
-	    else:
-		lens = [len(str(v)) for v in out[1:]]
-		for i in range(len(maxlens)):
-		    if lens[i] > maxlens[i]:
-			maxlens[i] = lens[i]
-		output.append(out)
+                #print 'setting', key, 'to', val, i
+                out.append(val)
+            if not formatting:
+                print(fmt % tuple(out))
+            else:
+                lens = [len(str(v)) for v in out[1:]]
+                for i in range(len(maxlens)):
+                    if lens[i] > maxlens[i]:
+                        maxlens[i] = lens[i]
+                output.append(out)
 
-	if formatting:
-	    fmt = ' '.join(['%%-%is' % width]+['%%-%is' % w for w in maxlens])
-	    tshort = [t.strip('"')[:m] for t,m in zip(titles[1:],maxlens)]
-	    print(fmt % tuple([titles[0][:width]] + tshort))
-	    for row in output:
-		print(fmt % tuple(row))
+        if formatting:
+            fmt = ' '.join(['%%-%is' % width]+['%%-%is' % w for w in maxlens])
+            tshort = [t.strip('"')[:m] for t,m in zip(titles[1:],maxlens)]
+            print(fmt % tuple([titles[0][:width]] + tshort))
+            for row in output:
+                print(fmt % tuple(row))
 
 if __name__ =='__main__':
     if len(sys.argv) == 1:
-	print(usage)
-	sys.exit(1)
+        print(usage)
+        sys.exit(1)
     try:
-	main(sys.argv[1:])
+        main(sys.argv[1:])
     except KeyboardInterrupt:
-	print('Closing')
-	sys.exit()
+        print('Closing')
+        sys.exit()

@@ -181,7 +181,7 @@ def starburst_Calzetti00(wa, Rv=4.05, EBmV=None):
 
     # k is A(lambda) / E(B - V)
     # Constants below assume wavelength is in microns.
-    
+
     uwa = np.array(wa / 10000.)
     k = np.zeros_like(wa)
 
@@ -507,4 +507,4 @@ def ElamV_from_AlamAv(AlamAv, Rv):
     """ Find E(lambda - V) / E(B - V) from A(lambda)/A(V).
     """
     return AlamAv*Rv - Rv
-1
+

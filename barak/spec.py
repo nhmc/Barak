@@ -456,7 +456,7 @@ def read(filename, comment='#', debug=False):
     except Exception:
         pass
     else:
-        s = Spectrum(wa=s.dispersion.value,
+        s = Spectrum(wa=s.wavelength.value,
                      fl=s.flux.value,
                      er=s.sig, co=s.co)
         return s

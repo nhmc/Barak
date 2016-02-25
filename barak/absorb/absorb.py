@@ -237,7 +237,7 @@ def logN_from_tau_peak(tau, b, wa0, osc):
 
 def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
                 label_tau_threshold=0.01, vpad=500., verbose=True,
-                logNthresh_LL=None):
+                logNthresh_LL=None, wstart_LL=912.8, add_LL=True):
     """ Returns tau values at each wavelength for transitions in ion.
 
     Parameters
@@ -261,6 +261,10 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
       the wavelength array.
     logNthresh_LL : float (default 14.8)
       Threshold value of log10(NHI) for including Lyman limit absorption.
+    wstart_LL : float (912.8)
+      Where the LL approximation starts.
+    add_LL : bool (True)
+      Whether to add tau from the Lyman limit continuum
     Returns
     -------
     tau : array of floats
@@ -318,13 +322,13 @@ def calc_iontau(wa, ion, zp1, logN, b, debug=False, ticks=False, maxdv=1000.,
         sumtau[i0:i1] += tau
 
     if logN > logNthresh_LL and abs(ion['wa'][0] - 1215.6701) < 1e-3:
-        wstart_LL = 912.8
         # remove tau from lines that move into the LL approximation
         # region.
         #import pdb; pdb.set_trace()
         c0 = wa < (wstart_LL * zp1)
         sumtau[c0] = 0
-        sumtau += tau_LL(logN, wa / zp1, wstart=wstart_LL)
+        if add_LL:
+            sumtau += tau_LL(logN, wa / zp1, wstart=wstart_LL)
 
     if ticks:
         return sumtau, tickmarks

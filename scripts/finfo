@@ -6,19 +6,19 @@ if len(sys.argv) < 2:
     sys.exit('usage: finfo [filenames] ')
 
 try:
-    import pyfits
+    import pyfits as fits
 except ImportError:
-    import astropy.io.fits as pyfits
+    import astropy.io.fits as fits
 
 from barak.utilities import stats
 
 for filename in sys.argv[1:]:
-    f = pyfits.open(filename)
+    f = fits.open(filename)
     results = filename + '\n'
     for j in range(len(f)):
         results += "  %-3d  %s\n"%(j, f[j]._summary())
         if f[j].data is not None:
-	    try:
+            try:
                 results = results +  '  ' + stats(f[j].data) + '\n'
             except TypeError:
                 pass

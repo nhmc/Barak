@@ -1104,8 +1104,8 @@ def voigt(a, u):
 
     This function uses a Taylor approximation to the Voigt function
     for 0 < a < 0.1. (Harris 1948, ApJ, 108, 112).  Relative error
-    with respect to `voigt_wofz` is < 10^-4.9 for a < 0.1. For larger
-    `a` the exact calculation is done in `voigt_wofz`.
+    with respect to `voigt_wofz` is < 10^-4.9 for a < 0.1.  For larger
+    `a` the calculation is done in `voigt_wofz`.
     """
     a = float(a)
     if a > 0.1:
