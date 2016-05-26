@@ -523,7 +523,7 @@ class Bins:
         self.width = np.diff(edges)
         self.halfwidth = 0.5 * np.diff(edges)
         self.cen = 0.5 * (edges[:-1] + edges[1:])
-        self.dw = [l, r for l, r in zip(edges[:-1], edges[1:])]
+        self.dw = [(l, r) for l, r in zip(edges[:-1], edges[1:])]
 
 def get_bins(x, nbins=10, minfrac=0.08):
     """ Adaptively choose bin sizes to make roughly the same number of
