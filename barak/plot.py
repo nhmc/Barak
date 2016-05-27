@@ -239,6 +239,9 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
         Replace any non-positive values of y with `nonposval`.
     """
 
+    y = np.asarray(y)
+    x = np.asarray(x)
+
     if ax is None:
         fig = pl.figure()
         ax = fig.add_subplot(111)
