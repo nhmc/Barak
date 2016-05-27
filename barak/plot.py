@@ -214,7 +214,7 @@ def distplot(vals, xvals=None, perc=(68, 95), showmean=False,
     return ax
 
 def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
-            ecolor=None, elw=None, zorder=None, nonposval=None, **kwargs):
+            ecolor=None, zorder=None, nonposval=None, **kwargs):
     """ Plot a graph with errors.
 
     Parameters
@@ -270,8 +270,11 @@ def errplot(x, y, yerrs, xerrs=None, fmt='.b', ax=None, ms=None, mew=0.5,
         lo[lo <= 0] = nonposval
         hi[hi <= 0] = nonposval
 
-    if 'lw' in kwargs and elw is None:
+    if 'lw' in kwargs and elw is not in kwargs:
         elw = kwargs['lw']
+    else:
+        elw = kwargs.pop('elw')
+
     col = ax.vlines(x, lo, hi, color=ecolor, lw=elw, label='__nolabel__')
 
     if xerrs is not None:
